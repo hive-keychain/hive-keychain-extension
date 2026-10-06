@@ -1,72 +1,90 @@
 .nft-collection-preview-card {
-  @include small-card();
   display: flex;
   flex-direction: column;
-  row-gap: 4px;
-  align-items: flex-start;
+  row-gap: 8px;
+  align-items: stretch;
+  color: var(--main-font-color);
   cursor: pointer;
   width: calc(100% - 60px);
   min-width: 0;
   box-sizing: border-box;
   margin-left: auto;
   margin-right: auto;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--card-border);
 
-  .nft-collection-name-panel {
+  .nft-collection-header {
     display: flex;
-    align-items: center;
-    column-gap: 4px;
-    width: 100%;
-    min-width: 0;
-    .nft-collection-name {
-      @include poppins500(16px);
-      color: var(--main-font-color);
-    }
-    .nft-collection-address {
-      @include poppins300(13px);
-      opacity: 0.8;
-      font-style: italic;
-    }
-  }
-  .nft-collection-preview {
-    display: grid;
-    grid-template-columns: 1fr auto;
+    align-items: flex-start;
+    justify-content: space-between;
     column-gap: 12px;
     width: 100%;
+    min-width: 0;
+  }
 
-    .nft-preview-container {
-      display: flex;
-      column-gap: 8px;
-      min-width: 0;
-      flex: 1;
-      overflow: hidden;
-    }
+  .nft-collection-heading {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
 
-    .go-to-icon {
-      align-self: center;
-      justify-self: right;
-      transform: rotate(-90deg);
-    }
+  .nft-collection-name {
+    @include poppins600(15px);
+    color: var(--main-font-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
-    .nft-media {
-      height: 64px;
-      width: 64px;
-      border: solid 1px var(--card-border);
-      border-radius: 8px;
-    }
-    .nft-balance {
-      position: absolute;
-      top: 0;
-      right: 0;
-      background: $red;
-      color: white;
-      border-radius: 50%;
-      padding: 4px 4px;
-      font-size: 12px;
-      height: 12px;
-      width: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+  .nft-collection-address {
+    @include poppins300(12px);
+    opacity: 0.65;
+    font-style: italic;
+  }
+
+  .nft-collection-count {
+    display: flex;
+    align-items: center;
+    column-gap: 2px;
+    flex-shrink: 0;
+    @include poppins400(13px);
+    color: var(--main-font-color);
+    opacity: 0.7;
+  }
+
+  .go-to-icon {
+    transform: rotate(-90deg);
+  }
+
+  .nft-preview-container {
+    display: flex;
+    column-gap: 8px;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .nft-preview-thumb {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .nft-media {
+    height: 64px;
+    width: 64px;
+    border-radius: 10px;
+    display: block;
+  }
+
+  .nft-balance {
+    position: absolute;
+    right: 4px;
+    bottom: 4px;
+    background: rgba(33, 40, 56, 0.72);
+    color: white;
+    border-radius: 6px;
+    padding: 3px 5px;
+    font-size: 10px;
+    line-height: 1;
+    font-weight: 500;
   }
 }

@@ -1,4 +1,11 @@
 .nft-media {
   object-fit: cover;
   background: var(--card-background);
+
+  &.placeholder {
+    object-fit: contain;
+    background: $lighter-blue;
+    padding: 22%;
+    box-sizing: border-box;
+  }
 }

@@ -1,7 +1,6 @@
 import { Card } from '@common-ui/card/card.component';
 import { EvmRiskStaticAlert } from '@common-ui/evm/evm-risk-warning/evm-risk-alert-banner.component';
 import RotatingLogoComponent from '@common-ui/rotating-logo/rotating-logo.component';
-import { SeparatorWithFilter } from '@common-ui/separator-with-filter/separator-with-filter.component';
 import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
 import {
   EvmActiveAccount,
@@ -22,6 +21,8 @@ import FlatList from 'flatlist-react';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
+import { InputType } from 'src/common-ui/input/input-type.enum';
+import InputComponent from 'src/common-ui/input/input.component';
 
 import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
@@ -52,7 +53,6 @@ const EvmWalletNftGallery = ({
     ready: boolean;
     showCard: boolean;
   }>({ ready: false, showCard: false });
-  const hasFilterableCollections = Boolean(filteredCollections?.length);
 
   useEffect(() => {
     if (!activeAccount.nfts.loading) {
@@ -63,15 +63,17 @@ const EvmWalletNftGallery = ({
   useEffect(() => {
     if (filteredCollections) {
       setDisplayedCollections(
-        filteredCollections.filter(
-          (collection) =>
-            collection.tokenInfo.name
-              ?.toLowerCase()
-              .includes(filterValue.toLowerCase()) ||
-            collection.tokenInfo.symbol
-              ?.toLowerCase()
-              .includes(filterValue.toLowerCase()),
-        ),
+        filteredCollections.filter((collection) => {
+          const query = filterValue.trim().toLowerCase();
+          if (!query) {
+            return true;
+          }
+          return (
+            collection.tokenInfo.name?.toLowerCase().includes(query) ||
+            collection.tokenInfo.symbol?.toLowerCase().includes(query) ||
+            collection.tokenInfo.contractAddress.toLowerCase().includes(query)
+          );
+        }),
       );
     }
   }, [filterValue, filteredCollections]);
@@ -143,21 +145,24 @@ const EvmWalletNftGallery = ({
               dataTestId="evm-nft-stale-alert"
             />
           )}
-          {(hasFilterableCollections || isCustomChainSelected) && (
-            <SeparatorWithFilter
-              setFilterValue={setFilterValue}
-              filterValue={filterValue}
-              rightAction={
-                isCustomChainSelected
-                  ? {
-                      icon: SVGIcons.WALLET_SETTINGS,
-                      onClick: openAddCustomTokenPanel,
-                    }
-                  : undefined
-              }
-              filterDisabled={activeAccount.nfts.value.length === 0}
+          <div className="nft-gallery-toolbar">
+            <InputComponent
+              value={filterValue}
+              type={InputType.TEXT}
+              onChange={setFilterValue}
+              placeholder="evm_nft_search_collection"
+              logo={SVGIcons.INPUT_SEARCH}
+              dataTestId="nft-collection-search"
             />
-          )}
+            {isCustomChainSelected && (
+              <button
+                type="button"
+                className="nft-gallery-settings"
+                onClick={openAddCustomTokenPanel}>
+                <SVGIcon icon={SVGIcons.WALLET_SETTINGS} />
+              </button>
+            )}
+          </div>
           {emptyCardState.ready && emptyCardState.showCard && (
             <Card className="evm-custom-erc20-empty-card">
               <p

@@ -12,7 +12,9 @@ import { EvmLifiSwapComponent } from '@popup/evm/pages/home/evm-lifi-swap/evm-li
 import { LiFiConfirmationPageComponent } from '@popup/evm/pages/home/evm-lifi-swap/lifi-confirmation-page/lifi-confirmation-page.component';
 import { LiFiHistoryPageComponent } from '@popup/evm/pages/home/evm-lifi-swap/lifi-history-page/lifi-history-page.component';
 import { EvmNftAllCollectionsPageComponent } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-all-collections-page/evm-nft-all-collections-page.component';
+import { EvmNftDetailsPageComponent } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-details/evm-nft-details-page.component';
 import { EvmNftCollectionPageComponent } from '@popup/evm/pages/home/evm-nft-pages/evm-ntf-collection-page/evm-ntf-collection-page.component';
+import { EvmNftTransferPageComponent } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-transfer/evm-nft-transfer-page.component';
 import { EvmReceiveComponent } from '@popup/evm/pages/home/receive/evm-receive.component';
 import { EvmAccountsComponent } from '@popup/evm/pages/home/settings/evm-accounts/evm-accounts.component';
 import { EvmCustomChainsComponent } from '@popup/evm/pages/home/settings/evm-custom-chains/evm-custom-chains.component';
@@ -370,6 +372,10 @@ const UnifiedRouter = ({
         return <EvmTransactionResultComponent />;
       case EvmScreen.EVM_NFT_COLLECTION_PAGE:
         return <EvmNftCollectionPageComponent />;
+      case EvmScreen.EVM_NFT_DETAILS_PAGE:
+        return <EvmNftDetailsPageComponent />;
+      case EvmScreen.EVM_NFT_TRANSFER_PAGE:
+        return <EvmNftTransferPageComponent />;
       case EvmScreen.EVM_NFT_ALL_NFTS_PAGE:
         return <EvmNftAllCollectionsPageComponent />;
       case EvmScreen.EVM_SETTINGS:

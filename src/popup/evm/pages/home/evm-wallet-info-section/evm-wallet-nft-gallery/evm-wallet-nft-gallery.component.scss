@@ -2,9 +2,34 @@
   z-index: 2;
   display: flex;
   flex-direction: column;
-  row-gap: 12px;
+  row-gap: 8px;
   width: 100%;
   height: 100%;
+
+  .nft-gallery-toolbar {
+    display: flex;
+    align-items: center;
+    column-gap: 8px;
+    width: calc(100% - 60px);
+    margin-left: auto;
+    margin-right: auto;
+
+    .custom-input {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  .nft-gallery-settings {
+    flex-shrink: 0;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    color: var(--main-font-color);
+    display: flex;
+    align-items: center;
+  }
 
   .no-nfts-found {
     @include no-data-panel();

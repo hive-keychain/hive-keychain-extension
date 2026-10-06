@@ -99,6 +99,7 @@ export const EvmNftMedia = ({ src, className }: Props) => {
     <img
       className={mediaClassName}
       src={mediaSrc}
+      alt=""
       onError={handleError}
     />
   );

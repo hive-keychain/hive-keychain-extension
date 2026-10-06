@@ -23,6 +23,7 @@ import type { EvmNftCollectionListItem } from '@popup/evm/pages/home/evm-nft-pag
 import { ERC1155Abi, ERC721Abi } from '@popup/evm/reference-data/abi.data';
 import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
+import { EvmNftDisplayUtils } from '@popup/evm/utils/evm-nft-display.utils';
 import { EvmLedgerUtils } from '@popup/evm/utils/evm-ledger.utils';
 import { EvmTransactionDisplayUtils } from '@popup/evm/utils/evm-transaction-display.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
@@ -41,6 +42,7 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
+import { EvmNftMedia } from 'src/common-ui/evm/nft-media/nft-media.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -382,41 +384,91 @@ const EvmNftTransferForm = ({
     void handleSubmit(handleClickOnSend)();
   };
 
+  const isErc1155 =
+    collectionItem.collection.tokenInfo.type === EVMSmartContractType.ERC1155;
+  const watchedAmount = watch('amount');
+  const quantity = Number(watchedAmount) || 1;
+  const maxQuantity = Math.max(1, balance);
+  const setQuantity = (next: number) => {
+    const clamped = Math.min(maxQuantity, Math.max(1, next));
+    setValue('amount', clamped, { shouldValidate: true });
+  };
+  const displayName = EvmNftDisplayUtils.getNftDisplayName(
+    collectionItem.item,
+    collectionItem.collection.tokenInfo.name,
+  );
+  const collectionName = collectionItem.collection.tokenInfo.name?.trim();
+  const standard = EvmNftDisplayUtils.formatNftStandard(
+    collectionItem.collection.tokenInfo.type,
+  );
+
   return (
     <div
       className="nft-send-form"
       data-testid="nft-send-form"
       onClick={(event) => event.stopPropagation()}>
+      <div className="nft-send-summary">
+        <EvmNftMedia
+          className="nft-send-summary-media"
+          src={collectionItem.item.metadata.image}
+        />
+        <div className="nft-send-summary-copy">
+          <div className="nft-send-summary-name">{displayName}</div>
+          {collectionName && (
+            <div className="nft-send-summary-collection">{collectionName}</div>
+          )}
+          <div className="nft-send-summary-meta">
+            {`#${collectionItem.item.id} · ${standard}`}
+          </div>
+        </div>
+      </div>
       <FormInputComponent
         name="receiverAddress"
         control={control}
         type={InputType.TEXT}
         logo={SVGIcons.INPUT_AT}
-        placeholder="evm_nft_transfer_address"
-        label="evm_nft_transfer_address"
+        placeholder="evm_nft_recipient_placeholder"
+        label="evm_nft_recipient"
         autocompleteValues={autocompleteValues}
         onEnterPress={submitTransfer}
       />
 
-      {collectionItem.collection.tokenInfo.type ===
-        EVMSmartContractType.ERC1155 && (
-        <FormInputComponent
-          name="amount"
-          control={control}
-          type={InputType.NUMBER}
-          placeholder="popup_html_amount"
-          label="popup_html_amount"
-          customOnChange={(value) => {
-            setValue('amount', Number(value));
-          }}
-          onEnterPress={submitTransfer}
-        />
+      {isErc1155 && (
+        <div className="nft-quantity">
+          <div className="label">{I18nUtils.getMessage('evm_nft_quantity')}</div>
+          <div className="nft-quantity-stepper" data-testid="nft-quantity-stepper">
+            <button
+              type="button"
+              className="nft-quantity-step"
+              aria-label={I18nUtils.getMessage('evm_nft_quantity_decrease')}
+              data-testid="nft-quantity-decrease"
+              disabled={quantity <= 1}
+              onClick={() => setQuantity(quantity - 1)}>
+              −
+            </button>
+            <span className="nft-quantity-value" data-testid="nft-quantity-value">
+              {quantity}
+            </span>
+            <button
+              type="button"
+              className="nft-quantity-step"
+              aria-label={I18nUtils.getMessage('evm_nft_quantity_increase')}
+              data-testid="nft-quantity-increase"
+              disabled={quantity >= balance}
+              onClick={() => setQuantity(quantity + 1)}>
+              +
+            </button>
+          </div>
+          <div className="nft-quantity-owned" data-testid="nft-quantity-owned">
+            {I18nUtils.getMessage('evm_nft_you_own', [String(balance)])}
+          </div>
+        </div>
       )}
       <ButtonComponent
         onClick={submitTransfer}
-        label={'popup_html_send_transfer'}
+        label="popup_html_continue"
         additionalClass="send-button"
-        height="small"
+        height="medium"
       />
     </div>
   );

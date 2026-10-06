@@ -199,4 +199,65 @@ describe('evm-nft-transfer autocomplete behavior', () => {
 
     expect(hasUnmountedStateUpdateWarning(consoleError)).toBe(false);
   });
+
+  it('uses an integer stepper for erc1155 and omits it for erc721', async () => {
+    jest
+      .spyOn(EvmAddressesUtils, 'getWhiteListAutocomplete')
+      .mockResolvedValue(baseAutocomplete);
+    jest
+      .spyOn(EvmAddressesUtils, 'enrichWhiteListAutocomplete')
+      .mockImplementation(async (values) => values);
+
+    const { unmount } = customRender(
+      <EvmNftTransferFormComponent collectionItem={collectionItem} />,
+      {
+        initialState: buildState(),
+      },
+    );
+
+    expect(screen.queryByTestId('nft-quantity-stepper')).not.toBeInTheDocument();
+    expect(
+      screen.queryByPlaceholderText('popup_html_amount'),
+    ).not.toBeInTheDocument();
+    unmount();
+
+    const erc1155Item = {
+      ...collectionItem,
+      collection: {
+        tokenInfo: {
+          ...collectionItem.collection.tokenInfo,
+          type: EVMSmartContractType.ERC1155,
+        },
+      },
+      item: {
+        ...collectionItem.item,
+        balance: 2,
+      },
+    } as EvmNftCollectionListItem;
+
+    customRender(
+      <EvmNftTransferFormComponent collectionItem={erc1155Item} />,
+      {
+        initialState: buildState(),
+      },
+    );
+
+    expect(screen.getByTestId('nft-quantity-owned')).toHaveTextContent(
+      'evm_nft_you_own',
+    );
+    expect(screen.getByTestId('nft-quantity-increase')).toBeEnabled();
+
+    fireEvent.click(screen.getByTestId('nft-quantity-increase'));
+
+    expect(screen.getByTestId('nft-quantity-value')).toHaveTextContent('2');
+    expect(screen.getByTestId('nft-quantity-owned')).toHaveTextContent(
+      'evm_nft_you_own',
+    );
+    expect(screen.getByTestId('nft-quantity-increase')).toBeDisabled();
+
+    fireEvent.click(screen.getByTestId('nft-quantity-decrease'));
+
+    expect(screen.getByTestId('nft-quantity-value')).toHaveTextContent('1');
+    expect(screen.getByTestId('nft-quantity-decrease')).toBeDisabled();
+  });
 });

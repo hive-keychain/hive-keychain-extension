@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { act, cleanup, screen } from '@testing-library/react';
+import { cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
@@ -7,7 +7,6 @@ import {
   EvmNftCollectionComponent,
   EvmNftCollectionListItem,
 } from '@popup/evm/pages/home/evm-nft-pages/evm-nft-collection/evm-nft-collection.component';
-import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import React from 'react';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
@@ -69,39 +68,101 @@ describe('EvmNftCollectionComponent', () => {
     cleanup();
   });
 
-  it('shows the send form on the expanded nft card', async () => {
+  it('opens the selected nft without showing the send form', async () => {
     const user = userEvent.setup();
-    let resolveAutocomplete: (value: { categories: [] }) => void = () => undefined;
-    const autocompletePromise = new Promise<{ categories: [] }>((resolve) => {
-      resolveAutocomplete = resolve;
-    });
+    const onSelectNft = jest.fn();
 
-    jest
-      .spyOn(EvmAddressesUtils, 'getWhiteListAutocomplete')
-      .mockReturnValue(autocompletePromise);
-    jest
-      .spyOn(EvmAddressesUtils, 'enrichWhiteListAutocomplete')
-      .mockImplementation(async (values) => values);
+    customRender(
+      <EvmNftCollectionComponent
+        nftList={[collectionItem]}
+        onSelectNft={onSelectNft}
+      />,
+      {
+        initialState: buildState(),
+      },
+    );
 
-    customRender(<EvmNftCollectionComponent nftList={[collectionItem]} />, {
-      initialState: buildState(),
-    });
-
-    expect(
-      screen.queryByPlaceholderText('evm_nft_transfer_address'),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId('nft-send-form')).not.toBeInTheDocument();
+    expect(screen.getByText('#1')).toBeInTheDocument();
 
     await user.click(await screen.findByText('Kitty #1'));
 
-    expect(
-      await screen.findByPlaceholderText('evm_nft_transfer_address'),
-    ).toBeInTheDocument();
-    expect(screen.getByTestId('nft-send-form')).toBeInTheDocument();
+    expect(onSelectNft).toHaveBeenCalledWith(collectionItem);
+    expect(screen.queryByTestId('nft-send-form')).not.toBeInTheDocument();
+  });
 
-    await act(async () => {
-      resolveAutocomplete({ categories: [] });
-      await Promise.resolve();
-      await Promise.resolve();
-    });
+  it('shows an erc1155 quantity under the artwork', () => {
+    const onSelectNft = jest.fn();
+    const erc1155Item = {
+      ...collectionItem,
+      collection: {
+        tokenInfo: {
+          ...collectionItem.collection.tokenInfo,
+          type: EVMSmartContractType.ERC1155,
+        },
+      },
+      item: {
+        ...collectionItem.item,
+        id: '2',
+        balance: 3,
+        metadata: {
+          name: 'Paper',
+          image: 'https://example.com/paper.png',
+        },
+      },
+    } as EvmNftCollectionListItem;
+
+    customRender(
+      <EvmNftCollectionComponent
+        nftList={[erc1155Item]}
+        onSelectNft={onSelectNft}
+      />,
+      {
+        initialState: buildState(),
+      },
+    );
+
+    expect(screen.getByText('#2')).toBeInTheDocument();
+    expect(screen.getByText('×3')).toBeInTheDocument();
+  });
+
+  it('filters the gallery to tokens with more than one copy', async () => {
+    const user = userEvent.setup();
+    const onSelectNft = jest.fn();
+    const multipleCopies = {
+      ...collectionItem,
+      collection: {
+        tokenInfo: {
+          ...collectionItem.collection.tokenInfo,
+          type: EVMSmartContractType.ERC1155,
+        },
+      },
+      item: {
+        ...collectionItem.item,
+        id: '2',
+        balance: 3,
+        metadata: {
+          name: 'Paper',
+          image: 'https://example.com/paper.png',
+          description: '',
+        },
+      },
+    } as EvmNftCollectionListItem;
+
+    customRender(
+      <EvmNftCollectionComponent
+        nftList={[collectionItem, multipleCopies]}
+        onSelectNft={onSelectNft}
+      />,
+      {
+        initialState: buildState(),
+      },
+    );
+
+    await user.click(screen.getByTestId('nft-filter-button'));
+    await user.click(screen.getByTestId('nft-filter-multiple'));
+
+    expect(screen.getByText('Paper')).toBeInTheDocument();
+    expect(screen.queryByText('Kitty #1')).not.toBeInTheDocument();
   });
 });

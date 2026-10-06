@@ -62,23 +62,22 @@ describe('EvmNftDetails', () => {
     };
   });
 
-  const renderExpandedNft = (chain: EvmChain = ethereumChain) => {
-    const onClick = jest.fn();
+  const renderNftDetails = (chain: EvmChain = ethereumChain) => {
+    const onSend = jest.fn();
     render(
       <EvmNftDetailsView
         nft={nft}
         collection={collection}
-        expanded
         chain={chain}
-        onClick={onClick}
+        onSend={onSend}
       />,
     );
-    return { onClick };
+    return { onSend };
   };
 
-  it('copies the smart contract address from the expanded nft details', async () => {
+  it('copies the smart contract address from the nft details', async () => {
     const user = userEvent.setup();
-    const { onClick } = renderExpandedNft();
+    const { onSend } = renderNftDetails();
 
     expect(
       screen.getByTestId(`nft-contract-address-${contractAddress}-${tokenId}`),
@@ -92,12 +91,12 @@ describe('EvmNftDetails', () => {
       contractAddress,
       'swap_copied_to_clipboard',
     );
-    expect(onClick).not.toHaveBeenCalled();
+    expect(onSend).not.toHaveBeenCalled();
   });
 
   it('opens the nft contract page on the chain block explorer', async () => {
     const user = userEvent.setup();
-    const { onClick } = renderExpandedNft();
+    const { onSend } = renderNftDetails();
 
     await user.click(
       screen.getByTestId(
@@ -108,11 +107,11 @@ describe('EvmNftDetails', () => {
     expect(tabsCreate).toHaveBeenCalledWith({
       url: `https://eth.blockscout.com/token/${contractAddress}`,
     });
-    expect(onClick).not.toHaveBeenCalled();
+    expect(onSend).not.toHaveBeenCalled();
   });
 
   it('hides the explorer button when the chain has no block explorer', () => {
-    renderExpandedNft({} as EvmChain);
+    renderNftDetails({} as EvmChain);
 
     expect(
       screen.getByTestId(`nft-contract-copy-${contractAddress}-${tokenId}`),
@@ -124,17 +123,44 @@ describe('EvmNftDetails', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('does not show the contract address actions when the nft is collapsed', () => {
+  it('shows the token for viewing and sends from the primary button', async () => {
+    const user = userEvent.setup();
+    const { onSend } = renderNftDetails();
+
+    expect(screen.getByText('Kitty #42')).toBeInTheDocument();
+    expect(screen.getByText('CryptoKitties')).toBeInTheDocument();
+    expect(screen.getByText('#42')).toBeInTheDocument();
+    expect(screen.queryByTestId('nft-owned-quantity')).not.toBeInTheDocument();
+    expect(screen.getAllByText('ERC721').length).toBeGreaterThan(0);
+    expect(screen.queryByTestId('nft-details-balance')).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('nft-details-tab-description'),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId('nft-send-form')).not.toBeInTheDocument();
+
+    await user.click(screen.getByTestId('nft-details-send'));
+
+    expect(onSend).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows how many copies are owned for an erc1155 token', () => {
     render(
       <EvmNftDetailsView
-        nft={nft}
-        collection={collection}
+        nft={{ ...nft, balance: 2 }}
+        collection={{
+          ...collection,
+          tokenInfo: {
+            ...collection.tokenInfo,
+            type: EVMSmartContractType.ERC1155,
+          },
+        }}
         chain={ethereumChain}
       />,
     );
 
-    expect(
-      screen.queryByTestId(`nft-contract-copy-${contractAddress}-${tokenId}`),
-    ).not.toBeInTheDocument();
+    expect(screen.getByTestId('nft-owned-quantity')).toHaveTextContent(
+      'evm_nft_you_own',
+    );
+    expect(screen.queryByText('evm_nft_your_balance')).not.toBeInTheDocument();
   });
 });

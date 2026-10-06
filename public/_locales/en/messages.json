@@ -6798,6 +6798,114 @@
     "message": "Address",
     "description": "NFT Address"
   },
+  "evm_nft_recipient": {
+    "message": "Recipient",
+    "description": "NFT send recipient field"
+  },
+  "evm_nft_you_own": {
+    "message": "You own $1",
+    "description": "NFT details ownership quantity"
+  },
+  "evm_nft_item_count_one": {
+    "message": "1 item",
+    "description": "NFT collection count when the wallet owns one item"
+  },
+  "evm_nft_item_count_other": {
+    "message": "$1 items",
+    "description": "NFT collection count"
+  },
+  "evm_nft_collection": {
+    "message": "Collection",
+    "description": "NFT collection label when it matches the token name"
+  },
+  "evm_nft_details": {
+    "message": "Details",
+    "description": "NFT details metadata section"
+  },
+  "evm_nft_token_standard": {
+    "message": "Standard",
+    "description": "NFT token standard label"
+  },
+  "evm_nft_quantity": {
+    "message": "Quantity",
+    "description": "ERC-1155 send quantity"
+  },
+  "evm_nft_quantity_decrease": {
+    "message": "Decrease quantity",
+    "description": "ERC-1155 quantity stepper"
+  },
+  "evm_nft_quantity_increase": {
+    "message": "Increase quantity",
+    "description": "ERC-1155 quantity stepper"
+  },
+  "popup_html_continue": {
+    "message": "Continue",
+    "description": "Continue to the next step"
+  },
+  "evm_nft_search_collection": {
+    "message": "Search a collection...",
+    "description": "NFT overview collection search"
+  },
+  "evm_nft_search_nft": {
+    "message": "Search an NFT...",
+    "description": "NFT collection gallery search"
+  },
+  "evm_nft_filter": {
+    "message": "Filter",
+    "description": "NFT gallery filter"
+  },
+  "evm_nft_sort": {
+    "message": "Sort",
+    "description": "NFT gallery sort"
+  },
+  "evm_nft_filter_all": {
+    "message": "All",
+    "description": "NFT gallery filter: all tokens"
+  },
+  "evm_nft_filter_multiple": {
+    "message": "Multiple copies",
+    "description": "NFT gallery filter: balances greater than one"
+  },
+  "evm_nft_sort_name": {
+    "message": "Name",
+    "description": "NFT gallery sort by name"
+  },
+  "evm_nft_sort_token_id": {
+    "message": "Token ID",
+    "description": "NFT gallery sort by token id"
+  },
+  "evm_nft_sort_quantity": {
+    "message": "Quantity",
+    "description": "NFT gallery sort by quantity"
+  },
+  "evm_nft_description": {
+    "message": "Description",
+    "description": "NFT details description tab"
+  },
+  "evm_nft_no_description": {
+    "message": "No description",
+    "description": "NFT details empty description"
+  },
+  "evm_nft_your_balance": {
+    "message": "Your balance",
+    "description": "NFT details owned balance"
+  },
+  "evm_nft_contract": {
+    "message": "Contract",
+    "description": "NFT details contract row"
+  },
+  "evm_nft_copy_token_id": {
+    "message": "Copy token ID",
+    "description": "Copy an NFT token id"
+  },
+  "evm_nft_send_title": {
+    "message": "Send an NFT",
+    "description": "NFT send screen title"
+  },
+  "evm_nft_recipient_placeholder": {
+    "message": "Address or ENS name",
+    "description": "NFT send recipient placeholder"
+  },
   "evm_history_op_native_send": {
     "message": "Transfer",
     "description": "EVM light-node history: page title for NATIVE_SEND (native token)"

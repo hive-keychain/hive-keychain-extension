@@ -1,0 +1,105 @@
+.nft-send-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  row-gap: 16px;
+  flex: 1;
+  min-height: 0;
+  color: var(--main-font-color);
+
+  .nft-send-summary {
+    display: flex;
+    align-items: center;
+    column-gap: 12px;
+    background: $lighter-blue;
+    border-radius: 16px;
+    padding: 10px;
+  }
+
+  .nft-media.nft-send-summary-media {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    flex-shrink: 0;
+  }
+
+  .nft-send-summary-name {
+    @include poppins600(16px);
+    color: var(--main-font-color);
+  }
+
+  .nft-send-summary-collection,
+  .nft-send-summary-meta {
+    margin-top: 2px;
+    @include poppins400(13px);
+    opacity: 0.7;
+  }
+
+  .nft-quantity {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+
+    .label {
+      @include input-label;
+      margin-left: 8px;
+    }
+  }
+
+  .nft-quantity-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: $input-height;
+    border-radius: 66px;
+    border: 1px solid var(--input-border);
+    background: var(--input-background);
+    padding: 2px 4px;
+  }
+
+  .nft-quantity-step {
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--form-panel-background);
+    color: var(--main-font-color);
+    @include poppins400(16px);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $red;
+      outline-offset: 2px;
+    }
+  }
+
+  .nft-quantity-value {
+    flex: 1;
+    text-align: center;
+    @include poppins500(16px);
+  }
+
+  .nft-quantity-owned {
+    @include poppins400(13px);
+    opacity: 0.7;
+    text-align: center;
+  }
+
+  .send-button {
+    margin-top: auto;
+    width: 100%;
+  }
+}

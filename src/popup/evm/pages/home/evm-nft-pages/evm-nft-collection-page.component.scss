@@ -1,16 +1,245 @@
+.evm-nft-screen,
+.evm-nft-details-page {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+}
+
 .evm-nft-collection-page {
   @include pageLayoutRowGap;
   flex: 1;
   overflow: hidden;
+  color: var(--main-font-color);
+
+  .form-container {
+    row-gap: 12px;
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  .nft-collection-contract-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    column-gap: 6px;
+    min-width: 0;
+    margin-top: -8px;
+  }
+
+  .nft-collection-contract {
+    @include poppins300(13px);
+    font-style: italic;
+    opacity: 0.7;
+    color: var(--main-font-color);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .nft-collection-contract-action {
+    flex-shrink: 0;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+    color: var(--main-font-color);
+    display: flex;
+    align-items: center;
+
+    .svg-icon,
+    svg {
+      @include icon-size(16px);
+    }
+  }
+
+  .nft-gallery-toolbar {
+    display: flex;
+    align-items: center;
+    column-gap: 8px;
+
+    .custom-input {
+      flex: 1;
+      min-width: 0;
+    }
+  }
 
   .nft-list {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    row-gap: 4px;
-    column-gap: 4px;
+    row-gap: 18px;
+    column-gap: 14px;
     overflow: auto;
-    margin-bottom: -20px;
-    padding-bottom: 20px;
-    grid-auto-flow: dense;
+    flex: 1;
+    min-height: 0;
+    align-content: start;
   }
+
+  .nft-gallery-tile {
+    position: relative;
+    min-width: 0;
+    color: var(--main-font-color);
+  }
+
+  .nft-gallery-open {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    min-width: 0;
+    text-align: left;
+    cursor: pointer;
+    color: var(--main-font-color);
+    font: inherit;
+  }
+
+  .nft-gallery-art {
+    position: relative;
+
+    .nft-media {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 12px;
+      display: block;
+    }
+  }
+
+  .nft-balance {
+    position: absolute;
+    right: 6px;
+    bottom: 6px;
+    background: rgba(33, 40, 56, 0.78);
+    color: white;
+    border-radius: 6px;
+    padding: 3px 5px;
+    font-size: 10px;
+    line-height: 1;
+    font-weight: 500;
+  }
+
+  .nft-gallery-tile-name {
+    margin-top: 8px;
+    padding-right: 22px;
+    @include poppins500(14px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .nft-gallery-tile-meta {
+    margin-top: 2px;
+    @include poppins400(12px);
+    opacity: 0.65;
+  }
+
+  .nft-gallery-tile-menu {
+    position: absolute;
+    right: 0;
+    bottom: 14px;
+  }
+}
+
+.evm-nft-details-page,
+.evm-nft-transfer-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+
+  .form-container {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+}
+
+.nft-options {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.nft-options-trigger {
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 66px;
+  border: 1px solid var(--card-border);
+  background: var(--form-panel-background);
+  color: var(--main-font-color);
+  @include poppins500(12px);
+  cursor: pointer;
+
+  &.is-icon {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .svg-icon,
+    svg {
+      @include icon-size(16px);
+    }
+  }
+
+  &.is-active {
+    border-color: $dark-blue;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $red;
+    outline-offset: 2px;
+  }
+}
+
+.nft-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.nft-options-panel {
+  position: fixed;
+  z-index: 31;
+  min-width: 168px;
+  background: var(--form-panel-background);
+  color: var(--main-font-color);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 24px rgba(33, 40, 56, 0.12);
+
+  button {
+    border: 0;
+    background: transparent;
+    text-align: left;
+    color: var(--main-font-color);
+    @include poppins400(13px);
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+
+    &.is-selected {
+      @include poppins500(13px);
+    }
+  }
+}
+
+.nft-page-menu {
+  position: absolute;
+  top: 0;
+  right: 16px;
 }
