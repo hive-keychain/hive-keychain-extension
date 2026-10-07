@@ -7,28 +7,28 @@
 >
   <ellipse
     cx="12"
-    cy="15"
+    cy="15.75"
     rx="6.5"
     ry="2.5"
     stroke="var(--wallet-icon-color)"
     stroke-width="1.27"
   />
   <path
-    d="M5.5 15V18C5.5 19.38 8.41 20.5 12 20.5C15.59 20.5 18.5 19.38 18.5 18V15"
+    d="M5.5 15.75V18.75C5.5 20.13 8.41 21.25 12 21.25C15.59 21.25 18.5 20.13 18.5 18.75V15.75"
     stroke="var(--wallet-icon-color)"
     stroke-width="1.27"
     stroke-linecap="round"
   />
 
   <path
-    d="M12 12V4"
+    d="M12 10V2.5"
     stroke="var(--wallet-icon-color)"
     stroke-width="1.27"
     stroke-linecap="round"
     stroke-linejoin="round"
   />
   <path
-    d="M8.75 7.25L12 4L15.25 7.25"
+    d="M8.75 5.75L12 2.5L15.25 5.75"
     stroke="var(--wallet-icon-color)"
     stroke-width="1.27"
     stroke-linecap="round"
