@@ -28,7 +28,7 @@
     "description": "tutorial popup"
   },
   "popup_html_guided_tour_add_evm_step1_title": {
-    "message": "¡Keychain ahora es multi-cadena!",
+    "message": "¡Keychain ahora es multi-red!",
     "description": "guided tour add evm account step 1 title"
   },
   "popup_html_guided_tour_add_evm_step1_description": {
@@ -68,19 +68,19 @@
     "description": "guided tour add evm chains step 1 title"
   },
   "popup_html_guided_tour_add_evm_chains_step1_description": {
-    "message": "¡Puedes añadir cadenas aquí!",
+    "message": "¡Puedes añadir redes aquí!",
     "description": "guided tour add evm chains step 1 description"
   },
   "popup_html_guided_tour_add_evm_chains_step2_title": {
-    "message": "Selecciona una cadena EVM o haz clic en Gestionar cadenas para añadir más",
+    "message": "Selecciona una red EVM o haz clic en Administrar redes para añadir más",
     "description": "guided tour add evm chains step 2 title"
   },
   "popup_html_guided_tour_add_evm_chains_step3_title": {
-    "message": "Selecciona una cadena o añade una manualmente",
+    "message": "Selecciona una red o añade una manualmente",
     "description": "guided tour add evm chains step 3 title"
   },
   "popup_html_guided_tour_add_evm_chains_step3_description": {
-    "message": "Los tokens y NFT se detectan automáticamente en las cadenas predefinidas",
+    "message": "Los tokens y NFT se detectan automáticamente en las redes predefinidas",
     "description": "guided tour add evm chains step 3 description"
   },
   "popup_html_wrong_key_active": {
@@ -272,7 +272,7 @@
     "description": "on popup main page"
   },
   "popup_html_history": {
-    "message": "Historia",
+    "message": "Historial",
     "description": "on popup main page"
   },
   "popup_html_tokens": {
@@ -812,7 +812,7 @@
     "description": "Preferences and display: default side panel checkbox hint"
   },
   "popup_html_chain_settings": {
-    "message": "Configuración de cadenas",
+    "message": "Configuración de redes",
     "description": "Settings menu section for Hive and EVM chain-specific options"
   },
   "popup_html_help_and_about": {
@@ -976,7 +976,7 @@
     "description": "On tokens page"
   },
   "popup_html_tokens_settings_text": {
-    "message": "Ver información del token y elegir qué tokens mostrar. Aprende más sobre tokens personalizados en la cadena de bloques de Hive en <a href=\"https://hive-engine.com\" target=\"_blank\">https://hive-engine.com</a>.",
+    "message": "Ver información del token y elegir qué tokens mostrar. Aprende más sobre tokens personalizados en la red de bloques de Hive en <a href=\"https://hive-engine.com\" target=\"_blank\">https://hive-engine.com</a>.",
     "description": "On tokens page"
   },
   "popup_html_available": {
@@ -1288,7 +1288,7 @@
     "description": "When website requests a swap"
   },
   "dialog_swap": {
-    "message": "Intercambio",
+    "message": "Swap",
     "description": "When website requests a swap"
   },
   "dialog_from_amount": {
@@ -1472,7 +1472,7 @@
     "description": "Website request title"
   },
   "dialog_title_swap": {
-    "message": "Intercambio",
+    "message": "Swap",
     "description": "When website requests a swap"
   },
   "dialog_title_sign": {
@@ -2199,7 +2199,7 @@
     "description": "No accounts available for shortcuts"
   },
   "popup_html_shortcuts_action_change_chain": {
-    "message": "Cadena de cambio",
+    "message": "Red de cambio",
     "description": "Shortcut action change chain"
   },
   "popup_html_shortcuts_action_toggle_theme": {
@@ -2211,7 +2211,7 @@
     "description": "Shortcut action open Keychain outside the popup"
   },
   "popup_html_shortcut_transfer_chain_label": {
-    "message": "Cadena",
+    "message": "Red",
     "description": "Shortcuts form: transfer chain selector label"
   },
   "popup_html_shortcut_account_type_hive": {
@@ -2219,15 +2219,15 @@
     "description": "Shortcuts: Hive account row subtitle in account picker"
   },
   "popup_html_shortcut_no_chains": {
-    "message": "No hay cadenas disponibles",
+    "message": "No hay redes disponibles",
     "description": "Shortcuts: empty chain list"
   },
   "popup_html_shortcut_last_used_evm_chain": {
-    "message": "Última cadena EVM usada",
+    "message": "Última red EVM usada",
     "description": "Shortcuts: switch to last used EVM network"
   },
   "popup_html_shortcut_no_tokens": {
-    "message": "No hay fichas disponibles",
+    "message": "No hay tokens disponibles",
     "description": "Shortcuts: empty token list for transfer"
   },
   "popup_html_shortcut_currency_hive": {
@@ -3483,7 +3483,7 @@
     "description": "Account field on pending account creation payment page"
   },
   "html_popup_create_account_payment_chain": {
-    "message": "Cadena",
+    "message": "Red",
     "description": "Chain field on pending account creation payment page"
   },
   "html_popup_create_account_payment_token": {
@@ -4108,7 +4108,7 @@
     "description": "Discover key on Ledger"
   },
   "popup_html_token_swaps": {
-    "message": "Intercambios",
+    "message": "Swaps",
     "description": "Token swaps"
   },
   "html_popup_swaps_slipperage": {
@@ -4116,7 +4116,7 @@
     "description": "Token swaps : Slippage"
   },
   "html_popup_swaps_process_swap": {
-    "message": "Intercambiar",
+    "message": "Swap",
     "description": "Token swaps : process"
   },
   "html_popup_swaps_final_price": {
@@ -4217,7 +4217,7 @@
     "message": "Vender"
   },
   "portfolio_section_swap": {
-    "message": "Intercambio"
+    "message": "Swap"
   },
   "portfolio_section_bridge": {
     "message": "Puente"
@@ -4247,7 +4247,7 @@
     "message": "La ejecución nativa requiere una cuenta EVM."
   },
   "portfolio_chain_not_setup": {
-    "message": "Añade la cadena de origen a Keychain antes de firmar."
+    "message": "Añade la red de origen a Keychain antes de firmar."
   },
   "portfolio_native_confirmation_message": {
     "message": "Revisa los detalles del Swap abajo y firma para confirmar."
@@ -4487,7 +4487,7 @@
     "message": "Vende crypto por fiat a través de proveedores off-ramp compatibles."
   },
   "portfolio_page_description_swap": {
-    "message": "Intercambia tokens entre cadenas compatibles sin cambiar tu cuenta activa."
+    "message": "Intercambia tokens entre redes compatibles sin cambiar tu cuenta activa."
   },
   "portfolio_page_description_history": {
     "message": "Sigue la actividad de Comprar, Vender y Swap de tus cuentas Keychain."
@@ -4689,7 +4689,7 @@
     "description": "History swap empty"
   },
   "swap_under_maintenance": {
-    "message": "El Intercambio de Keychain está en mantenimiento, por favor inténtalo de nuevo más tarde",
+    "message": "El Swap de Keychain está en mantenimiento, por favor inténtalo de nuevo más tarde",
     "description": "Keychain swap under maintenance"
   },
   "swap_start_end_token_should_be_different": {
@@ -5249,7 +5249,7 @@
     "description": "Portfolio fetching message"
   },
   "html_popup_evm_add_wallet_method": {
-    "message": "Importa o crea una cartera EVM para usarla en todas las cadenas EVM",
+    "message": "Importa o crea una cartera EVM para usarla en todas las redes EVM",
     "description": "EVM > Add wallet main page"
   },
   "html_popup_evm_import_wallet": {
@@ -5325,11 +5325,11 @@
     "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
   },
   "html_popup_chain_selector_page_title": {
-    "message": "Elige una cadena de bloques",
+    "message": "Elige una red de bloques",
     "description": "setup blockchain page title"
   },
   "html_popup_chain_selector_page_caption": {
-    "message": "Elija su primera cadena de bloques para crear o importar una cuenta. No te preocupes, podrás agregar más cuentas más adelante.",
+    "message": "Elija su primera red de bloques para crear o importar una cuenta. No te preocupes, podrás agregar más cuentas más adelante.",
     "description": "setup blockchain page caption"
   },
   "html_popup_deriving_wallets": {
@@ -5413,7 +5413,7 @@
     "description": "Prompt shown before copying an EVM seed phrase"
   },
   "html_popup_add_blockchain": {
-    "message": "Agregar cadena",
+    "message": "Agregar red",
     "description": "display seed phrase"
   },
   "html_popup_evm_create_wallet_copy_seed_phrase_error": {
@@ -5473,7 +5473,7 @@
     "description": "Create blockchain button"
   },
   "popup_html_create_blockchain_chain_type": {
-    "message": "Tipo de cadena",
+    "message": "Tipo de red",
     "description": "Blockchain chain type"
   },
   "popup_html_create_blockchain_name": {
@@ -5489,7 +5489,7 @@
     "description": "Blockchain logo"
   },
   "popup_html_create_blockchain_chain_id": {
-    "message": "ID de cadena",
+    "message": "ID de red",
     "description": "Blockchain chain id"
   },
   "popup_html_create_blockchain_block_explorer": {
@@ -5565,7 +5565,7 @@
     "description": "Suggest by dapp"
   },
   "popup_html_add_custom_blockchain": {
-    "message": "Agregar cadena de bloques personalizada",
+    "message": "Agregar red de bloques personalizada",
     "description": "Add custom blockchain page title"
   },
   "popup_html_evm_history_transfer_in": {
@@ -6201,11 +6201,11 @@
     "description": "Sign typed data message primary type"
   },
   "evm_chain_id": {
-    "message": "Identificación de cadena",
+    "message": "Identificación de red",
     "description": "evm chain id"
   },
   "evm_chain": {
-    "message": "Cadena",
+    "message": "Red",
     "description": "evm chain"
   },
   "evm_domain_name": {
@@ -6281,7 +6281,7 @@
     "description": "NFT approve all value"
   },
   "evm_nft_number_of_tokens": {
-    "message": "Número de fichas",
+    "message": "Número de tokens",
     "description": "NFT number of tokens"
   },
   "evm_nft_token_type": {
@@ -6293,7 +6293,7 @@
     "description": "Global word"
   },
   "evm_tab_tokens": {
-    "message": "Fichas",
+    "message": "Tokens",
     "description": "Tokens tab"
   },
   "evm_tab_nfts": {
@@ -6301,7 +6301,7 @@
     "description": "NFTs tab"
   },
   "evm_tab_history": {
-    "message": "Historia",
+    "message": "Historial",
     "description": "History tab"
   },
   "evm_menu_contacts": {
@@ -6309,11 +6309,11 @@
     "description": "Addresses menu item"
   },
   "evm_menu_custom_chains": {
-    "message": "Administrar cadenas",
+    "message": "Administrar redes",
     "description": "EVM settings: chain management"
   },
   "evm_menu_dapps_connections": {
-    "message": "Conectado dApps",
+    "message": "dApps conectadas",
     "description": "EVM settings: connected dapps"
   },
   "evm_dapps_connections_empty": {
@@ -6329,31 +6329,31 @@
     "description": "Option to manage connected addresses for an EVM dapp"
   },
   "evm_dapps_connections_chains_option": {
-    "message": "Cadenas",
+    "message": "Redes",
     "description": "Option to manage allowed chains for an EVM dapp"
   },
   "evm_dapps_connections_chains_caption": {
-    "message": "Las cadenas permitidas permiten que este dApp solicite actividad en las redes seleccionadas.",
+    "message": "Las redes permiten que este dApp solicite actividad en las redes seleccionadas.",
     "description": "Caption for EVM dapp allowed chains popup"
   },
   "evm_dapps_connections_allowed_chains": {
-    "message": "Cadenas permitidas",
+    "message": "Redes permitidas",
     "description": "Title for EVM dapp allowed chains list"
   },
   "evm_dapps_connections_unknown_chain": {
-    "message": "cadena desconocida",
+    "message": "red desconocida",
     "description": "Fallback label for an EVM dapp allowed chain missing local metadata"
   },
   "evm_dapps_connections_no_chains": {
-    "message": "No se permiten cadenas.",
+    "message": "No se permiten redes.",
     "description": "Empty state for an EVM dapp allowed chains popup"
   },
   "evm_dapps_connections_remove_all_chains": {
-    "message": "Quitar todas las cadenas",
+    "message": "Quitar todas las redes",
     "description": "Button label to remove every allowed chain for an EVM dapp"
   },
   "evm_custom_chains_caption": {
-    "message": "Las cadenas personalizadas tienen soporte limitado. Es posible que funciones como el descubrimiento de tokens y la carga automática del historial no estén disponibles.",
+    "message": "Las redes personalizadas tienen soporte limitado. Es posible que funciones como el descubrimiento de tokens y la carga automática del historial no estén disponibles.",
     "description": "Custom chains info caption"
   },
   "evm_custom_chains_delete": {
@@ -6361,23 +6361,23 @@
     "description": "Remove an added custom EVM chain"
   },
   "evm_custom_chains_delete_confirm": {
-    "message": "¿Eliminar \"$1\" de tus cadenas personalizadas? Esto no se puede deshacer.",
+    "message": "¿Eliminar \"$1\" de tus redes personalizadas? Esto no se puede deshacer.",
     "description": "Confirmation before deleting a custom EVM chain; $1 is the chain name"
   },
   "evm_custom_chains_add": {
-    "message": "Agregar cadena personalizada",
+    "message": "Agregar red personalizada",
     "description": "Button to add a custom EVM chain"
   },
   "evm_custom_chains_modal_title": {
-    "message": "Agregar cadena personalizada",
+    "message": "Agregar red personalizada",
     "description": "Modal title for adding custom chain"
   },
   "evm_custom_chains_modal_title_edit": {
-    "message": "Editar cadena personalizada",
+    "message": "Editar red personalizada",
     "description": "Modal title for editing a custom chain"
   },
   "evm_custom_chains_modal_title_edit_default": {
-    "message": "Editar cadena admitida",
+    "message": "Editar red admitida",
     "description": "Modal title for editing a supported default EVM chain"
   },
   "evm_custom_chains_update": {
@@ -6389,19 +6389,19 @@
     "description": "Button label to reset a supported EVM chain override"
   },
   "evm_custom_chains_error_not_found": {
-    "message": "No se pudo encontrar esta cadena personalizada. Intente actualizar la lista.",
+    "message": "No se pudo encontrar esta red personalizada. Intente actualizar la lista.",
     "description": "When update targets a missing custom chain"
   },
   "evm_custom_chains_empty": {
-    "message": "Aún no hay cadenas personalizadas. Agregue uno para conectarse a una cadena que no esté en la lista predeterminada.",
+    "message": "Aún no hay redes personalizadas. Agregue uno para conectarse a una red que no esté en la lista predeterminada.",
     "description": "Empty state for custom chains list"
   },
   "evm_custom_chains_field_name": {
-    "message": "Nombre de la cadena",
+    "message": "Nombre de la red",
     "description": "Custom chain form field"
   },
   "evm_custom_chains_field_chain_id": {
-    "message": "ID de cadena",
+    "message": "ID de red",
     "description": "Custom chain form field"
   },
   "evm_custom_chains_field_symbol": {
@@ -6461,11 +6461,11 @@
     "description": "Custom chain form checkbox"
   },
   "evm_custom_chains_save": {
-    "message": "Guardar cadena",
+    "message": "Guardar red",
     "description": "Save custom chain button"
   },
   "evm_custom_chains_error_name": {
-    "message": "Por favor ingresa un nombre de cadena.",
+    "message": "Por favor ingresa un nombre de red.",
     "description": "Custom chain validation"
   },
   "evm_custom_chains_error_symbol": {
@@ -6485,23 +6485,23 @@
     "description": "Custom chain save: an RPC check failed"
   },
   "evm_custom_chains_error_chain_id": {
-    "message": "Introduzca un ID de cadena válido (decimal o 0x hexadecimal).",
+    "message": "Introduzca un ID de red válido (decimal o 0x hexadecimal).",
     "description": "Custom chain validation"
   },
   "evm_custom_chains_error_duplicate": {
-    "message": "Ya se agregó una cadena personalizada con este ID.",
+    "message": "Ya se agregó una red personalizada con este ID.",
     "description": "Custom chain validation"
   },
   "evm_custom_chains_error_default_exists": {
-    "message": "Esta cadena ya está disponible como cadena predeterminada. En su lugar, habilítelo desde la lista de cadenas.",
+    "message": "Esta red ya está disponible como red predeterminada. En su lugar, habilítelo desde la lista de redes.",
     "description": "Custom chain validation"
   },
   "evm_custom_chains_error_generic": {
-    "message": "No se pudo salvar esta cadena. Por favor revise sus entradas e inténtelo nuevamente.",
+    "message": "No se pudo salvar esta red. Por favor revise sus entradas e inténtelo nuevamente.",
     "description": "Custom chain generic error"
   },
   "evm_custom_chains_chainlist_found": {
-    "message": "Se encontró una cadena coincidente en la lista de cadenas públicas (ChainList.org).",
+    "message": "Se encontró una red coincidente en la lista de redes públicas (ChainList.org).",
     "description": "When chain ID matches ChainList.org data for add-custom-chain form"
   },
   "evm_custom_chains_chainlist_preload_link": {
@@ -6509,7 +6509,7 @@
     "description": "Button to prefill add-custom-chain form from ChainList.org"
   },
   "evm_custom_chains_chainlist_looking_up": {
-    "message": "Buscando datos de la cadena pública...",
+    "message": "Buscando datos de la red pública...",
     "description": "While ChainList.org data is being fetched for the chain ID"
   },
   "evm_custom_chains_rpc_collapsed_summary": {
@@ -6649,7 +6649,7 @@
     "description": "EVM light-node history: page title for ERC1155_BURN (ERC-1155)"
   },
   "evm_history_op_swap": {
-    "message": "Intercambio",
+    "message": "Swap",
     "description": "EVM light-node history: page title for SWAP"
   },
   "evm_history_op_airdrop_receive": {
@@ -7085,7 +7085,7 @@
     "description": "Gas fee estimation not available"
   },
   "evm_gas_fee_warning_not_available_for_chain": {
-    "message": "La estimación de la tarifa de red no está disponible para esta cadena",
+    "message": "La estimación de la tarifa de red no está disponible para esta red",
     "description": "Gas fee estimation not available for chain"
   },
   "evm_gas_fee_warning_transaction_will_revert": {
@@ -7105,7 +7105,7 @@
     "description": "Priority fee is higher than max fee"
   },
   "evm_gas_fee_warning_gas_price_below_minimum": {
-    "message": "El precio de gas está por debajo del mínimo de esta cadena",
+    "message": "El precio de gas está por debajo del mínimo de esta red",
     "description": "Legacy gas price is below the configured chain minimum"
   },
   "evm_gas_fee_warning_updated_after_insufficient_price": {
@@ -7153,7 +7153,7 @@
     "description": "HTTP RPC warning message while adding a new EVM RPC from the popup"
   },
   "evm_add_rpc_invalid_chain_error": {
-    "message": "Este RPC no responde a la cadena seleccionada.",
+    "message": "Este RPC no responde a la red seleccionada.",
     "description": "Invalid chain error message while adding a new EVM RPC"
   },
   "evm_history_warning_potential_zero_amount_scam": {
@@ -7165,11 +7165,11 @@
     "description": "Transaction result error message transfer amount exceeds allowance"
   },
   "evm_add_chain": {
-    "message": "Agregar cadena",
+    "message": "Agregar red",
     "description": "Add chain"
   },
   "evm_update_chain": {
-    "message": "Cadena de actualización",
+    "message": "Red de actualización",
     "description": "Update chain"
   },
   "evm_chain_symbol": {
@@ -7193,15 +7193,15 @@
     "description": "Chain name"
   },
   "evm_add_chain_caption": {
-    "message": "$1 te pide que agregues una nueva cadena. Asegúrate de confiar en esta cadena antes de agregarla.",
+    "message": "$1 te pide que agregues una nueva red. Asegúrate de confiar en esta red antes de agregarla.",
     "description": "Add chain caption"
   },
   "evm_update_chain_caption": {
-    "message": "$1 solicita actualizar una cadena existente. Esto agregará las URL RPC a la lista existente, pero no se activarán automáticamente.",
+    "message": "$1 solicita actualizar una red existente. Esto agregará las URL RPC a la lista existente, pero no se activarán automáticamente.",
     "description": "Update chain caption"
   },
   "html_popup_popular_chains": {
-    "message": "Cadenas populares",
+    "message": "Redes populares",
     "description": "Popular chains"
   },
   "html_popup_testnet_chains": {
@@ -7209,23 +7209,23 @@
     "description": "Testnet chains"
   },
   "html_popup_custom_chains": {
-    "message": "Cadenas personalizadas",
+    "message": "Redes personalizadas",
     "description": "Custom chains section"
   },
   "html_popup_manage_chains": {
-    "message": "Administrar cadenas",
+    "message": "Administrar redes",
     "description": "Manage chains page and dropdown action"
   },
   "html_popup_search_chains": {
-    "message": "Buscar cadenas...",
+    "message": "Buscar redes...",
     "description": "Search chains input placeholder"
   },
   "html_popup_manage_chains_empty_results": {
-    "message": "Ninguna cadena coincide con tu búsqueda.",
+    "message": "Ninguna red coincide con tu búsqueda.",
     "description": "Empty state when Manage chains filters have no results"
   },
   "html_popup_non_popular_chains": {
-    "message": "Otras cadenas",
+    "message": "Otras redes",
     "description": "Non popular chains"
   },
   "popup_html_show_testnets": {
@@ -7268,11 +7268,11 @@
     "description": "Intro caption on manage tokens page; may include a <br/> line break"
   },
   "evm_custom_tokens_section_title": {
-    "message": "Fichas personalizadas",
+    "message": "Tokens personalizadas",
     "description": "Custom token list section title on manage tokens page"
   },
   "evm_auto_detected_tokens_section_title": {
-    "message": "Fichas detectadas automáticamente",
+    "message": "Tokens detectadas automáticamente",
     "description": "Auto-detected token list section title on manage tokens page"
   },
   "evm_auto_detected_tokens_empty": {
@@ -7348,7 +7348,7 @@
     "description": "Hint on wallet NFT tab when there are no custom NFTs on a custom chain"
   },
   "evm_custom_history_info_card_message": {
-    "message": "En esta cadena personalizada, solo se mostrarán las transacciones transmitidas por Keychain",
+    "message": "En esta red personalizada, solo se mostrarán las transacciones transmitidas por Keychain",
     "description": "Hint on wallet history tab for custom EVM chains"
   },
   "evm_add_custom_token_popup_title": {
@@ -7464,7 +7464,7 @@
     "description": "Error when persisting a custom ERC20 token fails"
   },
   "evm_add_custom_token_error_fetch_erc20_metadata": {
-    "message": "No se pudo leer el nombre del token ni los decimales de la cadena. Verifica la dirección y que sea un contrato estándar ERC20.",
+    "message": "No se pudo leer el nombre del token ni los decimales de la red. Verifica la dirección y que sea un contrato estándar ERC20.",
     "description": "Error when fetching ERC20 name and decimals from chain fails"
   },
   "evm_add_custom_nft_error_token_ids_not_owned": {
@@ -7540,23 +7540,23 @@
     "description": "Coming soon panel description"
   },
   "evm_chain_non_supported": {
-    "message": "La cadena $1 no es compatible con Keychain",
+    "message": "La red $1 no es compatible con Keychain",
     "description": "Chain not supported error message"
   },
   "evm_request_add_chain_title": {
-    "message": "Añadir una cadena",
+    "message": "Añadir una red",
     "description": "Request to add chain title"
   },
   "evm_request_add_chain_caption": {
-    "message": "$1 ha solicitado realizar una acción en una cadena que aún no has configurado. ¿Quiere agregarlo a Keychain y continuar con esa transacción?",
+    "message": "$1 ha solicitado realizar una acción en una red que aún no has configurado. ¿Quiere agregarlo a Keychain y continuar con esa transacción?",
     "description": "Request to add chain caption"
   },
   "evm_request_add_custom_chain_title": {
-    "message": "Agregar una cadena personalizada",
+    "message": "Agregar una red personalizada",
     "description": "Request to add a custom chain title"
   },
   "evm_request_add_custom_chain_caption": {
-    "message": "$1 solicitó un cambio a la cadena $2, pero Keychain aún no conoce esta cadena. Agregue los detalles de la cadena personalizada a continuación para continuar.",
+    "message": "$1 solicitó un cambio a la red $2, pero Keychain aún no conoce esta red. Agregue los detalles de la red personalizada a continuación para continuar.",
     "description": "Request to add a custom chain caption"
   },
   "evm_link_to_other_receiver": {
@@ -7583,11 +7583,11 @@
     "message": "Confirma este intercambio de $3 $1 a $2."
   },
   "evm_lifi_swap": {
-    "message": "LiFi Intercambiar",
+    "message": "LiFi Swap",
     "description": "LiFi Swap"
   },
   "evm_swap_operation": {
-    "message": "Intercambio",
+    "message": "Swap",
     "description": "Swap operation"
   },
   "evm_approval_operation": {
@@ -7615,7 +7615,7 @@
     "description": "Bridge not available"
   },
   "evm_lifi_swap_status_chain_not_available": {
-    "message": "Cadena no disponible",
+    "message": "Red no disponible",
     "description": "Chain not available"
   },
   "evm_lifi_swap_refund_in_progress": {
@@ -7799,7 +7799,7 @@
     "description": "Title for EVM switch chain confirmation dialog"
   },
   "evm_switch_chain_caption": {
-    "message": "$DOMAIN$ quiere usar una cadena diferente con tu billetera.",
+    "message": "$DOMAIN$ quiere usar una red diferente con tu billetera.",
     "description": "Caption for EVM switch chain confirmation dialog",
     "placeholders": {
       "domain": {
@@ -7917,7 +7917,7 @@
     "message": "Pronto podrás vender crypto por fiat, sin salir de Keychain."
   },
   "portfolio_coming_soon_description_swap": {
-    "message": "Pronto podrás hacer Swap y Bridge de tokens entre cadenas compatibles."
+    "message": "Pronto podrás hacer Swap y Bridge de tokens entre redes compatibles."
   },
   "portfolio_quote_auto_refresh_countdown": {
     "message": "Actualizando en $1s",
@@ -8205,7 +8205,7 @@
     "message": "El proveedor pausó este Swap por compliance. Contáctalo e incluye tu Exchange ID."
   },
   "portfolio_history_exchange_id": {
-    "message": "ID de intercambio"
+    "message": "ID de Swap"
   },
   "portfolio_history_contact_provider": {
     "message": "Contactar proveedor"
@@ -8238,7 +8238,7 @@
     "message": "Ningún activo coincide con tus filtros."
   },
   "portfolio_swap_switch_tokens": {
-    "message": "Intercambiar tokens",
+    "message": "Swap tokens",
     "description": "Botón entre los paneles de origen y destino del swap del portfolio"
   },
   "portfolio_swap_no_wallet_tokens": {
