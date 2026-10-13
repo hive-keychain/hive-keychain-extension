@@ -19,5 +19,7 @@ export interface PortfolioBalance {
   balance: number;
   usdValue: number;
   priceUsd?: number | null;
+  /** HIVE/HBD that can be swapped: liquid plus open orders, without savings. */
+  spendableBalance?: number;
   breakdown?: PortfolioHiveEngineBalanceBreakdown;
 }

@@ -353,6 +353,16 @@ describe('porfolio.utils', () => {
       expect(symbols).toContain('HIVE');
       expect(symbols).toContain('HBD');
       expect(symbols).toContain('HP');
+      const hiveBalance = portfolio[0].balances.find(
+        (balance) => balance.symbol === 'HIVE',
+      );
+      const hbdBalance = portfolio[0].balances.find(
+        (balance) => balance.symbol === 'HBD',
+      );
+      expect(hiveBalance?.balance).toBe(12);
+      expect(hiveBalance?.spendableBalance).toBe(11);
+      expect(hbdBalance?.balance).toBe(3);
+      expect(hbdBalance?.spendableBalance).toBe(2.5);
       expect(portfolio[0].totalUSD).toBeGreaterThan(0);
       expect(portfolio[0].totalHive).toBeGreaterThan(0);
       expect(tokens).toEqual([]);

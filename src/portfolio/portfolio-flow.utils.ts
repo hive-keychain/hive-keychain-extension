@@ -35,6 +35,8 @@ export type PortfolioFlowRow = {
   symbol: string;
   network: string;
   balance: string;
+  /** Spendable amount when it differs from the displayed holding, such as HIVE/HBD without savings. */
+  spendableBalance?: string;
   usdValue?: number | null;
   decimals?: number;
   chainId?: string | null;
@@ -67,18 +69,32 @@ export const hasPositivePortfolioBalance = (balance: string): boolean => {
   return Number.isFinite(amount) && amount > 0;
 };
 
-export const formatPortfolioTokenBalance = (balance: string): string => {
+export const getPortfolioRowAvailableBalance = (
+  row: Pick<PortfolioFlowRow, 'balance' | 'spendableBalance'>,
+): string => row.spendableBalance ?? row.balance;
+
+export const formatPortfolioTokenBalance = (
+  balance: string,
+  decimals?: number | null,
+): string => {
   const normalized = balance.replace(/,/g, '').trim();
   if (!normalized || !Number.isFinite(Number(normalized))) {
     return balance;
   }
 
   const fractionLength = normalized.split('.')[1]?.length ?? 0;
-  return FormatUtils.withCommas(
-    normalized,
-    Math.min(fractionLength, 18),
-    true,
-  );
+  const hasValidDecimals =
+    decimals !== undefined && decimals !== null && Number.isFinite(decimals);
+  const displayDecimals = hasValidDecimals
+    ? Math.min(Math.max(Math.trunc(decimals), 0), 18)
+    : Math.min(fractionLength, 18);
+  const displayValue = hasValidDecimals
+    ? new Decimal(normalized)
+        .toDecimalPlaces(displayDecimals, Decimal.ROUND_HALF_UP)
+        .toFixed(displayDecimals)
+    : normalized;
+
+  return FormatUtils.withCommas(displayValue, displayDecimals, true);
 };
 
 export type { PortfolioHiveEngineBalanceBreakdown };
@@ -215,6 +231,22 @@ export const formatPortfolioQuoteFromAmount = (
   } catch {
     return normalizedAmount;
   }
+};
+
+export const formatPortfolioAvailableBalance = (
+  balance: string,
+  decimals?: number | null,
+): string => {
+  const hasValidDecimals =
+    decimals !== undefined && decimals !== null && Number.isFinite(decimals);
+  const normalizedBalance = hasValidDecimals
+    ? formatPortfolioQuoteFromAmount(balance, Math.trunc(decimals))
+    : balance;
+
+  return formatPortfolioTokenBalance(
+    normalizedBalance,
+    hasValidDecimals ? Math.trunc(decimals) : undefined,
+  );
 };
 
 const USD_DISPLAY_DECIMALS = 2;
@@ -810,11 +842,16 @@ export const buildPortfolioFromSelectOptions = (
   rows: PortfolioFlowRow[],
 ): PortfolioFlowSelectOption[] =>
   rows
-    .filter((row) => hasPositivePortfolioBalance(row.balance))
+    .filter((row) =>
+      hasPositivePortfolioBalance(getPortfolioRowAvailableBalance(row)),
+    )
     .filter((row) => !row.isTestnet)
     .filter((row) => !isPortfolioSwapExcludedSymbol(row.symbol))
     .map((row) => {
-      const formattedBalance = formatPortfolioTokenBalance(row.balance);
+      const formattedBalance = formatPortfolioAvailableBalance(
+        getPortfolioRowAvailableBalance(row),
+        row.decimals,
+      );
       return {
         value: row.key,
         label: row.network
@@ -2114,6 +2151,8 @@ export const PortfolioFlowUtils = {
   isPortfolioSwapExcludedSymbol,
   isValidPortfolioRecipientAddress,
   formatPortfolioQuoteFromAmount,
+  formatPortfolioAvailableBalance,
+  getPortfolioRowAvailableBalance,
   formatPortfolioAmountUsdHint,
   formatPortfolioUsdValue,
   formatPortfolioHiveEngineBalanceBreakdown,

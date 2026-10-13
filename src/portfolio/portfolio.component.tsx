@@ -50,6 +50,7 @@ import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.component';
+import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -176,6 +177,7 @@ type PortfolioRow = {
   symbol: string;
   network: string;
   balance: string;
+  spendableBalance?: string;
   usdValue: number | null;
   priceUsd: number | null;
   decimals?: number;
@@ -1080,8 +1082,9 @@ export const Portfolio = ({
     );
     const rowsWithPositiveBalance = rowsWithCanonicalAsset.filter(
       (row) =>
-        PortfolioFlowUtils.hasPositivePortfolioBalance(row.balance) &&
-        !row.isTestnet,
+        PortfolioFlowUtils.hasPositivePortfolioBalance(
+          PortfolioFlowUtils.getPortfolioRowAvailableBalance(row),
+        ) && !row.isTestnet,
     );
 
     const rampAvailableAssetIds = new Set(
@@ -1417,6 +1420,25 @@ export const Portfolio = ({
     () => rows.find((row) => row.key === fromAssetId),
     [rows, fromAssetId],
   );
+  const selectedToRow = useMemo(
+    () =>
+      rows.find(
+        (row) =>
+          PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
+            row,
+            canonicalAssetsForRowResolution,
+            toAssetEvmChains,
+            portfolioChains,
+          ) === toAssetId,
+      ),
+    [
+      canonicalAssetsForRowResolution,
+      portfolioChains,
+      rows,
+      toAssetEvmChains,
+      toAssetId,
+    ],
+  );
 
   const canSetAmountToMax =
     (flowMode === 'swap' || flowMode === 'sell') && Boolean(selectedFromRow);
@@ -1426,8 +1448,28 @@ export const Portfolio = ({
       return;
     }
 
-    setAmount(selectedFromRow.balance.replace(/,/g, '').trim());
+    const availableBalance =
+      PortfolioFlowUtils.getPortfolioRowAvailableBalance(selectedFromRow);
+    setAmount(
+      selectedFromRow.decimals !== undefined
+        ? PortfolioFlowUtils.formatPortfolioQuoteFromAmount(
+            availableBalance,
+            selectedFromRow.decimals,
+          )
+        : availableBalance.replace(/,/g, '').trim(),
+    );
   };
+
+  const selectedFromAvailableAmount = selectedFromRow
+    ? selectedFromRow.decimals !== undefined
+      ? PortfolioFlowUtils.formatPortfolioQuoteFromAmount(
+          PortfolioFlowUtils.getPortfolioRowAvailableBalance(selectedFromRow),
+          selectedFromRow.decimals,
+        )
+      : PortfolioFlowUtils.getPortfolioRowAvailableBalance(
+          selectedFromRow,
+        ).replace(/,/g, '')
+    : undefined;
 
   const hasInsufficientFromBalance = useMemo(() => {
     if (process.env.PORTFOLIO_SKIP_BALANCE_CHECK === 'true') {
@@ -1443,13 +1485,13 @@ export const Portfolio = ({
     }
 
     const requestedAmount = Number(amount.replace(/,/g, ''));
-    const availableBalance = Number(selectedFromRow.balance.replace(/,/g, ''));
+    const availableBalance = Number(selectedFromAvailableAmount);
     return (
       Number.isFinite(requestedAmount) &&
       Number.isFinite(availableBalance) &&
       requestedAmount > availableBalance
     );
-  }, [amount, flowMode, selectedFromRow]);
+  }, [amount, flowMode, selectedFromAvailableAmount]);
 
   const canFillMinimumAmount = useMemo(
     () =>
@@ -1457,14 +1499,14 @@ export const Portfolio = ({
         fillAmount: amountQuoteError?.fillAmount,
         availableBalance:
           flowMode === 'swap' || flowMode === 'sell'
-            ? selectedFromRow?.balance
+            ? selectedFromAvailableAmount
             : undefined,
         // Buy/sell fiat mins have no crypto balance to gate against.
         skipBalanceCheck:
           process.env.PORTFOLIO_SKIP_BALANCE_CHECK === 'true' ||
           flowMode === 'buy',
       }),
-    [amountQuoteError?.fillAmount, flowMode, selectedFromRow?.balance],
+    [amountQuoteError?.fillAmount, flowMode, selectedFromAvailableAmount],
   );
 
   const quoteAmountHint = useMemo(
@@ -1481,13 +1523,13 @@ export const Portfolio = ({
         fillAmount: quoteAmountHint?.fillAmount,
         availableBalance:
           flowMode === 'swap' || flowMode === 'sell'
-            ? selectedFromRow?.balance
+            ? selectedFromAvailableAmount
             : undefined,
         skipBalanceCheck:
           process.env.PORTFOLIO_SKIP_BALANCE_CHECK === 'true' ||
           flowMode === 'buy',
       }),
-    [flowMode, quoteAmountHint?.fillAmount, selectedFromRow?.balance],
+    [flowMode, quoteAmountHint?.fillAmount, selectedFromAvailableAmount],
   );
 
   const handleFillMinimumAmount = () => {
@@ -1798,7 +1840,10 @@ export const Portfolio = ({
     return (
       <PortfolioTokenIdentity
         {...portfolioRowToTokenIdentityProps(row)}
-        balance={PortfolioFlowUtils.formatPortfolioTokenBalance(row.balance)}
+        balance={PortfolioFlowUtils.formatPortfolioAvailableBalance(
+          PortfolioFlowUtils.getPortfolioRowAvailableBalance(row),
+          row.decimals,
+        )}
       />
     );
   };
@@ -2577,6 +2622,10 @@ export const Portfolio = ({
             symbol: balance.symbol,
             network: 'Hive',
             balance: balance.balance.toString(),
+            spendableBalance:
+              balance.spendableBalance !== undefined
+                ? balance.spendableBalance.toString()
+                : undefined,
             usdValue: balance.usdValue,
             priceUsd:
               balance.priceUsd ??
@@ -3526,8 +3575,9 @@ export const Portfolio = ({
   const openFlowForRow = useCallback(
     (row: PortfolioRow, mode: PortfolioMode) => {
       const canUseAsFrom =
-        PortfolioFlowUtils.hasPositivePortfolioBalance(row.balance) &&
-        !row.isTestnet;
+        PortfolioFlowUtils.hasPositivePortfolioBalance(
+          PortfolioFlowUtils.getPortfolioRowAvailableBalance(row),
+        ) && !row.isTestnet;
       resetFlowFormFields();
       hasUserSelectedFromAssetRef.current = mode !== 'buy' && canUseAsFrom;
       setFromAssetId(mode === 'buy' || !canUseAsFrom ? '' : row.key);
@@ -3862,29 +3912,37 @@ export const Portfolio = ({
         quoteResponse?.quotes.length === 0)
         ? I18nUtils.getMessage('portfolio_no_quote_available_short')
         : null;
-    const fromAmountUsdHint =
-      mode === 'swap'
-        ? PortfolioFlowUtils.formatPortfolioAmountUsdHint(
-            amount,
-            selectedFromRow?.priceUsd,
-            selectedQuote?.fromAsset?.priceUsd,
-            fromCanonicalAsset?.priceUsd,
-          )
-        : null;
-    const toAmountUsdHint =
+    const estimatedAmountUsdHint =
       mode === 'swap'
         ? PortfolioFlowUtils.formatPortfolioAmountUsdHint(
             selectedQuote?.estimatedToAmount,
             selectedQuote?.toAsset?.priceUsd,
             toCanonicalAsset?.priceUsd,
+            selectedToRow?.priceUsd,
           )
         : null;
-    const renderAmountUsdHint = (hint: string | null, testId: string) =>
-      hint ? (
-        <p className="portfolio-amount-usd-hint" data-testid={testId}>
-          {hint}
-        </p>
-      ) : null;
+    const estimatedToAmountDecimals =
+      selectedQuote?.toAsset?.decimals ??
+      toCanonicalAsset?.decimals ??
+      selectedToRow?.decimals;
+    const formattedEstimatedToAmount = selectedQuote?.estimatedToAmount
+      ? PortfolioFlowUtils.formatPortfolioTokenBalance(
+          selectedQuote.estimatedToAmount,
+          estimatedToAmountDecimals,
+        )
+      : '';
+    const estimatedAmountValue = (
+      <div
+        className={`portfolio-swap-quote-input__value${
+          estimatedAmountErrorMessage
+            ? ' portfolio-swap-quote-input__value--error-text'
+            : ''
+        }`}
+        data-testid="portfolio-swap-quote-value"
+        role={estimatedAmountErrorMessage ? 'alert' : undefined}>
+        {formattedEstimatedToAmount || estimatedAmountErrorMessage || ''}
+      </div>
+    );
 
     const handleSwapQuoteInputClick = () => {
       if (!hasAvailableQuotes) {
@@ -3901,7 +3959,6 @@ export const Portfolio = ({
     };
 
     const estimatedAmountInput = isQuoteAutoFetchSection(mode) ? (
-      <>
         <div className="custom-input portfolio-swap-quote-field">
         <div className="label">
           {I18nUtils.getMessage('portfolio_estimated_amount')}
@@ -3924,20 +3981,18 @@ export const Portfolio = ({
           role={hasAvailableQuotes ? 'button' : undefined}
           tabIndex={hasAvailableQuotes ? 0 : undefined}>
           <div className="portfolio-swap-quote-input__container input-container no-logo">
-            <div
-              className={`portfolio-swap-quote-input__value${
-                estimatedAmountErrorMessage
-                  ? ' portfolio-swap-quote-input__value--error-text'
-                  : ''
-              }`}
-              data-testid="portfolio-swap-quote-value"
-              role={estimatedAmountErrorMessage ? 'alert' : undefined}>
-              {selectedQuote?.estimatedToAmount
-                ? PortfolioFlowUtils.formatPortfolioTokenBalance(
-                    selectedQuote.estimatedToAmount,
-                  )
-                : (estimatedAmountErrorMessage ?? '')}
-            </div>
+            {estimatedAmountUsdHint ? (
+              <CustomTooltip
+                message={estimatedAmountUsdHint}
+                skipTranslation
+                position="top"
+                additionalClassName="portfolio-swap-quote-input__usd-tooltip"
+                dataTestId="portfolio-estimated-amount-usd">
+                {estimatedAmountValue}
+              </CustomTooltip>
+            ) : (
+              estimatedAmountValue
+            )}
             <div className="portfolio-swap-quote-input__adornments">
               {showSwapQuoteActionButton ? (
                 <button
@@ -3988,20 +4043,12 @@ export const Portfolio = ({
             </div>
           </div>
         </div>
-        {renderAmountUsdHint(toAmountUsdHint, 'portfolio-to-amount-usd')}
-      </>
     ) : (
       <div className="portfolio-amount-field">
         <InputComponent
           label="portfolio_estimated_amount"
           type={InputType.TEXT}
-          value={
-            selectedQuote?.estimatedToAmount
-              ? PortfolioFlowUtils.formatPortfolioTokenBalance(
-                  selectedQuote.estimatedToAmount,
-                )
-              : ''
-          }
+          value={formattedEstimatedToAmount}
           onChange={() => {}}
           disabled
           imageLogoUrl={selectedQuote?.providerLogoUrl ?? undefined}
@@ -4239,7 +4286,6 @@ export const Portfolio = ({
             canSetAmountToMax ? SVGIcons.INPUT_MAX : undefined
           }
         />
-        {renderAmountUsdHint(fromAmountUsdHint, 'portfolio-from-amount-usd')}
         {hasInsufficientFromBalance && (
           <p className="portfolio-field-error" role="alert">
             {I18nUtils.getMessage('portfolio_insufficient_balance', [

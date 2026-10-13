@@ -173,24 +173,28 @@ const getPortfolio = async (
       hive: 0,
       hbd: 0,
     };
+    const hiveSavings = Asset.fromString(savings_balance.toString()).amount;
+    const hbdSavings = Asset.fromString(savings_hbd_balance.toString()).amount;
     const totalHIVE =
       Asset.fromString(balance.toString()).amount +
-      Asset.fromString(savings_balance.toString()).amount +
+      hiveSavings +
       lockedInOrders.hive;
     const totalHBD =
       Asset.fromString(hbd_balance.toString()).amount +
-      Asset.fromString(savings_hbd_balance.toString()).amount +
+      hbdSavings +
       lockedInOrders.hbd;
     const totalVESTS = Asset.fromString(vesting_shares.toString()).amount;
     const totalHP = FormatUtils.toHP(totalVESTS.toString(), globals);
     userPortfolio.balances.push({
       symbol: 'HIVE',
       balance: totalHIVE,
+      spendableBalance: totalHIVE - hiveSavings,
       usdValue: totalHIVE * (prices.hive.usd ?? 1),
     });
     userPortfolio.balances.push({
       symbol: 'HBD',
       balance: totalHBD,
+      spendableBalance: totalHBD - hbdSavings,
       usdValue: totalHBD * (prices.hive_dollar.usd ?? 1),
     });
     userPortfolio.balances.push({

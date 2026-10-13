@@ -153,6 +153,48 @@ describe('PortfolioFlowUtils', () => {
     ]);
   });
 
+  it('formats from balances to token decimals and leaves Hive savings out of the available amount', () => {
+    const options = PortfolioFlowUtils.buildPortfolioFromSelectOptions([
+      {
+        key: 'hive:HIVE',
+        symbol: 'HIVE',
+        network: 'Hive',
+        balance: '12.000000000000002',
+        spendableBalance: '11.0019',
+        decimals: 3,
+        isHive: true,
+      },
+      {
+        key: 'hive:HBD',
+        symbol: 'HBD',
+        network: 'Hive',
+        balance: '3',
+        spendableBalance: '0',
+        decimals: 3,
+        isHive: true,
+      },
+      {
+        key: '0x1:USDC:0xabc',
+        symbol: 'USDC',
+        network: 'Ethereum',
+        balance: '1.23456789',
+        decimals: 6,
+        chainId: '0x1',
+      },
+    ]);
+
+    expect(options).toEqual([
+      {
+        value: 'hive:HIVE',
+        label: 'HIVE - Hive (11.001)',
+      },
+      {
+        value: '0x1:USDC:0xabc',
+        label: 'USDC - Ethereum (1.234567)',
+      },
+    ]);
+  });
+
   it('defaults to the first available asset option value', () => {
     expect(
       PortfolioFlowUtils.getDefaultSelectOptionValue([
@@ -1504,6 +1546,18 @@ describe('PortfolioFlowUtils', () => {
     );
     expect(PortfolioFlowUtils.formatPortfolioTokenBalance('~0')).toBe('~0');
     expect(PortfolioFlowUtils.formatPortfolioTokenBalance('n/a')).toBe('n/a');
+  });
+
+  it('rounds displayed token amounts to the destination token precision', () => {
+    expect(
+      PortfolioFlowUtils.formatPortfolioTokenBalance(
+        '0.29999999999999993',
+        3,
+      ),
+    ).toBe('0.3');
+    expect(
+      PortfolioFlowUtils.formatPortfolioTokenBalance('1.2349999', 3),
+    ).toBe('1.235');
   });
 
   it('formats USD values to 2 decimals and marks non-zero dust as ~$0.00', () => {

@@ -2728,7 +2728,7 @@ describe('Portfolio', () => {
     }
   });
 
-  it('shows USD price hints under swap from and to amounts', async () => {
+  it('shows the estimated USD value in a tooltip on the swap estimate amount', async () => {
     (PortfolioApiUtils.getQuotes as jest.Mock).mockResolvedValue({
       quotes: [
         {
@@ -2736,10 +2736,11 @@ describe('Portfolio', () => {
           provider: 'lifi',
           providerName: 'LiFi',
           providerLogoUrl: null,
-          estimatedToAmount: '50',
+          estimatedToAmount: '49.99999999999999',
           executionType: 'redirect',
           toAsset: {
-            priceUsd: 2,
+            decimals: 3,
+            priceUsd: 0,
           },
         },
       ],
@@ -2754,7 +2755,7 @@ describe('Portfolio', () => {
     });
 
     expect(queryByTestId('portfolio-from-amount-usd')).toBeNull();
-    expect(queryByTestId('portfolio-to-amount-usd')).toBeNull();
+    expect(queryByTestId('portfolio-estimated-amount-usd')).toBeNull();
 
     const amountInput = container.querySelector(
       '.portfolio-flow .portfolio-amount-field input[type="number"]',
@@ -2763,13 +2764,35 @@ describe('Portfolio', () => {
 
     await waitFor(() => {
       expect(
-        container.querySelector('[data-testid="portfolio-from-amount-usd"]')
+        container.querySelector('[data-testid="portfolio-swap-quote-value"]')
           ?.textContent,
-      ).toBe('$10.00');
+      ).toBe('50');
       expect(
-        container.querySelector('[data-testid="portfolio-to-amount-usd"]')
+        container.querySelector(
+          '[data-testid="portfolio-estimated-amount-usd"]',
+        ),
+      ).not.toBeNull();
+    });
+
+    expect(
+      container.querySelector('[data-testid="portfolio-from-amount-usd"]'),
+    ).toBeNull();
+
+    expect(
+      container.querySelector('[data-testid="portfolio-to-amount-usd"]'),
+    ).toBeNull();
+
+    fireEvent.mouseEnter(
+      container.querySelector(
+        '[data-testid="portfolio-estimated-amount-usd"]',
+      ) as HTMLElement,
+    );
+
+    await waitFor(() => {
+      expect(
+        document.body.querySelector('[data-testid="tooltip-content"]')
           ?.textContent,
-      ).toBe('$100.00');
+      ).toBe('$50.00');
     });
   });
 
