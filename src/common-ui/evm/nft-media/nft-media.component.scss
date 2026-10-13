@@ -4,7 +4,7 @@
 
   &.placeholder {
     object-fit: contain;
-    background: $lighter-blue;
+    background: var(--card-background);
     padding: 22%;
     box-sizing: border-box;
   }
