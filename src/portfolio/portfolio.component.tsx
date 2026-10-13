@@ -50,7 +50,6 @@ import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.component';
-import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -3912,6 +3911,15 @@ export const Portfolio = ({
         quoteResponse?.quotes.length === 0)
         ? I18nUtils.getMessage('portfolio_no_quote_available_short')
         : null;
+    const fromAmountUsdHint =
+      mode === 'swap'
+        ? PortfolioFlowUtils.formatPortfolioAmountUsdHint(
+            amount,
+            selectedQuote?.fromAsset?.priceUsd,
+            fromCanonicalAsset?.priceUsd,
+            selectedFromRow?.priceUsd,
+          )
+        : null;
     const estimatedAmountUsdHint =
       mode === 'swap'
         ? PortfolioFlowUtils.formatPortfolioAmountUsdHint(
@@ -3921,6 +3929,12 @@ export const Portfolio = ({
             selectedToRow?.priceUsd,
           )
         : null;
+    const renderAmountUsdHint = (hint: string | null, testId: string) =>
+      hint ? (
+        <p className="portfolio-amount-usd-hint" data-testid={testId}>
+          {hint}
+        </p>
+      ) : null;
     const estimatedToAmountDecimals =
       selectedQuote?.toAsset?.decimals ??
       toCanonicalAsset?.decimals ??
@@ -3981,18 +3995,7 @@ export const Portfolio = ({
           role={hasAvailableQuotes ? 'button' : undefined}
           tabIndex={hasAvailableQuotes ? 0 : undefined}>
           <div className="portfolio-swap-quote-input__container input-container no-logo">
-            {estimatedAmountUsdHint ? (
-              <CustomTooltip
-                message={estimatedAmountUsdHint}
-                skipTranslation
-                position="top"
-                additionalClassName="portfolio-swap-quote-input__usd-tooltip"
-                dataTestId="portfolio-estimated-amount-usd">
-                {estimatedAmountValue}
-              </CustomTooltip>
-            ) : (
-              estimatedAmountValue
-            )}
+            {estimatedAmountValue}
             <div className="portfolio-swap-quote-input__adornments">
               {showSwapQuoteActionButton ? (
                 <button
@@ -4042,6 +4045,10 @@ export const Portfolio = ({
             </div>
             </div>
           </div>
+          {renderAmountUsdHint(
+            estimatedAmountUsdHint,
+            'portfolio-estimated-amount-usd',
+          )}
         </div>
     ) : (
       <div className="portfolio-amount-field">
@@ -4055,6 +4062,10 @@ export const Portfolio = ({
           imageLogoAlt={selectedQuote?.providerName || selectedQuote?.provider}
           logoPosition={selectedQuote?.providerLogoUrl ? 'right' : undefined}
         />
+        {renderAmountUsdHint(
+          estimatedAmountUsdHint,
+          'portfolio-estimated-amount-usd',
+        )}
         {estimatedAmountErrorMessage ? (
           <p
             className="portfolio-field-error"
@@ -4266,26 +4277,28 @@ export const Portfolio = ({
         />
       ) : null;
 
+    const amountInput = (
+      <InputComponent
+        label="popup_html_transfer_amount"
+        type={InputType.NUMBER}
+        value={amount}
+        min={0}
+        onChange={setAmount}
+        classname={
+          amountQuoteError || hasInsufficientFromBalance
+            ? 'portfolio-amount-input--error'
+            : undefined
+        }
+        rightActionClicked={
+          canSetAmountToMax ? handleSetAmountToMax : undefined
+        }
+        rightActionIcon={canSetAmountToMax ? SVGIcons.INPUT_MAX : undefined}
+      />
+    );
     const amountField = (
       <div className="portfolio-amount-field">
-        <InputComponent
-          label="popup_html_transfer_amount"
-          type={InputType.NUMBER}
-          value={amount}
-          min={0}
-          onChange={setAmount}
-          classname={
-            amountQuoteError || hasInsufficientFromBalance
-              ? 'portfolio-amount-input--error'
-              : undefined
-          }
-          rightActionClicked={
-            canSetAmountToMax ? handleSetAmountToMax : undefined
-          }
-          rightActionIcon={
-            canSetAmountToMax ? SVGIcons.INPUT_MAX : undefined
-          }
-        />
+        {amountInput}
+        {renderAmountUsdHint(fromAmountUsdHint, 'portfolio-from-amount-usd')}
         {hasInsufficientFromBalance && (
           <p className="portfolio-field-error" role="alert">
             {I18nUtils.getMessage('portfolio_insufficient_balance', [
