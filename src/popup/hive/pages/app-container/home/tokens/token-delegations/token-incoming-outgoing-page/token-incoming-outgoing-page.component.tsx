@@ -29,6 +29,7 @@ const TokenIncomingOutgoingPage = ({
   useEffect(() => {
     setTitleContainerProperties({
       title: delegationType,
+      titleParams: [tokenBalance.symbol],
       isBackButtonEnabled: true,
     });
     init();

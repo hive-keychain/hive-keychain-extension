@@ -37,6 +37,7 @@ const IncomingOutgoingRcPage = ({
   useEffect(() => {
     setTitleContainerProperties({
       title: delegationType,
+      titleParams: ['RC'],
       isBackButtonEnabled: true,
       isCloseButtonDisabled: false,
     });
