@@ -211,42 +211,78 @@ describe('WalletTokenPriceChart', () => {
     ).toBeUndefined();
   });
 
-  it('prices recent Hive Engine trades in USD and drops trades older than 24h', () => {
+  it('builds the hourly Hive Engine candle URL', () => {
+    expect(WalletTokenPriceChartUtils.buildHiveEngineOhlcvUrl(' bee ')).toBe(
+      'https://info-api.tribaldex.com/market/ohlcv?symbol=BEE&interval=hourly',
+    );
+  });
+
+  it('prices 24h and 7d closes with the matching HIVE series', () => {
     const now = Date.parse('2026-10-01T04:00:00.000Z');
     const history = WalletTokenPriceChartUtils.buildHiveEnginePriceHistory(
       [
-        { timestamp: (now - 48 * 60 * 60 * 1000) / 1000, price: '9' },
-        { timestamp: (now - 2 * 60 * 60 * 1000) / 1000, price: '2' },
-        { timestamp: (now - 60 * 1000) / 1000, price: '4' },
+        { timestamp: (now - 8 * 24 * 60 * 60 * 1000) / 1000, close: '9' },
+        { timestamp: (now - 48 * 60 * 60 * 1000) / 1000, close: '9' },
+        { timestamp: (now - 2 * 60 * 60 * 1000) / 1000, close: '2' },
+        { timestamp: (now - 60 * 1000) / 1000, close: '4' },
       ],
-      [
-        { timestamp: now - 3 * 60 * 60 * 1000, price: 0.5 },
-        { timestamp: now - 30 * 60 * 1000, price: 1 },
-      ],
+      {
+        '24h': [
+          { timestamp: now - 3 * 60 * 60 * 1000, price: 0.5 },
+          { timestamp: now - 30 * 60 * 1000, price: 1 },
+        ],
+        '7d': [{ timestamp: now - 3 * 24 * 60 * 60 * 1000, price: 2 }],
+      },
       undefined,
       now,
     );
 
-    expect(history.categories).toEqual(['24h']);
+    expect(history.categories).toEqual(['24h', '7d']);
     expect(history.seriesByCategory['24h']).toEqual([
       { timestamp: now - 2 * 60 * 60 * 1000, price: 1 },
       { timestamp: now - 60 * 1000, price: 4 },
     ]);
+    expect(history.seriesByCategory['7d']).toEqual([
+      { timestamp: now - 48 * 60 * 60 * 1000, price: 18 },
+      { timestamp: now - 2 * 60 * 60 * 1000, price: 4 },
+      { timestamp: now - 60 * 1000, price: 8 },
+    ]);
+  });
+
+  it('keeps 24 hourly closes for 24h and a week of closes for 7d', () => {
+    const now = Date.parse('2026-10-01T04:00:00.000Z');
+    const candles = Array.from({ length: 25 }, (_, index) => ({
+      timestamp: (now - (25 - index) * 30 * 60 * 1000) / 1000,
+      close: '1',
+    }));
+    const history = WalletTokenPriceChartUtils.buildHiveEnginePriceHistory(
+      candles,
+      {},
+      1,
+      now,
+    );
+
+    expect(history.seriesByCategory['24h']).toHaveLength(24);
+    expect(history.seriesByCategory['24h']?.[0]?.timestamp).toBe(
+      now - 24 * 30 * 60 * 1000,
+    );
+    expect(history.seriesByCategory['7d']).toHaveLength(25);
   });
 
   it('uses the current HIVE price when HIVE history is missing', () => {
     const now = Date.parse('2026-10-01T04:00:00.000Z');
     const history = WalletTokenPriceChartUtils.buildHiveEnginePriceHistory(
       [
-        { timestamp: Math.floor((now - 120_000) / 1000), price: '1' },
-        { timestamp: Math.floor((now - 60_000) / 1000), price: '2' },
+        { timestamp: Math.floor((now - 120_000) / 1000), close: '1' },
+        { timestamp: Math.floor((now - 60_000) / 1000), close: '2' },
       ],
-      [],
+      {},
       0.25,
       now,
     );
 
     expect(history.seriesByCategory['24h']?.[1]?.price).toBe(0.5);
+    expect(history.seriesByCategory['7d']?.[1]?.price).toBe(0.5);
   });
 
   it('shows an empty state when live history has no categories', () => {

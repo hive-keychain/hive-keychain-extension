@@ -110,10 +110,30 @@ const HIVE_PRICE_HISTORY_ASSETS: Record<string, string> = {
   HBD: 'hbd',
 };
 
-const HIVE_ENGINE_HISTORY_WINDOW_MS = 24 * 60 * 60 * 1000;
+const HIVE_ENGINE_OHLCV_URL = 'https://info-api.tribaldex.com/market/ohlcv';
+const HIVE_ENGINE_RANGES = [
+  {
+    category: '24h',
+    windowMs: 24 * 60 * 60 * 1000,
+    pointLimit: 24,
+  },
+  {
+    category: '7d',
+    windowMs: 7 * 24 * 60 * 60 * 1000,
+    pointLimit: 7 * 24,
+  },
+] as const;
 
-const toTradeTimestampMs = (timestamp: number): number =>
+const toUnixTimestampMs = (timestamp: number): number =>
   timestamp > 1e12 ? timestamp : timestamp * 1000;
+
+const buildHiveEngineOhlcvUrl = (symbol: string): string => {
+  const params = new URLSearchParams({
+    symbol: symbol.trim().toUpperCase(),
+    interval: 'hourly',
+  });
+  return `${HIVE_ENGINE_OHLCV_URL}?${params.toString()}`;
+};
 
 const hiveUsdAt = (
   points: TokenPriceChartPoint[],
@@ -129,13 +149,15 @@ const hiveUsdAt = (
   return matched ?? points[0]?.price;
 };
 
-const buildHiveEnginePriceHistory = (
-  trades: { timestamp: number; price: string | number }[],
+const buildHiveEngineRangePoints = (
+  candles: { timestamp: number; close: string | number }[],
   hiveUsdPoints: TokenPriceChartPoint[],
-  fallbackHiveUsd?: number,
-  now = Date.now(),
-): TokenPriceHistory => {
-  const windowStart = now - HIVE_ENGINE_HISTORY_WINDOW_MS;
+  windowMs: number,
+  pointLimit: number,
+  fallbackHiveUsd: number | undefined,
+  now: number,
+): TokenPriceChartPoint[] => {
+  const windowStart = now - windowMs;
   const sortedHiveUsd = [...hiveUsdPoints]
     .filter(
       (point) =>
@@ -144,18 +166,15 @@ const buildHiveEnginePriceHistory = (
     .sort((left, right) => left.timestamp - right.timestamp);
   const points: TokenPriceChartPoint[] = [];
 
-  const sortedTrades = [...trades].sort(
-    (left, right) => left.timestamp - right.timestamp,
-  );
-  for (const trade of sortedTrades) {
-    const timestamp = toTradeTimestampMs(Number(trade.timestamp));
-    const swapHivePrice = Number(trade.price);
+  for (const candle of candles) {
+    const timestamp = toUnixTimestampMs(Number(candle.timestamp));
+    const closePrice = Number(candle.close);
     if (
       !Number.isFinite(timestamp) ||
       timestamp < windowStart ||
       timestamp > now ||
-      !Number.isFinite(swapHivePrice) ||
-      swapHivePrice <= 0
+      !Number.isFinite(closePrice) ||
+      closePrice <= 0
     ) {
       continue;
     }
@@ -169,18 +188,41 @@ const buildHiveEnginePriceHistory = (
 
     points.push({
       timestamp,
-      price: swapHivePrice * hiveUsd,
+      price: closePrice * hiveUsd,
     });
   }
 
-  if (points.length < 2) {
-    return { categories: [], seriesByCategory: {} };
+  return points.slice(-pointLimit);
+};
+
+const buildHiveEnginePriceHistory = (
+  candles: { timestamp: number; close: string | number }[],
+  hiveUsdByCategory: Record<string, TokenPriceChartPoint[]>,
+  fallbackHiveUsd?: number,
+  now = Date.now(),
+): TokenPriceHistory => {
+  const sortedCandles = [...candles].sort(
+    (left, right) => left.timestamp - right.timestamp,
+  );
+  const categories: string[] = [];
+  const seriesByCategory: Record<string, TokenPriceChartPoint[]> = {};
+
+  for (const range of HIVE_ENGINE_RANGES) {
+    const points = buildHiveEngineRangePoints(
+      sortedCandles,
+      hiveUsdByCategory[range.category] ?? [],
+      range.windowMs,
+      range.pointLimit,
+      fallbackHiveUsd,
+      now,
+    );
+    if (points.length > 1) {
+      categories.push(range.category);
+      seriesByCategory[range.category] = points;
+    }
   }
 
-  return {
-    categories: ['24h'],
-    seriesByCategory: { '24h': points },
-  };
+  return { categories, seriesByCategory };
 };
 
 const buildHivePriceHistoryPath = (symbol: string): string | undefined => {
@@ -250,6 +292,7 @@ export const WalletTokenPriceChartUtils = {
   buildFakeTokenPriceSeries,
   parsePriceHistoryPayload,
   buildHivePriceHistoryPath,
+  buildHiveEngineOhlcvUrl,
   buildHiveEnginePriceHistory,
   buildEvmPriceHistoryPath,
   getDefaultPriceHistoryCategory,

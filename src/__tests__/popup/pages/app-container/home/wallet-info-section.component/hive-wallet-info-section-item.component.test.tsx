@@ -4,7 +4,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ImageUtils from 'hive-keychain-commons/lib/utils/images.utils';
 import React from 'react';
-import { HiveEngineUtils } from '@popup/hive/utils/hive-engine.utils';
+import { BaseApi } from 'src/api/base';
 import { KeychainApi } from 'src/api/keychain';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { WalletInfoSectionItem } from 'src/popup/hive/pages/app-container/home/hive-wallet-info-section/hive-wallet-info-section-item/hive-wallet-info-section-item.component';
@@ -16,8 +16,8 @@ jest.mock('src/api/keychain', () => ({
   },
 }));
 
-jest.mock('@popup/hive/utils/hive-engine.utils', () => ({
-  HiveEngineUtils: {
+jest.mock('src/api/base', () => ({
+  BaseApi: {
     get: jest.fn(),
   },
 }));
@@ -64,7 +64,7 @@ describe('Hive WalletInfoSectionItem', () => {
         ['2026-09-28T01:00:00.000Z', 1.2],
       ],
     });
-    (HiveEngineUtils.get as jest.Mock).mockReset();
+    (BaseApi.get as jest.Mock).mockReset();
   });
 
   it('renders native HIVE/HBD/HP logos from bundled SVG files', () => {
@@ -263,12 +263,24 @@ describe('Hive WalletInfoSectionItem', () => {
     ).toHaveTextContent('$0.9900');
   });
 
-  it('loads a Hive Engine chart from recent trades priced in USD', async () => {
+  it('loads a Hive Engine chart from hourly closes priced in USD', async () => {
     const user = userEvent.setup();
     const nowSeconds = Math.floor(Date.now() / 1000);
-    (HiveEngineUtils.get as jest.Mock).mockResolvedValue([
-      { timestamp: nowSeconds - 3600, price: '2' },
-      { timestamp: nowSeconds - 60, price: '4' },
+    (KeychainApi.get as jest.Mock).mockResolvedValue({
+      '24h': [
+        ['2026-09-28T00:00:00.000Z', 1],
+        ['2026-09-28T01:00:00.000Z', 1.2],
+      ],
+      '7d': [
+        ['2026-09-22T00:00:00.000Z', 2],
+        ['2026-09-28T00:00:00.000Z', 2],
+      ],
+    });
+    (BaseApi.get as jest.Mock).mockResolvedValue([
+      { timestamp: nowSeconds - 8 * 24 * 60 * 60, close: '1' },
+      { timestamp: nowSeconds - 2 * 24 * 60 * 60, close: '3' },
+      { timestamp: nowSeconds - 7200, close: '2' },
+      { timestamp: nowSeconds - 3600, close: '4' },
     ]);
     const tokenInfo = {
       name: 'Bee Token',
@@ -295,22 +307,28 @@ describe('Hive WalletInfoSectionItem', () => {
         .querySelector('.wallet-token-detail-panel-title'),
     ).toHaveTextContent('Bee Token');
 
-    expect(HiveEngineUtils.get).toHaveBeenCalledWith({
-      contract: 'market',
-      table: 'tradesHistory',
-      query: { symbol: 'BEE' },
-      limit: 1000,
-      offset: 0,
-      indexes: [{ index: 'symbol', descending: true }],
-    });
+    expect(BaseApi.get).toHaveBeenCalledWith(
+      'https://info-api.tribaldex.com/market/ohlcv?symbol=BEE&interval=hourly',
+    );
     expect(KeychainApi.get).toHaveBeenCalledWith('hive/v2/price/hive/history');
     await screen.findByTestId('wallet-token-price-chart-price-BEE');
     expect(
-      screen.queryByTestId('wallet-token-price-chart-category-BEE-24h'),
-    ).not.toBeInTheDocument();
+      screen.getByTestId('wallet-token-price-chart-category-BEE-24h'),
+    ).toHaveAttribute('aria-selected', 'true');
     expect(
       screen.getByTestId('wallet-token-price-chart-price-BEE'),
     ).toHaveTextContent('$4.80');
+
+    await user.click(
+      screen.getByTestId('wallet-token-price-chart-category-BEE-7d'),
+    );
+
+    expect(
+      screen.getByTestId('wallet-token-price-chart-price-BEE'),
+    ).toHaveTextContent('$8.00');
+    expect(
+      screen.getByTestId('wallet-token-price-chart-change-BEE'),
+    ).toHaveTextContent('7d');
   });
 
   it('loads Hive Power from the Hive price history', async () => {

@@ -10,7 +10,6 @@ import {
   HiveWalletInfoSectionActions,
 } from '@popup/hive/pages/app-container/home/hive-wallet-info-section/hive-wallet-info-section-actions';
 import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
-import { HiveEngineUtils } from '@popup/hive/utils/hive-engine.utils';
 import TokensUtils, {
   isAcceptableSpread,
 } from '@popup/hive/utils/tokens.utils';
@@ -25,6 +24,7 @@ import React, {
   useState,
 } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { BaseApi } from 'src/api/base';
 import { KeychainApi } from 'src/api/keychain';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
@@ -191,30 +191,22 @@ export const WalletInfoSectionItem = ({
 
     const loadHiveEnginePriceHistory = async () => {
       try {
-        const [trades, hivePayload] = await Promise.all([
-          HiveEngineUtils.get<
-            { timestamp: number; price: string | number }[]
-          >({
-            contract: 'market',
-            table: 'tradesHistory',
-            query: { symbol: tokenSymbol },
-            limit: 1000,
-            offset: 0,
-            indexes: [{ index: 'symbol', descending: true }],
-          }),
+        const [ohlcvPayload, hivePayload] = await Promise.all([
+          BaseApi.get(
+            WalletTokenPriceChartUtils.buildHiveEngineOhlcvUrl(tokenSymbol),
+          ),
           KeychainApi.get('hive/v2/price/hive/history').catch(() => undefined),
         ]);
         const hiveHistory =
           WalletTokenPriceChartUtils.parsePriceHistoryPayload(hivePayload);
-        const hiveUsdPoints =
-          hiveHistory.seriesByCategory['24h'] ??
-          hiveHistory.seriesByCategory[hiveHistory.categories[0]] ??
-          [];
         if (!cancelled) {
           setPriceHistory(
             WalletTokenPriceChartUtils.buildHiveEnginePriceHistory(
-              Array.isArray(trades) ? trades : [],
-              hiveUsdPoints,
+              Array.isArray(ohlcvPayload) ? ohlcvPayload : [],
+              {
+                '24h': hiveHistory.seriesByCategory['24h'] ?? [],
+                '7d': hiveHistory.seriesByCategory['7d'] ?? [],
+              },
               hive?.usd,
             ),
           );
