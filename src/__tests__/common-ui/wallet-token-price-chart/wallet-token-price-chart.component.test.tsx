@@ -22,15 +22,10 @@ describe('WalletTokenPriceChart', () => {
     );
     expect(screen.getByTestId('wallet-token-price-chart-change-ETH')).toBeInTheDocument();
     expect(screen.getByRole('img')).toBeInTheDocument();
-    const attribution = screen.getByTestId(
-      'wallet-token-price-chart-attribution-ETH',
-    );
-    expect(attribution).toHaveTextContent('wallet_token_price_data_provided_by');
-    expect(attribution.querySelector('a')).toHaveAttribute(
-      'href',
-      'https://www.coingecko.com/?utm_source=hivekeychain&utm_medium=referral',
-    );
-    expect(attribution.querySelector('a')).toHaveTextContent('CoinGecko');
+    expect(screen.queryByText('CoinGecko')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('wallet_token_price_data_provided_by'),
+    ).not.toBeInTheDocument();
     expect(series.points.length).toBeGreaterThan(1);
     expect(
       screen.getAllByTestId(/wallet-token-price-chart-dot-ETH-/).length,
@@ -224,6 +219,9 @@ describe('WalletTokenPriceChart', () => {
     expect(
       screen.getByTestId('wallet-token-price-chart-status-USDC'),
     ).toHaveTextContent('wallet_token_price_unavailable');
+    expect(
+      screen.getByTestId('wallet-token-price-chart-status-icon-USDC'),
+    ).toBeInTheDocument();
     expect(screen.queryByRole('img')).not.toBeInTheDocument();
   });
 });

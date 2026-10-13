@@ -29,8 +29,6 @@ interface ChartCoordinate {
 const CHART_WIDTH = 320;
 const CHART_HEIGHT = 148;
 const CHART_PADDING_Y = 10;
-const COINGECKO_ATTRIBUTION_URL =
-  'https://www.coingecko.com/?utm_source=hivekeychain&utm_medium=referral';
 /** Show every point as a dot when the series is this size or smaller. */
 const MAX_VISIBLE_DOTS = 12;
 
@@ -228,6 +226,15 @@ export const WalletTokenPriceChart = ({
         <div
           className="wallet-token-price-chart__status"
           data-testid={`wallet-token-price-chart-status-${symbol}`}>
+          {!priceHistoryLoading && (
+            <svg
+              className="wallet-token-price-chart__status-icon"
+              data-testid={`wallet-token-price-chart-status-icon-${symbol}`}
+              viewBox="0 0 24 24"
+              aria-hidden="true">
+              <path d="M4 19V5M4 19H20M7 15L11 11L14 14L20 8" />
+            </svg>
+          )}
           {I18nUtils.getMessage(
             priceHistoryLoading
               ? 'popup_html_loading'
@@ -259,13 +266,6 @@ export const WalletTokenPriceChart = ({
 
   const clearActivePoint = () => {
     setActiveIndex(undefined);
-  };
-
-  const openCoingeckoAttribution = (
-    event: React.MouseEvent<HTMLAnchorElement>,
-  ) => {
-    event.preventDefault();
-    chrome.tabs.create({ url: COINGECKO_ATTRIBUTION_URL });
   };
 
   const activateNearestPoint = (
@@ -445,20 +445,6 @@ export const WalletTokenPriceChart = ({
             ))}
           </div>
         )}
-        <div
-          className="wallet-token-price-chart__attribution"
-          data-testid={`wallet-token-price-chart-attribution-${symbol}`}>
-          <span>
-            {I18nUtils.getMessage('wallet_token_price_data_provided_by')}
-          </span>
-          <a
-            href={COINGECKO_ATTRIBUTION_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={openCoingeckoAttribution}>
-            CoinGecko
-          </a>
-        </div>
       </div>
     </div>
   );
