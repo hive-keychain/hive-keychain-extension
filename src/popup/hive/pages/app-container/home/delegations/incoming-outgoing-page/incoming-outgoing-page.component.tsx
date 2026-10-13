@@ -43,6 +43,7 @@ const IncomingOutgoingPage = ({
   useEffect(() => {
     setTitleContainerProperties({
       title: delegationType,
+      titleParams: [currencyLabels.hp],
       isBackButtonEnabled: true,
     });
 
@@ -75,7 +76,7 @@ const IncomingOutgoingPage = ({
     }
 
     setTotalHP(FormatUtils.toHP(totalVests.toString(), globalProperties));
-  }, [delegations]);
+  }, [currencyLabels.hp, delegations]);
 
   return (
     <div
