@@ -131,6 +131,47 @@ describe('WalletTokenPriceChart', () => {
     ).toHaveTextContent('7d');
   });
 
+  it('hides the category selector when only 24h history is available', () => {
+    render(
+      <WalletTokenPriceChart
+        symbol="HIVE"
+        priceHistory={{
+          categories: ['24h'],
+          seriesByCategory: {
+            '24h': [
+              { timestamp: 1, price: 0.2 },
+              { timestamp: 2, price: 0.25 },
+            ],
+          },
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByTestId('wallet-token-price-chart-svg-HIVE'),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('wallet-token-price-chart-categories-HIVE'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows a chart-shaped loading placeholder while live history loads', () => {
+    render(
+      <WalletTokenPriceChart symbol="ETH" priceHistoryLoading />,
+    );
+
+    expect(screen.getByTestId('wallet-token-price-chart-ETH')).toHaveAttribute(
+      'aria-busy',
+      'true',
+    );
+    expect(
+      screen.getByTestId('wallet-token-price-chart-loading-ETH'),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('wallet-token-price-chart-status-ETH'),
+    ).not.toBeInTheDocument();
+  });
+
   it('keeps the tooltip inside the chart near the horizontal edges', () => {
     expect(
       WalletTokenPriceChartUtils.getClampedTooltipCenter(1, 320, 120),

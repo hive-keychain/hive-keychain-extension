@@ -186,6 +186,76 @@
     stroke-linejoin: round;
   }
 
+  &__loading {
+    min-height: 190px;
+    justify-content: space-between;
+  }
+
+  &__loading-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    column-gap: 12px;
+  }
+
+  &__loading-price-block,
+  &__loading-change-block {
+    display: flex;
+    flex-direction: column;
+    row-gap: 7px;
+  }
+
+  &__loading-change-block {
+    align-items: flex-end;
+  }
+
+  &__loading-bar {
+    border-radius: 999px;
+    background: var(--placeholder-color);
+    animation: wallet-token-price-chart-loading-pulse 1.4s ease-in-out infinite;
+
+    &.label {
+      width: 76px;
+      height: 9px;
+    }
+
+    &.price {
+      width: 104px;
+      height: 22px;
+    }
+
+    &.change {
+      width: 56px;
+      height: 12px;
+    }
+
+    &.period {
+      width: 28px;
+      height: 8px;
+    }
+  }
+
+  &__loading-canvas {
+    width: 100%;
+    height: 148px;
+    overflow: hidden;
+
+    svg {
+      display: block;
+      width: 100%;
+      height: 148px;
+    }
+
+    path {
+      fill: none;
+      stroke: var(--placeholder-color);
+      stroke-width: 3;
+      stroke-linecap: round;
+      vector-effect: non-scaling-stroke;
+      animation: wallet-token-price-chart-loading-pulse 1.4s ease-in-out infinite;
+    }
+  }
+
   &__categories {
     display: flex;
     flex-wrap: wrap;
@@ -217,5 +287,24 @@
       outline: 2px solid $red;
       outline-offset: 2px;
     }
+  }
+}
+
+@keyframes wallet-token-price-chart-loading-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+
+  50% {
+    opacity: 0.85;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wallet-token-price-chart__loading-bar,
+  .wallet-token-price-chart__loading-canvas path {
+    animation: none;
+    opacity: 0.6;
   }
 }

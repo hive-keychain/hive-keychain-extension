@@ -151,6 +151,13 @@ export const WalletTokenPriceChart = ({
   });
   const isLiveChart = priceHistory !== undefined || priceHistoryLoading;
   const liveCategories = priceHistory?.categories ?? [];
+  const shouldShowCategorySelector =
+    isLiveChart &&
+    liveCategories.length > 0 &&
+    !(
+      liveCategories.length === 1 &&
+      liveCategories[0].toLowerCase() === '24h'
+    );
 
   useEffect(() => {
     if (!priceHistory) {
@@ -218,6 +225,37 @@ export const WalletTokenPriceChart = ({
     });
   }, [activeIndex, series]);
 
+  if (!series && priceHistoryLoading) {
+    return (
+      <div
+        className="wallet-token-price-chart wallet-token-price-chart__loading"
+        data-testid={`wallet-token-price-chart-${symbol}`}
+        aria-label={I18nUtils.getMessage('popup_html_loading')}
+        aria-busy="true">
+        <div
+          className="wallet-token-price-chart__loading-header"
+          aria-hidden="true">
+          <div className="wallet-token-price-chart__loading-price-block">
+            <div className="wallet-token-price-chart__loading-bar label" />
+            <div className="wallet-token-price-chart__loading-bar price" />
+          </div>
+          <div className="wallet-token-price-chart__loading-change-block">
+            <div className="wallet-token-price-chart__loading-bar change" />
+            <div className="wallet-token-price-chart__loading-bar period" />
+          </div>
+        </div>
+        <div
+          className="wallet-token-price-chart__loading-canvas"
+          data-testid={`wallet-token-price-chart-loading-${symbol}`}
+          aria-hidden="true">
+          <svg viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`}>
+            <path d="M0 116 C42 104, 64 124, 104 92 S172 78, 208 88 S270 40, 320 54" />
+          </svg>
+        </div>
+      </div>
+    );
+  }
+
   if (!series) {
     return (
       <div
@@ -226,20 +264,14 @@ export const WalletTokenPriceChart = ({
         <div
           className="wallet-token-price-chart__status"
           data-testid={`wallet-token-price-chart-status-${symbol}`}>
-          {!priceHistoryLoading && (
-            <svg
-              className="wallet-token-price-chart__status-icon"
-              data-testid={`wallet-token-price-chart-status-icon-${symbol}`}
-              viewBox="0 0 24 24"
-              aria-hidden="true">
-              <path d="M4 19V5M4 19H20M7 15L11 11L14 14L20 8" />
-            </svg>
-          )}
-          {I18nUtils.getMessage(
-            priceHistoryLoading
-              ? 'popup_html_loading'
-              : 'wallet_token_price_unavailable',
-          )}
+          <svg
+            className="wallet-token-price-chart__status-icon"
+            data-testid={`wallet-token-price-chart-status-icon-${symbol}`}
+            viewBox="0 0 24 24"
+            aria-hidden="true">
+            <path d="M4 19V5M4 19H20M7 15L11 11L14 14L20 8" />
+          </svg>
+          {I18nUtils.getMessage('wallet_token_price_unavailable')}
         </div>
       </div>
     );
@@ -421,7 +453,7 @@ export const WalletTokenPriceChart = ({
             </div>
           </div>
         )}
-        {isLiveChart && liveCategories.length > 0 && (
+        {shouldShowCategorySelector && (
           <div
             className="wallet-token-price-chart__categories"
             role="tablist"

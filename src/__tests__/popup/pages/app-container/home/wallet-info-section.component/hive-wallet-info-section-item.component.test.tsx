@@ -120,6 +120,7 @@ describe('Hive WalletInfoSectionItem', () => {
     const tokenIcon =
       'https://s3.amazonaws.com/steem-engine/images/icon_steem-engine_gradient.svg';
     const tokenInfo = {
+      name: 'Bee Token',
       symbol: 'BEE',
       metadata: {
         url: 'https://hive-engine.com',
@@ -218,7 +219,10 @@ describe('Hive WalletInfoSectionItem', () => {
     expect(
       screen.getByTestId('icon-token-history-HIVE'),
     ).toBeInTheDocument();
-    await screen.findByTestId('wallet-token-price-chart-category-HIVE-24h');
+    await screen.findByTestId('wallet-token-price-chart-price-HIVE');
+    expect(
+      screen.queryByTestId('wallet-token-price-chart-category-HIVE-24h'),
+    ).not.toBeInTheDocument();
     expect(KeychainApi.get).toHaveBeenCalledWith('hive/v2/price/hive/history');
     expect(
       screen.getByTestId('wallet-token-price-chart-price-HIVE'),
@@ -267,6 +271,7 @@ describe('Hive WalletInfoSectionItem', () => {
       { timestamp: nowSeconds - 60, price: '4' },
     ]);
     const tokenInfo = {
+      name: 'Bee Token',
       symbol: 'BEE',
       metadata: { url: 'https://hive-engine.com', icon: '', desc: 'BEE' },
     } as Token;
@@ -284,6 +289,12 @@ describe('Hive WalletInfoSectionItem', () => {
 
     await user.click(screen.getByTestId('token-user-item'));
 
+    expect(
+      screen
+        .getByTestId('wallet-token-detail-panel-BEE')
+        .querySelector('.wallet-token-detail-panel-title'),
+    ).toHaveTextContent('Bee Token');
+
     expect(HiveEngineUtils.get).toHaveBeenCalledWith({
       contract: 'market',
       table: 'tradesHistory',
@@ -293,7 +304,10 @@ describe('Hive WalletInfoSectionItem', () => {
       indexes: [{ index: 'symbol', descending: true }],
     });
     expect(KeychainApi.get).toHaveBeenCalledWith('hive/v2/price/hive/history');
-    await screen.findByTestId('wallet-token-price-chart-category-BEE-24h');
+    await screen.findByTestId('wallet-token-price-chart-price-BEE');
+    expect(
+      screen.queryByTestId('wallet-token-price-chart-category-BEE-24h'),
+    ).not.toBeInTheDocument();
     expect(
       screen.getByTestId('wallet-token-price-chart-price-BEE'),
     ).toHaveTextContent('$4.80');
@@ -314,7 +328,10 @@ describe('Hive WalletInfoSectionItem', () => {
     await user.click(screen.getByTestId('dropdown-arrow-hp'));
 
     expect(KeychainApi.get).toHaveBeenCalledWith('hive/v2/price/hive/history');
-    await screen.findByTestId('wallet-token-price-chart-category-HP-24h');
+    await screen.findByTestId('wallet-token-price-chart-price-HP');
+    expect(
+      screen.queryByTestId('wallet-token-price-chart-category-HP-24h'),
+    ).not.toBeInTheDocument();
     expect(
       screen.getByTestId('wallet-token-price-chart-price-HP'),
     ).toHaveTextContent('$1.20');

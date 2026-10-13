@@ -83,6 +83,7 @@ export const WalletInfoSectionItem = ({
   const tokenExplorerUrl = contractAddress
     ? getTokenExplorerUrl(chain?.blockExplorer?.url, contractAddress)
     : undefined;
+  const tokenDisplayName = token.tokenInfo.name?.trim() || mainValueLabel;
 
   useEffect(() => {
     init();
@@ -270,7 +271,7 @@ export const WalletInfoSectionItem = ({
       <WalletTokenDetailPanel
         isOpen={isPanelOpen}
         onClose={closePanel}
-        title={mainValueLabel}
+        title={tokenDisplayName}
         titleId={detailsId}
         logo={tokenLogo}
         dataTestId={`wallet-token-detail-panel-${token.tokenInfo.symbol}`}

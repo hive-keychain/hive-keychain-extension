@@ -126,6 +126,7 @@ export const WalletInfoSectionItem = ({
   const hivePriceHistoryPath =
     WalletTokenPriceChartUtils.buildHivePriceHistoryPath(tokenSymbol);
   const usesHiveEngineChart = Boolean(tokenInfo) && !hivePriceHistoryPath;
+  const tokenDisplayName = tokenInfo?.name?.trim() || mainValueLabel;
 
   const [hasButtonsInList, setHasButtonInList] = useState(false);
 
@@ -400,7 +401,7 @@ export const WalletInfoSectionItem = ({
       <WalletTokenDetailPanel
         isOpen={isPanelOpen}
         onClose={closePanel}
-        title={mainValueLabel}
+        title={tokenDisplayName}
         titleId={detailsId}
         dataTestId={`wallet-token-detail-panel-${tokenSymbol}`}
         logo={

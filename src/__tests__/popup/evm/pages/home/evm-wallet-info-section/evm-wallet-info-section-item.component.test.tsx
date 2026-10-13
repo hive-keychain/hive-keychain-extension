@@ -65,6 +65,7 @@ describe('EVM WalletInfoSectionItem', () => {
         token={
           {
             tokenInfo: {
+              name: 'Ether',
               symbol: 'ETH',
               type: EVMSmartContractType.NATIVE,
             },
@@ -91,6 +92,11 @@ describe('EVM WalletInfoSectionItem', () => {
     expect(
       screen.getByTestId('wallet-token-detail-panel-ETH'),
     ).toBeInTheDocument();
+    expect(
+      screen
+        .getByTestId('wallet-token-detail-panel-ETH')
+        .querySelector('.wallet-token-detail-panel-title'),
+    ).toHaveTextContent('Ether');
     expect(
       screen.getByTestId('wallet-token-price-chart-ETH'),
     ).toBeInTheDocument();
@@ -287,9 +293,10 @@ describe('EVM WalletInfoSectionItem', () => {
     await waitFor(() =>
       expect(EvmLightNodeApi.get).toHaveBeenCalledWith('price/1/history'),
     );
+    await screen.findByTestId('wallet-token-price-chart-price-ETH');
     expect(
-      await screen.findByTestId('wallet-token-price-chart-category-ETH-24h'),
-    ).toHaveAttribute('aria-selected', 'true');
+      screen.queryByTestId('wallet-token-price-chart-category-ETH-24h'),
+    ).not.toBeInTheDocument();
     expect(
       screen.getByTestId('wallet-token-price-chart-price-ETH'),
     ).toHaveTextContent('$1.20');
