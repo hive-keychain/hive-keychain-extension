@@ -75,10 +75,6 @@
       .wallet-token-price-chart__gradient-end {
         stop-color: rgba(22, 163, 74, 0);
       }
-      .wallet-token-price-chart__dot {
-        fill: #16a34a;
-        stroke: var(--form-panel-background);
-      }
       .wallet-token-price-chart__guide {
         stroke: rgba(22, 163, 74, 0.35);
       }
@@ -94,10 +90,6 @@
       .wallet-token-price-chart__gradient-end {
         stop-color: rgba(227, 19, 55, 0);
       }
-      .wallet-token-price-chart__dot {
-        fill: $red;
-        stroke: var(--form-panel-background);
-      }
       .wallet-token-price-chart__guide {
         stroke: rgba(227, 19, 55, 0.35);
       }
@@ -111,23 +103,6 @@
     stroke-miterlimit: 2;
     vector-effect: non-scaling-stroke;
     shape-rendering: geometricPrecision;
-  }
-
-  &__dot-hitbox {
-    fill: transparent;
-    cursor: pointer;
-
-    &:focus {
-      outline: none;
-    }
-  }
-
-  &__dot {
-    stroke-width: 2;
-
-    &.active {
-      stroke-width: 2.5;
-    }
   }
 
   &__guide {

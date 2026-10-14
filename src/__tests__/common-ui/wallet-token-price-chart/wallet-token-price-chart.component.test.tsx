@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { WalletTokenPriceChart } from 'src/common-ui/wallet-token-price-chart/wallet-token-price-chart.component';
@@ -28,8 +28,8 @@ describe('WalletTokenPriceChart', () => {
     ).not.toBeInTheDocument();
     expect(series.points.length).toBeGreaterThan(1);
     expect(
-      screen.getAllByTestId(/wallet-token-price-chart-dot-ETH-/).length,
-    ).toBeGreaterThan(1);
+      screen.queryByTestId(/wallet-token-price-chart-dot-ETH-/),
+    ).not.toBeInTheDocument();
   });
 
   it('uses provided points and current price when available', () => {
@@ -53,8 +53,7 @@ describe('WalletTokenPriceChart', () => {
     );
   });
 
-  it('shows point details in a tooltip when a chart dot is focused without changing the header price', async () => {
-    const user = userEvent.setup();
+  it('shows point details in a tooltip when the chart is hovered without changing the header price', () => {
     const timestamp = Date.UTC(2026, 8, 24, 10, 30);
 
     render(
@@ -72,9 +71,20 @@ describe('WalletTokenPriceChart', () => {
       screen.getByTestId('wallet-token-price-chart-price-DAI'),
     ).toHaveTextContent('$1.01');
 
-    await user.tab();
-    const firstDot = screen.getByTestId('wallet-token-price-chart-dot-DAI-0');
-    firstDot.focus();
+    const svg = screen.getByTestId('wallet-token-price-chart-svg-DAI');
+    svg.getBoundingClientRect = () =>
+      ({
+        left: 0,
+        width: 320,
+        top: 0,
+        height: 148,
+        right: 320,
+        bottom: 148,
+        x: 0,
+        y: 0,
+        toJSON: () => ({}),
+      }) as DOMRect;
+    fireEvent.mouseMove(svg, { clientX: 0, clientY: 40 });
 
     expect(
       screen.getByTestId('wallet-token-price-chart-tooltip-DAI'),

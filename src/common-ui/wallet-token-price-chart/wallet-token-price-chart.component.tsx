@@ -29,8 +29,6 @@ interface ChartCoordinate {
 const CHART_WIDTH = 320;
 const CHART_HEIGHT = 148;
 const CHART_PADDING_Y = 10;
-/** Show every point as a dot when the series is this size or smaller. */
-const MAX_VISIBLE_DOTS = 12;
 
 const resolveSeries = (
   symbol: string,
@@ -87,21 +85,6 @@ const buildChartGeometry = (points: TokenPriceChartPoint[]) => {
   const areaPath = `${linePath} L${CHART_WIDTH} ${CHART_HEIGHT} L0 ${CHART_HEIGHT} Z`;
 
   return { linePath, areaPath, coordinates, stepX };
-};
-
-const getVisibleDotIndexes = (pointCount: number): number[] => {
-  if (pointCount <= MAX_VISIBLE_DOTS) {
-    return Array.from({ length: pointCount }, (_, index) => index);
-  }
-
-  const indexes = new Set<number>([0, pointCount - 1]);
-  const innerSlots = MAX_VISIBLE_DOTS - 2;
-  for (let slot = 1; slot <= innerSlots; slot += 1) {
-    const index = Math.round((slot * (pointCount - 1)) / (innerSlots + 1));
-    indexes.add(index);
-  }
-
-  return Array.from(indexes).sort((left, right) => left - right);
 };
 
 const formatUsdPrice = (price: number) => {
@@ -284,7 +267,6 @@ export const WalletTokenPriceChart = ({
   const { linePath, areaPath, coordinates, stepX } = buildChartGeometry(
     series.points,
   );
-  const visibleDotIndexes = getVisibleDotIndexes(coordinates.length);
   const activeCoordinate =
     activeIndex === undefined ? undefined : coordinates[activeIndex];
 
@@ -300,14 +282,8 @@ export const WalletTokenPriceChart = ({
     setActiveIndex(undefined);
   };
 
-  const activateNearestPoint = (
-    event: React.MouseEvent<SVGSVGElement> | React.FocusEvent<SVGCircleElement>,
-  ) => {
-    if (!('clientX' in event)) {
-      return;
-    }
-
-    const svg = event.currentTarget as SVGSVGElement;
+  const activateNearestPoint = (event: React.MouseEvent<SVGSVGElement>) => {
+    const svg = event.currentTarget;
     const bounds = svg.getBoundingClientRect();
     if (bounds.width <= 0) {
       return;
@@ -383,36 +359,6 @@ export const WalletTokenPriceChart = ({
             d={linePath}
             fill="none"
           />
-          {visibleDotIndexes.map((index) => {
-            const coordinate = coordinates[index];
-            const isActive = activeIndex === index;
-            return (
-              <g key={`dot-${coordinate.point.timestamp}-${index}`}>
-                <circle
-                  className="wallet-token-price-chart__dot-hitbox"
-                  cx={coordinate.x}
-                  cy={coordinate.y}
-                  r={10}
-                  tabIndex={0}
-                  role="button"
-                  aria-label={`${currencyPrefix}${formatUsdPrice(coordinate.point.price)}, ${formatChartTimestamp(coordinate.point.timestamp)}`}
-                  data-testid={`wallet-token-price-chart-dot-${symbol}-${index}`}
-                  onFocus={() => setActiveIndex(index)}
-                  onBlur={clearActivePoint}
-                  onMouseEnter={() => setActiveIndex(index)}
-                />
-                <circle
-                  className={`wallet-token-price-chart__dot ${
-                    isActive ? 'active' : ''
-                  }`}
-                  cx={coordinate.x}
-                  cy={coordinate.y}
-                  r={isActive ? 4.5 : 3}
-                  pointerEvents="none"
-                />
-              </g>
-            );
-          })}
           {activeCoordinate && (
             <line
               className="wallet-token-price-chart__guide"
