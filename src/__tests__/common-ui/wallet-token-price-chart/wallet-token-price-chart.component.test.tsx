@@ -90,6 +90,9 @@ describe('WalletTokenPriceChart', () => {
       screen.getByTestId('wallet-token-price-chart-tooltip-DAI'),
     ).toHaveTextContent('$0.99');
     expect(
+      screen.getByTestId('wallet-token-price-chart-tooltip-DAI'),
+    ).toHaveTextContent('2026');
+    expect(
       screen.getByTestId('wallet-token-price-chart-price-DAI'),
     ).toHaveTextContent('$1.01');
   });

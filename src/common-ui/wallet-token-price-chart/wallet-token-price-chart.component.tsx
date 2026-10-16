@@ -108,6 +108,7 @@ const formatUsdPrice = (price: number) => {
 
 const formatChartTimestamp = (timestamp: number) =>
   new Date(timestamp).toLocaleString(undefined, {
+    year: 'numeric',
     month: 'short',
     day: 'numeric',
     hour: '2-digit',
