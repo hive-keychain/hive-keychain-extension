@@ -97,6 +97,59 @@ describe('WalletTokenPriceChart', () => {
     ).toHaveTextContent('$1.01');
   });
 
+  it('shows significant digits for prices that round to zero at six decimals', () => {
+    render(
+      <WalletTokenPriceChart
+        symbol="DUST"
+        currentPrice={0.000000051}
+        points={[
+          { timestamp: 1, price: 0.00000004 },
+          { timestamp: 2, price: 0.000000051 },
+        ]}
+      />,
+    );
+
+    expect(
+      screen.getByTestId('wallet-token-price-chart-price-DUST'),
+    ).toHaveTextContent('$0.000000051');
+  });
+
+  it('spaces chart points by timestamp so gaps stay wider than same-day samples', () => {
+    const start = Date.UTC(2026, 9, 12);
+    const day = 24 * 60 * 60 * 1000;
+
+    render(
+      <WalletTokenPriceChart
+        symbol="BEE"
+        priceHistory={{
+          categories: ['7d'],
+          seriesByCategory: {
+            '7d': [
+              { timestamp: start, price: 1 },
+              { timestamp: start + 3 * day, price: 2 },
+              { timestamp: start + 3 * day + 60 * 60 * 1000, price: 2.5 },
+              { timestamp: start + 7 * day, price: 4 },
+            ],
+          },
+        }}
+      />,
+    );
+
+    const line = screen
+      .getByTestId('wallet-token-price-chart-svg-BEE')
+      .querySelector('.wallet-token-price-chart__line');
+    const xPositions = [
+      ...(line?.getAttribute('d') ?? '').matchAll(/[ML](-?\d+(?:\.\d+)?)/g),
+    ].map((match) => Number(match[1]));
+
+    expect(xPositions).toHaveLength(4);
+    expect(xPositions[0]).toBeCloseTo(0, 1);
+    expect(xPositions[1]).toBeCloseTo((3 / 7) * 320, 1);
+    expect(xPositions[2]).toBeCloseTo(((3 + 1 / 24) / 7) * 320, 1);
+    expect(xPositions[3]).toBeCloseTo(320, 1);
+    expect(xPositions[2] - xPositions[1]).toBeLessThan(xPositions[1] - xPositions[0]);
+  });
+
   it('lists every history category and switches the series without using fake data', async () => {
     const user = userEvent.setup();
     const priceHistory = WalletTokenPriceChartUtils.parsePriceHistoryPayload({

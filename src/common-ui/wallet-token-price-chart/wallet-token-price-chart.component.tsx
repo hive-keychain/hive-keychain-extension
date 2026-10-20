@@ -58,16 +58,28 @@ const resolveSeries = (
 };
 
 const buildChartGeometry = (points: TokenPriceChartPoint[]) => {
-  const prices = points.map((point) => point.price);
+  const orderedPoints = [...points].sort(
+    (left, right) => left.timestamp - right.timestamp,
+  );
+  const prices = orderedPoints.map((point) => point.price);
   const minPrice = Math.min(...prices);
   const maxPrice = Math.max(...prices);
   const priceRange = maxPrice - minPrice || 1;
   const drawableHeight = CHART_HEIGHT - CHART_PADDING_Y * 2;
-  const stepX =
-    points.length > 1 ? CHART_WIDTH / (points.length - 1) : CHART_WIDTH;
+  const startTimestamp = orderedPoints[0]?.timestamp ?? 0;
+  const endTimestamp =
+    orderedPoints[orderedPoints.length - 1]?.timestamp ?? startTimestamp;
+  const timeSpan = endTimestamp - startTimestamp;
+  const indexStepX =
+    orderedPoints.length > 1
+      ? CHART_WIDTH / (orderedPoints.length - 1)
+      : CHART_WIDTH;
 
-  const coordinates: ChartCoordinate[] = points.map((point, index) => {
-    const x = index * stepX;
+  const coordinates: ChartCoordinate[] = orderedPoints.map((point, index) => {
+    const x =
+      timeSpan > 0
+        ? ((point.timestamp - startTimestamp) / timeSpan) * CHART_WIDTH
+        : index * indexStepX;
     const y =
       CHART_PADDING_Y +
       drawableHeight -
@@ -84,7 +96,22 @@ const buildChartGeometry = (points: TokenPriceChartPoint[]) => {
 
   const areaPath = `${linePath} L${CHART_WIDTH} ${CHART_HEIGHT} L0 ${CHART_HEIGHT} Z`;
 
-  return { linePath, areaPath, coordinates, stepX };
+  return { linePath, areaPath, coordinates };
+};
+
+const SMALL_PRICE_SIGNIFICANT_DIGITS = 4;
+const MAX_PRICE_FRACTION_DIGITS = 18;
+
+const fractionDigitsForSmallPrice = (price: number) => {
+  const absolute = Math.abs(price);
+  if (!Number.isFinite(absolute) || absolute === 0 || absolute >= 1) {
+    return 6;
+  }
+  const decimalsBeforeFirstDigit = -Math.floor(Math.log10(absolute));
+  return Math.min(
+    MAX_PRICE_FRACTION_DIGITS,
+    Math.max(6, decimalsBeforeFirstDigit + SMALL_PRICE_SIGNIFICANT_DIGITS - 1),
+  );
 };
 
 const formatUsdPrice = (price: number) => {
@@ -102,7 +129,7 @@ const formatUsdPrice = (price: number) => {
   }
   return price.toLocaleString(undefined, {
     minimumFractionDigits: 4,
-    maximumFractionDigits: 6,
+    maximumFractionDigits: fractionDigitsForSmallPrice(price),
   });
 };
 
@@ -265,9 +292,7 @@ export const WalletTokenPriceChart = ({
     isLiveChart && resolvedCategory
       ? resolvedCategory
       : I18nUtils.getMessage('wallet_token_price_change_24h');
-  const { linePath, areaPath, coordinates, stepX } = buildChartGeometry(
-    series.points,
-  );
+  const { linePath, areaPath, coordinates } = buildChartGeometry(series.points);
   const activeCoordinate =
     activeIndex === undefined ? undefined : coordinates[activeIndex];
 
@@ -291,9 +316,14 @@ export const WalletTokenPriceChart = ({
     }
 
     const relativeX = ((event.clientX - bounds.left) / bounds.width) * CHART_WIDTH;
-    const nearestIndex = Math.min(
-      coordinates.length - 1,
-      Math.max(0, Math.round(relativeX / (stepX || CHART_WIDTH))),
+    const nearestIndex = coordinates.reduce(
+      (closestIndex, coordinate, index) => {
+        const closestDistance = Math.abs(coordinates[closestIndex].x - relativeX);
+        return Math.abs(coordinate.x - relativeX) < closestDistance
+          ? index
+          : closestIndex;
+      },
+      0,
     );
     setActiveIndex(nearestIndex);
   };
