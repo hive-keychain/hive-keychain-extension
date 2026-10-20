@@ -264,17 +264,19 @@ export const EvmCustomErc20Form = forwardRef<
 
       const trimmed = erc20FormRef.current.contractAddress.trim();
 
-      setErc20Errors((current) => ({
-        ...current,
-        contractAddress: undefined,
-        save: undefined,
-      }));
-
       if (!trimmed.length) {
+        if (isMountedRef.current) {
+          setErc20Errors((current) => ({
+            ...current,
+            contractAddress: undefined,
+            save: undefined,
+          }));
+        }
         return;
       }
 
       const normalizedAddress = normalizeAddress(trimmed);
+      const normalizedAddressKey = normalizedAddress.toLowerCase();
 
       if (!normalizedAddress || !ethers.isAddress(normalizedAddress)) {
         if (isMountedRef.current) {
@@ -283,27 +285,41 @@ export const EvmCustomErc20Form = forwardRef<
             contractAddress: I18nUtils.getMessage(
               'evm_add_custom_asset_error_contract_address_invalid',
             ),
+            save: undefined,
           }));
         }
         return;
       }
 
-      if (
-        normalizedExistingErc20Ref.current.has(normalizedAddress.toLowerCase())
-      ) {
+      if (autoResolvedAddressRef.current === normalizedAddressKey) {
+        return;
+      }
+
+      if (normalizedExistingErc20Ref.current.has(normalizedAddressKey)) {
+        autoResolvedAddressRef.current = normalizedAddressKey;
         if (isMountedRef.current) {
           setErc20Errors((current) => ({
             ...current,
             contractAddress: I18nUtils.getMessage(
               'evm_add_custom_asset_error_contract_address_duplicate',
             ),
+            save: undefined,
           }));
         }
         return;
       }
 
+      autoResolvedAddressRef.current = normalizedAddressKey;
       contractBlurGenerationRef.current += 1;
       const runId = contractBlurGenerationRef.current;
+
+      if (isMountedRef.current) {
+        setErc20Errors((current) => ({
+          ...current,
+          contractAddress: undefined,
+          save: undefined,
+        }));
+      }
 
       setIsResolvingContract(true);
       try {
@@ -347,10 +363,12 @@ export const EvmCustomErc20Form = forwardRef<
     };
 
     useEffect(() => {
+      if (!autoResolveContract || isEditing) {
+        return;
+      }
+
       const normalizedAddress = normalizeAddress(erc20Form.contractAddress);
       if (
-        !autoResolveContract ||
-        isEditing ||
         !normalizedAddress ||
         !ethers.isAddress(normalizedAddress) ||
         autoResolvedAddressRef.current === normalizedAddress.toLowerCase()
@@ -358,7 +376,6 @@ export const EvmCustomErc20Form = forwardRef<
         return;
       }
 
-      autoResolvedAddressRef.current = normalizedAddress.toLowerCase();
       void resolveContractMetadata();
     }, [
       autoResolveContract,

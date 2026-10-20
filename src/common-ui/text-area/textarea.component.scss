@@ -167,7 +167,8 @@ $autoCompleteItemHeight: 30px;
   .error {
     @include poppins400(12px);
     color: $red;
-    padding-left: 6px;
+    padding: 0 12px;
+    box-sizing: border-box;
   }
   &.small {
     .custom-input-content {

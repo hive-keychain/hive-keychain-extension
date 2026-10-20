@@ -15,6 +15,8 @@ import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   chain: EvmChain;
   existingAddresses?: string[];
+  onQueryChange?: (query: string) => void;
+  onLoadFailed?: () => void;
   onSave?: (form: EvmCustomErc20FormData) => Promise<void> | void;
 }
 
@@ -33,11 +35,18 @@ const normalizeAddress = (address: string) => {
 export const EvmKnownTokenList = ({
   chain,
   existingAddresses = [],
+  onQueryChange,
+  onLoadFailed,
   onSave,
 }: Props) => {
   const cachedTokens = LiFiUtils.getCachedKnownTokensForChain(chain.chainId);
   const [tokens, setTokens] = useState<TokenExtended[]>(cachedTokens ?? []);
   const [query, setQuery] = useState('');
+
+  const handleQueryChange = (value: string) => {
+    setQuery(value);
+    onQueryChange?.(value);
+  };
   const [visibleTokenCount, setVisibleTokenCount] = useState(
     KNOWN_TOKENS_PAGE_SIZE,
   );
@@ -82,6 +91,7 @@ export const EvmKnownTokenList = ({
         setTokens(knownTokens);
       } catch {
         if (mounted) {
+          onLoadFailed?.();
           setError(
             I18nUtils.getMessage('evm_known_tokens_error_loading'),
           );
@@ -266,7 +276,7 @@ export const EvmKnownTokenList = ({
         placeholder="evm_known_tokens_search_placeholder"
         value={query}
         type={InputType.TEXT}
-        onChange={setQuery}
+        onChange={handleQueryChange}
         dataTestId="known-token-search"
         classname="custom-asset-input"
       />
