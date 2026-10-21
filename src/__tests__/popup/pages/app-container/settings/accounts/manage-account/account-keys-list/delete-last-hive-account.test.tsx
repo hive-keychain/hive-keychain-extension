@@ -62,9 +62,11 @@ describe('deleting a Hive account', () => {
 
     const confirmation = store.getState().navigation.stack[0];
     expect(confirmation.currentPage).toBe(Screen.CONFIRMATION_PAGE);
-    expect(confirmation.params.warningMessage).toBe(
-      'popup_html_delete_last_account_reset_warning',
+    expect(confirmation.params.message).toContain(
+      'Deleting the last account on Keychain will completely reset Keychain.',
     );
+    expect(confirmation.params.message).toContain('reset-keychain-warning');
+    expect(confirmation.params.warningMessage).toBeUndefined();
 
     await confirmation.params.afterConfirmAction();
 

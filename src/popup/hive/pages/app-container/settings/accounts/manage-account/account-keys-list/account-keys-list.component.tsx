@@ -138,19 +138,23 @@ const AccountKeysList = ({
     );
     let warningMessage: string | undefined;
     let warningParams: string[] | undefined;
-    if (isLastAccountOnKeychain) {
-      warningMessage = 'popup_html_delete_last_account_reset_warning';
-    } else if (hasAuthorizedAccountLinkedToActiveAccount) {
+    const confirmationMessage = I18nUtils.getMessage(
+      'popup_html_delete_account_confirmation_message',
+      [selectedAccountName],
+    );
+    const message = isLastAccountOnKeychain
+      ? `${confirmationMessage}<span class="reset-keychain-warning">${I18nUtils.getMessage(
+          'popup_html_delete_last_account_reset_warning',
+        )}</span>`
+      : confirmationMessage;
+    if (hasAuthorizedAccountLinkedToActiveAccount && !isLastAccountOnKeychain) {
       warningMessage = 'popup_html_deleting_account_linked_to_authorized';
       warningParams = [selectedAccountName];
     }
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: null,
       fields: [],
-      message: I18nUtils.getMessage(
-        'popup_html_delete_account_confirmation_message',
-        [selectedAccountName],
-      ),
+      message,
       title: 'popup_html_delete_account',
       warningMessage: warningMessage,
       warningParams: warningParams,
