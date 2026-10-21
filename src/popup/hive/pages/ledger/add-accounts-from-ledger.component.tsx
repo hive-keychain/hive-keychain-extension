@@ -1,8 +1,7 @@
 import { Screen } from '@interfaces/screen.interface';
-import { loadActiveAccount } from '@popup/hive/actions/active-account.actions';
+import { activateHiveAccount } from '@popup/hive/actions/active-account.actions';
 import { setAccounts } from '@popup/hive/actions/account.actions';
 import AccountUtils from '@popup/hive/utils/account.utils';
-import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -10,7 +9,6 @@ import {
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { setSuccessMessage } from '@popup/multichain/actions/message.actions';
-import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -20,8 +18,7 @@ const AddAccountsFromLedger = ({
   mk,
   setTitleContainerProperties,
   setAccounts,
-  setActiveAccountType,
-  loadActiveAccount,
+  activateHiveAccount,
   navigateTo,
   setSuccessMessage,
   addToLoadingList,
@@ -52,8 +49,7 @@ const AddAccountsFromLedger = ({
     }
 
     setAccounts(accounts);
-    setActiveAccountType(ChainType.HIVE);
-    await loadActiveAccount(accounts[0]);
+    await activateHiveAccount(accounts[0]);
     setSuccessMessage('add_accounts_from_ledger_sucessful');
     navigateTo(Screen.HOME_PAGE, true);
   };
@@ -98,8 +94,7 @@ const mapStateToProps = (state: RootState) => ({
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   setAccounts,
-  setActiveAccountType,
-  loadActiveAccount,
+  activateHiveAccount,
   navigateTo,
   setSuccessMessage,
   addToLoadingList,
