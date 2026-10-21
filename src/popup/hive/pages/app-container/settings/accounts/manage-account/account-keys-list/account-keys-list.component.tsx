@@ -1,8 +1,16 @@
 import { Screen } from '@interfaces/screen.interface';
+import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
+import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { setAccounts } from '@popup/hive/actions/account.actions';
-import { loadActiveAccount } from '@popup/hive/actions/active-account.actions';
+import {
+  loadActiveAccount,
+  resetActiveAccount,
+} from '@popup/hive/actions/active-account.actions';
 import { AccountKeysListItemComponent } from '@popup/hive/pages/app-container/settings/accounts/manage-account/account-keys-list/account-keys-list-item/account-keys-list-item.component';
 import { WrongKeysOnUser } from '@popup/hive/pages/app-container/wrong-key-popup/wrong-key-popup.component';
+import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
+import { setChain } from '@popup/multichain/actions/chain.actions';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -11,6 +19,12 @@ import {
   navigateTo,
   navigateToWithParams,
 } from '@popup/multichain/actions/navigation.actions';
+import { resetKeychain } from '@popup/multichain/actions/reset-keychain.actions';
+import {
+  Chain,
+  ChainType,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { KeychainKeyTypesLC } from 'hive-keychain-commons';
@@ -27,6 +41,7 @@ import { LocalAccount } from 'src/interfaces/local-account.interface';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
 interface AccountKeysListProps {
@@ -40,12 +55,20 @@ const AccountKeysList = ({
   onAccountSelected,
   wrongKeysFound,
   accounts,
+  evmAccounts,
+  mk,
+  chain,
   setAccounts,
   loadActiveAccount,
+  resetActiveAccount,
   navigateToWithParams,
   navigateTo,
   addToLoadingList,
   removeFromLoadingList,
+  resetKeychain,
+  setActiveAccountType,
+  setChain,
+  loadEvmActiveAccount,
 }: PropsType & AccountKeysListProps) => {
   const [qrCodeDisplayed, setQRCodeDisplayed] = useState(false);
   const [account, setAccount] = useState<LocalAccount>();
@@ -80,8 +103,32 @@ const AccountKeysList = ({
     );
   };
 
+  const openRemainingEvmAccount = async (remainingEvmAccounts: EvmAccount[]) => {
+    const nextAccount =
+      remainingEvmAccounts.find((evmAccount) => !evmAccount.hide) ??
+      remainingEvmAccounts[0];
+    if (!nextAccount) return;
+
+    const currentChain =
+      chain?.type === ChainType.EVM ? (chain as EvmChain) : undefined;
+    const evmChain =
+      currentChain ??
+      (await EvmChainUtils.getLastEvmChain()) ??
+      (await EvmChainUtils.getEthChain());
+    if (!evmChain) return;
+
+    setActiveAccountType(ChainType.EVM);
+    await setChain(evmChain);
+    await loadEvmActiveAccount(evmChain, nextAccount.wallet);
+  };
+
   const deleteAccount = () => {
-    let warningMessage, warningParams;
+    const accountsAfterRemoval = AccountUtils.getAccountsAfterAccountRemoval(
+      selectedAccountName,
+      accounts,
+    );
+    const isLastAccountOnKeychain =
+      accountsAfterRemoval.length === 0 && evmAccounts.length === 0;
     const hasAuthorizedAccountLinkedToActiveAccount = accounts.some((account) =>
       [
         account.keys.activePubkey,
@@ -89,7 +136,11 @@ const AccountKeysList = ({
         account.keys.postingPubkey,
       ].includes(`@${selectedAccountName}`),
     );
-    if (hasAuthorizedAccountLinkedToActiveAccount) {
+    let warningMessage: string | undefined;
+    let warningParams: string[] | undefined;
+    if (isLastAccountOnKeychain) {
+      warningMessage = 'popup_html_delete_last_account_reset_warning';
+    } else if (hasAuthorizedAccountLinkedToActiveAccount) {
       warningMessage = 'popup_html_deleting_account_linked_to_authorized';
       warningParams = [selectedAccountName];
     }
@@ -105,10 +156,13 @@ const AccountKeysList = ({
       warningParams: warningParams,
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_delete_account_operation');
-        let newAccounts = AccountUtils.deleteAccount(
-          selectedAccountName,
-          accounts,
-        );
+        if (isLastAccountOnKeychain) {
+          await resetKeychain();
+          navigateTo(Screen.SIGN_UP_PAGE, true);
+          removeFromLoadingList('html_popup_delete_account_operation');
+          return;
+        }
+
         let no_key_check = await LocalStorageUtils.getValueFromLocalStorage(
           LocalStorageKeyEnum.NO_KEY_CHECK,
         );
@@ -120,36 +174,22 @@ const AccountKeysList = ({
             no_key_check,
           );
         }
-        let finalAccounts = [];
-        if (hasAuthorizedAccountLinkedToActiveAccount) {
-          for (let i = 0; i < newAccounts.length; i++) {
-            let tmp = newAccounts[i];
-            if (tmp.keys.activePubkey === `@${selectedAccountName}`) {
-              delete tmp.keys.activePubkey;
-              delete tmp.keys.active;
-            }
-            if (tmp.keys.postingPubkey === `@${selectedAccountName}`) {
-              delete tmp.keys.posting;
-              delete tmp.keys.postingPubkey;
-            }
-            if (tmp.keys.memoPubkey === `@${selectedAccountName}`) {
-              delete tmp.keys.memo;
-              delete tmp.keys.memoPubkey;
-            }
 
-            newAccounts[i] = tmp;
-
-            if (Object.keys(newAccounts[i].keys).length > 0) {
-              finalAccounts.push(newAccounts[i]);
-            }
+        if (accountsAfterRemoval.length === 0) {
+          try {
+            await openRemainingEvmAccount(evmAccounts);
+          } catch (error) {
+            Logger.error(
+              'Failed to switch to the remaining EVM account',
+              error,
+            );
           }
+          await AccountUtils.saveAccounts([], mk);
+          resetActiveAccount();
+          setAccounts([]);
         } else {
-          finalAccounts = newAccounts;
-        }
-
-        setAccounts(finalAccounts);
-        if (finalAccounts.length) {
-          loadActiveAccount(finalAccounts[0]);
+          setAccounts(accountsAfterRemoval);
+          loadActiveAccount(accountsAfterRemoval[0]);
         }
         navigateTo(Screen.HOME_PAGE, true);
         removeFromLoadingList('html_popup_delete_account_operation');
@@ -275,14 +315,12 @@ const AccountKeysList = ({
         </div>
       )}
 
-      {accounts.length > 1 && (
-        <ButtonComponent
-          dataTestId="button-delete-account"
-          label="popup_html_delete_account"
-          type={ButtonType.IMPORTANT}
-          onClick={() => deleteAccount()}
-        />
-      )}
+      <ButtonComponent
+        dataTestId="button-delete-account"
+        label="popup_html_delete_account"
+        type={ButtonType.IMPORTANT}
+        onClick={() => deleteAccount()}
+      />
     </div>
   );
 };
@@ -290,16 +328,24 @@ const AccountKeysList = ({
 const mapStateToProps = (state: RootState) => {
   return {
     accounts: state.hive.accounts as LocalAccount[],
+    evmAccounts: state.evm.accounts as EvmAccount[],
+    mk: state.mk,
+    chain: state.chain as Chain,
   };
 };
 
 const connector = connect(mapStateToProps, {
   setAccounts,
   loadActiveAccount,
+  resetActiveAccount,
   navigateToWithParams,
   addToLoadingList,
   removeFromLoadingList,
   navigateTo,
+  resetKeychain,
+  setActiveAccountType,
+  setChain,
+  loadEvmActiveAccount,
 });
 type PropsType = ConnectedProps<typeof connector>;
 

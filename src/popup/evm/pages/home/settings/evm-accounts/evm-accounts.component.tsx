@@ -1,5 +1,6 @@
-import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
+import { Screen } from '@interfaces/screen.interface';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
+import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import {
   EvmAccount,
   EvmAccountOrPublic,
@@ -15,6 +16,8 @@ import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import { resetKeychain } from '@popup/multichain/actions/reset-keychain.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
@@ -39,6 +42,7 @@ import {
 import { I18nUtils } from 'src/utils/i18n.utils';
 const EvmAccounts = ({
   accounts,
+  hiveAccounts,
   mk,
   chain,
   setTitleContainerProperties,
@@ -46,6 +50,8 @@ const EvmAccounts = ({
   loadEvmActiveAccount,
   evmAccountsNavigationParams,
   evmAccountsRestoreParams,
+  resetKeychain,
+  navigateTo,
 }: PropsType) => {
   const [selectedSeed, setSelectedSeed] = useState<OptionItem>();
   const [seedsOptions, setSeedsOptions] = useState<OptionItem[]>();
@@ -103,6 +109,15 @@ const EvmAccounts = ({
   const isCurrentSourceSeed = () => {
     const currentSeed = getCurrentSeed();
     return currentSeed?.source === EvmAccountSource.SEED;
+  };
+
+  const isLastKeychainAccount = (remainingEvmAccountCount: number) => {
+    return remainingEvmAccountCount === 0 && hiveAccounts.length === 0;
+  };
+
+  const resetKeychainAfterLastAccountRemoval = async () => {
+    await resetKeychain();
+    navigateTo(Screen.SIGN_UP_PAGE, true);
   };
 
   const getSeedOptionLabel = (account: EvmAccount) => {
@@ -242,6 +257,14 @@ const EvmAccounts = ({
     const seed = getCurrentSeed();
     if (!seed) return;
 
+    const remainingEvmAccounts = localAccounts.filter(
+      (account) => account.seedId !== seed.seedId,
+    );
+    if (isLastKeychainAccount(remainingEvmAccounts.length)) {
+      await resetKeychainAfterLastAccountRemoval();
+      return;
+    }
+
     const selectedSeedIndex =
       seedsOptions?.findIndex((option) => option.value === seed.seedId) ?? 0;
 
@@ -283,6 +306,16 @@ const EvmAccounts = ({
     if (!accountToDelete) return;
     const deletedAccount = accountToDelete;
     setAccountToDelete(undefined);
+
+    const remainingEvmAccounts = localAccounts.filter(
+      (account) =>
+        account.seedId !== deletedAccount.seedId ||
+        account.id !== deletedAccount.id,
+    );
+    if (isLastKeychainAccount(remainingEvmAccounts.length)) {
+      await resetKeychainAfterLastAccountRemoval();
+      return;
+    }
 
     const selectedSeedIndex =
       seedsOptions?.findIndex(
@@ -413,6 +446,20 @@ const EvmAccounts = ({
     setLocalAccounts(accounts);
   };
 
+  const deletingLastKeychainAccountFromSeed = isLastKeychainAccount(
+    localAccounts.filter((account) => account.seedId !== selectedSeed?.value)
+      .length,
+  );
+  const deletingLastKeychainAccountAddress =
+    !!accountToDelete &&
+    isLastKeychainAccount(
+      localAccounts.filter(
+        (account) =>
+          account.seedId !== accountToDelete.seedId ||
+          account.id !== accountToDelete.id,
+      ).length,
+    );
+
   const menu = selectedSeed
     ? EvmAccountsContextualMenu({
         onEditClicked: handleEditSeedClick,
@@ -420,6 +467,9 @@ const EvmAccounts = ({
         onCopyClicked: handleCopySeedClick,
         isLedgerSource: isCurrentSourceLedger(),
         isImportedSource: isCurrentSourceImported(),
+        deleteConfirmationMessage: deletingLastKeychainAccountFromSeed
+          ? 'popup_html_delete_last_account_reset_warning'
+          : undefined,
       })
     : undefined;
 
@@ -480,6 +530,13 @@ const EvmAccounts = ({
           <div className="caption">
             {I18nUtils.getMessage('evm_delete_account_confirmation_message')}
           </div>
+          {deletingLastKeychainAccountAddress && (
+            <div className="caption">
+              {I18nUtils.getMessage(
+                'popup_html_delete_last_account_reset_warning',
+              )}
+            </div>
+          )}
           <div className="popup-footer">
             <ButtonComponent
               label="dialog_cancel"
@@ -504,6 +561,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.evm.activeAccount,
     accounts: state.evm.accounts,
+    hiveAccounts: state.hive.accounts,
     mk: state.mk,
     chain: state.chain as EvmChain,
     evmAccountsNavigationParams: state.navigation.stack[0]?.params,
@@ -514,6 +572,8 @@ const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   setEvmAccounts,
   loadEvmActiveAccount,
+  resetKeychain,
+  navigateTo,
 });
 
 type PropsType = ConnectedProps<typeof connector>;

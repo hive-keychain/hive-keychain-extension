@@ -2754,6 +2754,10 @@
     "message": "Einige Ihrer Konten verwenden @$1 als autorisiertes Konto und können keine Operationen mehr durchführen.",
     "description": "when deleting account from keychain"
   },
+  "popup_html_delete_last_account_reset_warning": {
+    "message": "Das Löschen des letzten Kontos in Keychain setzt Keychain vollständig zurück.",
+    "description": "warning when removing the last account from Keychain"
+  },
   "popup_html_account_already_existing": {
     "message": "Konto existiert bereits",
     "description": "while trying to add a new account"

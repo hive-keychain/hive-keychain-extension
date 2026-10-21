@@ -379,6 +379,69 @@ const deleteAccount = (
   );
 };
 
+const accountUsesAuthorizedAccount = (
+  account: LocalAccount,
+  authorizedAccountName: string,
+) => {
+  const authorizedAccountRef = `@${authorizedAccountName}`;
+  return [
+    account.keys.activePubkey,
+    account.keys.memoPubkey,
+    account.keys.postingPubkey,
+  ].includes(authorizedAccountRef);
+};
+
+const removeAuthorizedAccountReferences = (
+  account: LocalAccount,
+  authorizedAccountName: string,
+): LocalAccount | undefined => {
+  const authorizedAccountRef = `@${authorizedAccountName}`;
+  const keys = { ...account.keys };
+
+  if (keys.activePubkey === authorizedAccountRef) {
+    delete keys.active;
+    delete keys.activePubkey;
+  }
+  if (keys.postingPubkey === authorizedAccountRef) {
+    delete keys.posting;
+    delete keys.postingPubkey;
+  }
+  if (keys.memoPubkey === authorizedAccountRef) {
+    delete keys.memo;
+    delete keys.memoPubkey;
+  }
+
+  if (Object.keys(keys).length === 0) {
+    return undefined;
+  }
+
+  return { ...account, keys };
+};
+
+const getAccountsAfterAccountRemoval = (
+  accountName: string,
+  accounts: LocalAccount[],
+): LocalAccount[] => {
+  const hasAuthorizedAccountLinked = accounts.some((account) =>
+    accountUsesAuthorizedAccount(account, accountName),
+  );
+  const accountsAfterRemoval = deleteAccount(accountName, accounts);
+
+  if (!hasAuthorizedAccountLinked) {
+    return accountsAfterRemoval;
+  }
+
+  return accountsAfterRemoval.flatMap((account) => {
+    const accountWithoutAuthorizedReference = removeAuthorizedAccountReferences(
+      account,
+      accountName,
+    );
+    return accountWithoutAuthorizedReference
+      ? [accountWithoutAuthorizedReference]
+      : [];
+  });
+};
+
 const isAccountListIdentical = (
   a: LocalAccount[],
   b: LocalAccount[],
@@ -833,6 +896,7 @@ const AccountUtils = {
   deleteKey,
   isAccountListIdentical,
   deleteAccount,
+  getAccountsAfterAccountRemoval,
   downloadAccounts,
   downloadMultichainAccounts,
   getKeys,

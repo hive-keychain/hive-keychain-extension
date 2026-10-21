@@ -2754,6 +2754,10 @@
     "message": "Beberapa akun Anda menggunakan @$1 sebagai akun terotorisasi dan tidak dapat melakukan operasi lagi",
     "description": "when deleting account from keychain"
   },
+  "popup_html_delete_last_account_reset_warning": {
+    "message": "Menghapus akun terakhir di Keychain akan mengatur ulang Keychain sepenuhnya.",
+    "description": "warning when removing the last account from Keychain"
+  },
   "popup_html_account_already_existing": {
     "message": "Akun ini sudah terdaftar. ",
     "description": "while trying to add a new account"

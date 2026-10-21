@@ -1,30 +1,17 @@
 import { Screen } from '@interfaces/screen.interface';
-import { resetEvmState } from '@popup/evm/actions/accounts.actions';
-import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
-import { resetChain } from '@popup/multichain/actions/chain.actions';
-import { setHasFinishedSignup } from '@popup/multichain/actions/has-finished-signup.actions';
-import { forgetMk } from '@popup/multichain/actions/mk.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import { resetKeychain } from '@popup/multichain/actions/reset-keychain.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import { resetAccount } from 'src/popup/hive/actions/account.actions';
-import { resetActiveAccount } from 'src/popup/hive/actions/active-account.actions';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 import { HtmlUtils } from 'src/utils/html.utils';
-import { I18nUtils } from 'src/utils/i18n.utils';
 const ResetPasswordPage = ({
   setTitleContainerProperties,
   navigateTo,
-  resetAccount,
-  forgetMk,
-  resetActiveAccount,
-  setHasFinishedSignup,
-  resetChain,
-  resetEvmState,
+  resetKeychain,
 }: PropsFromRedux) => {
   useEffect(() => {
     setTitleContainerProperties({
@@ -34,14 +21,7 @@ const ResetPasswordPage = ({
   }, []);
 
   const reset = async () => {
-    resetAccount();
-    resetEvmState();
-    EvmWalletUtils.invalidateRebuildAccountsCache();
-    setHasFinishedSignup(false);
-    forgetMk();
-    resetActiveAccount();
-    resetChain();
-    await LocalStorageUtils.clearLocalStorage();
+    await resetKeychain();
     navigateTo(Screen.SIGN_UP_PAGE, true);
   };
 
@@ -73,12 +53,7 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   navigateTo,
-  resetAccount,
-  forgetMk,
-  resetActiveAccount,
-  setHasFinishedSignup,
-  resetChain,
-  resetEvmState,
+  resetKeychain,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

@@ -2754,6 +2754,10 @@
     "message": "Certains de vos comptes utilisent les clés de @$1 pour signer et ne pourront plus effectuer d'opérations.",
     "description": "when deleting account from keychain"
   },
+  "popup_html_delete_last_account_reset_warning": {
+    "message": "Supprimer le dernier compte de Keychain réinitialisera complètement Keychain.",
+    "description": "warning when removing the last account from Keychain"
+  },
   "popup_html_account_already_existing": {
     "message": "Ce compte est déjà enregistré",
     "description": "while trying to add a new account"

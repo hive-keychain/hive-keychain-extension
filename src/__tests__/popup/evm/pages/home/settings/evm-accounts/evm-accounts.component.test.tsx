@@ -8,6 +8,8 @@ import { EvmAccountSource } from 'src/popup/evm/interfaces/wallet.interface';
 import { EvmAccountsComponent } from 'src/popup/evm/pages/home/settings/evm-accounts/evm-accounts.component';
 import { EvmWalletUtils } from 'src/popup/evm/utils/wallet.utils';
 import { ChainType } from 'src/popup/multichain/interfaces/chains.interface';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
+import VaultUtils from 'src/utils/vault.utils';
 
 jest.mock('src/common-ui/svg-icon/svg-icon.component', () => ({
   SVGIcon: ({ dataTestId, className, onClick }: any) => (
@@ -302,9 +304,103 @@ describe('EvmAccountsComponent', () => {
     await user.click(screen.getByTestId('delete-evm-account-0'));
 
     expect(
-      screen.getByText('evm_delete_account_confirmation_message'),
+      screen.getByText('Are you sure you want to delete this account ?'),
     ).toBeInTheDocument();
-    expect(screen.getByText('popup_html_confirm')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Deleting the last account on Keychain will completely reset Keychain.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Confirm')).toBeInTheDocument();
+  });
+
+  it('resets Keychain when confirming deletion of the last account', async () => {
+    const user = userEvent.setup();
+    jest.spyOn(VaultUtils, 'removeFromVault').mockResolvedValue(undefined);
+    jest
+      .spyOn(LocalStorageUtils, 'clearLocalStorage')
+      .mockResolvedValue(undefined);
+    const { store } = customRender(<EvmAccountsComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk,
+        hasFinishedSignup: true,
+        chain: {
+          ...initialEmptyStateStore.chain,
+          type: ChainType.EVM,
+          chainId: '0x1',
+          name: 'Ethereum',
+        },
+        evm: {
+          ...initialEmptyStateStore.evm,
+          accounts: [
+            {
+              id: 0,
+              path: "m/44'/60'/0'/0/0",
+              seedId: 3,
+              seedNickname: 'Ledger',
+              nickname: 'Ledger account',
+              source: EvmAccountSource.LEDGER,
+              wallet,
+            },
+          ],
+        },
+      },
+    });
+
+    await user.click(screen.getByTestId('delete-evm-account-0'));
+    await user.click(screen.getByText('Confirm'));
+
+    await waitFor(() => {
+      expect(LocalStorageUtils.clearLocalStorage).toHaveBeenCalled();
+      expect(store.getState().mk).toBe('');
+      expect(store.getState().hasFinishedSignup).toBe(false);
+    });
+  });
+
+  it('keeps the normal delete confirmation when a Hive account remains', async () => {
+    const user = userEvent.setup();
+    customRender(<EvmAccountsComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk,
+        chain: {
+          ...initialEmptyStateStore.chain,
+          type: ChainType.EVM,
+          chainId: '0x1',
+          name: 'Ethereum',
+        },
+        hive: {
+          ...initialEmptyStateStore.hive,
+          accounts: [{ name: 'alice', keys: {} }],
+        },
+        evm: {
+          ...initialEmptyStateStore.evm,
+          accounts: [
+            {
+              id: 0,
+              path: "m/44'/60'/0'/0/0",
+              seedId: 3,
+              seedNickname: 'Ledger',
+              nickname: 'Ledger account',
+              source: EvmAccountSource.LEDGER,
+              wallet,
+            },
+          ],
+        },
+      },
+    });
+
+    await user.click(screen.getByTestId('delete-evm-account-0'));
+
+    expect(
+      screen.getByText('Are you sure you want to delete this account ?'),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        'Deleting the last account on Keychain will completely reset Keychain.',
+      ),
+    ).not.toBeInTheDocument();
   });
 
   it('syncs renamed seed nicknames to redux immediately', async () => {

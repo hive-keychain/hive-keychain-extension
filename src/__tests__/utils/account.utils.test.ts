@@ -702,6 +702,55 @@ describe('account.utils tests:\n', () => {
     });
   });
 
+  describe('getAccountsAfterAccountRemoval tests:\n', () => {
+    test('removes only the named account when no authorized account is linked', () => {
+      const accounts: LocalAccount[] = [
+        { name: 'alice', keys: { posting: 'key', postingPubkey: 'STM1' } },
+        { name: 'bob', keys: { active: 'key', activePubkey: 'STM2' } },
+      ];
+
+      expect(
+        AccountUtils.getAccountsAfterAccountRemoval('alice', accounts),
+      ).toEqual([accounts[1]]);
+    });
+
+    test('drops accounts left with no keys after an authorized account is removed', () => {
+      const accounts: LocalAccount[] = [
+        { name: 'alice', keys: { posting: 'key', postingPubkey: 'STM1' } },
+        { name: 'bob', keys: { postingPubkey: '@alice' } },
+      ];
+
+      expect(
+        AccountUtils.getAccountsAfterAccountRemoval('alice', accounts),
+      ).toEqual([]);
+    });
+
+    test('keeps remaining keys and does not mutate the original accounts', () => {
+      const bob: LocalAccount = {
+        name: 'bob',
+        keys: {
+          active: 'key',
+          activePubkey: 'STM2',
+          postingPubkey: '@alice',
+        },
+      };
+      const accounts: LocalAccount[] = [
+        { name: 'alice', keys: { posting: 'key', postingPubkey: 'STM1' } },
+        bob,
+      ];
+
+      expect(
+        AccountUtils.getAccountsAfterAccountRemoval('alice', accounts),
+      ).toEqual([
+        {
+          name: 'bob',
+          keys: { active: 'key', activePubkey: 'STM2' },
+        },
+      ]);
+      expect(bob.keys.postingPubkey).toBe('@alice');
+    });
+  });
+
   describe('isAccountListIdentical tests:\n', () => {
     test('returns true if both lists are identical', () => {
       const _accounts1: LocalAccount[] = [{ name: 'theghost1980', keys: {} }];
