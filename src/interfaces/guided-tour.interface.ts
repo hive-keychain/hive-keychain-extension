@@ -26,6 +26,8 @@ export interface GuidedTourStep {
   titleKey: string;
   descriptionKey?: string;
   advanceOn?: GuidedTourStepAdvanceOn;
+  /** Show this step as soon as its target is mounted, even if the previous target is still on screen. */
+  showWhenPresent?: boolean;
 }
 
 export interface GuidedTourDefinition {
