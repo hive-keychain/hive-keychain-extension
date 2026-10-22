@@ -29,8 +29,6 @@ interface ChartCoordinate {
 const CHART_WIDTH = 320;
 const CHART_HEIGHT = 148;
 const CHART_PADDING_Y = 10;
-/** Show every point as a dot when the series is this size or smaller. */
-const MAX_VISIBLE_DOTS = 12;
 
 const resolveSeries = (
   symbol: string,
@@ -60,16 +58,28 @@ const resolveSeries = (
 };
 
 const buildChartGeometry = (points: TokenPriceChartPoint[]) => {
-  const prices = points.map((point) => point.price);
+  const orderedPoints = [...points].sort(
+    (left, right) => left.timestamp - right.timestamp,
+  );
+  const prices = orderedPoints.map((point) => point.price);
   const minPrice = Math.min(...prices);
   const maxPrice = Math.max(...prices);
   const priceRange = maxPrice - minPrice || 1;
   const drawableHeight = CHART_HEIGHT - CHART_PADDING_Y * 2;
-  const stepX =
-    points.length > 1 ? CHART_WIDTH / (points.length - 1) : CHART_WIDTH;
+  const startTimestamp = orderedPoints[0]?.timestamp ?? 0;
+  const endTimestamp =
+    orderedPoints[orderedPoints.length - 1]?.timestamp ?? startTimestamp;
+  const timeSpan = endTimestamp - startTimestamp;
+  const indexStepX =
+    orderedPoints.length > 1
+      ? CHART_WIDTH / (orderedPoints.length - 1)
+      : CHART_WIDTH;
 
-  const coordinates: ChartCoordinate[] = points.map((point, index) => {
-    const x = index * stepX;
+  const coordinates: ChartCoordinate[] = orderedPoints.map((point, index) => {
+    const x =
+      timeSpan > 0
+        ? ((point.timestamp - startTimestamp) / timeSpan) * CHART_WIDTH
+        : index * indexStepX;
     const y =
       CHART_PADDING_Y +
       drawableHeight -
@@ -86,22 +96,22 @@ const buildChartGeometry = (points: TokenPriceChartPoint[]) => {
 
   const areaPath = `${linePath} L${CHART_WIDTH} ${CHART_HEIGHT} L0 ${CHART_HEIGHT} Z`;
 
-  return { linePath, areaPath, coordinates, stepX };
+  return { linePath, areaPath, coordinates };
 };
 
-const getVisibleDotIndexes = (pointCount: number): number[] => {
-  if (pointCount <= MAX_VISIBLE_DOTS) {
-    return Array.from({ length: pointCount }, (_, index) => index);
-  }
+const SMALL_PRICE_SIGNIFICANT_DIGITS = 4;
+const MAX_PRICE_FRACTION_DIGITS = 18;
 
-  const indexes = new Set<number>([0, pointCount - 1]);
-  const innerSlots = MAX_VISIBLE_DOTS - 2;
-  for (let slot = 1; slot <= innerSlots; slot += 1) {
-    const index = Math.round((slot * (pointCount - 1)) / (innerSlots + 1));
-    indexes.add(index);
+const fractionDigitsForSmallPrice = (price: number) => {
+  const absolute = Math.abs(price);
+  if (!Number.isFinite(absolute) || absolute === 0 || absolute >= 1) {
+    return 6;
   }
-
-  return Array.from(indexes).sort((left, right) => left - right);
+  const decimalsBeforeFirstDigit = -Math.floor(Math.log10(absolute));
+  return Math.min(
+    MAX_PRICE_FRACTION_DIGITS,
+    Math.max(6, decimalsBeforeFirstDigit + SMALL_PRICE_SIGNIFICANT_DIGITS - 1),
+  );
 };
 
 const formatUsdPrice = (price: number) => {
@@ -119,12 +129,13 @@ const formatUsdPrice = (price: number) => {
   }
   return price.toLocaleString(undefined, {
     minimumFractionDigits: 4,
-    maximumFractionDigits: 6,
+    maximumFractionDigits: fractionDigitsForSmallPrice(price),
   });
 };
 
 const formatChartTimestamp = (timestamp: number) =>
   new Date(timestamp).toLocaleString(undefined, {
+    year: 'numeric',
     month: 'short',
     day: 'numeric',
     hour: '2-digit',
@@ -281,10 +292,7 @@ export const WalletTokenPriceChart = ({
     isLiveChart && resolvedCategory
       ? resolvedCategory
       : I18nUtils.getMessage('wallet_token_price_change_24h');
-  const { linePath, areaPath, coordinates, stepX } = buildChartGeometry(
-    series.points,
-  );
-  const visibleDotIndexes = getVisibleDotIndexes(coordinates.length);
+  const { linePath, areaPath, coordinates } = buildChartGeometry(series.points);
   const activeCoordinate =
     activeIndex === undefined ? undefined : coordinates[activeIndex];
 
@@ -300,23 +308,22 @@ export const WalletTokenPriceChart = ({
     setActiveIndex(undefined);
   };
 
-  const activateNearestPoint = (
-    event: React.MouseEvent<SVGSVGElement> | React.FocusEvent<SVGCircleElement>,
-  ) => {
-    if (!('clientX' in event)) {
-      return;
-    }
-
-    const svg = event.currentTarget as SVGSVGElement;
+  const activateNearestPoint = (event: React.MouseEvent<SVGSVGElement>) => {
+    const svg = event.currentTarget;
     const bounds = svg.getBoundingClientRect();
     if (bounds.width <= 0) {
       return;
     }
 
     const relativeX = ((event.clientX - bounds.left) / bounds.width) * CHART_WIDTH;
-    const nearestIndex = Math.min(
-      coordinates.length - 1,
-      Math.max(0, Math.round(relativeX / (stepX || CHART_WIDTH))),
+    const nearestIndex = coordinates.reduce(
+      (closestIndex, coordinate, index) => {
+        const closestDistance = Math.abs(coordinates[closestIndex].x - relativeX);
+        return Math.abs(coordinate.x - relativeX) < closestDistance
+          ? index
+          : closestIndex;
+      },
+      0,
     );
     setActiveIndex(nearestIndex);
   };
@@ -383,36 +390,6 @@ export const WalletTokenPriceChart = ({
             d={linePath}
             fill="none"
           />
-          {visibleDotIndexes.map((index) => {
-            const coordinate = coordinates[index];
-            const isActive = activeIndex === index;
-            return (
-              <g key={`dot-${coordinate.point.timestamp}-${index}`}>
-                <circle
-                  className="wallet-token-price-chart__dot-hitbox"
-                  cx={coordinate.x}
-                  cy={coordinate.y}
-                  r={10}
-                  tabIndex={0}
-                  role="button"
-                  aria-label={`${currencyPrefix}${formatUsdPrice(coordinate.point.price)}, ${formatChartTimestamp(coordinate.point.timestamp)}`}
-                  data-testid={`wallet-token-price-chart-dot-${symbol}-${index}`}
-                  onFocus={() => setActiveIndex(index)}
-                  onBlur={clearActivePoint}
-                  onMouseEnter={() => setActiveIndex(index)}
-                />
-                <circle
-                  className={`wallet-token-price-chart__dot ${
-                    isActive ? 'active' : ''
-                  }`}
-                  cx={coordinate.x}
-                  cy={coordinate.y}
-                  r={isActive ? 4.5 : 3}
-                  pointerEvents="none"
-                />
-              </g>
-            );
-          })}
           {activeCoordinate && (
             <line
               className="wallet-token-price-chart__guide"

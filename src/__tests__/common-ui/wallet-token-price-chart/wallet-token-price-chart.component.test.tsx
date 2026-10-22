@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { WalletTokenPriceChart } from 'src/common-ui/wallet-token-price-chart/wallet-token-price-chart.component';
@@ -28,8 +28,8 @@ describe('WalletTokenPriceChart', () => {
     ).not.toBeInTheDocument();
     expect(series.points.length).toBeGreaterThan(1);
     expect(
-      screen.getAllByTestId(/wallet-token-price-chart-dot-ETH-/).length,
-    ).toBeGreaterThan(1);
+      screen.queryByTestId(/wallet-token-price-chart-dot-ETH-/),
+    ).not.toBeInTheDocument();
   });
 
   it('uses provided points and current price when available', () => {
@@ -53,8 +53,7 @@ describe('WalletTokenPriceChart', () => {
     );
   });
 
-  it('shows point details in a tooltip when a chart dot is focused without changing the header price', async () => {
-    const user = userEvent.setup();
+  it('shows point details in a tooltip when the chart is hovered without changing the header price', () => {
     const timestamp = Date.UTC(2026, 8, 24, 10, 30);
 
     render(
@@ -72,16 +71,83 @@ describe('WalletTokenPriceChart', () => {
       screen.getByTestId('wallet-token-price-chart-price-DAI'),
     ).toHaveTextContent('$1.01');
 
-    await user.tab();
-    const firstDot = screen.getByTestId('wallet-token-price-chart-dot-DAI-0');
-    firstDot.focus();
+    const svg = screen.getByTestId('wallet-token-price-chart-svg-DAI');
+    svg.getBoundingClientRect = () =>
+      ({
+        left: 0,
+        width: 320,
+        top: 0,
+        height: 148,
+        right: 320,
+        bottom: 148,
+        x: 0,
+        y: 0,
+        toJSON: () => ({}),
+      }) as DOMRect;
+    fireEvent.mouseMove(svg, { clientX: 0, clientY: 40 });
 
     expect(
       screen.getByTestId('wallet-token-price-chart-tooltip-DAI'),
     ).toHaveTextContent('$0.99');
     expect(
+      screen.getByTestId('wallet-token-price-chart-tooltip-DAI'),
+    ).toHaveTextContent('2026');
+    expect(
       screen.getByTestId('wallet-token-price-chart-price-DAI'),
     ).toHaveTextContent('$1.01');
+  });
+
+  it('shows significant digits for prices that round to zero at six decimals', () => {
+    render(
+      <WalletTokenPriceChart
+        symbol="DUST"
+        currentPrice={0.000000051}
+        points={[
+          { timestamp: 1, price: 0.00000004 },
+          { timestamp: 2, price: 0.000000051 },
+        ]}
+      />,
+    );
+
+    expect(
+      screen.getByTestId('wallet-token-price-chart-price-DUST'),
+    ).toHaveTextContent('$0.000000051');
+  });
+
+  it('spaces chart points by timestamp so gaps stay wider than same-day samples', () => {
+    const start = Date.UTC(2026, 9, 12);
+    const day = 24 * 60 * 60 * 1000;
+
+    render(
+      <WalletTokenPriceChart
+        symbol="BEE"
+        priceHistory={{
+          categories: ['7d'],
+          seriesByCategory: {
+            '7d': [
+              { timestamp: start, price: 1 },
+              { timestamp: start + 3 * day, price: 2 },
+              { timestamp: start + 3 * day + 60 * 60 * 1000, price: 2.5 },
+              { timestamp: start + 7 * day, price: 4 },
+            ],
+          },
+        }}
+      />,
+    );
+
+    const line = screen
+      .getByTestId('wallet-token-price-chart-svg-BEE')
+      .querySelector('.wallet-token-price-chart__line');
+    const xPositions = [
+      ...(line?.getAttribute('d') ?? '').matchAll(/[ML](-?\d+(?:\.\d+)?)/g),
+    ].map((match) => Number(match[1]));
+
+    expect(xPositions).toHaveLength(4);
+    expect(xPositions[0]).toBeCloseTo(0, 1);
+    expect(xPositions[1]).toBeCloseTo((3 / 7) * 320, 1);
+    expect(xPositions[2]).toBeCloseTo(((3 + 1 / 24) / 7) * 320, 1);
+    expect(xPositions[3]).toBeCloseTo(320, 1);
+    expect(xPositions[2] - xPositions[1]).toBeLessThan(xPositions[1] - xPositions[0]);
   });
 
   it('lists every history category and switches the series without using fake data', async () => {

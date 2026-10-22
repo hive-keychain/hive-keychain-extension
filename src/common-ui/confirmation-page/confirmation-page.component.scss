@@ -15,6 +15,13 @@
       @include small-card;
       display: unset;
       margin: unset;
+
+      .reset-keychain-warning {
+        display: block;
+        margin-top: 12px;
+        color: $red;
+        @include poppins400(12px);
+      }
     }
 
     .multisig-message {

@@ -46,6 +46,7 @@ export const GUIDED_TOURS: GuidedTourDefinition[] = [
       {
         target: GuidedTourTarget.CHAIN_DROPDOWN_PANEL,
         titleKey: 'popup_html_guided_tour_add_evm_chains_step2_title',
+        showWhenPresent: true,
       },
       {
         target: GuidedTourTarget.CHAIN_SELECTOR,

@@ -2123,7 +2123,7 @@
     "description": "Error while voting for proposal"
   },
   "popup_html_advanced_settings": {
-    "message": "Paramètres Avancés",
+    "message": "Paramètres avancés",
     "description": "Advanced settings sub menu"
   },
   "popup_html_shortcuts": {
@@ -2753,6 +2753,10 @@
   "popup_html_deleting_account_linked_to_authorized": {
     "message": "Certains de vos comptes utilisent les clés de @$1 pour signer et ne pourront plus effectuer d'opérations.",
     "description": "when deleting account from keychain"
+  },
+  "popup_html_delete_last_account_reset_warning": {
+    "message": "Supprimer le dernier compte de Keychain réinitialisera complètement Keychain.",
+    "description": "warning when removing the last account from Keychain"
   },
   "popup_html_account_already_existing": {
     "message": "Ce compte est déjà enregistré",

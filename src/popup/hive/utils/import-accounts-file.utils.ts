@@ -5,10 +5,8 @@ import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { setAccounts } from '@popup/hive/actions/account.actions';
-import { loadActiveAccount } from '@popup/hive/actions/active-account.actions';
+import { activateHiveAccount } from '@popup/hive/actions/active-account.actions';
 import AccountUtils from '@popup/hive/utils/account.utils';
-import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
-import { setChain } from '@popup/multichain/actions/chain.actions';
 import {
   setErrorMessage,
   setSuccessMessage,
@@ -18,10 +16,8 @@ import { resetTitleContainerProperties } from '@popup/multichain/actions/title-c
 import {
   ChainType,
   EvmChain,
-  HiveChain,
 } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
-import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface.utils';
 import { Store } from 'redux';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
@@ -85,33 +81,11 @@ const getImportErrorMessage = (value: BackgroundMessage['value']): string => {
   return value?.message ?? 'import_html_error';
 };
 
-const resolveHiveChain = async (): Promise<HiveChain | undefined> => {
-  const setupHiveChains = await ChainUtils.getAllSetupChainsForType<HiveChain>(
-    ChainType.HIVE,
-  );
-  if (setupHiveChains[0]) {
-    return setupHiveChains[0];
-  }
-  const setupChains = await ChainUtils.getSetupChains(true);
-  return setupChains.find((chain) => chain.type === ChainType.HIVE) as
-    | HiveChain
-    | undefined;
-};
-
 const activateImportedHiveAccount = async (
   reduxStore: ImportAccountsStore,
   hiveAccount: LocalAccount,
 ): Promise<void> => {
-  const currentChain = reduxStore.getState().chain;
-  const hiveChain = await resolveHiveChain();
-  if (
-    hiveChain &&
-    currentChain?.chainId?.toLowerCase() !== hiveChain.chainId.toLowerCase()
-  ) {
-    await reduxStore.dispatch(setChain(hiveChain));
-  }
-  reduxStore.dispatch(setActiveAccountType(ChainType.HIVE));
-  reduxStore.dispatch(loadActiveAccount(hiveAccount));
+  await reduxStore.dispatch(activateHiveAccount(hiveAccount));
 };
 
 const applyImportedAccountsMessage = async (

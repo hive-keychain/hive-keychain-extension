@@ -160,6 +160,39 @@ describe('guided-tour.utils tests:\n', () => {
     ).toBe(3);
   });
 
+  it('shows a step marked present even while the previous target is still mounted', () => {
+    const steps = addEvmChainsTour.steps.map((step, index) =>
+      index === 1 ? { ...step, showWhenPresent: true } : step,
+    );
+    const presentTargets = new Set<string>([
+      GuidedTourTarget.CHAIN_DROPDOWN_TRIGGER,
+      GuidedTourTarget.CHAIN_DROPDOWN_PANEL,
+    ]);
+
+    expect(
+      GuidedTourUtils.getRenderableStepIndex(
+        steps,
+        0,
+        (target) => presentTargets.has(target),
+      ),
+    ).toBe(1);
+  });
+
+  it('keeps the current step when the next target is mounted without showWhenPresent', () => {
+    const presentTargets = new Set<string>([
+      GuidedTourTarget.CHAIN_DROPDOWN_TRIGGER,
+      GuidedTourTarget.CHAIN_DROPDOWN_PANEL,
+    ]);
+
+    expect(
+      GuidedTourUtils.getRenderableStepIndex(
+        addEvmChainsTour.steps,
+        0,
+        (target) => presentTargets.has(target),
+      ),
+    ).toBe(0);
+  });
+
   it('falls back to the latest reachable earlier step when the current target is missing', () => {
     const presentTargets = new Set<string>([
       GuidedTourTarget.ACCOUNT_SELECTOR_TRIGGER,

@@ -3,20 +3,18 @@ import {
   setErrorMessage,
   setSuccessMessage,
 } from '@popup/multichain/actions/message.actions';
-import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import {
   resetTitleContainerProperties,
   setTitleContainerProperties,
 } from '@popup/multichain/actions/title-container.actions';
-import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { Keys } from 'src/interfaces/keys.interface';
-import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
+import { activateHiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { addAccount } from 'src/popup/hive/actions/account.actions';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 
@@ -36,8 +34,7 @@ const SelectKeys = ({
   navigateTo,
   setSuccessMessage,
   resetTitleContainerProperties,
-  setActiveAccountType,
-  loadActiveAccount,
+  activateHiveAccount,
 }: PropsFromRedux) => {
   const [importActive, setImportActive] = useState(keys.active ? true : false);
   const [importPosting, setImportPosting] = useState(
@@ -52,7 +49,9 @@ const SelectKeys = ({
     });
   }, []);
 
-  const importKeys = (event: React.MouseEvent<HTMLButtonElement>): void => {
+  const importKeys = async (
+    event: React.MouseEvent<HTMLButtonElement>,
+  ): Promise<void> => {
     event.preventDefault();
     event.stopPropagation();
     let keysToImport: Keys = {};
@@ -76,8 +75,7 @@ const SelectKeys = ({
       addAccount(account);
       setSuccessMessage('popup_html_import_success');
       resetTitleContainerProperties();
-      setActiveAccountType(ChainType.HIVE);
-      loadActiveAccount(account);
+      await activateHiveAccount(account);
       navigateTo(Screen.HOME_PAGE, true);
     }
   };
@@ -152,8 +150,7 @@ const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   navigateTo,
   resetTitleContainerProperties,
-  setActiveAccountType,
-  loadActiveAccount,
+  activateHiveAccount,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

@@ -72,8 +72,10 @@
     min-width: 0;
   }
 
-  .error-message {
-    margin: 0;
+  &.popup-container .popup-content .error-message {
+    margin: 4px 0 0;
+    padding: 0 12px;
+    box-sizing: border-box;
     font-size: 12px;
     line-height: 1.3;
   }

@@ -140,15 +140,17 @@ const getRenderableStepIndex = (
     return null;
   }
   const start = Math.min(Math.max(currentStep, 0), steps.length - 1);
+  const nextStepIndex = start + 1;
+  const nextStep = steps[nextStepIndex];
+  if (nextStep?.showWhenPresent && isTargetPresent(nextStep.target)) {
+    return nextStepIndex;
+  }
+
   if (isTargetPresent(steps[start].target)) {
     return start;
   }
 
-  const nextStepIndex = start + 1;
-  if (
-    nextStepIndex < steps.length &&
-    isTargetPresent(steps[nextStepIndex].target)
-  ) {
+  if (nextStep && isTargetPresent(nextStep.target)) {
     return nextStepIndex;
   }
 

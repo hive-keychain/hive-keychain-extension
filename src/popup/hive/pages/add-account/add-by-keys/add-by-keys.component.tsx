@@ -1,6 +1,5 @@
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { Screen } from '@interfaces/screen.interface';
-import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
 import {
   navigateTo,
@@ -10,7 +9,6 @@ import {
   resetTitleContainerProperties,
   setTitleContainerProperties,
 } from '@popup/multichain/actions/title-container.actions';
-import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -18,7 +16,7 @@ import ButtonComponent from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
+import { activateHiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { addAccount } from 'src/popup/hive/actions/account.actions';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
@@ -33,8 +31,7 @@ const AddByKeys = ({
   setTitleContainerProperties,
   resetTitleContainerProperties,
   setErrorMessage,
-  setActiveAccountType,
-  loadActiveAccount,
+  activateHiveAccount,
 }: PropsType) => {
   const [username, setUsername] = useState('');
   const [privateKey, setPrivateKey] = useState('');
@@ -77,8 +74,7 @@ const AddByKeys = ({
       const account = { name: username, keys: keys };
       addAccount(account);
       resetTitleContainerProperties();
-      setActiveAccountType(ChainType.HIVE);
-      loadActiveAccount(account);
+      await activateHiveAccount(account);
       navigateTo(Screen.HOME_PAGE, true);
     }
   };
@@ -135,8 +131,7 @@ const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   resetTitleContainerProperties,
   setErrorMessage,
-  setActiveAccountType,
-  loadActiveAccount,
+  activateHiveAccount,
 });
 type PropsType = ConnectedProps<typeof connector>;
 

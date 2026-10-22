@@ -5,7 +5,10 @@ import { InputType } from '@common-ui/input/input-type.enum';
 import InputComponent from '@common-ui/input/input.component';
 import { PopupContainer } from '@common-ui/popup-container/popup-container.component';
 import { TextAreaComponent } from '@common-ui/text-area/textarea.component';
-import { EvmCustomErc20Form } from '@popup/evm/pages/home/evm-add-custom-asset-popup/evm-custom-erc20-form.component';
+import {
+  EvmCustomErc20Form,
+  EvmCustomErc20InitialForm,
+} from '@popup/evm/pages/home/evm-add-custom-asset-popup/evm-custom-erc20-form.component';
 import { EvmKnownTokenList } from '@popup/evm/pages/home/evm-add-custom-asset-popup/evm-known-token-list.component';
 import {
   EvmCustomNft,
@@ -155,6 +158,11 @@ export const EvmAddCustomAssetPopup = ({
   const [isSaving, setIsSaving] = useState(false);
   const [isResolvingContract, setIsResolvingContract] = useState(false);
   const [showManualErc20Form, setShowManualErc20Form] = useState(false);
+  const [skipKnownTokenBrowse, setSkipKnownTokenBrowse] = useState(false);
+  const [knownTokenQuery, setKnownTokenQuery] = useState('');
+  const [manualErc20InitialForm, setManualErc20InitialForm] = useState<
+    EvmCustomErc20InitialForm | undefined
+  >();
   const isMountedRef = useRef(true);
   const erc20FormRef = useRef(erc20Form);
   const normalizedExistingErc20Ref = useRef(
@@ -201,6 +209,7 @@ export const EvmAddCustomAssetPopup = ({
 
   useEffect(() => {
     setShowManualErc20Form(false);
+    setManualErc20InitialForm(undefined);
   }, [tokenToEdit]);
 
   useEffect(() => {
@@ -631,6 +640,30 @@ export const EvmAddCustomAssetPopup = ({
     await onSave?.(form);
   };
 
+  const openManualErc20Form = () => {
+    const trimmedQuery = knownTokenQuery.trim();
+    setManualErc20InitialForm(
+      ethers.isAddress(trimmedQuery)
+        ? { contractAddress: ethers.getAddress(trimmedQuery) }
+        : undefined,
+    );
+    setShowManualErc20Form(true);
+  };
+
+  const handleKnownTokensLoadFailed = () => {
+    setSkipKnownTokenBrowse(true);
+    setShowManualErc20Form(true);
+  };
+
+  const closeManualErc20Form = () => {
+    if (skipKnownTokenBrowse) {
+      onClose();
+      return;
+    }
+    setManualErc20InitialForm(undefined);
+    setShowManualErc20Form(false);
+  };
+
   const renderErc20Browse = () => (
     <>
       <div className="popup-title">
@@ -639,6 +672,8 @@ export const EvmAddCustomAssetPopup = ({
       <EvmKnownTokenList
         chain={chain}
         existingAddresses={existingAddresses}
+        onQueryChange={setKnownTokenQuery}
+        onLoadFailed={handleKnownTokensLoadFailed}
         onSave={handleKnownTokenSave}
       />
       <div className="popup-footer">
@@ -651,7 +686,7 @@ export const EvmAddCustomAssetPopup = ({
           type={ButtonType.IMPORTANT}
           label="evm_add_custom_token_manually"
           dataTestId="btn-add-custom-token-manually"
-          onClick={() => setShowManualErc20Form(true)}
+          onClick={openManualErc20Form}
         />
       </div>
     </>
@@ -669,6 +704,8 @@ export const EvmAddCustomAssetPopup = ({
           ? tokenToEdit
           : null
       }
+      initialForm={isEditing ? undefined : manualErc20InitialForm}
+      autoResolveContract={!isEditing}
       title={
         isEditing
           ? I18nUtils.getMessage('evm_custom_tokens_modal_title_edit')
@@ -679,9 +716,7 @@ export const EvmAddCustomAssetPopup = ({
           ? I18nUtils.getMessage('evm_custom_tokens_modal_caption_edit')
           : undefined
       }
-      onClose={
-        isEditing ? onClose : () => setShowManualErc20Form(false)
-      }
+      onClose={isEditing ? onClose : closeManualErc20Form}
       onSave={onSave as (form: EvmCustomErc20FormData) => Promise<void> | void}
     />
   );

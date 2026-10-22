@@ -443,26 +443,105 @@ describe('GuidedTourComponent', () => {
     expect(screen.queryByTestId('guided-tour-overlay')).not.toBeInTheDocument();
   });
 
-  it('advances to the open dropdown step when the highlighted chain control is clicked', async () => {
-    const user = userEvent.setup();
+  it('moves the spotlight onto the open chain menu so manage chains stays clickable', async () => {
     const saveSpy = jest.spyOn(LocalStorageUtils, 'saveValueInLocalStorage');
+    const triggerRect = {
+      x: 280,
+      y: 8,
+      top: 8,
+      left: 280,
+      right: 332,
+      bottom: 40,
+      width: 52,
+      height: 32,
+      toJSON: () => ({}),
+    } as DOMRect;
+    const panelRect = {
+      x: 140,
+      y: 44,
+      top: 44,
+      left: 140,
+      right: 340,
+      bottom: 204,
+      width: 200,
+      height: 160,
+      toJSON: () => ({}),
+    } as DOMRect;
+
+    jest
+      .spyOn(HTMLElement.prototype, 'getBoundingClientRect')
+      .mockImplementation(function (this: HTMLElement) {
+        const tourTarget = this.closest('[data-guided-tour]')?.getAttribute(
+          'data-guided-tour',
+        );
+        if (tourTarget === GuidedTourTarget.CHAIN_DROPDOWN_PANEL) {
+          return panelRect;
+        }
+        if (tourTarget === GuidedTourTarget.CHAIN_DROPDOWN_TRIGGER) {
+          return triggerRect;
+        }
+        return {
+          x: 0,
+          y: 0,
+          top: 0,
+          left: 0,
+          right: 260,
+          bottom: 72,
+          width: 260,
+          height: 72,
+          toJSON: () => ({}),
+        } as DOMRect;
+      });
 
     renderTour(
       <>
         <button data-guided-tour={GuidedTourTarget.CHAIN_DROPDOWN_TRIGGER}>
           Chains
         </button>
-        <div data-guided-tour={GuidedTourTarget.CHAIN_DROPDOWN_PANEL}>
-          Enabled chains
-        </div>
         <GuidedTourComponent />
       </>,
       getEvmSelectedTourState(),
     );
 
     expect(await screen.findByTestId('guided-tour-overlay')).toBeInTheDocument();
+    expect(screen.getByTestId('guided-tour-tooltip')).toHaveTextContent(
+      'You can add chains here!',
+    );
 
-    await user.click(screen.getByText('Chains'));
+    const panel = document.createElement('div');
+    panel.setAttribute(
+      'data-guided-tour',
+      GuidedTourTarget.CHAIN_DROPDOWN_PANEL,
+    );
+    const manageChains = document.createElement('button');
+    manageChains.textContent = 'Manage chains';
+    panel.append(manageChains);
+    act(() => {
+      document.body.append(panel);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('guided-tour-tooltip')).toHaveTextContent(
+        'Select an EVM chain or click on Manage chains to add more',
+      );
+    });
+    expect(
+      screen.queryByTestId('guided-tour-dismiss-button'),
+    ).not.toBeInTheDocument();
+    expect(screen.getByTestId('guided-tour-highlight')).not.toHaveClass(
+      'blocking',
+    );
+    expect(screen.getByTestId('guided-tour-highlight')).toHaveStyle({
+      top: '44px',
+      left: '140px',
+      width: '200px',
+      height: '160px',
+    });
+
+    const tooltipTop = Number.parseFloat(
+      screen.getByTestId('guided-tour-tooltip').style.top,
+    );
+    expect(tooltipTop).toBeGreaterThanOrEqual(panelRect.bottom);
 
     await waitFor(() => {
       expect(saveSpy).toHaveBeenCalledWith(
@@ -476,14 +555,7 @@ describe('GuidedTourComponent', () => {
       );
     });
 
-    await waitFor(() => {
-      expect(screen.getByTestId('guided-tour-tooltip')).toHaveTextContent(
-        'Select an EVM chain or click on Manage chains to add more',
-      );
-    });
-    expect(
-      screen.queryByTestId('guided-tour-dismiss-button'),
-    ).not.toBeInTheDocument();
+    panel.remove();
   });
 
   it('shows the manage-chains page copy after the dropdown step', async () => {

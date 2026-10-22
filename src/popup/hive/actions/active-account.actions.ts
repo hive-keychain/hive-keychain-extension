@@ -1,4 +1,11 @@
+import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
+import { setChain } from '@popup/multichain/actions/chain.actions';
 import { AppThunk } from '@popup/multichain/actions/interfaces';
+import {
+  ChainType,
+  HiveChain,
+} from '@popup/multichain/interfaces/chains.interface';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { HiveActionType } from 'src/popup/hive/actions/action-type.enum';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
@@ -28,6 +35,40 @@ export const refreshKeys = (localAccount: LocalAccount) => {
     },
   };
 };
+
+const resolveHiveChain = async (): Promise<HiveChain | undefined> => {
+  const setupHiveChains = await ChainUtils.getAllSetupChainsForType<HiveChain>(
+    ChainType.HIVE,
+  );
+  if (setupHiveChains[0]) {
+    return setupHiveChains[0];
+  }
+
+  const setupChains = await ChainUtils.getSetupChains(true);
+  return setupChains.find((chain) => chain.type === ChainType.HIVE) as
+    | HiveChain
+    | undefined;
+};
+
+const isSameChainId = (leftChainId?: string, rightChainId?: string) =>
+  !!leftChainId &&
+  !!rightChainId &&
+  leftChainId.toLowerCase() === rightChainId.toLowerCase();
+
+export const activateHiveAccount =
+  (account: LocalAccount): AppThunk =>
+  async (dispatch, getState) => {
+    const currentChain = getState().chain;
+    const hiveChain = await resolveHiveChain();
+    if (
+      hiveChain &&
+      !isSameChainId(currentChain?.chainId, hiveChain.chainId)
+    ) {
+      await dispatch(setChain(hiveChain));
+    }
+    dispatch(setActiveAccountType(ChainType.HIVE));
+    await dispatch(loadActiveAccount(account));
+  };
 
 export const loadActiveAccount =
   (account: LocalAccount): AppThunk =>

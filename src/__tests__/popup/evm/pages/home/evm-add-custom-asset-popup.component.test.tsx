@@ -111,6 +111,37 @@ describe('EvmAddCustomAssetPopup', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('opens the manual form when known tokens cannot be loaded', async () => {
+    const onClose = jest.fn();
+    jest
+      .spyOn(LiFiUtils, 'getKnownTokensForChain')
+      .mockRejectedValue(new Error('unavailable'));
+
+    render(
+      <EvmAddCustomAssetPopup
+        chain={chain}
+        mode="erc20"
+        walletAddress="0x1111111111111111111111111111111111111111"
+        onClose={onClose}
+        onSave={jest.fn()}
+      />,
+    );
+
+    expect(
+      await screen.findByTestId('custom-asset-contract-address'),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('btn-add-custom-token-manually'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('evm_known_tokens_error_loading'),
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Cancel'));
+
+    expect(onClose).toHaveBeenCalled();
+  });
+
   it('opens the manual ERC20 form from Add manually and returns to browse on cancel', async () => {
     render(
       <EvmAddCustomAssetPopup
@@ -135,6 +166,125 @@ describe('EvmAddCustomAssetPopup', () => {
     expect(
       screen.queryByTestId('custom-asset-contract-address'),
     ).not.toBeInTheDocument();
+  });
+
+  it('prefills a searched contract address and loads metadata without blur', async () => {
+    render(
+      <EvmAddCustomAssetPopup
+        chain={chain}
+        mode="erc20"
+        walletAddress="0x1111111111111111111111111111111111111111"
+        onClose={jest.fn()}
+        onSave={jest.fn()}
+      />,
+    );
+
+    fireEvent.change(await screen.findByTestId('known-token-search'), {
+      target: { value: '00000000000000000000000000000000000000aa' },
+    });
+    await openManualErc20Form();
+
+    expect(screen.getByTestId('custom-asset-contract-address')).toHaveValue(
+      '0x00000000000000000000000000000000000000AA',
+    );
+    await waitFor(() => {
+      expect(screen.getByTestId('custom-asset-name')).toHaveValue('USD Coin');
+    });
+    expect(screen.getByTestId('custom-asset-decimals')).toHaveValue('6');
+    expect(
+      EvmTokensUtils.fetchErc20NameAndDecimalsFromChain,
+    ).toHaveBeenCalledTimes(1);
+    expect(
+      EvmTokensUtils.fetchErc20NameAndDecimalsFromChain,
+    ).toHaveBeenCalledWith(
+      chain,
+      '0x00000000000000000000000000000000000000AA',
+    );
+  });
+
+  it('leaves the contract address empty when the search is not an address', async () => {
+    render(
+      <EvmAddCustomAssetPopup
+        chain={chain}
+        mode="erc20"
+        walletAddress="0x1111111111111111111111111111111111111111"
+        onClose={jest.fn()}
+        onSave={jest.fn()}
+      />,
+    );
+
+    fireEvent.change(await screen.findByTestId('known-token-search'), {
+      target: { value: 'usdc' },
+    });
+    await openManualErc20Form();
+
+    expect(screen.getByTestId('custom-asset-contract-address')).toHaveValue(
+      '',
+    );
+    expect(
+      EvmTokensUtils.fetchErc20NameAndDecimalsFromChain,
+    ).not.toHaveBeenCalled();
+  });
+
+  it('loads ERC20 metadata as soon as a valid contract address is entered', async () => {
+    render(
+      <EvmAddCustomAssetPopup
+        chain={chain}
+        mode="erc20"
+        walletAddress="0x1111111111111111111111111111111111111111"
+        onClose={jest.fn()}
+        onSave={jest.fn()}
+      />,
+    );
+
+    await openManualErc20Form();
+    fireEvent.change(screen.getByTestId('custom-asset-contract-address'), {
+      target: { value: '0x00000000000000000000000000000000000000aa' },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('custom-asset-name')).toHaveValue('USD Coin');
+    });
+    expect(screen.getByTestId('custom-asset-decimals')).toHaveValue('6');
+    expect(
+      EvmTokensUtils.fetchErc20NameAndDecimalsFromChain,
+    ).toHaveBeenCalledTimes(1);
+
+    fireEvent.blur(screen.getByTestId('custom-asset-contract-address'));
+
+    expect(
+      EvmTokensUtils.fetchErc20NameAndDecimalsFromChain,
+    ).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps invalid contract addresses on blur without fetching metadata', async () => {
+    render(
+      <EvmAddCustomAssetPopup
+        chain={chain}
+        mode="erc20"
+        walletAddress="0x1111111111111111111111111111111111111111"
+        onClose={jest.fn()}
+        onSave={jest.fn()}
+      />,
+    );
+
+    await openManualErc20Form();
+    fireEvent.change(screen.getByTestId('custom-asset-contract-address'), {
+      target: { value: '0x1234' },
+    });
+
+    expect(
+      EvmTokensUtils.fetchErc20NameAndDecimalsFromChain,
+    ).not.toHaveBeenCalled();
+
+    fireEvent.blur(screen.getByTestId('custom-asset-contract-address'));
+
+    expect(
+      await screen.findByText('Enter a valid contract address.'),
+    ).toBeInTheDocument();
+    expect(
+      EvmTokensUtils.fetchErc20NameAndDecimalsFromChain,
+    ).not.toHaveBeenCalled();
   });
 
   it('skips the browse step when editing a custom token', async () => {

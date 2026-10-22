@@ -7,6 +7,7 @@ interface EvmAccountContextualMenuParams {
   onCopyClicked: Function;
   isLedgerSource?: boolean;
   isImportedSource?: boolean;
+  deleteConfirmationMessage?: string;
 }
 
 const getDeleteSeedConfirmationMessage = (
@@ -28,16 +29,16 @@ export const EvmAccountsContextualMenu = ({
   onCopyClicked,
   isLedgerSource,
   isImportedSource,
+  deleteConfirmationMessage,
 }: EvmAccountContextualMenuParams): ContextualMenu => {
   const deleteSeedItem = {
     icon: SVGIcons.EVM_ACCOUNT_DELETE,
     label: 'evm_delete_seed_button',
     onClick: onDeleteClicked,
     needsConfirmation: true,
-    confirmationMessage: getDeleteSeedConfirmationMessage(
-      isLedgerSource,
-      isImportedSource,
-    ),
+    confirmationMessage:
+      deleteConfirmationMessage ??
+      getDeleteSeedConfirmationMessage(isLedgerSource, isImportedSource),
   };
 
   const seedItems = [

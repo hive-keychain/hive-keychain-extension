@@ -2754,6 +2754,10 @@
     "message": "您的某些帐号正在使用@$1 作为授权帐号，将无法再执行操作。",
     "description": "when deleting account from keychain"
   },
+  "popup_html_delete_last_account_reset_warning": {
+    "message": "删除 Keychain 上的最后一个账户将完全重置 Keychain。",
+    "description": "warning when removing the last account from Keychain"
+  },
   "popup_html_account_already_existing": {
     "message": "帐号已经存在",
     "description": "while trying to add a new account"

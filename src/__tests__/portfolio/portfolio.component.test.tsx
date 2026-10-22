@@ -2728,7 +2728,7 @@ describe('Portfolio', () => {
     }
   });
 
-  it('shows the estimated USD value in a tooltip on the swap estimate amount', async () => {
+  it('shows USD hints under the swap outgoing and estimated amounts', async () => {
     (PortfolioApiUtils.getQuotes as jest.Mock).mockResolvedValue({
       quotes: [
         {
@@ -2768,30 +2768,13 @@ describe('Portfolio', () => {
           ?.textContent,
       ).toBe('50');
       expect(
+        container.querySelector('[data-testid="portfolio-from-amount-usd"]')
+          ?.textContent,
+      ).toBe('$10.00');
+      expect(
         container.querySelector(
           '[data-testid="portfolio-estimated-amount-usd"]',
-        ),
-      ).not.toBeNull();
-    });
-
-    expect(
-      container.querySelector('[data-testid="portfolio-from-amount-usd"]'),
-    ).toBeNull();
-
-    expect(
-      container.querySelector('[data-testid="portfolio-to-amount-usd"]'),
-    ).toBeNull();
-
-    fireEvent.mouseEnter(
-      container.querySelector(
-        '[data-testid="portfolio-estimated-amount-usd"]',
-      ) as HTMLElement,
-    );
-
-    await waitFor(() => {
-      expect(
-        document.body.querySelector('[data-testid="tooltip-content"]')
-          ?.textContent,
+        )?.textContent,
       ).toBe('$50.00');
     });
   });
