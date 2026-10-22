@@ -152,6 +152,7 @@ const EditMyWitness = ({
         value={formParams.url}
         onChange={(value) => handleFormParams('url', value)}
       />
+      <div className="fill-space"></div>
       <div className="bottom-panel">
         <ButtonComponent
           label={'popup_html_button_label_cancel'}

@@ -3,9 +3,17 @@ import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
+import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { WitnessInfoDataComponent } from 'src/popup/hive/pages/app-container/home/governance/my-witness-tab/witness-information/witness-info-data/witness-info-data.component';
+import { copyTextWithToast } from 'src/common-ui/toast/copy-toast.utils';
 
-import { I18nUtils } from 'src/utils/i18n.utils';
+const formatSigningKey = (signingKey: string) => {
+  if (signingKey.length <= 16) {
+    return signingKey;
+  }
+  return `${signingKey.slice(0, 7)}...${signingKey.slice(-5)}`;
+};
+
 interface WitnessParametersInformationProps {
   witnessInfo: WitnessInfo;
 }
@@ -13,15 +21,23 @@ interface WitnessParametersInformationProps {
 const WitnessInformationParameters = ({
   witnessInfo,
 }: PropsFromRedux & WitnessParametersInformationProps) => {
+  const copySigningKey = () => {
+    void copyTextWithToast(witnessInfo.signingKey, 'popup_html_copied');
+  };
+
   return (
     <div className="witness-information-parameters">
-      <div className="label-title">
-        {I18nUtils.getMessage(
-          'popup_html_witness_information_signing_key_label',
-        )}
-      </div>
-      <div className="smaller-text">{witnessInfo.signingKey}</div>
       <div className="info-panel">
+        <CustomTooltip
+          message={witnessInfo.signingKey}
+          skipTranslation
+          additionalClassName="signing-key-tooltip">
+          <WitnessInfoDataComponent
+            label={'popup_html_witness_information_signing_key_label'}
+            value={formatSigningKey(witnessInfo.signingKey)}
+            valueOnClickAction={copySigningKey}
+          />
+        </CustomTooltip>
         <WitnessInfoDataComponent
           label={'popup_html_witness_information_maximum_block_size_label'}
           value={witnessInfo.params.maximumBlockSize}

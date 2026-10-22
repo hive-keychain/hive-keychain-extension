@@ -1,10 +1,13 @@
 .witness-information {
   display: flex;
   flex-direction: column;
-  flex: unset;
-  padding: 0;
+  flex: 1;
+  min-height: 0;
+  box-sizing: border-box;
+  padding: 0 0 16px;
   font-size: 16px;
-  overflow: visible;
+  overflow-x: hidden;
+  overflow-y: auto;
   row-gap: 8px;
 
   .witness-disabled {
@@ -78,6 +81,7 @@
 
   .bottom-panel {
     display: flex;
+    flex-shrink: 0;
     column-gap: 16px;
   }
 }
