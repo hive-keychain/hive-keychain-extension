@@ -2123,7 +2123,7 @@
     "description": "Error while voting for proposal"
   },
   "popup_html_advanced_settings": {
-    "message": "Paramètres Avancés",
+    "message": "Paramètres avancés",
     "description": "Advanced settings sub menu"
   },
   "popup_html_shortcuts": {
