@@ -1,4 +1,5 @@
 import { EvmLightNodeApi, EvmLightNodeApiError } from '@api/evm-light-node';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import {
   CatchupStatus,
   EvmLightNodeUtils,
@@ -6,6 +7,12 @@ import {
   isCatchupStatusPending,
   normalizeDomainForLightNode,
 } from '@popup/evm/utils/evm-light-node.utils';
+import {
+  ChainType,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { BaseApi } from 'src/api/base';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
@@ -296,7 +303,92 @@ describe('evm-light-node.utils tests:\n', () => {
     );
   });
 
-  it('registers addresses with POST on the direct light-node API', async () => {
+  it('registers every non-custom setup chain and wallet address in one POST /register', async () => {
+    const ethereum = {
+      chainId: '0x1',
+      type: ChainType.EVM,
+      isCustom: false,
+    } as EvmChain;
+    const polygon = {
+      chainId: '0x89',
+      type: ChainType.EVM,
+      isCustom: false,
+    } as EvmChain;
+    const custom = {
+      chainId: '0x539',
+      type: ChainType.EVM,
+      isCustom: true,
+    } as EvmChain;
+    jest
+      .spyOn(ChainUtils, 'getAllSetupChainsForType')
+      .mockResolvedValue([ethereum, polygon, custom]);
+    const getDefaultChainSpy = jest.spyOn(
+      ChainUtils,
+      'getChainFromDefaultChains',
+    );
+    jest.spyOn(EvmWalletUtils, 'getAllLocalAddresses').mockResolvedValue([
+      '0x00000000000000000000000000000000000000aa',
+      '0x00000000000000000000000000000000000000bb',
+      'not-an-address',
+    ]);
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockResolvedValue({ '0x1': ['0xold'] } as any);
+    const saveSpy = jest
+      .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+      .mockResolvedValue(undefined as any);
+    const postSpy = jest.spyOn(EvmLightNodeApi, 'post').mockResolvedValue({});
+
+    await EvmLightNodeUtils.registerAddress(
+      '0x1',
+      '0x00000000000000000000000000000000000000AA',
+      false,
+    );
+
+    expect(getDefaultChainSpy).not.toHaveBeenCalled();
+    expect(postSpy).toHaveBeenCalledWith('register', {
+      chainIds: [1, 137],
+      addresses: [
+        '0x00000000000000000000000000000000000000aa',
+        '0x00000000000000000000000000000000000000bb',
+      ],
+      new: false,
+    });
+    expect(saveSpy).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.EVM_LIGHT_NODE_REGISTERED_ADDRESSES,
+      {
+        '0x1': [
+          '0x00000000000000000000000000000000000000aa',
+          '0x00000000000000000000000000000000000000bb',
+        ],
+        '0x89': [
+          '0x00000000000000000000000000000000000000aa',
+          '0x00000000000000000000000000000000000000bb',
+        ],
+      },
+    );
+  });
+
+  it('includes a known default chain that is not in setup yet and forwards new=true', async () => {
+    const ethereum = {
+      chainId: '0x1',
+      type: ChainType.EVM,
+      isCustom: false,
+    } as EvmChain;
+    const polygon = {
+      chainId: '0x89',
+      type: ChainType.EVM,
+      isCustom: false,
+    } as EvmChain;
+    jest
+      .spyOn(ChainUtils, 'getAllSetupChainsForType')
+      .mockResolvedValue([ethereum]);
+    jest
+      .spyOn(ChainUtils, 'getChainFromDefaultChains')
+      .mockResolvedValue(polygon);
+    jest
+      .spyOn(EvmWalletUtils, 'getAllLocalAddresses')
+      .mockResolvedValue(['0x00000000000000000000000000000000000000aa']);
     jest
       .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
       .mockResolvedValue(undefined as any);
@@ -306,15 +398,44 @@ describe('evm-light-node.utils tests:\n', () => {
     const postSpy = jest.spyOn(EvmLightNodeApi, 'post').mockResolvedValue({});
 
     await EvmLightNodeUtils.registerAddress(
-      '0x1',
+      '0x89',
+      '0x00000000000000000000000000000000000000bb',
+      true,
+    );
+
+    expect(postSpy).toHaveBeenCalledWith('register', {
+      chainIds: [1, 137],
+      addresses: [
+        '0x00000000000000000000000000000000000000aa',
+        '0x00000000000000000000000000000000000000bb',
+      ],
+      new: true,
+    });
+  });
+
+  it('does not register when every setup chain is custom', async () => {
+    jest.spyOn(ChainUtils, 'getAllSetupChainsForType').mockResolvedValue([
+      {
+        chainId: '0x539',
+        type: ChainType.EVM,
+        isCustom: true,
+      } as EvmChain,
+    ]);
+    jest
+      .spyOn(ChainUtils, 'getChainFromDefaultChains')
+      .mockResolvedValue(undefined as any);
+    jest.spyOn(EvmWalletUtils, 'getAllLocalAddresses').mockResolvedValue([
+      '0x00000000000000000000000000000000000000aa',
+    ]);
+    const postSpy = jest.spyOn(EvmLightNodeApi, 'post').mockResolvedValue({});
+
+    await EvmLightNodeUtils.registerAddress(
+      '0x539',
       '0x00000000000000000000000000000000000000aa',
       false,
     );
 
-    expect(postSpy).toHaveBeenCalledWith(
-      'register/1/0x00000000000000000000000000000000000000aa/false',
-      {},
-    );
+    expect(postSpy).not.toHaveBeenCalled();
   });
 
   it('getReceiverSecurity calls GET /address with encoded receiver', async () => {

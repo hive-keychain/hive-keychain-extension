@@ -12,6 +12,12 @@ import {
   EvmSmartContractInfoErc721,
   EvmSmartContractInfoNative,
 } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
+import {
+  ChainType,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { BaseApi } from 'src/api/base';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -617,34 +623,133 @@ const getMetadata = async (
   return {} as EvmSmartContractInfo;
 };
 
+const EVM_ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/;
+
+type RegisterChain = {
+  chainId: string;
+  decimalChainId: number;
+};
+
+const toDecimalChainId = (chainId: string): number | undefined => {
+  const segment = evmChainIdToDecimalPathSegment(chainId);
+  if (!/^\d+$/.test(segment)) return undefined;
+  const decimalChainId = Number(segment);
+  if (!Number.isSafeInteger(decimalChainId) || decimalChainId <= 0) {
+    return undefined;
+  }
+  return decimalChainId;
+};
+
+const collectRegisterChains = async (
+  chainId: string,
+): Promise<RegisterChain[]> => {
+  const setupChains = await ChainUtils.getAllSetupChainsForType<EvmChain>(
+    ChainType.EVM,
+  );
+  const candidates = setupChains.filter((chain) => chain.isCustom !== true);
+  const normalizedTrigger = chainId.trim().toLowerCase();
+  const triggerAlreadyIncluded = candidates.some(
+    (chain) => chain.chainId.toLowerCase() === normalizedTrigger,
+  );
+
+  if (!triggerAlreadyIncluded && normalizedTrigger) {
+    const defaultChain = await ChainUtils.getChainFromDefaultChains<EvmChain>(
+      chainId,
+    );
+    if (
+      defaultChain &&
+      defaultChain.type === ChainType.EVM &&
+      defaultChain.isCustom !== true
+    ) {
+      candidates.push(defaultChain);
+    }
+  }
+
+  const chains: RegisterChain[] = [];
+  const seen = new Set<number>();
+  for (const chain of candidates) {
+    const decimalChainId = toDecimalChainId(chain.chainId);
+    if (decimalChainId === undefined || seen.has(decimalChainId)) continue;
+    seen.add(decimalChainId);
+    chains.push({ chainId: chain.chainId, decimalChainId });
+  }
+  return chains;
+};
+
+const addUniqueAddress = (
+  addresses: string[],
+  seen: Set<string>,
+  value: string | undefined,
+) => {
+  if (!value) return;
+  const trimmed = value.trim();
+  if (!EVM_ADDRESS_REGEX.test(trimmed)) return;
+  const normalized = trimmed.toLowerCase();
+  if (seen.has(normalized)) return;
+  seen.add(normalized);
+  addresses.push(normalized);
+};
+
+const collectRegisterAddresses = async (address: string): Promise<string[]> => {
+  const localAddresses = await EvmWalletUtils.getAllLocalAddresses();
+  const addresses: string[] = [];
+  const seen = new Set<string>();
+  for (const localAddress of localAddresses) {
+    addUniqueAddress(addresses, seen, localAddress);
+  }
+  addUniqueAddress(
+    addresses,
+    seen,
+    process.env.FORCED_EVM_WALLET_ADDRESS ?? address,
+  );
+  return addresses;
+};
+
+const saveRegisteredAddresses = async (
+  chains: RegisterChain[],
+  addresses: string[],
+) => {
+  const stored = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.EVM_LIGHT_NODE_REGISTERED_ADDRESSES,
+  );
+  const registeredAddresses: EvmLightNodeRegisteredAddresses =
+    stored && typeof stored === 'object' && !Array.isArray(stored)
+      ? stored
+      : {};
+
+  for (const chain of chains) {
+    const existingKey =
+      Object.keys(registeredAddresses).find(
+        (key) => key.toLowerCase() === chain.chainId.toLowerCase(),
+      ) ?? chain.chainId;
+    registeredAddresses[existingKey] = addresses;
+  }
+
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_LIGHT_NODE_REGISTERED_ADDRESSES,
+    registeredAddresses,
+  );
+};
+
 const registerAddress = async (
   chainId: string,
   address: string,
   newAddress: boolean,
 ): Promise<void> => {
-  address = process.env.FORCED_EVM_WALLET_ADDRESS ?? address;
-  let registeredAddresses: EvmLightNodeRegisteredAddresses =
-    await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.EVM_LIGHT_NODE_REGISTERED_ADDRESSES,
-    );
-  if (!registeredAddresses) registeredAddresses = {};
-  if (!registeredAddresses[chainId]) registeredAddresses[chainId] = [];
-  if (registeredAddresses[chainId].includes(address)) {
-    // TODO remove after testing period
-    // return;
+  const [chains, addresses] = await Promise.all([
+    collectRegisterChains(chainId),
+    collectRegisterAddresses(address),
+  ]);
+  if (chains.length === 0 || addresses.length === 0) {
+    return;
   }
-  registeredAddresses[chainId].push(address);
 
-  const id = evmChainIdToDecimalPathSegment(chainId);
-  await EvmLightNodeApi.post(
-    `register/${id}/${encodeURIComponent(address)}/${newAddress}`,
-    {},
-  );
-  await LocalStorageUtils.saveValueInLocalStorage(
-    LocalStorageKeyEnum.EVM_LIGHT_NODE_REGISTERED_ADDRESSES,
-    registeredAddresses,
-  );
-  return;
+  await EvmLightNodeApi.post('register', {
+    chainIds: chains.map((chain) => chain.decimalChainId),
+    addresses,
+    new: newAddress,
+  });
+  await saveRegisteredAddresses(chains, addresses);
 };
 
 export const EvmLightNodeUtils = {
