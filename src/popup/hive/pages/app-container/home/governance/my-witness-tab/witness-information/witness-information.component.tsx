@@ -42,6 +42,7 @@ interface WitnessInformationProps {
   witnessInfo: WitnessInfo;
   ranking: Witness[];
   setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
+  openOnParameters?: boolean;
 }
 
 enum WitnessInfoScreen {
@@ -54,6 +55,7 @@ const WitnessInformation = ({
   witnessInfo,
   ranking,
   setEditMode,
+  openOnParameters = false,
   navigateToWithParams,
   addToLoadingList,
   setErrorMessage,
@@ -63,7 +65,7 @@ const WitnessInformation = ({
   goBack,
 }: PropsFromRedux & WitnessInformationProps) => {
   const [selectedScreen, setSelectedScreen] = useState<WitnessInfoScreen>(
-    WitnessInfoScreen.INFO,
+    openOnParameters ? WitnessInfoScreen.PARAMS : WitnessInfoScreen.INFO,
   );
   const [witnessRanking, setWitnessRanking] = useState<Witness>();
   const [lastSigningKey, setLastSigningKey] = useState<string | null>(null);

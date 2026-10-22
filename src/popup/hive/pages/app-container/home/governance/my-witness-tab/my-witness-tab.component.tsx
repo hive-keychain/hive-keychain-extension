@@ -26,13 +26,15 @@ const MyWitnessTab = ({
   const [isLoading, setIsLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [showUpdatedParameters, setShowUpdatedParameters] = useState(false);
 
   useEffect(() => {
-    init();
+    loadWitnessInfo();
   }, []);
 
-  const init = async () => {
+  const loadWitnessInfo = async () => {
     setIsLoading(true);
+    setHasError(false);
     try {
       const result = await WitnessUtils.getWitnessInfo(
         activeAccount.name!,
@@ -41,12 +43,18 @@ const MyWitnessTab = ({
       );
 
       setWitnessInfo(result);
-      setIsLoading(false);
     } catch (err) {
-      setIsLoading(false);
       setHasError(true);
       setErrorMessage('popup_html_error_retrieving_witness_information');
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const handleWitnessParametersUpdated = async () => {
+    setShowUpdatedParameters(true);
+    setEditMode(false);
+    await loadWitnessInfo();
   };
 
   return (
@@ -58,11 +66,13 @@ const MyWitnessTab = ({
             ranking={ranking}
             setEditMode={setEditMode}
             witnessInfo={witnessInfo}
+            openOnParameters={showUpdatedParameters}
           />
         ) : (
           <EditMyWitnessComponent
             setEditMode={setEditMode}
             witnessInfo={witnessInfo}
+            onWitnessParametersUpdated={handleWitnessParametersUpdated}
           />
         ))}
       {isLoading && (

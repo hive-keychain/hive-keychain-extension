@@ -31,11 +31,13 @@ import WitnessUtils from 'src/popup/hive/utils/witness.utils';
 interface EditMyWitnessProps {
   witnessInfo: WitnessInfo;
   setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
+  onWitnessParametersUpdated: () => Promise<void>;
 }
 
 const EditMyWitness = ({
   witnessInfo,
   setEditMode,
+  onWitnessParametersUpdated,
   activeAccount,
   addToLoadingList,
   removeFromLoadingList,
@@ -69,11 +71,13 @@ const EditMyWitness = ({
       removeFromLoadingList('html_popup_confirm_transaction_operation');
       refreshActiveAccount();
       if (success) {
-        goBackPage();
-
         if (success.isUsingMultisig) {
           setSuccessMessage('multisig_transaction_sent_to_signers');
-        } else setSuccessMessage('popup_success_witness_account_update');
+          goBackPage();
+        } else {
+          setSuccessMessage('popup_success_witness_account_update');
+          await onWitnessParametersUpdated();
+        }
       } else {
         setErrorMessage('popup_error_witness_account_update', [
           `${activeAccount.name!}`,
