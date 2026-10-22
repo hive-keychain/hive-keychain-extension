@@ -105,11 +105,12 @@ const IncomingOutgoing = ({
             options,
           );
           if (success) {
+            removeFromLoadingList('html_popup_cancel_delegation_operation');
             if (success.isUsingMultisig) {
               setSuccessMessage('multisig_transaction_sent_to_signers');
             } else setSuccessMessage('popup_html_cancel_delegation_successful');
-            await refreshDelegations();
             goBack();
+            void refreshDelegations();
           } else {
             setErrorMessage('popup_html_cancel_delegation_fail');
           }
@@ -138,6 +139,7 @@ const IncomingOutgoing = ({
 
     if (Number(value) <= 0) {
       cancelDelegation();
+      return;
     }
 
     const formattedAmount = `${parseFloat(value.toString()).toFixed(3)} ${
@@ -183,11 +185,12 @@ const IncomingOutgoing = ({
             options,
           );
           if (success) {
+            removeFromLoadingList('html_popup_delegation_operation');
             if (success.isUsingMultisig) {
               setSuccessMessage('multisig_transaction_sent_to_signers');
             } else setSuccessMessage('popup_html_delegation_successful');
-            await refreshDelegations();
             goBack();
+            void refreshDelegations();
           } else {
             setErrorMessage('popup_html_delegation_fail');
           }
