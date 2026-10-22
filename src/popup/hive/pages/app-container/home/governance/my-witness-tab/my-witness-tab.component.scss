@@ -3,6 +3,26 @@
   overflow: visible;
   flex: unset;
 
+  // Popup height is fixed. Inset the panel inside that height so the last
+  // control stays fully visible with space under it. The side panel is taller
+  // and already clears the bottom edge.
+  html:not(.sidepanel-page) & {
+    flex: 1;
+    min-height: 0;
+    height: auto;
+    overflow: hidden;
+
+    .witness-information,
+    .edit-my-witness-component {
+      flex: 1;
+      min-height: 0;
+      box-sizing: border-box;
+      padding-bottom: 16px;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+  }
+
   .rotating-logo-container {
     display: flex;
     align-self: center;
