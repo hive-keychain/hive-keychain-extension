@@ -12,6 +12,16 @@ import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
+
+const NOTIFICATION_ID_PREFIX = 'evm-tx';
+
+let clickListenerRegistered = false;
+
+const getTransactionNotificationId = (
+  transactionResponse: TransactionResponse,
+) =>
+  `${NOTIFICATION_ID_PREFIX}:${transactionResponse.chainId}:${transactionResponse.hash}`;
+
 const waitForTransaction = async (transactionResponse: TransactionResponse) => {
   try {
     const transactionReceipt = await transactionResponse.wait();
@@ -223,7 +233,7 @@ const createSuccessNotification = async (
   transactionResponse: TransactionResponse,
 ) => {
   chrome.notifications.create(
-    `${transactionResponse.hash}-${transactionResponse.chainId}`,
+    getTransactionNotificationId(transactionResponse),
     {
       type: 'basic',
       iconUrl: '/assets/images/iconhive.png',
@@ -243,7 +253,7 @@ const createFailedNotification = async (
   transactionResponse: TransactionResponse,
 ) => {
   chrome.notifications.create(
-    `${transactionResponse.hash}-${transactionResponse.chainId}`,
+    getTransactionNotificationId(transactionResponse),
     {
       type: 'basic',
       iconUrl: '/assets/images/iconhive.png',
@@ -258,19 +268,32 @@ const createFailedNotification = async (
 };
 
 const onNotificationClicked = async (notificationId: string) => {
-  if (notificationId.startsWith('evm-incoming:')) {
+  if (!notificationId.startsWith(`${NOTIFICATION_ID_PREFIX}:`)) {
     return;
   }
-  const [hash, chainId] = notificationId.split('-');
-  const chainIdHex = `0x${parseInt(chainId).toString(16)}`;
-  const chain = await ChainUtils.getChain<EvmChain>(chainIdHex);
-  if (!chain.blockExplorer?.url) {
+  const [, rawChainId, transactionHash] = notificationId.split(':');
+  const chainId = Number(rawChainId);
+  if (!Number.isInteger(chainId) || chainId < 0 || !transactionHash) {
     return;
   }
-  chrome.tabs.create({ url: `${chain.blockExplorer.url}/tx/${hash}` });
+  const chain = await ChainUtils.getChain<EvmChain>(
+    `0x${chainId.toString(16)}`,
+  );
+  if (!chain?.blockExplorer?.url) {
+    return;
+  }
+  chrome.tabs.create({
+    url: `${chain.blockExplorer.url}/tx/${transactionHash}`,
+  });
 };
 
-chrome.notifications.onClicked.addListener(onNotificationClicked);
+const registerClickListener = () => {
+  if (clickListenerRegistered) {
+    return;
+  }
+  clickListenerRegistered = true;
+  chrome.notifications.onClicked.addListener(onNotificationClicked);
+};
 
 const finalizeConfirmedPendingTransaction = async (
   pendingTransaction: EvmPendingTransaction,
@@ -307,4 +330,5 @@ const finalizeConfirmedPendingTransaction = async (
 export const EvmPendingTransactionsNotifications = {
   waitForTransaction,
   finalizeConfirmedPendingTransaction,
+  registerClickListener,
 };

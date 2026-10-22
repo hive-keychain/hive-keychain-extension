@@ -149,7 +149,7 @@ describe('evm-pending-transactions-notifications.utils', () => {
       EvmTransactionsUtils.deleteFromPendingTransactions,
     ).toHaveBeenCalledWith('0xhash');
     expect(chrome.notifications.create).toHaveBeenCalledWith(
-      '0xhash-1',
+      'evm-tx:1:0xhash',
       expect.objectContaining({
         title: 'evm_tx_completed_notification_title',
       }),
@@ -177,7 +177,7 @@ describe('evm-pending-transactions-notifications.utils', () => {
       EvmTransactionsUtils.deleteFromPendingTransactions,
     ).toHaveBeenCalledWith('0xhash');
     expect(chrome.notifications.create).toHaveBeenCalledWith(
-      '0xhash-1',
+      'evm-tx:1:0xhash',
       expect.objectContaining({
         title: 'evm_tx_failed_notification_title',
       }),
@@ -256,5 +256,34 @@ describe('evm-pending-transactions-notifications.utils', () => {
     expect(
       EvmTransactionsUtils.deleteFromPendingTransactions,
     ).toHaveBeenCalledWith('0xhash');
+  });
+
+  it('opens the explorer once when a transaction notification is clicked', async () => {
+    const addListenerSpy = jest.spyOn(
+      chrome.notifications.onClicked,
+      'addListener',
+    );
+    const createTabSpy = jest.spyOn(chrome.tabs, 'create');
+    (ChainUtils.getChain as jest.Mock).mockResolvedValue({
+      ...chain,
+      blockExplorer: { url: 'https://explorer.test' },
+    });
+
+    EvmPendingTransactionsNotifications.registerClickListener();
+    EvmPendingTransactionsNotifications.registerClickListener();
+
+    expect(addListenerSpy).toHaveBeenCalledTimes(1);
+    const listener = addListenerSpy.mock.calls[0][0];
+    await listener('evm-tx:1:0xhash');
+    await listener('hive-push:alice:1');
+    await listener('evm-incoming:1:0xhash:0');
+
+    expect(ChainUtils.getChain).toHaveBeenCalledWith('0x1');
+    expect(createTabSpy).toHaveBeenCalledTimes(1);
+    expect(createTabSpy).toHaveBeenCalledWith({
+      url: 'https://explorer.test/tx/0xhash',
+    });
+    addListenerSpy.mockRestore();
+    createTabSpy.mockRestore();
   });
 });

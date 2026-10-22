@@ -50,6 +50,7 @@ const initializeServiceWorker = async () => {
   Logger.info('Starting EVM service worker');
   initializeEvmProviderRegistration();
   EvmIncomingTransactionsModule.start();
+  EvmPendingTransactionsNotifications.registerClickListener();
   void EvmTransactionsUtils.rehydratePendingTransactions();
 
   chrome.webNavigation.onBeforeNavigate.addListener((details: any) => {
