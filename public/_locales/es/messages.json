@@ -288,7 +288,7 @@
     "description": "on popup main page"
   },
   "popup_html_estimation_info_text": {
-    "message": "El valor aproximado es un estimado de del valor total de sus fondos.<br><br>Puedes cambiar entre los modos USD, HIVE u oculto al hacer clic en la cantidad mostrada.",
+    "message": "El valor aproximado es un estimado de del valor total de sus fondos.<br><br>Puedes cambiar entre los modos USD, $1 u oculto al hacer clic en la cantidad mostrada.",
     "description": "on popup main page, click info near estimated value"
   },
   "popup_html_wallet_history": {

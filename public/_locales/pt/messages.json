@@ -288,7 +288,7 @@
     "description": "on popup main page"
   },
   "popup_html_estimation_info_text": {
-    "message": "O valor estimado da conta é uma estimativa de quanto seus fundos valem. U<br><br>Você pode alternar entre os modos USD, Hive ou ocultos clicando no valor exibido.",
+    "message": "O valor estimado da conta é uma estimativa de quanto seus fundos valem. U<br><br>Você pode alternar entre os modos USD, $1 ou ocultos clicando no valor exibido.",
     "description": "on popup main page, click info near estimated value"
   },
   "popup_html_wallet_history": {

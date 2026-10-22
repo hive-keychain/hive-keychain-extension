@@ -508,6 +508,7 @@ const Home = ({
             <EstimatedAccountValueSectionComponent
               hasPortofolio
               onPortfolioClick={PortfolioRouteUtils.open}
+              mainTokenSymbol={chain.mainToken}
               accountValues={{
                 [AccountValueType.DOLLARS]: accountValues.usdValue,
                 [AccountValueType.TOKEN]: accountValues.mainTokenValue,

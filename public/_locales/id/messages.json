@@ -288,7 +288,7 @@
     "description": "on popup main page"
   },
   "popup_html_estimation_info_text": {
-    "message": "Perkiraan nilai akun memberi gambaran kasar tentang total dana Anda.<br><br>Klik nilai yang ditampilkan untuk mengganti tampilan antara USD, HIVE, atau klik nilai yang ditampilkan untuk mengaktifkan mode tersembunyi.",
+    "message": "Perkiraan nilai akun memberi gambaran kasar tentang total dana Anda.<br><br>Klik nilai yang ditampilkan untuk mengganti tampilan antara USD, $1, atau klik nilai yang ditampilkan untuk mengaktifkan mode tersembunyi.",
     "description": "on popup main page, click info near estimated value"
   },
   "popup_html_wallet_history": {

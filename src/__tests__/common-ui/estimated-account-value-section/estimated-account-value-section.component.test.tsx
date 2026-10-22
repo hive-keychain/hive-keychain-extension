@@ -10,6 +10,7 @@ describe('EstimatedAccountValueSectionComponent', () => {
       <EstimatedAccountValueSectionComponent
         hasPortofolio
         onPortfolioClick={onPortfolioClick}
+        mainTokenSymbol="HIVE"
         accountValues={{
           [AccountValueType.DOLLARS]: '$1',
           [AccountValueType.TOKEN]: '1 HIVE',

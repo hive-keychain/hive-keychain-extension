@@ -515,6 +515,7 @@ const Home = ({
               <ResourcesSectionComponent />
               <EstimatedAccountValueSectionComponent
                 onPortfolioClick={PortfolioRouteUtils.open}
+                mainTokenSymbol={chain.mainTokens?.hive ?? 'HIVE'}
                 accountValues={{
                   [AccountValueType.DOLLARS]: `$ ${AccountUtils.getAccountValue(
                     activeAccount.account,

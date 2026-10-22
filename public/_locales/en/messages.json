@@ -288,7 +288,7 @@
     "description": "on popup main page"
   },
   "popup_html_estimation_info_text": {
-    "message": "The estimated account value is a ballpark idea of what your funds are worth.<br><br>You can switch between the USD, HIVE or hidden modes by clicking on the displayed amount.",
+    "message": "The estimated account value is a ballpark idea of what your funds are worth.<br><br>You can switch between the USD, $1 or hidden modes by clicking on the displayed amount.",
     "description": "on popup main page, click info near estimated value"
   },
   "popup_html_wallet_history": {

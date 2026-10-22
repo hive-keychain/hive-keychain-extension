@@ -288,7 +288,7 @@
     "description": "on popup main page"
   },
   "popup_html_estimation_info_text": {
-    "message": "Der geschätzte Kontowert ist eine ungefähre Vorstellung davon, was Dein Guthaben wert ist<br><br>.Du kannst zwischen den Modi USD, HIVE oder Ausblenden wechseln, indem Du auf den angezeigten Betrag klickst.",
+    "message": "Der geschätzte Kontowert ist eine ungefähre Vorstellung davon, was Dein Guthaben wert ist<br><br>.Du kannst zwischen den Modi USD, $1 oder Ausblenden wechseln, indem Du auf den angezeigten Betrag klickst.",
     "description": "on popup main page, click info near estimated value"
   },
   "popup_html_wallet_history": {

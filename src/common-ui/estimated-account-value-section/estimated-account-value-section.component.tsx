@@ -15,12 +15,14 @@ export interface DisplayedAccountValues {
 interface EstimatedAccountValueSectionProps {
   hasPortofolio?: boolean;
   accountValues: DisplayedAccountValues;
+  mainTokenSymbol: string;
   onPortfolioClick?: () => void;
 }
 
 const EstimatedAccountValueSection = ({
   hasPortofolio,
   accountValues,
+  mainTokenSymbol,
   onPortfolioClick,
 }: EstimatedAccountValueSectionProps) => {
   const [accountValueType, setAccountValueType] = useState<AccountValueType>(
@@ -60,6 +62,7 @@ const EstimatedAccountValueSection = ({
           <CustomTooltip
             dataTestId="custom-tool-tip-estimated-value-section"
             message="popup_html_estimation_info_text"
+            messageParams={[mainTokenSymbol]}
             delayShow={500}
             position="bottom">
             <div className="label">
