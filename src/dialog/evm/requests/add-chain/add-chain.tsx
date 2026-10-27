@@ -12,6 +12,7 @@ import {
   TransactionConfirmationFields,
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { ChainListOrgUtils } from '@popup/evm/utils/chain-list-org.utils';
+import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmRpcUrlUtils } from '@popup/evm/utils/evm-rpc-url.utils';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import { EvmInputDisplayType } from '@popup/evm/utils/evm-transaction-parser.utils';
@@ -24,8 +25,8 @@ import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import { CommunicationUtils } from 'src/utils/communication.utils';
-
 import { I18nUtils } from 'src/utils/i18n.utils';
+import Logger from 'src/utils/logger.utils';
 interface Props {
   request: EvmRequest<AddChainRequest>;
   data: EvmRequestMessage;
@@ -213,6 +214,18 @@ export const AddChain = (props: Props) => {
         validDappRpcUrls,
         defaultChainToAdd,
       );
+      if (defaultChainToAdd.isCustom !== true) {
+        try {
+          await EvmLightNodeUtils.registerLocalAddresses(
+            defaultChainToAdd.chainId,
+          );
+        } catch (error) {
+          Logger.error(
+            'Error while registering EVM address with light node',
+            error,
+          );
+        }
+      }
     }
   };
 

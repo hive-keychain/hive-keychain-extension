@@ -25,13 +25,13 @@ import { PageTitleComponent } from 'src/common-ui/page-title/page-title.componen
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
+import Logger from 'src/utils/logger.utils';
 interface ChainSelectorProps {
   hideTitle?: boolean;
 }
 
 const ChainSelector = ({
   chain,
-  activeAccount,
   setChain,
   openModal,
   closeModal,
@@ -59,17 +59,6 @@ const ChainSelector = ({
   }, [chain, init]);
 
   const selectChain = async (selectedChain: Chain) => {
-    if (
-      activeAccount?.address &&
-      selectedChain.type === ChainType.EVM &&
-      !(selectedChain as EvmChain).isCustom
-    ) {
-      await EvmLightNodeUtils.registerAddress(
-        selectedChain.chainId,
-        activeAccount.address,
-        false,
-      );
-    }
     setChain(selectedChain, { syncProviderNetwork: true });
   };
 
@@ -242,6 +231,19 @@ const ChainSelector = ({
     }
 
     await ChainUtils.addChainToSetupChains(selectedChain);
+    if (
+      selectedChain.type === ChainType.EVM &&
+      !(selectedChain as EvmChain).isCustom
+    ) {
+      try {
+        await EvmLightNodeUtils.registerLocalAddresses(selectedChain.chainId);
+      } catch (error) {
+        Logger.error(
+          'Error while registering EVM address with light node',
+          error,
+        );
+      }
+    }
     await init();
     await selectChain(selectedChain);
   };
@@ -439,7 +441,6 @@ const ChainSelector = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.evm?.activeAccount,
     chain: state.chain,
   };
 };

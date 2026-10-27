@@ -491,7 +491,7 @@ export const loadMoreTokensInActiveAccount =
       await EvmAccountTokensLoadUtils.loadNativeAndErc20TokensForChain(
         chain,
         wallet.address,
-        { registerAddress: false, shouldContinue: isCurrentRequest },
+        { shouldContinue: isCurrentRequest },
       );
     if (!isCurrentRequest()) {
       return;
@@ -573,15 +573,6 @@ export const loadEvmActiveAccount =
       return;
     }
 
-    try {
-      await EvmLightNodeUtils.registerAddress(
-        chain.chainId,
-        wallet.address,
-        false,
-      );
-    } catch (error) {
-      Logger.error('Error while registering EVM address with light node', error);
-    }
     if (!isSameEvmChain(getState().chain as Chain, chain)) {
       return;
     }
@@ -595,7 +586,6 @@ export const loadEvmActiveAccount =
         chain,
         wallet.address,
         {
-          registerAddress: false,
           shouldContinue: () =>
             isActiveAccountRequestCurrent(
               getState().chain as Chain,

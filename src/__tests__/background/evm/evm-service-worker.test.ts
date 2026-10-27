@@ -3,6 +3,7 @@ import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 
 const addCustomChainMock = jest.fn();
+const addChainToSetupChainsMock = jest.fn();
 const setActiveRpcMock = jest.fn();
 const initEvmRequestHandlerMock = jest.fn();
 const getFromLocalStorageMock = jest.fn();
@@ -59,6 +60,8 @@ jest.mock('src/utils/communication.utils', () => ({
 jest.mock('@popup/multichain/utils/chain.utils', () => ({
   ChainUtils: {
     addCustomChain: (...args: any[]) => addCustomChainMock(...args),
+    addChainToSetupChains: (...args: any[]) =>
+      addChainToSetupChainsMock(...args),
   },
 }));
 
@@ -102,6 +105,12 @@ describe('evm service worker', () => {
     getFromLocalStorageMock.mockResolvedValue(requestHandler);
 
     const listener = await importListener();
+    const { EvmLightNodeUtils } = await import(
+      '@popup/evm/utils/evm-light-node.utils'
+    );
+    const registerSpy = jest
+      .spyOn(EvmLightNodeUtils, 'registerLocalAddresses')
+      .mockResolvedValue(undefined);
 
     const request = {
       request_id: 99,
@@ -141,6 +150,7 @@ describe('evm service worker', () => {
     );
 
     expect(addCustomChainMock).toHaveBeenCalledWith(requestedChain);
+    expect(registerSpy).not.toHaveBeenCalled();
     expect(setActiveRpcMock).toHaveBeenCalledWith(
       requestedChain.rpcs[0],
       requestedChain,
@@ -160,6 +170,46 @@ describe('evm service worker', () => {
       dappInfo,
       requestHandler,
     );
+  });
+
+  it('registers local addresses when a known chain is approved', async () => {
+    addChainToSetupChainsMock.mockResolvedValue(undefined);
+    const listener = await importListener();
+    const { EvmLightNodeUtils } = await import(
+      '@popup/evm/utils/evm-light-node.utils'
+    );
+    const registerSpy = jest
+      .spyOn(EvmLightNodeUtils, 'registerLocalAddresses')
+      .mockResolvedValue(undefined);
+    const requestedChain = {
+      type: 'EVM',
+      isCustom: false,
+      name: 'Polygon',
+      chainId: '0x89',
+    };
+
+    await listener(
+      {
+        command: BackgroundCommand.ACCEPT_ADD_EVM_CHAIN,
+        value: {
+          request: { request_id: 4 },
+          tab: 12,
+          dappInfo: {
+            origin: 'https://example.app',
+            domain: 'example.app',
+            protocol: 'https:',
+            logo: '',
+          },
+          requestedChain,
+        },
+      } as any,
+      {} as any,
+      jest.fn(),
+    );
+
+    expect(addChainToSetupChainsMock).toHaveBeenCalledWith(requestedChain);
+    expect(registerSpy).toHaveBeenCalledWith('0x89');
+    expect(initEvmRequestHandlerMock).toHaveBeenCalled();
   });
 
   it('sets provider chain for manual popup sync requests', async () => {

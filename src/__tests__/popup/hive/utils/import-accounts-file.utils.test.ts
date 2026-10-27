@@ -1,6 +1,7 @@
 import { Screen } from '@interfaces/screen.interface';
 import { MessageType } from '@reference-data/message-type.enum';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface.utils';
@@ -27,6 +28,12 @@ describe('import-accounts-file.utils tests', () => {
 
   afterEach(() => {
     jest.restoreAllMocks();
+  });
+
+  beforeEach(() => {
+    jest
+      .spyOn(EvmLightNodeUtils, 'registerLocalAddresses')
+      .mockResolvedValue(undefined);
   });
 
   const getStore = (chain = initialEmptyStateStore.chain) =>
@@ -168,6 +175,7 @@ describe('import-accounts-file.utils tests', () => {
     );
     expect(reduxStore.getState().message.key).toBe('import_html_success');
     expect(reduxStore.getState().message.type).toBe(MessageType.SUCCESS);
+    expect(EvmLightNodeUtils.registerLocalAddresses).not.toHaveBeenCalled();
   });
 
   it('switches the active chain to Hive when a mixed backup selects a Hive account', async () => {
@@ -202,6 +210,9 @@ describe('import-accounts-file.utils tests', () => {
     expect(reduxStore.getState().activeAccountType).toBe(ChainType.HIVE);
     expect(reduxStore.getState().chain.type).toBe(ChainType.HIVE);
     expect(reduxStore.getState().chain.chainId).toBe(hiveChain.chainId);
+    expect(EvmLightNodeUtils.registerLocalAddresses).toHaveBeenCalledWith(
+      evmChain.chainId,
+    );
   });
 
   it('switches the active chain to Hive when importing Hive-only accounts from an EVM chain', async () => {
@@ -223,6 +234,7 @@ describe('import-accounts-file.utils tests', () => {
     expect(reduxStore.getState().activeAccountType).toBe(ChainType.HIVE);
     expect(reduxStore.getState().chain.type).toBe(ChainType.HIVE);
     expect(reduxStore.getState().chain.chainId).toBe(hiveChain.chainId);
+    expect(EvmLightNodeUtils.registerLocalAddresses).not.toHaveBeenCalled();
   });
 
   it('shows an error message when the backup import fails', async () => {
@@ -238,5 +250,37 @@ describe('import-accounts-file.utils tests', () => {
 
     expect(reduxStore.getState().message.key).toBe('import_html_error');
     expect(reduxStore.getState().message.type).toBe(MessageType.ERROR);
+  });
+
+  it('registers EVM accounts imported from a backup while Hive is active', async () => {
+    jest.spyOn(ChainUtils, 'getAllSetupChainsForType').mockResolvedValue([
+      hiveChain,
+      { ...evmChain, isCustom: false },
+    ] as never);
+    const { onMessageListener } = startImportAndGetListener();
+    jest
+      .spyOn(EvmWalletUtils, 'rebuildAccountsFromLocalStorage')
+      .mockResolvedValue([
+        {
+          id: 0,
+          seedId: 1,
+          wallet: { address: '0x1234567890123456789012345678901234567890' },
+          source: 'seed',
+        },
+      ] as any);
+    jest.spyOn(EvmWalletUtils, 'invalidateRebuildAccountsCache');
+
+    await onMessageListener!({
+      command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
+      value: {
+        success: true,
+        accountType: 'evm',
+        message: 'import_html_success',
+      },
+    });
+
+    expect(EvmLightNodeUtils.registerLocalAddresses).toHaveBeenCalledWith(
+      evmChain.chainId,
+    );
   });
 });

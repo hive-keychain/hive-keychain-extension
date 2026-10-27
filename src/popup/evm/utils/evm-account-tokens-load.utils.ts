@@ -122,7 +122,6 @@ const getVisibleNativeAndErc20Tokens = async (
 };
 
 type LoadNativeAndErc20TokensForChainOptions = {
-  registerAddress?: boolean;
   shouldContinue?: () => boolean;
 };
 
@@ -149,14 +148,6 @@ const loadNativeAndErc20TokensForChain = async (
     );
 
     return { balances, shouldLoadMore: false };
-  }
-
-  if (options?.registerAddress !== false) {
-    try {
-      await EvmLightNodeUtils.registerAddress(chain.chainId, walletAddress, false);
-    } catch (error) {
-      Logger.error('Error while registering EVM address with light node', error);
-    }
   }
 
   if (isLoadCancelled(options)) {
@@ -234,7 +225,6 @@ const loadVisibleNativeAndErc20TokensForChain = async (
     chain,
     walletAddress,
     {
-      registerAddress: retryCount === 0,
       shouldContinue: options?.shouldContinue,
     },
   );

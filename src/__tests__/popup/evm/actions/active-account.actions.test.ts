@@ -204,13 +204,20 @@ describe('EVM active-account.actions (custom chain)', () => {
     ).toBe('0x00000000000000000000000000000000000000cc');
   });
 
-  it('loadEvmActiveAccount sets wallet identity before Light Node register', async () => {
-    const registerAddressSpy = jest
-      .spyOn(EvmLightNodeUtils, 'registerAddress')
+  it('loadEvmActiveAccount sets wallet identity before loading tokens', async () => {
+    const getDiscoveredTokensSpy = jest
+      .spyOn(EvmLightNodeUtils, 'getDiscoveredTokens')
       .mockImplementation(async () => {
         expect(store.getState().evm.activeAccount.wallet?.address).toBe(
           wallet.address,
         );
+        return {
+          address: wallet.address,
+          chainId: '1',
+          tokens: [],
+          catchupStatus: CatchupStatus.DONE,
+          pricingStatus: PricingStatus.READY,
+        };
       });
     const store = getFakeStore({
       ...initialEmptyStateStore,
@@ -219,7 +226,8 @@ describe('EVM active-account.actions (custom chain)', () => {
 
     await store.dispatch<any>(loadEvmActiveAccount(baseEvmChain, wallet));
 
-    expect(registerAddressSpy).toHaveBeenCalled();
+    expect(getDiscoveredTokensSpy).toHaveBeenCalled();
+    expect(EvmLightNodeUtils.registerAddress).not.toHaveBeenCalled();
   });
 
   it('loadEvmActiveAccount uses Light Node for default chains', async () => {
@@ -230,7 +238,7 @@ describe('EVM active-account.actions (custom chain)', () => {
 
     await store.dispatch<any>(loadEvmActiveAccount(baseEvmChain, wallet));
 
-    expect(EvmLightNodeUtils.registerAddress).toHaveBeenCalled();
+    expect(EvmLightNodeUtils.registerAddress).not.toHaveBeenCalled();
     expect(EvmLightNodeUtils.getDiscoveredTokens).toHaveBeenCalled();
     expect(EvmLightNodeUtils.getDiscoveredNfts).toHaveBeenCalled();
     expect(EvmTokensHistoryUtils.fetchHistory2).toHaveBeenCalled();

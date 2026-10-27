@@ -2,6 +2,7 @@ import '@testing-library/jest-dom';
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { AddChain } from '@dialog/evm/requests/add-chain/add-chain';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
+import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { ChainListOrgUtils } from '@popup/evm/utils/chain-list-org.utils';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import {
@@ -187,6 +188,9 @@ describe('AddChain', () => {
     jest.spyOn(ChainUtils, 'addChainToSetupChains').mockResolvedValue();
     jest.spyOn(ChainUtils, 'addCustomChain').mockResolvedValue();
     jest.spyOn(ChainListOrgUtils, 'findByChainId').mockResolvedValue(undefined);
+    jest
+      .spyOn(EvmLightNodeUtils, 'registerLocalAddresses')
+      .mockResolvedValue(undefined);
   });
 
   afterEach(() => {
@@ -212,6 +216,7 @@ describe('AddChain', () => {
     });
     expect(EvmRpcUtils.setActiveRpc).not.toHaveBeenCalled();
     expect(ChainUtils.addCustomChain).not.toHaveBeenCalled();
+    expect(EvmLightNodeUtils.registerLocalAddresses).not.toHaveBeenCalled();
     expect(mockCustomEvmChainForm).not.toHaveBeenCalled();
     expect(CommunicationUtils.runtimeSendMessage).toHaveBeenCalledWith({
       command: BackgroundCommand.SEND_EVM_RESPONSE_TO_SW,
@@ -331,6 +336,32 @@ describe('AddChain', () => {
       ]),
     });
     expect(mockCustomEvmChainForm).not.toHaveBeenCalled();
+  });
+
+  it('registers local addresses after a default chain is approved', async () => {
+    jest.spyOn(ChainUtils, 'getSetupChains').mockResolvedValue([]);
+    jest.spyOn(ChainUtils, 'getChainFromDefaultChains').mockResolvedValue({
+      ...chain,
+      name: 'Canonical Chain',
+      isCustom: false,
+    });
+
+    render(<AddChain request={request} data={data} afterCancel={jest.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('evm_add_chain')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByTestId('dialog-confirm'));
+
+    await waitFor(() => {
+      expect(ChainUtils.addChainToSetupChains).toHaveBeenCalledWith(
+        expect.objectContaining({ chainId: chain.chainId }),
+      );
+      expect(EvmLightNodeUtils.registerLocalAddresses).toHaveBeenCalledWith(
+        chain.chainId,
+      );
+    });
   });
 
   it('preloads dapp chain data into the custom chain form when Keychain and Chainlist have no match', async () => {
@@ -477,6 +508,7 @@ describe('AddChain', () => {
       { url: 'https://rpc.example.com', isDefault: true },
       mockSubmittedChain,
     );
+    expect(EvmLightNodeUtils.registerLocalAddresses).not.toHaveBeenCalled();
     expect(CommunicationUtils.runtimeSendMessage).toHaveBeenCalledWith({
       command: BackgroundCommand.SEND_EVM_RESPONSE_TO_SW,
       value: {

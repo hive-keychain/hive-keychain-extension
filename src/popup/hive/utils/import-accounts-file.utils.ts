@@ -3,6 +3,7 @@ import { LocalAccount } from '@interfaces/local-account.interface';
 import { Screen } from '@interfaces/screen.interface';
 import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
+import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { setAccounts } from '@popup/hive/actions/account.actions';
 import { activateHiveAccount } from '@popup/hive/actions/active-account.actions';
@@ -18,11 +19,13 @@ import {
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface.utils';
 import { Store } from 'redux';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import FileUtils from 'src/utils/file.utils';
+import Logger from 'src/utils/logger.utils';
 
 type ImportAccountsStore = Store<RootState>;
 
@@ -88,6 +91,51 @@ const activateImportedHiveAccount = async (
   await reduxStore.dispatch(activateHiveAccount(hiveAccount));
 };
 
+const resolveImportedAccountsRegisterChainId = async (
+  activeChain: RootState['chain'],
+): Promise<string | undefined> => {
+  if (
+    activeChain?.type === ChainType.EVM &&
+    (activeChain as EvmChain).isCustom !== true
+  ) {
+    return activeChain.chainId;
+  }
+
+  const setupChains = await ChainUtils.getAllSetupChainsForType<EvmChain>(
+    ChainType.EVM,
+  );
+  return setupChains.find(
+    (setupChain) =>
+      setupChain.type === ChainType.EVM && setupChain.isCustom !== true,
+  )?.chainId;
+};
+
+const registerImportedEvmAccounts = async (
+  evmAccounts: Array<{ wallet?: { address?: string } }>,
+  activeChain: RootState['chain'],
+) => {
+  const hasAddress = evmAccounts.some((account) =>
+    Boolean(account.wallet?.address?.trim()),
+  );
+  if (!hasAddress) {
+    return;
+  }
+
+  const chainId = await resolveImportedAccountsRegisterChainId(activeChain);
+  if (!chainId) {
+    return;
+  }
+
+  try {
+    await EvmLightNodeUtils.registerLocalAddresses(chainId);
+  } catch (error) {
+    Logger.error(
+      'Error while registering imported EVM addresses with light node',
+      error,
+    );
+  }
+};
+
 const applyImportedAccountsMessage = async (
   message: BackgroundMessage,
   reduxStore: ImportAccountsStore,
@@ -112,6 +160,7 @@ const applyImportedAccountsMessage = async (
       await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
     reduxStore.dispatch(setAccounts(hiveAccounts));
     reduxStore.dispatch(setEvmAccounts(evmAccounts));
+    await registerImportedEvmAccounts(evmAccounts, chain);
     if (hiveAccounts[0]) {
       await activateImportedHiveAccount(reduxStore, hiveAccounts[0]);
     } else if (chain?.type === ChainType.EVM && evmAccounts[0]) {
@@ -134,6 +183,7 @@ const applyImportedAccountsMessage = async (
     const evmAccounts =
       await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
     reduxStore.dispatch(setEvmAccounts(evmAccounts));
+    await registerImportedEvmAccounts(evmAccounts, chain);
     if (chain?.type === ChainType.EVM && evmAccounts[0]) {
       await reduxStore.dispatch(
         loadEvmActiveAccount(chain as EvmChain, evmAccounts[0].wallet),

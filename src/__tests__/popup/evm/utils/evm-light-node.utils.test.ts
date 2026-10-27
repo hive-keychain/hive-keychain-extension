@@ -369,6 +369,44 @@ describe('evm-light-node.utils tests:\n', () => {
     );
   });
 
+  it('registerLocalAddresses skips the request when the wallet has no address', async () => {
+    jest.spyOn(EvmWalletUtils, 'getAllLocalAddresses').mockResolvedValue([]);
+    const postSpy = jest.spyOn(EvmLightNodeApi, 'post').mockResolvedValue({});
+
+    await EvmLightNodeUtils.registerLocalAddresses('0x1');
+
+    expect(postSpy).not.toHaveBeenCalled();
+  });
+
+  it('registerLocalAddresses registers every local address on the requested chain', async () => {
+    const ethereum = {
+      chainId: '0x1',
+      type: ChainType.EVM,
+      isCustom: false,
+    } as EvmChain;
+    jest
+      .spyOn(ChainUtils, 'getAllSetupChainsForType')
+      .mockResolvedValue([ethereum]);
+    jest.spyOn(EvmWalletUtils, 'getAllLocalAddresses').mockResolvedValue([
+      '0x00000000000000000000000000000000000000aa',
+    ]);
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockResolvedValue(undefined);
+    jest
+      .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+      .mockResolvedValue(undefined as any);
+    const postSpy = jest.spyOn(EvmLightNodeApi, 'post').mockResolvedValue({});
+
+    await EvmLightNodeUtils.registerLocalAddresses('0x1');
+
+    expect(postSpy).toHaveBeenCalledWith('register', {
+      chainIds: [1],
+      addresses: ['0x00000000000000000000000000000000000000aa'],
+      new: false,
+    });
+  });
+
   it('includes a known default chain that is not in setup yet and forwards new=true', async () => {
     const ethereum = {
       chainId: '0x1',
