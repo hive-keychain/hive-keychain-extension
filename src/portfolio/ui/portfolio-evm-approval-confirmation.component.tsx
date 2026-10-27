@@ -23,6 +23,7 @@ import { EvmRequestMessage } from 'src/dialog/interfaces/messages.interface';
 import { PortfolioEvmInAppConfirmationContext } from 'src/portfolio/portfolio-in-app-confirmation.interface';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
 import { EvmSwapConfirmationBalance } from 'src/common-ui/evm/evm-swap-confirmation-balance.component';
+import { EvmSwapConfirmationBalanceUtils } from '@popup/evm/utils/evm-swap-confirmation-balance.utils';
 import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 
@@ -33,32 +34,36 @@ type Props = {
 };
 
 /**
- * Embedded confirmation shown when a portfolio EVM swap first needs an ERC-20
- * approval. Mirrors the LI.FI confirmation page: a dedicated Approve panel and
- * Swap panel, each with its own gas fee selector, then a single confirm that
- * sends the approval (and waits) before the swap.
+ * Embedded confirmation shown when a portfolio EVM swap first needs an allowance.
+ * One Approve panel per allowance (ERC-20, then Permit2 when both are required)
+ * and a Swap panel, each with its own gas fee selector. A single confirm sends
+ * the allowances in order, waiting for each, before the swap.
  */
 export const PortfolioEvmApprovalConfirmation = ({
   context,
   onDismiss,
   setErrorMessage,
 }: Props) => {
-  const { approveFields = [], fields, chain, account, message } = context;
+  const { allowanceSteps, fields, chain, account, message } = context;
 
   const transactionHook = useTransactionHook(
     {} as EvmRequestMessage,
     {} as EvmRequest,
   );
 
-  const [approveSelectedFee, setApproveSelectedFee] =
-    useState<GasFeeEstimationBase>();
+  const [allowanceFees, setAllowanceFees] = useState<
+    Array<GasFeeEstimationBase | undefined>
+  >(() => allowanceSteps.map(() => undefined));
   const [swapSelectedFee, setSwapSelectedFee] =
     useState<GasFeeEstimationBase>();
   const [hasInsufficientBalance, setHasInsufficientBalance] = useState(false);
 
   useEffect(() => {
-    transactionHook.setConfirmationPageFields([...approveFields, ...fields]);
-  }, [approveFields, fields]);
+    transactionHook.setConfirmationPageFields([
+      ...allowanceSteps.flatMap((step) => step.fields),
+      ...fields,
+    ]);
+  }, [allowanceSteps, fields]);
 
   const handleErrors = (error: EtherRPCCustomError | undefined) => {
     if (error) {
@@ -66,23 +71,45 @@ export const PortfolioEvmApprovalConfirmation = ({
     }
   };
 
+  const handleSelectAllowanceFee = (
+    index: number,
+    fee: GasFeeEstimationBase,
+  ) => {
+    setAllowanceFees((current) =>
+      current.map((selected, selectedIndex) =>
+        selectedIndex === index ? fee : selected,
+      ),
+    );
+  };
+
   const handleClickOnConfirm = () => {
     if (transactionHook.hasWarning()) {
       transactionHook.openWarningsPopup();
       return;
     }
-    if (!swapSelectedFee || !approveSelectedFee) {
+    const selectedAllowanceFees = allowanceFees.filter(
+      (fee): fee is GasFeeEstimationBase => Boolean(fee),
+    );
+    if (
+      !swapSelectedFee ||
+      selectedAllowanceFees.length !== allowanceSteps.length
+    ) {
       setErrorMessage('popup_html_evm_gas_fee_not_selected');
       return;
     }
-    void context.onConfirm(swapSelectedFee, approveSelectedFee);
+    void context.onConfirm(swapSelectedFee, selectedAllowanceFees);
   };
 
   const handleClickOnCancel = () => {
     onDismiss();
   };
 
-  const confirmationFields = [...approveFields, ...fields];
+  const allowanceFields = allowanceSteps.flatMap((step) => step.fields);
+  const confirmationFields = [...allowanceFields, ...fields];
+  const allowanceFieldOffsetAt = (stepIndex: number) =>
+    allowanceSteps
+      .slice(0, stepIndex)
+      .reduce((total, step) => total + step.fields.length, 0);
   const bannerWarnings =
     EvmRiskWarningUtils.collectWarningsFromConfirmationFields(
       confirmationFields,
@@ -173,32 +200,34 @@ export const PortfolioEvmApprovalConfirmation = ({
           />
         )}
 
-        <div className="fields">
-          <LabelComponent
-            value={'evm_approval_operation'}
-            className="portfolio-operation-name"
-          />
-          {renderFields(approveFields, 0)}
-          <GasFeePanel
-            chain={chain as EvmChain}
-            fromAddress={account.wallet.address}
-            selectedFee={approveSelectedFee}
-            onSelectFee={setApproveSelectedFee}
-            transactionType={
-              context.approveTransactionData?.type ??
-              (chain as EvmChain).defaultTransactionType
-            }
-            transactionData={context.approveTransactionData}
-            setErrorMessage={handleErrors}
-          />
-        </div>
+        {allowanceSteps.map((step, index) => (
+          <div className="fields" key={`portfolio-allowance-${index}`}>
+            <LabelComponent
+              value={'evm_approval_operation'}
+              className="portfolio-operation-name"
+            />
+            {renderFields(step.fields, allowanceFieldOffsetAt(index))}
+            <GasFeePanel
+              chain={chain as EvmChain}
+              fromAddress={account.wallet.address}
+              selectedFee={allowanceFees[index]}
+              onSelectFee={(fee) => handleSelectAllowanceFee(index, fee)}
+              transactionType={
+                step.transactionData.type ??
+                (chain as EvmChain).defaultTransactionType
+              }
+              transactionData={step.transactionData}
+              setErrorMessage={handleErrors}
+            />
+          </div>
+        ))}
 
         <div className="fields">
           <LabelComponent
             value={'evm_swap_operation'}
             className="portfolio-operation-name"
           />
-          {renderFields(fields, approveFields.length)}
+          {renderFields(fields, allowanceFields.length)}
           <GasFeePanel
             chain={chain as EvmChain}
             fromAddress={account.wallet.address}
@@ -218,7 +247,9 @@ export const PortfolioEvmApprovalConfirmation = ({
           fromTokenInfo={context.fromTokenInfo}
           swapAmount={context.swapAmount}
           swapGasFee={swapSelectedFee}
-          approveGasFee={approveSelectedFee}
+          approveGasFee={EvmSwapConfirmationBalanceUtils.sumGasFees(
+            allowanceFees,
+          )}
           onInsufficientBalanceChange={setHasInsufficientBalance}
         />
       </div>

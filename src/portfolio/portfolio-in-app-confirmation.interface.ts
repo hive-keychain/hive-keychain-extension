@@ -34,12 +34,20 @@ export type PortfolioEvmInAppConfirmationContext = {
   fields: ConfirmationPageEvmFields[];
   swapAmount: number;
   fromTokenInfo: EvmSmartContractInfoNative | EvmSmartContractInfoErc20;
-  approveTransactionData?: ProviderTransactionData;
-  approveFields?: ConfirmationPageEvmFields[];
+  /**
+   * Allowance transactions to broadcast before the swap, in order.
+   * An ERC-20 `approve` comes before a Permit2 `approve` when both are required.
+   */
+  allowanceSteps: PortfolioAllowanceStep[];
   onConfirm: (
     gasFee?: GasFeeEstimationBase,
-    approveGasFee?: GasFeeEstimationBase,
+    allowanceGasFees?: GasFeeEstimationBase[],
   ) => Promise<void>;
+};
+
+export type PortfolioAllowanceStep = {
+  transactionData: ProviderTransactionData;
+  fields: ConfirmationPageEvmFields[];
 };
 
 export type PortfolioHiveInAppConfirmationContext = {

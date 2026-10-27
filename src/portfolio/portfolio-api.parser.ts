@@ -35,6 +35,7 @@ import {
   PortfolioQuoteAmountHints,
   PortfolioQuoteApproval,
   PortfolioQuoteFee,
+  PortfolioQuotePermit,
   PortfolioQuoteKyc,
   PortfolioQuoteRequestEcho,
   PortfolioQuoteResponse,
@@ -224,6 +225,25 @@ const parsePortfolioQuoteApproval = (
   }
 
   return { spender, amount };
+};
+
+const parsePortfolioQuotePermit = (
+  value: unknown,
+): PortfolioQuotePermit | null => {
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  const to = readString(value, 'to');
+  const token = readString(value, 'token');
+  const spender = readString(value, 'spender');
+  const amount = readString(value, 'amount');
+  const expiration = readString(value, 'expiration');
+  if (!to || !token || !spender || !amount || !expiration) {
+    return null;
+  }
+
+  return { to, token, spender, amount, expiration };
 };
 
 const parsePortfolioCanonicalAsset = (
@@ -433,6 +453,7 @@ const parsePortfolioQuote = (value: unknown): PortfolioQuote | null => {
     ),
     routeMetadata: readRecord(value.routeMetadata),
     approval: parsePortfolioQuoteApproval(value.approval),
+    permit: parsePortfolioQuotePermit(value.permit),
     transaction: parsePortfolioQuoteTransaction(value.transaction),
     paymentMethod: readPaymentMethodId(value.paymentMethod),
     kyc:

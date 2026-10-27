@@ -83,6 +83,7 @@ import {
   PortfolioSwapQuoteFetchResult,
 } from 'src/portfolio/portfolio-api.utils';
 import { PortfolioEvmApprovalUtils } from 'src/portfolio/portfolio-evm-approval.utils';
+import { PortfolioEvmPermitUtils } from 'src/portfolio/portfolio-evm-permit.utils';
 import { PortfolioEvmBalanceRefreshUtils } from 'src/portfolio/portfolio-evm-balance-refresh.utils';
 import { EvmSwapConfirmationBalanceUtils } from '@popup/evm/utils/evm-swap-confirmation-balance.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
@@ -96,6 +97,7 @@ import {
 } from 'src/portfolio/portfolio-flow.utils';
 import {
   getPortfolioHiveOperations,
+  PortfolioAllowanceStep,
   PortfolioInAppConfirmationContext,
 } from 'src/portfolio/portfolio-in-app-confirmation.interface';
 import { PortfolioSwapCatalogCacheUtils } from 'src/portfolio/portfolio-swap-catalog-cache.utils';
@@ -3270,36 +3272,80 @@ export const Portfolio = ({
       isReady: true,
     };
 
-    const requiredApproval =
-      await PortfolioEvmApprovalUtils.getRequiredApproval(
+    const fromAssetForAllowance = quote.fromAsset ?? fromCanonicalAsset;
+    const toAllowanceStep = (
+      transactionData: ReturnType<
+        typeof PortfolioEvmApprovalUtils.buildApproveTransactionData
+      >,
+      confirmationFields: ReturnType<
+        typeof PortfolioEvmApprovalUtils.buildApproveConfirmationFields
+      >,
+      namePrefix: string,
+    ): PortfolioAllowanceStep => ({
+      transactionData,
+      fields: confirmationFields.map((field, index) => ({
+        ...field,
+        name: field.label ?? `${namePrefix}-${index}`,
+      })) as ConfirmationPageEvmFields[],
+    });
+    const [requiredApproval, requiredPermit] = await Promise.all([
+      PortfolioEvmApprovalUtils.getRequiredApproval(
         chain,
         account.wallet.address,
         quote,
+      ),
+      PortfolioEvmPermitUtils.getRequiredPermit(
+        chain,
+        account.wallet.address,
+        quote,
+      ),
+    ]);
+    const allowanceSteps: PortfolioAllowanceStep[] = [];
+    if (requiredApproval) {
+      allowanceSteps.push(
+        toAllowanceStep(
+          PortfolioEvmApprovalUtils.buildApproveTransactionData(
+            chain,
+            account.wallet.address,
+            requiredApproval,
+          ),
+          PortfolioEvmApprovalUtils.buildApproveConfirmationFields(
+            requiredApproval,
+            fromAssetForAllowance,
+            toAssetEvmChains,
+            portfolioChains,
+          ),
+          'portfolio-approval',
+        ),
       );
-    const approveTransactionData = requiredApproval
-      ? PortfolioEvmApprovalUtils.buildApproveTransactionData(
-          chain,
-          account.wallet.address,
-          requiredApproval,
-        )
-      : undefined;
-    const approveFields = requiredApproval
-      ? (PortfolioEvmApprovalUtils.buildApproveConfirmationFields(
-          requiredApproval,
-          quote.fromAsset ?? fromCanonicalAsset,
-          toAssetEvmChains,
-          portfolioChains,
-        ).map((field, index) => ({
-          ...field,
-          name: field.label ?? `portfolio-approval-${index}`,
-        })) as ConfirmationPageEvmFields[])
-      : undefined;
+    }
+    if (requiredPermit) {
+      allowanceSteps.push(
+        toAllowanceStep(
+          PortfolioEvmPermitUtils.buildPermitTransactionData(
+            chain,
+            account.wallet.address,
+            requiredPermit,
+          ),
+          PortfolioEvmApprovalUtils.buildApproveConfirmationFields(
+            {
+              spender: requiredPermit.spender,
+              amount: requiredPermit.amount,
+              tokenAddress: requiredPermit.token,
+            },
+            fromAssetForAllowance,
+            toAssetEvmChains,
+            portfolioChains,
+          ),
+          'portfolio-permit',
+        ),
+      );
+    }
 
-    const fromAssetForConfirmation = quote.fromAsset ?? fromCanonicalAsset;
     const fromTokenInfo =
       EvmSwapConfirmationBalanceUtils.resolvePortfolioSwapFromTokenInfo(
         chain,
-        fromAssetForConfirmation,
+        fromAssetForAllowance,
       );
     const swapAmount = Number.parseFloat(quote.fromAmount ?? '0');
 
@@ -3315,8 +3361,7 @@ export const Portfolio = ({
       transactionData,
       swapAmount,
       fromTokenInfo,
-      approveTransactionData,
-      approveFields,
+      allowanceSteps,
       fields: [
         ...PortfolioQuoteDisplayUtils.buildPortfolioInAppConfirmationFields({
           quote,
@@ -3337,27 +3382,35 @@ export const Portfolio = ({
       })) as ConfirmationPageEvmFields[],
       onConfirm: async (
         gasFee?: GasFeeEstimationBase,
-        approveGasFee?: GasFeeEstimationBase,
+        allowanceGasFees: GasFeeEstimationBase[] = [],
       ) => {
-        const shouldApprove = Boolean(approveTransactionData && approveGasFee);
-        if (shouldApprove) {
+        const shouldSendAllowances = allowanceSteps.length > 0;
+        if (shouldSendAllowances) {
           addToLoadingList('portfolio_approving_smart_contract');
         }
         addToLoadingList('portfolio_sending_transaction');
         try {
-          let approveNonce: number | undefined;
-          if (shouldApprove) {
-            const approveResponse = await EvmTransactionsUtils.send(
-              account.wallet,
-              {
-                ...approveTransactionData!,
-                type: Number(approveTransactionData!.type),
-              },
-              approveGasFee!,
-              chain.chainId,
-            );
-            await approveResponse.wait();
-            approveNonce = approveResponse.nonce;
+          let nextNonce: number | undefined;
+          if (shouldSendAllowances) {
+            for (let index = 0; index < allowanceSteps.length; index++) {
+              const step = allowanceSteps[index];
+              const allowanceGasFee = allowanceGasFees[index];
+              if (!step || !allowanceGasFee) {
+                throw new Error('portfolio_execution_error');
+              }
+              const allowanceResponse = await EvmTransactionsUtils.send(
+                account.wallet,
+                {
+                  ...step.transactionData,
+                  type: Number(step.transactionData.type),
+                },
+                allowanceGasFee,
+                chain.chainId,
+                nextNonce,
+              );
+              await allowanceResponse.wait();
+              nextNonce = allowanceResponse.nonce + 1;
+            }
             removeFromLoadingList('portfolio_approving_smart_contract');
           }
 
@@ -3366,7 +3419,7 @@ export const Portfolio = ({
             { ...transactionData, type: Number(transactionData.type) },
             gasFee!,
             chain.chainId,
-            approveNonce !== undefined ? approveNonce + 1 : undefined,
+            nextNonce,
           );
           removeFromLoadingList('portfolio_sending_transaction');
           await PortfolioApiUtils.markSubmitted(

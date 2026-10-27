@@ -69,6 +69,20 @@ export interface PortfolioQuoteApproval {
   amount: string;
 }
 
+/** Permit2 allowance the wallet grants before a Uniswap ERC-20 swap. */
+export interface PortfolioQuotePermit {
+  /** Permit2 contract that receives `approve`. */
+  to: string;
+  /** Source token address passed to `Permit2.approve`. */
+  token: string;
+  /** Universal Router that pulls the token through Permit2. */
+  spender: string;
+  /** Allowance amount in atomic units of `token` (`uint160`). */
+  amount: string;
+  /** Unix time when the Permit2 allowance expires (`uint48`). */
+  expiration: string;
+}
+
 export interface PortfolioEvmTransaction {
   from: string | null;
   to: string;
@@ -148,6 +162,8 @@ export interface PortfolioQuote {
   executionType: PortfolioExecutionType;
   routeMetadata: Record<string, unknown> | null;
   approval: PortfolioQuoteApproval | null;
+  /** Permit2 allowance for the Uniswap router, or `null` when none is required. */
+  permit: PortfolioQuotePermit | null;
   transaction: PortfolioQuoteTransaction | null;
   /** Payment method for buy/sell quotes. Null for swap/bridge. */
   paymentMethod: string | null;
