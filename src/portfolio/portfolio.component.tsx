@@ -1052,6 +1052,10 @@ export const Portfolio = ({
   );
 
   const fromAssetOptions = useMemo(() => {
+    if (section !== 'swap' && section !== 'sell') {
+      return [];
+    }
+
     const resolveRowCanonicalAssetId = (row: PortfolioFlowRow) =>
       PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
         row,
@@ -1625,36 +1629,20 @@ export const Portfolio = ({
   }, [amount]);
 
   const eligibleToAssets = useMemo(() => {
-    const toAssets = (() => {
-      if (section === 'buy') {
-        const buyAssets =
-          rampAvailableAssets.length > 0 ? rampAvailableAssets : assets;
-        return PortfolioFlowUtils.filterToAssetsByFromAsset(
-          buyAssets,
-          undefined,
-        );
-      }
+    if (section !== 'buy' && section !== 'swap') {
+      return [];
+    }
 
-      if (section === 'swap') {
-        return PortfolioFlowUtils.filterToAssetsByFromAsset(
-          swapAvailableAssets,
-          fromCanonicalAsset,
-        );
-      }
-
-      if (section === 'sell') {
-        return [];
-      }
-
-      if (!fromCanonicalAsset) {
-        return PortfolioFlowUtils.filterToAssetsByFromAsset(assets, undefined);
-      }
-
-      return PortfolioFlowUtils.filterToAssetsByFromAsset(
-        assets,
-        fromCanonicalAsset,
-      );
-    })();
+    const toAssets =
+      section === 'buy'
+        ? PortfolioFlowUtils.filterToAssetsByFromAsset(
+            rampAvailableAssets.length > 0 ? rampAvailableAssets : assets,
+            undefined,
+          )
+        : PortfolioFlowUtils.filterToAssetsByFromAsset(
+            swapAvailableAssets,
+            fromCanonicalAsset,
+          );
 
     return PortfolioFlowUtils.sortCanonicalAssetsByRank(
       toAssets,
@@ -2231,6 +2219,10 @@ export const Portfolio = ({
   ]);
 
   useEffect(() => {
+    if (section !== 'buy' && section !== 'sell' && section !== 'swap') {
+      return;
+    }
+
     if (!toAssetOptions.length) {
       if (toAssetId) {
         setToAssetId('');

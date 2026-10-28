@@ -2071,6 +2071,194 @@ describe('Portfolio', () => {
     });
   });
 
+  it('keeps the selected swap destination across portfolio and clears it on sell', async () => {
+    const kaiaAsset = {
+      assetId: 'evm:native:kaia',
+      ecosystem: 'evm',
+      symbol: 'KAIA',
+      name: 'Kaia',
+      chainId: 'kaia',
+      address: null,
+      decimals: 18,
+      isNative: true,
+      familyId: 'kaia',
+      logoUrl: null,
+      priceUsd: 0,
+      rankScore: 1,
+    };
+    const rankedSwapAssets = [
+      { ...swapAssetsFixture[0], rankScore: 30 },
+      { ...swapAssetsFixture[1], rankScore: 20 },
+      kaiaAsset,
+    ];
+    (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
+      assets: rankedSwapAssets,
+      chains: {},
+    });
+    (PortfolioApiUtils.listAvailableAssets as jest.Mock).mockImplementation(
+      async (params: { mode: string; direction: string; sourceAssetId?: string }) => {
+        if (params.mode === 'swap' && !params.direction) {
+          return {
+            mode: 'swap',
+            direction: null,
+            sourceAssetId: params.sourceAssetId ?? null,
+            assets: rankedSwapAssets,
+            chains: {},
+          };
+        }
+
+        if (params.mode === 'sell') {
+          return {
+            mode: 'sell',
+            direction: 'from',
+            sourceAssetId: params.sourceAssetId ?? null,
+            assets: [rankedSwapAssets[0]],
+            chains: {},
+          };
+        }
+
+        return {
+          mode: params.mode,
+          direction: params.direction,
+          sourceAssetId: params.sourceAssetId ?? null,
+          assets: [],
+          chains: {},
+        };
+      },
+    );
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xabc' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.textContent).toContain('ETH');
+    });
+
+    clickPortfolioNav(container, 'swap');
+
+    await waitFor(() => {
+      expect(
+        container.querySelector('#portfolio-to-asset')?.textContent,
+      ).toContain('MATIC');
+    });
+
+    await selectOverlayOption(
+      container,
+      'portfolio-to-asset',
+      (text) => text.includes('KAIA'),
+    );
+
+    await waitFor(() => {
+      expect(
+        container.querySelector('#portfolio-to-asset')?.textContent,
+      ).toContain('KAIA');
+    });
+
+    clickPortfolioNav(container, 'portfolio');
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-to-asset')).toBeNull();
+    });
+
+    clickPortfolioNav(container, 'swap');
+
+    await waitFor(() => {
+      expect(
+        container.querySelector('#portfolio-to-asset')?.textContent,
+      ).toContain('KAIA');
+    });
+
+    clickPortfolioNav(container, 'sell');
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-from-asset')).not.toBeNull();
+      expect(container.querySelector('#portfolio-to-asset')).toBeNull();
+    });
+
+    clickPortfolioNav(container, 'swap');
+
+    await waitFor(() => {
+      expect(
+        container.querySelector('#portfolio-to-asset')?.textContent,
+      ).toContain('MATIC');
+      expect(
+        container.querySelector('#portfolio-to-asset')?.textContent,
+      ).not.toContain('KAIA');
+    });
+  });
+
+  it('builds from-asset options only for swap and sell', async () => {
+    const buildFromAssetOptionsSpy = jest.spyOn(
+      PortfolioFlowUtils,
+      'buildPortfolioFromSelectOptions',
+    );
+    const filterToAssetsSpy = jest.spyOn(
+      PortfolioFlowUtils,
+      'filterToAssetsByFromAsset',
+    );
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xabc' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.textContent).toContain('ETH');
+    });
+    expect(buildFromAssetOptionsSpy).not.toHaveBeenCalled();
+    expect(filterToAssetsSpy).not.toHaveBeenCalled();
+
+    clickPortfolioNav(container, 'history');
+
+    await waitFor(() => {
+      expect(window.location.hash).toBe('#history');
+    });
+    expect(buildFromAssetOptionsSpy).not.toHaveBeenCalled();
+    expect(filterToAssetsSpy).not.toHaveBeenCalled();
+
+    clickPortfolioNav(container, 'swap');
+
+    try {
+      await waitFor(() => {
+        expect(buildFromAssetOptionsSpy).toHaveBeenCalled();
+        expect(filterToAssetsSpy).toHaveBeenCalled();
+      });
+    } finally {
+      buildFromAssetOptionsSpy.mockRestore();
+      filterToAssetsSpy.mockRestore();
+    }
+  });
+
   it('keeps swap tokens when the destination asset is not in the from list', async () => {
     const setErrorMessage = jest.fn();
     (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
