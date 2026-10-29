@@ -117,6 +117,7 @@ describe('evm-provider tests:\n', () => {
 
     expect(provider.isMetaMask).toBe(true);
     expect((provider as any).autoRefreshOnNetworkChange).toBe(false);
+    expect(provider.selectedAddress).toBeNull();
     cleanup();
   });
 
@@ -161,7 +162,8 @@ describe('evm-provider tests:\n', () => {
       }),
     ).resolves.toEqual(['0xdef456']);
 
-    expect((provider as any)._accounts).toEqual([]);
+    expect((provider as any)._accounts).toEqual(['0xdef456']);
+    expect(provider.selectedAddress).toBe('0xdef456');
 
     dispatchRoutedEvent({
       eventType: EvmEventName.ACCOUNT_CHANGED,
@@ -170,6 +172,36 @@ describe('evm-provider tests:\n', () => {
     });
 
     expect((provider as any)._accounts).toEqual(['0xdef456']);
+    cleanup();
+  });
+
+  it('clears selectedAddress when eth_requestAccounts returns no accounts', async () => {
+    const responses = {
+      [EvmRequestMethod.GET_CHAIN]: { result: '0x1' },
+      [EvmRequestMethod.GET_ACCOUNTS]: { result: ['0xAbC123'] },
+      [EvmRequestMethod.REQUEST_ACCOUNTS]: {
+        result: [],
+      },
+    };
+    const cleanup = installRequestResponder(responses);
+    const provider = new EvmProvider();
+    await waitForInit();
+
+    dispatchRoutedEvent({
+      eventType: EvmEventName.ACCOUNT_CHANGED,
+      args: ['0xAbC123'],
+      origin: window.location.origin,
+    });
+    expect(provider.selectedAddress).toBe('0xabc123');
+
+    await expect(
+      provider.request({
+        method: EvmRequestMethod.REQUEST_ACCOUNTS,
+        params: [],
+      }),
+    ).resolves.toEqual([]);
+
+    expect(provider.selectedAddress).toBeNull();
     cleanup();
   });
 

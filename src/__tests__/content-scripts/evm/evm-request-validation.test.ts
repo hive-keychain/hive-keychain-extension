@@ -263,7 +263,42 @@ describe('evm-request-validation tests:\n', () => {
     });
   });
 
-  it('rejects wallet_addEthereumChain with HTTP RPC URLs', () => {
+  it('filters unsafe wallet_addEthereumChain RPC URLs when a safe URL remains', () => {
+    const request = {
+      request_id: 1,
+      method: EvmRequestMethod.WALLET_ADD_ETH_CHAIN,
+      params: [
+        {
+          ...validAddChainRequest,
+          rpcUrls: [
+            'http://rpc.example.com',
+            'not-a-url',
+            'https://sepolia.base.org',
+          ],
+        },
+      ],
+    };
+
+    expect(validateEvmRequest(request)).toEqual({
+      ...request,
+      params: [
+        {
+          ...validAddChainRequest,
+          rpcUrls: ['https://sepolia.base.org'],
+        },
+      ],
+    });
+    expect(request.params[0].rpcUrls).toEqual([
+      'http://rpc.example.com',
+      'not-a-url',
+      'https://sepolia.base.org',
+    ]);
+    expect(
+      validateRequest(EvmRequestMethod.WALLET_ADD_ETH_CHAIN, request.params),
+    ).toBe(true);
+  });
+
+  it('rejects wallet_addEthereumChain when no safe RPC URL remains', () => {
     expect(
       getThrownError(() =>
         validateEvmRequest({
