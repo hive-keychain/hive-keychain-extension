@@ -24,6 +24,7 @@ import {
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useEffect, useState } from 'react';
+import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 import Logger from 'src/utils/logger.utils';
@@ -44,6 +45,9 @@ export const AddChain = (props: Props) => {
   const [isUpdatingChain, setIsUpdatingChain] = useState<boolean>();
   const [defaultChainToAdd, setDefaultChainToAdd] = useState<EvmChain>();
   const [chainListChainToAdd, setChainListChainToAdd] = useState<EvmChain>();
+  const [isResolvingRequestedChain, setIsResolvingRequestedChain] =
+    useState(true);
+  const [rpcValidationPending, setRpcValidationPending] = useState(true);
   const [validatedDappRpcUrls, setValidatedDappRpcUrls] = useState<
     string[] | undefined
   >();
@@ -141,17 +145,22 @@ export const AddChain = (props: Props) => {
   const init = async () => {
     transactionHook.setLoading(true);
     transactionHook.setReady(false);
+    setIsResolvingRequestedChain(true);
+    setRpcValidationPending(true);
+    setIsUpdatingChain(undefined);
     setValidatedDappRpcUrls(undefined);
-    const validDappRpcUrls = await getValidDappRpcUrls(true);
+    const validDappRpcUrlsPromise = getValidDappRpcUrls(true);
     const setupChains = await ChainUtils.getSetupChains();
     setDefaultChainToAdd(undefined);
     setChainListChainToAdd(undefined);
+    let validDappRpcUrls: string[];
     let displayChain: EvmChain | undefined;
     const setupChain = setupChains.find(
       (chain) =>
         chain.chainId.toLowerCase() === addChainRequest.chainId.toLowerCase(),
     ) as EvmChain | undefined;
     if (setupChain) {
+      validDappRpcUrls = await validDappRpcUrlsPromise;
       displayChain = setupChain;
       setIsUpdatingChain(true);
     } else {
@@ -159,17 +168,20 @@ export const AddChain = (props: Props) => {
         addChainRequest.chainId,
       );
       if (defaultChain) {
+        validDappRpcUrls = await validDappRpcUrlsPromise;
         displayChain = defaultChain;
         setDefaultChainToAdd(defaultChain);
       } else {
-        let chainListChain: ChainListOrgChain | undefined;
-        try {
-          chainListChain = await ChainListOrgUtils.findByChainId(
-            getChainListChainId(),
-          );
-        } catch {
-          chainListChain = undefined;
-        }
+        setIsUpdatingChain(false);
+        setIsResolvingRequestedChain(false);
+        const chainListChainPromise = ChainListOrgUtils.findByChainId(
+          getChainListChainId(),
+        ).catch(() => undefined as ChainListOrgChain | undefined);
+        const [resolvedDappRpcUrls, chainListChain] = await Promise.all([
+          validDappRpcUrlsPromise,
+          chainListChainPromise,
+        ]);
+        validDappRpcUrls = resolvedDappRpcUrls;
         const chainListEvmChain = chainListChain
           ? ChainListOrgUtils.getEvmChain(
               chainListChain,
@@ -210,6 +222,8 @@ export const AddChain = (props: Props) => {
     });
 
     transactionHook.setFields(fields);
+    setIsResolvingRequestedChain(false);
+    setRpcValidationPending(false);
     setTimeout(() => {
       transactionHook.setReady(true);
       transactionHook.setLoading(false);
@@ -314,11 +328,11 @@ export const AddChain = (props: Props) => {
     sendSuccessResponse();
   };
 
-  const isResolvingRequestedChain = isUpdatingChain === undefined;
-  if (
-    isResolvingRequestedChain ||
-    (isUpdatingChain === false && !defaultChainToAdd)
-  ) {
+  if (isResolvingRequestedChain) {
+    return <LoadingComponent hide={false} />;
+  }
+
+  if (isUpdatingChain === false && !defaultChainToAdd) {
     return (
       <div className="request-add-custom-chain-page">
         <Card className="request-add-custom-chain-card">
@@ -334,7 +348,7 @@ export const AddChain = (props: Props) => {
             onCancel={handleCancel}
             onSubmit={handleSubmitNewChain}
             initialChain={chainListChainToAdd ?? initialChain}
-            rpcValidationPending={isResolvingRequestedChain}
+            rpcValidationPending={rpcValidationPending}
             validatedRpcUrls={getValidatedRpcUrls()}
             submitLabel="dialog_confirm"
           />

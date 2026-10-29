@@ -28,6 +28,11 @@ const mockTransactionHook = {
   setFields: jest.fn(),
 };
 
+jest.mock('src/common-ui/loading/loading.component', () => ({
+  LoadingComponent: ({ hide }: { hide?: boolean }) =>
+    hide ? null : <div data-testid="add-chain-loading" />,
+}));
+
 jest.mock('@dialog/evm/evm-operation/evm-operation', () => {
   const React = require('react');
   return {
@@ -197,24 +202,28 @@ describe('AddChain', () => {
     jest.restoreAllMocks();
   });
 
-  it('renders the form immediately while validating its RPC URLs', () => {
+  it('renders the form after local chain resolution while validating its RPC URLs', async () => {
+    jest.spyOn(ChainUtils, 'getSetupChains').mockResolvedValue([]);
     jest
       .spyOn(EvmRpcUtils, 'filterValidRpcsForChainId')
       .mockReturnValue(new Promise(() => undefined));
 
     render(<AddChain request={request} data={data} afterCancel={jest.fn()} />);
 
-    expect(screen.getByTestId('custom-evm-chain-form')).toBeInTheDocument();
-    expect(mockCustomEvmChainForm).toHaveBeenCalledWith(
-      expect.objectContaining({
-        rpcValidationPending: true,
-        initialChain: expect.objectContaining({
-          name: 'Local Chain',
-          chainId: '0x539',
-          rpcs: [{ url: 'https://rpc.example.com', isDefault: true }],
+    expect(screen.getByTestId('add-chain-loading')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByTestId('custom-evm-chain-form')).toBeInTheDocument();
+      expect(mockCustomEvmChainForm).toHaveBeenCalledWith(
+        expect.objectContaining({
+          rpcValidationPending: true,
+          initialChain: expect.objectContaining({
+            name: 'Local Chain',
+            chainId: '0x539',
+            rpcs: [{ url: 'https://rpc.example.com', isDefault: true }],
+          }),
         }),
-      }),
-    );
+      );
+    });
   });
 
   it('adds custom RPCs without activating them when updating an existing chain', async () => {
@@ -237,9 +246,7 @@ describe('AddChain', () => {
     expect(EvmRpcUtils.setActiveRpc).not.toHaveBeenCalled();
     expect(ChainUtils.addCustomChain).not.toHaveBeenCalled();
     expect(EvmLightNodeUtils.registerLocalAddresses).not.toHaveBeenCalled();
-    expect(
-      screen.queryByTestId('custom-evm-chain-form'),
-    ).not.toBeInTheDocument();
+    expect(mockCustomEvmChainForm).not.toHaveBeenCalled();
     expect(CommunicationUtils.runtimeSendMessage).toHaveBeenCalledWith({
       command: BackgroundCommand.SEND_EVM_RESPONSE_TO_SW,
       value: {
@@ -357,9 +364,7 @@ describe('AddChain', () => {
         }),
       ]),
     });
-    expect(
-      screen.queryByTestId('custom-evm-chain-form'),
-    ).not.toBeInTheDocument();
+    expect(mockCustomEvmChainForm).not.toHaveBeenCalled();
   });
 
   it('registers local addresses after a default chain is approved', async () => {
