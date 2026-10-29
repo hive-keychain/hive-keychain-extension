@@ -135,8 +135,11 @@ describe('ChainUtils', () => {
     const { ChainUtils, EvmLightNodeApi, LocalStorageUtils, Logger } =
       await loadTestContext();
     (EvmLightNodeApi.get as jest.Mock).mockRejectedValue(new Error('offline'));
-    LocalStorageUtils.getValueFromLocalStorage.mockResolvedValue(
-      clone(cachedChains),
+    LocalStorageUtils.getValueFromLocalStorage.mockImplementation(
+      async (key: LocalStorageKeyEnum) =>
+        key === LocalStorageKeyEnum.DEFAULT_CHAINS
+          ? clone(cachedChains)
+          : undefined,
     );
     LocalStorageUtils.saveValueInLocalStorage.mockResolvedValue(undefined);
 
@@ -528,6 +531,82 @@ describe('ChainUtils', () => {
     expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
       LocalStorageKeyEnum.CUSTOM_CHAINS,
       [expect.objectContaining({ name: 'Preserved Local', nativeCoinId: 'old-id' })],
+    );
+  });
+
+  it('uses default metadata and preserves user RPC preferences when a custom chain becomes supported', async () => {
+    const { ChainUtils, EvmLightNodeApi, LocalStorageUtils } =
+      await loadTestContext();
+    const promotedCustomChain = {
+      type: ChainType.EVM,
+      chainId: '0X1',
+      name: 'Local Ethereum',
+      logo: 'https://example.com/local-eth.svg',
+      mainToken: 'LOCAL',
+      defaultTransactionType: EvmTransactionType.LEGACY,
+      rpcs: [
+        { url: 'https://custom.ethereum.org', isDefault: true },
+        { url: 'https://rpc.ethereum.org', isDefault: false },
+      ],
+      testnet: true,
+      isCustom: true,
+      disableTokensAndHistoryAutoLoading: true,
+    };
+    const otherCustomChain = {
+      type: ChainType.EVM,
+      chainId: '0x539',
+      name: 'Local',
+      logo: '',
+      mainToken: 'ETH',
+      defaultTransactionType: EvmTransactionType.EIP_1559,
+      rpcs: [{ url: 'http://127.0.0.1:8545', isDefault: true }],
+      testnet: false,
+      isCustom: true,
+    };
+    (EvmLightNodeApi.get as jest.Mock).mockResolvedValue(clone(apiChains));
+    LocalStorageUtils.getValueFromLocalStorage.mockImplementation(
+      async (key: LocalStorageKeyEnum) => {
+        if (key === LocalStorageKeyEnum.CUSTOM_CHAINS) {
+          return [clone(promotedCustomChain), clone(otherCustomChain)];
+        }
+        if (key === LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST) {
+          return {
+            '0X1': [
+              { url: 'https://existing-custom.ethereum.org', isDefault: false },
+            ],
+          };
+        }
+        return undefined;
+      },
+    );
+    LocalStorageUtils.saveValueInLocalStorage.mockResolvedValue(undefined);
+
+    const defaults = await ChainUtils.getDefaultChains();
+
+    expect(defaults.find((chain) => chain.chainId === '0x1')).toEqual(
+      apiChains[1],
+    );
+    expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST,
+      {
+        '0x1': [
+          { url: 'https://existing-custom.ethereum.org', isDefault: false },
+          { url: 'https://custom.ethereum.org', isDefault: false },
+        ],
+      },
+    );
+    expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.EVM_ACTIVE_RPCS,
+      {
+        '0x1': {
+          url: 'https://custom.ethereum.org',
+          isDefault: false,
+        },
+      },
+    );
+    expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.CUSTOM_CHAINS,
+      [otherCustomChain],
     );
   });
 

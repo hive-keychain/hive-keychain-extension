@@ -1,3 +1,8 @@
+jest.mock('sanitize-html', () => ({
+  __esModule: true,
+  default: (value: string) => value,
+}));
+
 import SettingsModule from '@background/settings.module';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -200,6 +205,70 @@ describe('settings.module tests:\n', () => {
     expect(sSaveValueInLocalStorage).toHaveBeenCalledWith(
       LocalStorageKeyEnum.CUSTOM_CHAINS,
       [{ chainId: '0x1' }, { chainId: '0x2' }],
+    );
+  });
+
+  it('Must merge imported EVM chain settings by normalized chain id', async () => {
+    const existingChain = { chainId: '0x1', name: 'Existing' };
+    LocalStorageUtils.getValueFromLocalStorage = jest
+      .fn()
+      .mockImplementation((key: LocalStorageKeyEnum) => {
+        if (key === LocalStorageKeyEnum.CUSTOM_CHAINS) {
+          return Promise.resolve([existingChain]);
+        }
+        if (key === LocalStorageKeyEnum.EVM_ACTIVE_RPCS) {
+          return Promise.resolve({
+            '0x1': { url: 'https://local-active.example' },
+          });
+        }
+        if (key === LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST) {
+          return Promise.resolve({
+            '0x1': [{ url: 'https://local-custom.example' }],
+          });
+        }
+        return Promise.resolve(undefined);
+      });
+    const sSaveValueInLocalStorage = jest.spyOn(
+      LocalStorageUtils,
+      'saveValueInLocalStorage',
+    );
+
+    await SettingsModule.importSettings({
+      [LocalStorageKeyEnum.CUSTOM_CHAINS]: [
+        { chainId: '0X1', name: 'Imported duplicate' },
+        { chainId: '0x2', name: 'Imported new chain' },
+      ],
+      [LocalStorageKeyEnum.EVM_ACTIVE_RPCS]: {
+        '0X1': { url: 'https://imported-active.example' },
+        '0x2': { url: 'https://imported-active-2.example' },
+      },
+      [LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST]: {
+        '0X1': [
+          { url: 'https://local-custom.example' },
+          { url: 'https://imported-custom.example' },
+        ],
+      },
+    });
+
+    expect(sSaveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.CUSTOM_CHAINS,
+      [existingChain, { chainId: '0x2', name: 'Imported new chain' }],
+    );
+    expect(sSaveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.EVM_ACTIVE_RPCS,
+      {
+        '0x1': { url: 'https://local-active.example' },
+        '0x2': { url: 'https://imported-active-2.example' },
+      },
+    );
+    expect(sSaveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST,
+      {
+        '0x1': [
+          { url: 'https://local-custom.example' },
+          { url: 'https://imported-custom.example' },
+        ],
+      },
     );
   });
 

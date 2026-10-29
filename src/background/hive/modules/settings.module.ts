@@ -37,8 +37,6 @@ const MERGED_RECORD_SETTINGS_KEYS: LocalStorageKeyEnum[] = [
   LocalStorageKeyEnum.EVM_ORIGIN_CHAIN_STATE,
   LocalStorageKeyEnum.EVM_ORIGIN_CHAIN_WHITELIST,
   LocalStorageKeyEnum.EVM_WALLET_PERMISSIONS,
-  LocalStorageKeyEnum.EVM_ACTIVE_RPCS,
-  LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST,
   LocalStorageKeyEnum.EVM_SWITCH_RPC_AUTO,
   LocalStorageKeyEnum.EVM_WHITELISTED_ADDRESSES,
   LocalStorageKeyEnum.EVM_CUSTOM_TOKENS,
@@ -57,6 +55,8 @@ const MERGED_SETTINGS_KEYS: LocalStorageKeyEnum[] = [
   LocalStorageKeyEnum.RPC_LIST,
   LocalStorageKeyEnum.FAVORITE_USERS,
   LocalStorageKeyEnum.CUSTOM_CHAINS,
+  LocalStorageKeyEnum.EVM_ACTIVE_RPCS,
+  LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST,
   LocalStorageKeyEnum.EVM_ENS,
   LocalStorageKeyEnum.EVM_SAVED_ADDRESSES,
   LocalStorageKeyEnum.GUIDED_TOURS,
@@ -394,22 +394,122 @@ const mergeRecordSetting = async (
   });
 };
 
-const mergeKeyedListSetting = async (
-  key: LocalStorageKeyEnum,
-  importedValue: unknown,
-  itemKey: string,
-): Promise<void> => {
+const getChainIdRecordKey = (
+  record: ImportedSettings,
+  chainId: string,
+): string | undefined => {
+  const normalizedChainId = chainId.toLowerCase();
+  return Object.keys(record).find(
+    (recordChainId) => recordChainId.toLowerCase() === normalizedChainId,
+  );
+};
+
+const mergeEvmActiveRpcs = async (importedValue: unknown): Promise<void> => {
   if (importedValue === undefined) return;
-  if (!Array.isArray(importedValue)) {
-    ignoreUnmergeableSetting(key);
+  const importedRecord = getImportedObject(importedValue);
+  if (!importedRecord) {
+    ignoreUnmergeableSetting(LocalStorageKeyEnum.EVM_ACTIVE_RPCS);
     return;
   }
 
-  const existingValue = await LocalStorageUtils.getValueFromLocalStorage(key);
-  const existingList = Array.isArray(existingValue) ? existingValue : [];
+  const existingValue = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.EVM_ACTIVE_RPCS,
+  );
+  const mergedRecord = ObjectUtils.isPureObject(existingValue)
+    ? { ...(existingValue as ImportedSettings) }
+    : {};
+
+  for (const [chainId, rpc] of Object.entries(importedRecord)) {
+    if (getChainIdRecordKey(mergedRecord, chainId)) continue;
+    mergedRecord[chainId] = rpc;
+  }
+
   await LocalStorageUtils.saveValueInLocalStorage(
-    key,
-    ArrayUtils.mergeWithoutDuplicate(existingList, importedValue, itemKey),
+    LocalStorageKeyEnum.EVM_ACTIVE_RPCS,
+    mergedRecord,
+  );
+};
+
+const mergeEvmCustomRpcList = async (
+  importedValue: unknown,
+): Promise<void> => {
+  if (importedValue === undefined) return;
+  const importedRecord = getImportedObject(importedValue);
+  if (!importedRecord) {
+    ignoreUnmergeableSetting(LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST);
+    return;
+  }
+
+  const existingValue = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST,
+  );
+  const mergedRecord = ObjectUtils.isPureObject(existingValue)
+    ? { ...(existingValue as ImportedSettings) }
+    : {};
+
+  for (const [chainId, importedRpcs] of Object.entries(importedRecord)) {
+    if (!Array.isArray(importedRpcs)) continue;
+    const existingKey = getChainIdRecordKey(mergedRecord, chainId);
+    const targetKey = existingKey ?? chainId;
+    const existingRpcs = Array.isArray(mergedRecord[targetKey])
+      ? (mergedRecord[targetKey] as ImportedSettings[])
+      : [];
+    const existingRpcUrls = new Set(
+      existingRpcs
+        .filter(ObjectUtils.isPureObject)
+        .map((rpc) => rpc.url)
+        .filter((url): url is string => typeof url === 'string'),
+    );
+    const newRpcs = importedRpcs.filter((rpc) => {
+      if (!ObjectUtils.isPureObject(rpc) || typeof rpc.url !== 'string') {
+        return false;
+      }
+      if (existingRpcUrls.has(rpc.url)) return false;
+      existingRpcUrls.add(rpc.url);
+      return true;
+    });
+    mergedRecord[targetKey] = [...existingRpcs, ...newRpcs];
+  }
+
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST,
+    mergedRecord,
+  );
+};
+
+const mergeCustomChains = async (importedValue: unknown): Promise<void> => {
+  if (importedValue === undefined) return;
+  if (!Array.isArray(importedValue)) {
+    ignoreUnmergeableSetting(LocalStorageKeyEnum.CUSTOM_CHAINS);
+    return;
+  }
+
+  const existingValue = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.CUSTOM_CHAINS,
+  );
+  const existingList = Array.isArray(existingValue) ? existingValue : [];
+  const mergedList = [...existingList];
+  const existingChainIds = new Set(
+    existingList
+      .filter(ObjectUtils.isPureObject)
+      .map((chain) => (chain as ImportedSettings).chainId)
+      .filter((chainId): chainId is string => typeof chainId === 'string')
+      .map((chainId) => chainId.toLowerCase()),
+  );
+
+  for (const importedChain of importedValue) {
+    if (!ObjectUtils.isPureObject(importedChain)) continue;
+    const chainId = (importedChain as ImportedSettings).chainId;
+    if (typeof chainId !== 'string') continue;
+    const normalizedChainId = chainId.toLowerCase();
+    if (existingChainIds.has(normalizedChainId)) continue;
+    existingChainIds.add(normalizedChainId);
+    mergedList.push(importedChain);
+  }
+
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.CUSTOM_CHAINS,
+    mergedList,
   );
 };
 
@@ -550,11 +650,11 @@ const importSupportedSettings = async (
   for (const key of MERGED_RECORD_SETTINGS_KEYS) {
     await mergeRecordSetting(key, settings[key]);
   }
-  await mergeKeyedListSetting(
-    LocalStorageKeyEnum.CUSTOM_CHAINS,
-    settings[LocalStorageKeyEnum.CUSTOM_CHAINS],
-    'chainId',
+  await mergeEvmActiveRpcs(settings[LocalStorageKeyEnum.EVM_ACTIVE_RPCS]);
+  await mergeEvmCustomRpcList(
+    settings[LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST],
   );
+  await mergeCustomChains(settings[LocalStorageKeyEnum.CUSTOM_CHAINS]);
   await mergeEvmEns(settings[LocalStorageKeyEnum.EVM_ENS]);
   await mergeEvmSavedAddresses(settings[LocalStorageKeyEnum.EVM_SAVED_ADDRESSES]);
   await mergeGuidedTours(settings[LocalStorageKeyEnum.GUIDED_TOURS]);

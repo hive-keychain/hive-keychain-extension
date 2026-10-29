@@ -4,6 +4,7 @@ import {
   Chain,
   ChainType,
   EvmChain,
+  MultichainRpc,
 } from '@popup/multichain/interfaces/chains.interface';
 import { defaultChainList } from '@popup/multichain/reference-data/chains.list';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -92,11 +93,146 @@ const getDefaultChainIdSet = (chains: Chain[]): Set<string> => {
   return new Set(chains.map((chain) => chain.chainId.toLowerCase()));
 };
 
+const getChainIdRecordKey = (
+  record: Record<string, unknown>,
+  chainId: string,
+): string | undefined => {
+  const normalizedChainId = chainId.toLowerCase();
+  return Object.keys(record).find(
+    (recordChainId) => recordChainId.toLowerCase() === normalizedChainId,
+  );
+};
+
+const reconcilePromotedCustomChains = async (
+  defaultChainList: Chain[],
+  storedChains: EvmChain[],
+): Promise<EvmChain[]> => {
+  const defaultChainById = new Map(
+    defaultChainList
+      .filter((chain): chain is EvmChain => chain.type === ChainType.EVM)
+      .map((chain) => [chain.chainId.toLowerCase(), chain]),
+  );
+  const promotedChains = storedChains.filter(
+    (chain) =>
+      defaultChainById.has(chain.chainId.toLowerCase()) &&
+      chain.isDefaultOverride !== true,
+  );
+  if (promotedChains.length === 0) return storedChains;
+  const remainingStoredChains = storedChains.filter(
+    (chain) =>
+      !defaultChainById.has(chain.chainId.toLowerCase()) ||
+      chain.isDefaultOverride === true,
+  );
+
+  const storedCustomRpcs = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST,
+  );
+  const customRpcs: Record<string, MultichainRpc[]> =
+    storedCustomRpcs &&
+    typeof storedCustomRpcs === 'object' &&
+    !Array.isArray(storedCustomRpcs)
+      ? { ...(storedCustomRpcs as Record<string, MultichainRpc[]>) }
+      : {};
+  const storedActiveRpcs = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.EVM_ACTIVE_RPCS,
+  );
+  const activeRpcs: Record<string, MultichainRpc> =
+    storedActiveRpcs &&
+    typeof storedActiveRpcs === 'object' &&
+    !Array.isArray(storedActiveRpcs)
+      ? { ...(storedActiveRpcs as Record<string, MultichainRpc>) }
+      : {};
+  let customRpcsChanged = false;
+  let activeRpcsChanged = false;
+
+  for (const promotedChain of promotedChains) {
+    const defaultChain = defaultChainById.get(
+      promotedChain.chainId.toLowerCase(),
+    )!;
+    const customRpcKey = getChainIdRecordKey(
+      customRpcs as Record<string, unknown>,
+      defaultChain.chainId,
+    );
+    const storedCustomRpcsForChain = customRpcKey
+      ? customRpcs[customRpcKey]
+      : undefined;
+    const existingCustomRpcs = Array.isArray(storedCustomRpcsForChain)
+      ? storedCustomRpcsForChain
+      : [];
+    const knownRpcUrls = new Set([
+      ...defaultChain.rpcs.map((rpc) => rpc.url),
+      ...existingCustomRpcs.map((rpc) => rpc.url),
+    ]);
+    const promotedCustomRpcs = promotedChain.rpcs
+      .filter((rpc) => !knownRpcUrls.has(rpc.url))
+      .map((rpc) => ({ ...rpc, isDefault: false }));
+
+    if (
+      promotedCustomRpcs.length > 0 ||
+      (customRpcKey !== undefined && customRpcKey !== defaultChain.chainId)
+    ) {
+      if (customRpcKey && customRpcKey !== defaultChain.chainId) {
+        delete customRpcs[customRpcKey];
+      }
+      customRpcs[defaultChain.chainId] = [
+        ...existingCustomRpcs,
+        ...promotedCustomRpcs,
+      ];
+      customRpcsChanged = true;
+    }
+
+    const activeRpcKey = getChainIdRecordKey(
+      activeRpcs as Record<string, unknown>,
+      defaultChain.chainId,
+    );
+    if (activeRpcKey && activeRpcKey !== defaultChain.chainId) {
+      activeRpcs[defaultChain.chainId] = activeRpcs[activeRpcKey];
+      delete activeRpcs[activeRpcKey];
+      activeRpcsChanged = true;
+    } else if (!activeRpcKey && promotedChain.rpcs[0]) {
+      activeRpcs[defaultChain.chainId] = {
+        ...promotedChain.rpcs[0],
+        isDefault: false,
+      };
+      activeRpcsChanged = true;
+    }
+  }
+
+  try {
+    if (customRpcsChanged) {
+      await LocalStorageUtils.saveValueInLocalStorage(
+        LocalStorageKeyEnum.EVM_CUSTOM_RPC_LIST,
+        customRpcs,
+      );
+    }
+    if (activeRpcsChanged) {
+      await LocalStorageUtils.saveValueInLocalStorage(
+        LocalStorageKeyEnum.EVM_ACTIVE_RPCS,
+        activeRpcs,
+      );
+    }
+    await LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.CUSTOM_CHAINS,
+      remainingStoredChains,
+    );
+  } catch (error) {
+    Logger.error('Error while migrating promoted custom chains', error);
+  }
+
+  return remainingStoredChains;
+};
+
 const getDefaultChains = async (): Promise<Chain[]> => {
   const chains = await getBaseDefaultChains();
   const defaultChainIds = getDefaultChainIdSet(chains);
-  const overrides = (await getStoredEvmChains()).filter((chain) =>
-    defaultChainIds.has(chain.chainId.toLowerCase()),
+  const storedChains = await reconcilePromotedCustomChains(
+    chains,
+    await getStoredEvmChains(),
+  );
+  const overrides = storedChains.filter(
+    (chain) =>
+      defaultChainIds.has(chain.chainId.toLowerCase()) &&
+      chain.isDefaultOverride === true,
   );
   if (overrides.length === 0) return chains;
 
