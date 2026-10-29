@@ -13,14 +13,17 @@ import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import {
+  findRequestedEvmChain,
+  getRequestedSettingsChainId,
   getSettingsChainOptions,
-  resolveDefaultSettingsChainOption,
+  selectSettingsNetworkChain,
   SettingsChainOption,
 } from 'src/popup/multichain/pages/settings/settings-chain-select.utils';
 
 const SettingsNetworkPage = ({
   activeChain,
   hasHiveAccounts,
+  navigationParams,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
   const [options, setOptions] = useState<SettingsChainOption[]>([]);
@@ -37,10 +40,18 @@ const SettingsNetworkPage = ({
 
   const initOptions = async () => {
     const nextOptions = await getSettingsChainOptions(hasHiveAccounts);
-    setOptions(nextOptions);
-    setSelectedOption(
-      resolveDefaultSettingsChainOption(nextOptions, activeChain),
+    const preferredChainId = getRequestedSettingsChainId(navigationParams);
+    const requestedChain = preferredChainId
+      ? await findRequestedEvmChain(preferredChainId)
+      : undefined;
+    const selection = selectSettingsNetworkChain(
+      nextOptions,
+      activeChain,
+      preferredChainId,
+      requestedChain,
     );
+    setOptions(selection.options);
+    setSelectedOption(selection.selected);
   };
 
   const handleSelectedOption = (option: OptionItem) => {
@@ -81,6 +92,7 @@ const connector = connect(
   (state: RootState) => ({
     activeChain: state.chain as Chain,
     hasHiveAccounts: state.hive.accounts.length > 0,
+    navigationParams: state.navigation.stack[0]?.params,
   }),
   {
     setTitleContainerProperties,

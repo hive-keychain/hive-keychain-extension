@@ -121,6 +121,8 @@ export interface CustomEvmChainFormProps {
   chainToEdit?: EvmChain;
   initialChain?: Partial<EvmChain>;
   isDefaultChain?: boolean;
+  /** Edit mode only. Opens the network page for this chain's RPCs. */
+  onUpdateRpc?: () => void;
   setErrorMessage?: (key: string) => void;
   submitLabel?: string;
 }
@@ -132,6 +134,7 @@ export const CustomEvmChainForm = ({
   chainToEdit,
   initialChain,
   isDefaultChain,
+  onUpdateRpc,
   setErrorMessage,
   submitLabel,
 }: CustomEvmChainFormProps) => {
@@ -329,65 +332,77 @@ export const CustomEvmChainForm = ({
 
   const submit = async () => {
     clearError();
-    if (!name.trim()) {
-      reportError('evm_custom_chains_error_name');
-      return;
-    }
-    if (!symbol.trim()) {
-      reportError('evm_custom_chains_error_symbol');
-      return;
+    if (!isDefaultChain) {
+      if (!name.trim()) {
+        reportError('evm_custom_chains_error_name');
+        return;
+      }
+      if (!symbol.trim()) {
+        reportError('evm_custom_chains_error_symbol');
+        return;
+      }
     }
 
-    const cleanedRpcs = rpcUrls.map((u) => u.trim()).filter(Boolean);
-    if (cleanedRpcs.length === 0) {
-      reportError('evm_custom_chains_error_rpc');
-      return;
-    }
-    const seen = new Set<string>();
-    for (const url of cleanedRpcs) {
-      if (!isValidRpcUrl(url)) {
+    const cleanedRpcs = isEdit
+      ? []
+      : rpcUrls.map((u) => u.trim()).filter(Boolean);
+    if (!isEdit) {
+      if (cleanedRpcs.length === 0) {
         reportError('evm_custom_chains_error_rpc');
         return;
       }
-      const key = url.toLowerCase();
-      if (seen.has(key)) {
-        reportError('evm_custom_chains_error_rpc_duplicate');
-        return;
+      const seen = new Set<string>();
+      for (const url of cleanedRpcs) {
+        if (!isValidRpcUrl(url)) {
+          reportError('evm_custom_chains_error_rpc');
+          return;
+        }
+        const key = url.toLowerCase();
+        if (seen.has(key)) {
+          reportError('evm_custom_chains_error_rpc_duplicate');
+          return;
+        }
+        seen.add(key);
       }
-      seen.add(key);
     }
 
     let chainId: string;
-    try {
-      chainId = normalizeEvmChainIdInput(chainIdInput);
-    } catch {
-      reportError('evm_custom_chains_error_chain_id');
-      return;
+    if (isDefaultChain && chainToEdit) {
+      chainId = chainToEdit.chainId;
+    } else {
+      try {
+        chainId = normalizeEvmChainIdInput(chainIdInput);
+      } catch {
+        reportError('evm_custom_chains_error_chain_id');
+        return;
+      }
     }
 
     setSaving(true);
     try {
-      const rpcCheckRows = rpcUrls
-        .map((u, index) => ({ index, url: u.trim() }))
-        .filter(({ url }) => url.length > 0);
+      if (!isEdit) {
+        const rpcCheckRows = rpcUrls
+          .map((u, index) => ({ index, url: u.trim() }))
+          .filter(({ url }) => url.length > 0);
 
-      const rpcCheckResults = await Promise.all(
-        rpcCheckRows.map(({ index, url }) =>
-          EvmRpcUtils.isValidRpcForChainId(url, chainId).then((ok) => ({
-            index,
-            ok,
-          })),
-        ),
-      );
+        const rpcCheckResults = await Promise.all(
+          rpcCheckRows.map(({ index, url }) =>
+            EvmRpcUtils.isValidRpcForChainId(url, chainId).then((ok) => ({
+              index,
+              ok,
+            })),
+          ),
+        );
 
-      const failedIndices = rpcCheckResults
-        .filter((r) => !r.ok)
-        .map((r) => r.index);
-      if (failedIndices.length > 0) {
-        setFailedRpcRowIndices(failedIndices);
-        setRpcPanelCollapsed(false);
-        reportError('evm_custom_chains_error_rpc_unreachable');
-        return;
+        const failedIndices = rpcCheckResults
+          .filter((r) => !r.ok)
+          .map((r) => r.index);
+        if (failedIndices.length > 0) {
+          setFailedRpcRowIndices(failedIndices);
+          setRpcPanelCollapsed(false);
+          reportError('evm_custom_chains_error_rpc_unreachable');
+          return;
+        }
       }
 
       const chain: EvmChain = {
@@ -395,16 +410,28 @@ export const CustomEvmChainForm = ({
         type: ChainType.EVM,
         isCustom: !isDefaultChain,
         active: chainToEdit?.active ?? true,
-        name: name.trim(),
+        name: isDefaultChain && chainToEdit ? chainToEdit.name : name.trim(),
         chainId,
-        mainToken: symbol.trim(),
-        logo: logo.trim(),
-        testnet,
-        rpcs: cleanedRpcs.map((url, i) => ({
-          url,
-          isDefault: i === 0,
-        })),
-        defaultTransactionType: txType,
+        mainToken:
+          isDefaultChain && chainToEdit
+            ? chainToEdit.mainToken
+            : symbol.trim(),
+        logo:
+          isDefaultChain && chainToEdit
+            ? (chainToEdit.logo ?? '')
+            : logo.trim(),
+        testnet: isDefaultChain && chainToEdit ? !!chainToEdit.testnet : testnet,
+        rpcs:
+          isEdit && chainToEdit
+            ? chainToEdit.rpcs
+            : cleanedRpcs.map((url, i) => ({
+                url,
+                isDefault: i === 0,
+              })),
+        defaultTransactionType:
+          isDefaultChain && chainToEdit
+            ? chainToEdit.defaultTransactionType
+            : txType,
       };
 
       if (explorer.trim()) {
@@ -489,6 +516,7 @@ export const CustomEvmChainForm = ({
           clearError();
           setName(v);
         }}
+        disabled={isDefaultChain}
         dataTestId="custom-evm-chain-name"
       />
       <InputComponent
@@ -499,6 +527,7 @@ export const CustomEvmChainForm = ({
           clearError();
           setSymbol(v);
         }}
+        disabled={isDefaultChain}
         dataTestId="custom-evm-chain-symbol"
       />
       <div className="add-custom-evm-chain-form__logo-row">
@@ -511,6 +540,7 @@ export const CustomEvmChainForm = ({
               clearError();
               setLogo(v);
             }}
+            disabled={isDefaultChain}
             dataTestId="custom-evm-chain-logo"
           />
         </div>
@@ -534,6 +564,16 @@ export const CustomEvmChainForm = ({
         }}
         dataTestId="custom-evm-chain-explorer"
       />
+      {isEdit && onUpdateRpc && (
+        <button
+          type="button"
+          className="add-custom-evm-chain-form__update-rpc"
+          onClick={onUpdateRpc}
+          data-testid="custom-evm-chain-update-rpc">
+          {I18nUtils.getMessage('evm_custom_chains_update_rpc')}
+        </button>
+      )}
+      {!isEdit && (
       <div
         className={
           'add-custom-evm-chain-form__rpc-block' +
@@ -619,6 +659,7 @@ export const CustomEvmChainForm = ({
             </div>
           ))}
       </div>
+      )}
       {!isDefaultChain && (
         <CheckboxComponent
           title="evm_custom_chains_field_testnet"

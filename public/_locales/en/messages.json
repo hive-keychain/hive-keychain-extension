@@ -6610,6 +6610,10 @@
     "message": "Save changes",
     "description": "Save button when editing custom chain"
   },
+  "evm_custom_chains_update_rpc": {
+    "message": "Update RPCs",
+    "description": "Link from the edit-chain popup to the network page for this chain"
+  },
   "evm_custom_chains_reset_default": {
     "message": "Reset to default",
     "description": "Button label to reset a supported EVM chain override"

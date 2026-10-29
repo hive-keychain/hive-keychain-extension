@@ -167,6 +167,117 @@ describe('CustomEvmChainForm', () => {
     expect(
       screen.queryByText('evm_custom_chains_field_default_tx_type'),
     ).toBeNull();
+    expect(
+      (screen.getByTestId('custom-evm-chain-name') as HTMLInputElement).disabled,
+    ).toBe(true);
+    expect(
+      (screen.getByTestId('custom-evm-chain-symbol') as HTMLInputElement)
+        .disabled,
+    ).toBe(true);
+    expect(
+      (screen.getByTestId('custom-evm-chain-logo') as HTMLInputElement).disabled,
+    ).toBe(true);
+    expect(
+      (screen.getByTestId('custom-evm-chain-explorer') as HTMLInputElement)
+        .disabled,
+    ).toBe(false);
+    expect(screen.queryByTestId('custom-evm-chain-rpc-0')).toBeNull();
+  });
+
+  it('saves only the block explorer for a supported chain and links to its RPC page', async () => {
+    const onSubmit = jest.fn().mockResolvedValue(undefined);
+    const onUpdateRpc = jest.fn();
+    const chainToEdit: EvmChain = {
+      type: ChainType.EVM,
+      chainId: '0x38',
+      name: 'Binance Smart Chain',
+      mainToken: 'BNB',
+      logo: 'https://token-icons.llamao.fi/icons/chains/rsz_binance.jpg',
+      defaultTransactionType: EvmTransactionType.EIP_1559,
+      rpcs: [
+        { url: 'https://bsc-dataseed.bnbchain.org', isDefault: true },
+        { url: 'https://bsc-dataseed-public.bnbchain.org', isDefault: false },
+      ],
+      blockExplorer: { url: 'https://bscscan.com' },
+      testnet: false,
+      isCustom: false,
+    };
+
+    render(
+      <CustomEvmChainForm
+        onCancel={jest.fn()}
+        onSubmit={onSubmit}
+        onUpdateRpc={onUpdateRpc}
+        isDefaultChain
+        chainToEdit={chainToEdit}
+      />,
+    );
+
+    fireEvent.change(screen.getByTestId('custom-evm-chain-explorer'), {
+      target: { value: 'https://explorer.bnb' },
+    });
+    fireEvent.click(screen.getByTestId('custom-evm-chain-update-rpc'));
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('custom-evm-chain-submit'));
+    });
+
+    expect(onUpdateRpc).toHaveBeenCalledTimes(1);
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        chainId: '0x38',
+        name: 'Binance Smart Chain',
+        mainToken: 'BNB',
+        logo: chainToEdit.logo,
+        rpcs: chainToEdit.rpcs,
+        blockExplorer: { url: 'https://explorer.bnb' },
+        isCustom: false,
+      }),
+    );
+    expect(EvmRpcUtils.isValidRpcForChainId).not.toHaveBeenCalled();
+  });
+
+  it('keeps custom-chain fields editable and preserves RPCs while editing', async () => {
+    const onSubmit = jest.fn().mockResolvedValue(undefined);
+    const chainToEdit: EvmChain = {
+      type: ChainType.EVM,
+      chainId: '0x539',
+      name: 'Local Chain',
+      mainToken: 'ETH',
+      defaultTransactionType: EvmTransactionType.EIP_1559,
+      rpcs: [{ url: 'https://rpc.local', isDefault: true }],
+      testnet: false,
+      isCustom: true,
+    };
+
+    render(
+      <CustomEvmChainForm
+        onCancel={jest.fn()}
+        onSubmit={onSubmit}
+        onUpdateRpc={jest.fn()}
+        chainToEdit={chainToEdit}
+      />,
+    );
+
+    expect(
+      (screen.getByTestId('custom-evm-chain-name') as HTMLInputElement).disabled,
+    ).toBe(false);
+    expect(screen.queryByTestId('custom-evm-chain-rpc-0')).toBeNull();
+    expect(screen.getByTestId('custom-evm-chain-update-rpc')).not.toBeNull();
+
+    fireEvent.change(screen.getByTestId('custom-evm-chain-name'), {
+      target: { value: 'Renamed Chain' },
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('custom-evm-chain-submit'));
+    });
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'Renamed Chain',
+        rpcs: chainToEdit.rpcs,
+        isCustom: true,
+      }),
+    );
   });
 
   it('prefills the form on chain id blur when adding manually', async () => {

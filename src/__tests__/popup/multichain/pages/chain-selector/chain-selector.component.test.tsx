@@ -3,6 +3,7 @@ import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.inter
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
+import { Screen } from '@interfaces/screen.interface';
 import { ChainType, EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import userEvent from '@testing-library/user-event';
@@ -218,8 +219,12 @@ describe('ChainSelectorPageComponent', () => {
     );
 
     await user.click(await screen.findByTestId('btn-edit-default-chain-0x1'));
-    await user.clear(screen.getByTestId('custom-evm-chain-name'));
-    await user.type(screen.getByTestId('custom-evm-chain-name'), 'Edited ETH');
+    expect(screen.getByTestId('custom-evm-chain-name')).toBeDisabled();
+    expect(screen.queryByTestId('custom-evm-chain-rpc-0')).not.toBeInTheDocument();
+    await user.type(
+      screen.getByTestId('custom-evm-chain-explorer'),
+      'https://etherscan.io',
+    );
     await user.click(screen.getByTestId('custom-evm-chain-submit'));
 
     await waitFor(() => {
@@ -227,11 +232,44 @@ describe('ChainSelectorPageComponent', () => {
         '0x1',
         expect.objectContaining({
           chainId: '0x1',
-          name: 'Edited ETH',
+          name: 'Ethereum',
           isCustom: false,
+          blockExplorer: { url: 'https://etherscan.io' },
+          rpcs: supportedChain.rpcs,
         }),
       );
     });
+    expect(EvmRpcUtils.setActiveRpc).not.toHaveBeenCalled();
+  });
+
+  it('opens the network page on the edited chain from the update RPC link', async () => {
+    const user = userEvent.setup();
+    jest.spyOn(ChainUtils, 'getSetupChains').mockResolvedValue([
+      supportedChain,
+    ]);
+    jest.spyOn(ChainUtils, 'getDefaultChains').mockResolvedValue([
+      supportedChain,
+    ]);
+
+    const { store } = customRender(
+      <>
+        <ChainSelectorPageComponent hideTitle />
+        <TestModalHost />
+      </>,
+    );
+
+    await user.click(await screen.findByTestId('btn-edit-default-chain-0x1'));
+    await user.click(screen.getByTestId('custom-evm-chain-update-rpc'));
+
+    await waitFor(() => {
+      expect(store.getState().navigation.stack[0]).toEqual(
+        expect.objectContaining({
+          currentPage: Screen.SETTINGS_NETWORK,
+          params: { chainId: '0x1' },
+        }),
+      );
+    });
+    expect(store.getState().modal).toBeNull();
   });
 
   it('resets supported EVM chain overrides without deleting custom chains', async () => {

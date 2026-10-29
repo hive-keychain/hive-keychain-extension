@@ -46,12 +46,85 @@ export const getSettingsChainOptions = async (
 const isSameChainId = (left: string, right: string) =>
   left.toLowerCase() === right.toLowerCase();
 
+export const getRequestedSettingsChainId = (
+  params: unknown,
+): string | undefined => {
+  if (!params || typeof params !== 'object' || !('chainId' in params)) {
+    return undefined;
+  }
+  const chainId = (params as { chainId?: unknown }).chainId;
+  if (typeof chainId !== 'string') {
+    return undefined;
+  }
+  const trimmed = chainId.trim();
+  return trimmed || undefined;
+};
+
+export const findRequestedEvmChain = async (
+  chainId: string,
+): Promise<EvmChain | undefined> => {
+  const [defaultChains, customChains] = await Promise.all([
+    ChainUtils.getDefaultChains(),
+    ChainUtils.getCustomChains(),
+  ]);
+  const normalized = chainId.toLowerCase();
+  const match = [...customChains, ...defaultChains].find(
+    (chain) =>
+      chain.type === ChainType.EVM &&
+      chain.chainId.toLowerCase() === normalized,
+  );
+  return match && isEvmChain(match) ? match : undefined;
+};
+
+const isListedEvmChain = (options: SettingsChainOption[], chainId: string) =>
+  options.some(
+    (option) =>
+      option.value.type === ChainType.EVM &&
+      isSameChainId(option.value.chain.chainId, chainId),
+  );
+
+export const selectSettingsNetworkChain = (
+  options: SettingsChainOption[],
+  activeChain: Chain,
+  preferredChainId?: string,
+  requestedChain?: EvmChain,
+): { options: SettingsChainOption[]; selected?: SettingsChainOption } => {
+  const nextOptions =
+    preferredChainId &&
+    requestedChain &&
+    isSameChainId(requestedChain.chainId, preferredChainId) &&
+    !isListedEvmChain(options, preferredChainId)
+      ? [buildEvmSettingsOption(requestedChain), ...options]
+      : options;
+
+  return {
+    options: nextOptions,
+    selected: resolveDefaultSettingsChainOption(
+      nextOptions,
+      activeChain,
+      preferredChainId,
+    ),
+  };
+};
+
 export const resolveDefaultSettingsChainOption = (
   options: SettingsChainOption[],
   activeChain: Chain,
+  preferredChainId?: string,
 ): SettingsChainOption | undefined => {
   if (!options.length) {
     return undefined;
+  }
+
+  if (preferredChainId) {
+    const preferred = options.find(
+      (option) =>
+        option.value.type === ChainType.EVM &&
+        isSameChainId(option.value.chain.chainId, preferredChainId),
+    );
+    if (preferred) {
+      return preferred;
+    }
   }
 
   if (activeChain.type === ChainType.HIVE) {

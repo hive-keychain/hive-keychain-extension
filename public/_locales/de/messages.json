@@ -6384,6 +6384,10 @@
     "message": "Bearbeiten Sie die unterstützte Kette",
     "description": "Modal title for editing a supported default EVM chain"
   },
+  "evm_custom_chains_update_rpc": {
+    "message": "RPCs aktualisieren",
+    "description": "Link from the edit-chain popup to the network page for this chain"
+  },
   "evm_custom_chains_update": {
     "message": "Änderungen speichern",
     "description": "Save button when editing custom chain"
