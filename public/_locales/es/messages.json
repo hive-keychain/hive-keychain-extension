@@ -6384,6 +6384,10 @@
     "message": "Editar red admitida",
     "description": "Modal title for editing a supported default EVM chain"
   },
+  "evm_custom_chains_update_rpc": {
+    "message": "Actualizar RPCs",
+    "description": "Link from the edit-chain popup to the network page for this chain"
+  },
   "evm_custom_chains_update": {
     "message": "Guardar cambios",
     "description": "Save button when editing custom chain"

@@ -10,6 +10,7 @@ interface OwnProps {
   /** When set, form loads this chain and saves it as a custom chain update or default-chain override. */
   chainToEdit?: EvmChain;
   isDefaultChain?: boolean;
+  onUpdateRpc?: () => void;
 }
 
 /** Errors are shown inside the form so they stay above the modal content (global setErrorMessage renders behind the modal). */
@@ -18,12 +19,14 @@ export const AddCustomEvmChainForm = ({
   onCancel,
   chainToEdit,
   isDefaultChain,
+  onUpdateRpc,
 }: OwnProps) => {
   return (
     <CustomEvmChainForm
       onCancel={onCancel}
       chainToEdit={chainToEdit}
       isDefaultChain={isDefaultChain}
+      onUpdateRpc={onUpdateRpc}
       onResetToDefault={
         isDefaultChain && chainToEdit
           ? async () => {
@@ -43,7 +46,7 @@ export const AddCustomEvmChainForm = ({
         } else {
           await ChainUtils.addCustomChain(chain);
         }
-        if (chain.rpcs.length > 0) {
+        if (!chainToEdit && chain.rpcs.length > 0) {
           await EvmRpcUtils.setActiveRpc(chain.rpcs[0], chain);
         }
         await onSuccess();

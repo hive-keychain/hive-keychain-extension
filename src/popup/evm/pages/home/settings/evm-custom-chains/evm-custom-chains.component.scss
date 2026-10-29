@@ -206,7 +206,8 @@
     animation: add-custom-evm-chain-form-chainlist-spin 0.75s linear infinite;
   }
 
-  .add-custom-evm-chain-form__chainlist-preload {
+  .add-custom-evm-chain-form__chainlist-preload,
+  .add-custom-evm-chain-form__update-rpc {
     display: inline;
     margin: 0;
     padding: 0;
@@ -227,6 +228,10 @@
       cursor: not-allowed;
       opacity: 0.5;
     }
+  }
+
+  .add-custom-evm-chain-form__update-rpc {
+    align-self: flex-start;
   }
 
   .add-custom-evm-chain-form__rpc-block {

@@ -6414,6 +6414,10 @@
     "message": "编辑支持的链",
     "description": "Modal title for editing a supported default EVM chain"
   },
+  "evm_custom_chains_update_rpc": {
+    "message": "更新 RPCs",
+    "description": "Link from the edit-chain popup to the network page for this chain"
+  },
   "evm_custom_chains_update": {
     "message": "保存更改",
     "description": "Save button when editing custom chain"

@@ -300,4 +300,64 @@ describe('EvmRpcNodesComponent', () => {
     );
     expect(EvmRpcUtils.addCustomRpc).not.toHaveBeenCalled();
   });
+
+  it('rejects an empty or non-HTTP(S) RPC URL', async () => {
+    const store = getFakeStore({
+      ...initialEmptyStateStore,
+      chain,
+    });
+    const { container } = render(
+      <Provider store={store}>
+        <EvmRpcNodesComponent />
+      </Provider>,
+    );
+
+    await waitFor(() => {
+      expect(container.querySelector('.add-button')).not.toBeNull();
+    });
+    fireEvent.click(container.querySelector('.add-button')!);
+    fireEvent.click(screen.getByTestId('evm-rpc-save'));
+
+    await waitFor(() => {
+      expect(store.getState().message.key).toBe('evm_custom_chains_error_rpc');
+    });
+
+    fireEvent.change(screen.getByTestId('input-rpc-node-uri'), {
+      target: { value: 'ftp://rpc.example' },
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('evm-rpc-save'));
+    });
+
+    expect(store.getState().message.key).toBe('evm_custom_chains_error_rpc');
+    expect(EvmRpcUtils.isValidRpcForChainId).not.toHaveBeenCalled();
+    expect(EvmRpcUtils.addCustomRpc).not.toHaveBeenCalled();
+  });
+
+  it('rejects a case-insensitive duplicate RPC URL', async () => {
+    const store = getFakeStore({
+      ...initialEmptyStateStore,
+      chain,
+    });
+    const { container } = render(
+      <Provider store={store}>
+        <EvmRpcNodesComponent />
+      </Provider>,
+    );
+
+    await waitFor(() => {
+      expect(container.querySelector('.add-button')).not.toBeNull();
+    });
+    fireEvent.click(container.querySelector('.add-button')!);
+    fireEvent.change(screen.getByTestId('input-rpc-node-uri'), {
+      target: { value: ' HTTPS://DEFAULT.RPC ' },
+    });
+    fireEvent.click(screen.getByTestId('evm-rpc-save'));
+
+    await waitFor(() => {
+      expect(store.getState().message.key).toBe('evm_rpc_already_in_list');
+    });
+    expect(EvmRpcUtils.isValidRpcForChainId).not.toHaveBeenCalled();
+    expect(EvmRpcUtils.addCustomRpc).not.toHaveBeenCalled();
+  });
 });

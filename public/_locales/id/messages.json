@@ -6384,6 +6384,10 @@
     "message": "Edit rantai yang didukung",
     "description": "Modal title for editing a supported default EVM chain"
   },
+  "evm_custom_chains_update_rpc": {
+    "message": "Perbarui RPCs",
+    "description": "Link from the edit-chain popup to the network page for this chain"
+  },
   "evm_custom_chains_update": {
     "message": "Simpan perubahan",
     "description": "Save button when editing custom chain"

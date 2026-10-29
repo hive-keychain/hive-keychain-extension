@@ -119,10 +119,10 @@ const EvmRpcNodes = ({
     );
   };
 
-  const saveCustomRpc = async () => {
-    await EvmRpcUtils.addCustomRpc(newRpc, selectedChain);
+  const saveCustomRpc = async (rpc: MultichainRpc) => {
+    await EvmRpcUtils.addCustomRpc(rpc, selectedChain);
     if (setNewRpcAsActive) {
-      await selectRpc(newRpc);
+      await selectRpc(rpc);
     }
     setNewRpc(EMPTY_RPC);
     setSetNewRpcAsActive(false);
@@ -132,10 +132,10 @@ const EvmRpcNodes = ({
     }, 500);
   };
 
-  const validateAndSaveCustomRpc = async () => {
+  const validateAndSaveCustomRpc = async (rpc: MultichainRpc) => {
     if (
       !(await EvmRpcUtils.isValidRpcForChainId(
-        newRpc.url,
+        rpc.url,
         selectedChain.chainId,
         true,
       ))
@@ -143,30 +143,33 @@ const EvmRpcNodes = ({
       setErrorMessage('evm_add_rpc_invalid_chain_error');
       return;
     }
-    await saveCustomRpc();
+    await saveCustomRpc(rpc);
   };
 
   const addCustomRpc = async () => {
-    // Before adding new rpc, check if it is already in the list
-    const isRpcAlreadyInList = rpcOptions?.some(
-      (option) => option.value === newRpc.url,
-    );
-
-    if (!newRpc.url) {
+    const url = newRpc.url.trim();
+    if (!url || !EvmRpcUrlUtils.isValidHttpOrHttpsRpcUrl(url)) {
+      setErrorMessage('evm_custom_chains_error_rpc');
       return;
     }
+
+    const isRpcAlreadyInList = rpcOptions?.some(
+      (option) => option.value.toLowerCase() === url.toLowerCase(),
+    );
     if (isRpcAlreadyInList) {
       setErrorMessage('evm_rpc_already_in_list');
       return;
     }
-    if (EvmRpcUrlUtils.isHttpRpcUrl(newRpc.url)) {
+
+    const rpcToSave: MultichainRpc = { ...newRpc, url };
+    if (EvmRpcUrlUtils.isHttpRpcUrl(url)) {
       setWarningMessage('evm_add_http_rpc_warning', [], false, {
-        onConfirm: validateAndSaveCustomRpc,
+        onConfirm: () => validateAndSaveCustomRpc(rpcToSave),
         onCancel: () => {},
       });
       return;
     }
-    await validateAndSaveCustomRpc();
+    await validateAndSaveCustomRpc(rpcToSave);
   };
 
   const deleteRpc = async (rpc: MultichainRpc) => {

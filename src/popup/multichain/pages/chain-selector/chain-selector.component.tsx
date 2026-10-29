@@ -4,10 +4,12 @@ import ButtonComponent, {
 import CheckboxComponent from '@common-ui/checkbox/checkbox/checkbox.component';
 import { InputType } from '@common-ui/input/input-type.enum';
 import InputComponent from '@common-ui/input/input.component';
+import { Screen } from '@interfaces/screen.interface';
 import { AddCustomEvmChainForm } from '@popup/evm/pages/home/settings/evm-custom-chains/add-custom-evm-chain-form.component';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { setChain } from '@popup/multichain/actions/chain.actions';
 import { closeModal, openModal } from '@popup/multichain/actions/modal.actions';
+import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import {
   Chain,
   ChainType,
@@ -35,6 +37,7 @@ const ChainSelector = ({
   setChain,
   openModal,
   closeModal,
+  navigateToWithParams,
   hideTitle,
 }: PropsFromRedux & ChainSelectorProps) => {
   const [setupChains, setSetupChains] = useState<Chain[]>([]);
@@ -158,6 +161,12 @@ const ChainSelector = ({
           key={`edit-chain-${chainToEdit.chainId}`}
           chainToEdit={chainToEdit}
           isDefaultChain={isDefaultChain}
+          onUpdateRpc={() => {
+            closeModal();
+            navigateToWithParams(Screen.SETTINGS_NETWORK, {
+              chainId: chainToEdit.chainId,
+            });
+          }}
           onCancel={() => closeModal()}
           onSuccess={async () => {
             closeModal();
@@ -449,6 +458,7 @@ const connector = connect(mapStateToProps, {
   setChain,
   openModal,
   closeModal,
+  navigateToWithParams,
 });
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
