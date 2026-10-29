@@ -25,6 +25,8 @@ const config = {
     peakdNotificationsConfig: './src/peakd-notifications-config/index.tsx',
     web_interface: './src/content-scripts/hive/web-interface/index.ts',
     keychainify: './src/content-scripts/hive/keychainify/index.ts',
+    evmKeychainProvider:
+      './src/content-scripts/evm/injected/evm-keychain-provider.ts',
     evmKeychainLegacyPreferred:
       './src/content-scripts/evm/injected/evm-keychain-legacy-preferred.ts',
     evmKeychainLegacyYielding:

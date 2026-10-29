@@ -1,3 +1,3 @@
-import { bootstrapEvmKeychain } from 'src/content-scripts/evm/injected/evm-keychain';
+import { configureEvmKeychainLegacyMode } from 'src/content-scripts/evm/injected/evm-keychain';
 
-bootstrapEvmKeychain('yielding');
+configureEvmKeychainLegacyMode('yielding');
