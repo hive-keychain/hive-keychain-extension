@@ -5883,15 +5883,15 @@
     "description": "Error message if otp has been used already"
   },
   "dialog_evm_decrypt_request_permission_title": {
-    "message": "Demander l’autorisation",
+    "message": "Autoriser l’opération",
     "description": "Request permission dialog title"
   },
   "dialog_evm_get_encryption_key_title": {
-    "message": "Demander la clé de chiffrement",
+    "message": "Partager la clé de chiffrement",
     "description": "Request encryption key dialog title"
   },
   "dialog_evm_sign_data_title": {
-    "message": "Demander la signature des données",
+    "message": "Signature des données",
     "description": "Request sign typed data dialog title"
   },
   "evm_operation_transfer": {
