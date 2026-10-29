@@ -448,6 +448,31 @@ const resolvePortfolioHistoryDisplayToAmount = (
   return item.toAmount;
 };
 
+const assetsByNormalizedId = new WeakMap<
+  readonly PortfolioCanonicalAsset[],
+  Map<string, PortfolioCanonicalAsset>
+>();
+
+const getAssetsByNormalizedId = (
+  assets: readonly PortfolioCanonicalAsset[],
+): Map<string, PortfolioCanonicalAsset> => {
+  const cached = assetsByNormalizedId.get(assets);
+  if (cached) {
+    return cached;
+  }
+
+  const assetsById = new Map<string, PortfolioCanonicalAsset>();
+  for (const asset of assets) {
+    const normalizedAssetId = asset.assetId.trim().toLowerCase();
+    if (normalizedAssetId && !assetsById.has(normalizedAssetId)) {
+      assetsById.set(normalizedAssetId, asset);
+    }
+  }
+
+  assetsByNormalizedId.set(assets, assetsById);
+  return assetsById;
+};
+
 const resolvePortfolioAssetById = (
   assetId: string | null,
   assets: PortfolioCanonicalAsset[],
@@ -459,9 +484,7 @@ const resolvePortfolioAssetById = (
   }
   const normalizedAssetId = trimmedAssetId.toLowerCase();
 
-  const asset = assets.find(
-    (asset) => asset.assetId.trim().toLowerCase() === normalizedAssetId,
-  );
+  const asset = getAssetsByNormalizedId(assets).get(normalizedAssetId);
   if (asset) {
     const hiveEngineLogoUrl =
       asset.ecosystem === 'hive_engine'

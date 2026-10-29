@@ -20,7 +20,9 @@ const Config = {
     FREQUENCY: +(process.env.DEV_CLAIM_FREQUENCY || 10),
   },
   paidAccountCreation: {
-    SYNC_FREQUENCY_MINUTES: +(process.env.DEV_PAID_ACCOUNT_CREATION_SYNC_MINUTES || 1),
+    SYNC_FREQUENCY_MINUTES: +(
+      process.env.DEV_PAID_ACCOUNT_CREATION_SYNC_MINUTES || 1
+    ),
   },
   KEYCHAIN_PROPOSAL: 373,
   PROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP: 8 * 10 ** 6,
@@ -64,7 +66,7 @@ const Config = {
     host: process.env.KEYLESS_HOST || 'https://hive-auth.arcange.eu/',
   },
   social: {
-    discord: 'https://discord.gg/tUHtyev2xF',
+    discord: 'https://discord.gg/BgNH8rRukz',
     peakd: 'https://peakd.com/@keychain',
     twitter: 'https://twitter.com/HiveKeychain',
     medium: 'https://medium.com/@hivekeychain',

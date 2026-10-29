@@ -81,17 +81,13 @@ describe('EvmAccountTokensLoadUtils', () => {
     jest.spyOn(AsyncUtils, 'sleep').mockResolvedValue(undefined);
   });
 
-  it('registers the address and refreshes balances from rpc on first load', async () => {
+  it('refreshes balances from rpc without registering the address', async () => {
     const result = await EvmAccountTokensLoadUtils.loadNativeAndErc20TokensForChain(
       ethereumChain,
       '0xabc',
     );
 
-    expect(EvmLightNodeUtils.registerAddress).toHaveBeenCalledWith(
-      ethereumChain.chainId,
-      '0xabc',
-      false,
-    );
+    expect(EvmLightNodeUtils.registerAddress).not.toHaveBeenCalled();
     expect(EvmLightNodeUtils.getDiscoveredTokens).toHaveBeenCalledWith(
       ethereumChain.chainId,
       '0xabc',
@@ -150,11 +146,10 @@ describe('EvmAccountTokensLoadUtils', () => {
     );
   });
 
-  it('skips address registration on refresh loads', async () => {
+  it('does not register the address while loading discovered tokens', async () => {
     await EvmAccountTokensLoadUtils.loadNativeAndErc20TokensForChain(
       ethereumChain,
       '0xabc',
-      { registerAddress: false },
     );
 
     expect(EvmLightNodeUtils.registerAddress).not.toHaveBeenCalled();
@@ -167,11 +162,7 @@ describe('EvmAccountTokensLoadUtils', () => {
         '0xabc',
       );
 
-    expect(EvmLightNodeUtils.registerAddress).toHaveBeenCalledWith(
-      ethereumChain.chainId,
-      '0xabc',
-      false,
-    );
+    expect(EvmLightNodeUtils.registerAddress).not.toHaveBeenCalled();
     expect(EvmLightNodeUtils.getDiscoveredTokens).toHaveBeenCalledWith(
       ethereumChain.chainId,
       '0xabc',

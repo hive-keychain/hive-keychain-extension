@@ -353,6 +353,7 @@ describe('PortfolioApiParser', () => {
             spender: '0x1111111254eeb25477b68fb85ed929f73a960582',
             amount: '1000000000000000000',
           },
+          permit: null,
           transaction: expect.objectContaining({
             chainId: 1,
             to: '0xdef',
@@ -378,6 +379,44 @@ describe('PortfolioApiParser', () => {
     });
 
     expect(response.quotes[0]?.approval).toBeNull();
+    expect(response.quotes[0]?.permit).toBeNull();
+  });
+
+  it('parses a Permit2 allowance and drops an incomplete one', () => {
+    const response = PortfolioApiParser.parsePortfolioQuoteResponse({
+      request: { mode: 'swap' },
+      quotes: [
+        {
+          quoteId: 'uniswap:permit',
+          provider: { id: 'uniswap', name: 'Uniswap' },
+          fromAmount: '1',
+          estimatedToAmount: '0.99',
+          permit: {
+            to: '0x000000000022d473030f116ddee9f6b43ac78ba3',
+            token: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+            spender: '0x3fc91a3afd70395cd496c647d5a6cc9d4b2b7fad',
+            amount: '1000000',
+            expiration: '1700003600',
+          },
+        },
+        {
+          quoteId: 'uniswap:incomplete-permit',
+          provider: { id: 'uniswap', name: 'Uniswap' },
+          fromAmount: '1',
+          estimatedToAmount: '0.99',
+          permit: { to: '0x000000000022d473030f116ddee9f6b43ac78ba3' },
+        },
+      ],
+    });
+
+    expect(response.quotes[0]?.permit).toEqual({
+      to: '0x000000000022d473030f116ddee9f6b43ac78ba3',
+      token: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+      spender: '0x3fc91a3afd70395cd496c647d5a6cc9d4b2b7fad',
+      amount: '1000000',
+      expiration: '1700003600',
+    });
+    expect(response.quotes[1]?.permit).toBeNull();
   });
 
   it('falls back comparableValue to estimatedToAmount when omitted', () => {

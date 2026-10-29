@@ -62,7 +62,7 @@ const Menu = ({
   };
 
   const goToDiscord = () => {
-    chrome.tabs.create({ url: 'https://discord.gg/E6P6Gjv9MC' });
+    chrome.tabs.create({ url: 'https://discord.gg/BgNH8rRukz' });
   };
   const goToPeakD = () => {
     chrome.tabs.create({ url: 'https://peakd.com/@keychain' });

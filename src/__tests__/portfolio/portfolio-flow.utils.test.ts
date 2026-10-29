@@ -863,6 +863,81 @@ describe('PortfolioFlowUtils', () => {
     ).toBe('evm-eth-1');
   });
 
+  it('resolves duplicate symbols to the first catalog entry', () => {
+    const firstHiveAsset = createTestCanonicalAsset({
+      assetId: 'hive-hive-first',
+      ecosystem: 'hive',
+      symbol: 'HIVE',
+      name: 'First Hive',
+    });
+    const secondHiveAsset = createTestCanonicalAsset({
+      assetId: 'hive-hive-second',
+      ecosystem: 'hive',
+      symbol: 'hive',
+      name: 'Second Hive',
+    });
+    const hiveRow = {
+      key: 'hive:HIVE',
+      symbol: 'HIVE',
+      network: 'Hive',
+      balance: '1',
+    };
+    const hiveAssets = [firstHiveAsset, secondHiveAsset];
+
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(hiveRow, hiveAssets),
+    ).toBe('hive-hive-first');
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(hiveRow, hiveAssets),
+    ).toBe('hive-hive-first');
+
+    const contractAddress = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
+    const firstUsdcAsset = createTestCanonicalAsset({
+      assetId: `evm:token:ethereum:${contractAddress}`,
+      ecosystem: 'evm',
+      symbol: 'USDC',
+      name: 'First USD Coin',
+      chainId: 'ethereum',
+    });
+    const secondUsdcAsset = createTestCanonicalAsset({
+      assetId: `evm:token:1:${contractAddress}`,
+      ecosystem: 'evm',
+      symbol: 'USDC',
+      name: 'Second USD Coin',
+      chainId: '1',
+    });
+    const chains = [
+      {
+        name: 'Ethereum',
+        chainId: '0x1',
+        logo: 'ethereum.svg',
+      } as never,
+    ];
+    const usdcRow = {
+      key: `0x1:USDC:${contractAddress}`,
+      symbol: 'USDC',
+      network: 'Ethereum',
+      balance: '1',
+      chainId: '0x1',
+    };
+    const usdcAssets = [ethAsset, firstUsdcAsset, secondUsdcAsset];
+
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
+        usdcRow,
+        usdcAssets,
+        chains,
+      ),
+    ).toBe(firstUsdcAsset.assetId);
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRowToSwapFromAssetId(
+        usdcRow,
+        usdcAssets,
+        chains,
+      ),
+    ).toBe(firstUsdcAsset.assetId);
+  });
+
   it('resolves a selected row key to a canonical asset id for quotes', () => {
     const rows = [
       {
@@ -1380,6 +1455,63 @@ describe('PortfolioFlowUtils', () => {
       },
     };
 
+    expect(
+      PortfolioFlowUtils.sortCanonicalAssetsByRank(
+        [polygonUsdc, ethereumUsdc],
+        portfolioChains,
+      ),
+    ).toEqual([ethereumUsdc, polygonUsdc]);
+  });
+
+  it('resolves chain rank from chain.id when the record key differs, keeping the first id', () => {
+    const polygonUsdc = createTestCanonicalAsset({
+      assetId: 'evm-usdc-polygon',
+      ecosystem: 'evm',
+      symbol: 'USDC',
+      name: 'USD Coin',
+      chainId: 'polygon',
+      priceUsd: 1,
+      rankScore: 100,
+    });
+    const ethereumUsdc = createTestCanonicalAsset({
+      assetId: 'evm-usdc-ethereum',
+      ecosystem: 'evm',
+      symbol: 'USDC',
+      name: 'USD Coin',
+      chainId: 'Ethereum',
+      priceUsd: 1,
+      rankScore: 100,
+    });
+    const portfolioChains = {
+      eth: {
+        id: 'ethereum',
+        name: 'Ethereum',
+        logoUrl: null,
+        numericChainId: 1,
+        rankScore: 9200,
+      },
+      ethDuplicate: {
+        id: 'Ethereum',
+        name: 'Ethereum duplicate',
+        logoUrl: null,
+        numericChainId: 1,
+        rankScore: 1,
+      },
+      pol: {
+        id: 'polygon',
+        name: 'Polygon',
+        logoUrl: null,
+        numericChainId: 137,
+        rankScore: 800,
+      },
+    };
+
+    expect(
+      PortfolioFlowUtils.sortCanonicalAssetsByRank(
+        [polygonUsdc, ethereumUsdc],
+        portfolioChains,
+      ),
+    ).toEqual([ethereumUsdc, polygonUsdc]);
     expect(
       PortfolioFlowUtils.sortCanonicalAssetsByRank(
         [polygonUsdc, ethereumUsdc],

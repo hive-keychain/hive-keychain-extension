@@ -1,5 +1,3 @@
-import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
-import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { setChain } from '@popup/multichain/actions/chain.actions';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { Chain, ChainType } from '@popup/multichain/interfaces/chains.interface';
@@ -19,10 +17,8 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { I18nUtils } from 'src/utils/i18n.utils';
 const ChainDropdown = ({
   chain,
-  activeAccount,
   setChain,
   navigateTo,
-  loadEvmActiveAccount,
 }: PropsFromRedux) => {
   const [options, setOptions] = useState<OptionItem[]>([]);
 
@@ -65,15 +61,8 @@ const ChainDropdown = ({
     navigateTo(EvmScreen.EVM_CUSTOM_CHAINS);
   };
 
-  const selectChain = async (chain: Chain) => {
-    if (chain.type === ChainType.EVM) {
-      await EvmLightNodeUtils.registerAddress(
-        chain.chainId,
-        activeAccount.address,
-        false,
-      );
-    }
-    setChain(chain, { syncProviderNetwork: true });
+  const selectChain = (selectedChain: Chain) => {
+    setChain(selectedChain, { syncProviderNetwork: true });
   };
 
   const getChainIdsFromOptions = (optionItems: OptionItem[]) => {
@@ -136,14 +125,12 @@ const ChainDropdown = ({
 const mapStateToProps = (state: RootState) => {
   return {
     chain: state.chain as Chain,
-    activeAccount: state.evm.activeAccount,
   };
 };
 
 const connector = connect(mapStateToProps, {
   setChain,
   navigateTo,
-  loadEvmActiveAccount,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

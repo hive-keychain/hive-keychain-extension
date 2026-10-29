@@ -25,6 +25,7 @@ import {
   RoutedEvmEvent,
 } from '@interfaces/evm-provider.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
@@ -107,6 +108,21 @@ const routeEvmEvent = (event: RoutedEvmEvent) => {
         }
       });
       break;
+  }
+};
+
+const registerApprovedEvmChain = async (requestedChain: EvmChain) => {
+  if (!requestedChain?.chainId || requestedChain.isCustom === true) {
+    return;
+  }
+
+  try {
+    await EvmLightNodeUtils.registerLocalAddresses(requestedChain.chainId);
+  } catch (error) {
+    Logger.error(
+      'Error while registering EVM address with light node',
+      error,
+    );
   }
 };
 
@@ -349,6 +365,7 @@ const chromeMessageHandler = async (
         backgroundMessage.value;
 
       await ChainUtils.addChainToSetupChains(requestedChain);
+      await registerApprovedEvmChain(requestedChain);
 
       await initEvmRequestHandler(
         request,

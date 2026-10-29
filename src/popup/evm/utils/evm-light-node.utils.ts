@@ -752,6 +752,18 @@ const registerAddress = async (
   await saveRegisteredAddresses(chains, addresses);
 };
 
+const registerLocalAddresses = async (chainId: string): Promise<void> => {
+  const addresses = await EvmWalletUtils.getAllLocalAddresses();
+  const address = addresses.find((value) =>
+    EVM_ADDRESS_REGEX.test(value.trim()),
+  );
+  if (!address) {
+    return;
+  }
+
+  await registerAddress(chainId, address, false);
+};
+
 export const EvmLightNodeUtils = {
   getDiscoveredTokens,
   getDiscoveredTokensForAllRegisteredChains,
@@ -769,4 +781,5 @@ export const EvmLightNodeUtils = {
   getAbi,
   getMetadata,
   registerAddress,
+  registerLocalAddresses,
 };

@@ -525,6 +525,35 @@ describe('PortfolioHistoryDisplayUtils', () => {
       ).toBe(asset);
     });
 
+    it('uses the first catalog asset when ids normalize to the same value', () => {
+      const firstAsset = createAsset({
+        assetId: 'hive-hive',
+        ecosystem: 'hive',
+        symbol: 'HIVE',
+        name: 'First Hive',
+      });
+      const secondAsset = createAsset({
+        assetId: 'HIVE-HIVE',
+        ecosystem: 'hive',
+        symbol: 'OTHER',
+        name: 'Second Hive',
+      });
+      const assets = [firstAsset, secondAsset];
+
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioAssetById(
+          'hive-hive',
+          assets,
+        ),
+      ).toBe(firstAsset);
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioAssetById(
+          'HIVE-HIVE',
+          assets,
+        ),
+      ).toBe(firstAsset);
+    });
+
     it('builds a Hive core asset when the API catalog has no match', () => {
       expect(
         PortfolioHistoryDisplayUtils.resolvePortfolioAssetById(

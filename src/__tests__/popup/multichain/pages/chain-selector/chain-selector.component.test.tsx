@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
+import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import { ChainType, EvmChain } from '@popup/multichain/interfaces/chains.interface';
@@ -157,6 +158,44 @@ describe('ChainSelectorPageComponent', () => {
     expect(
       await screen.findByTestId('btn-edit-default-chain-0x1'),
     ).toBeInTheDocument();
+  });
+
+  it('registers a built-in chain when it is added and not when it is only selected', async () => {
+    const user = userEvent.setup();
+    const polygon = {
+      ...fallbackChain,
+      chainId: '0x89',
+      name: 'Polygon',
+    };
+    jest.spyOn(ChainUtils, 'getSetupChains').mockResolvedValue([fallbackChain]);
+    jest
+      .spyOn(ChainUtils, 'getDefaultChains')
+      .mockResolvedValue([fallbackChain, polygon]);
+    jest.spyOn(ChainUtils, 'addChainToSetupChains').mockResolvedValue(undefined);
+    const registerSpy = jest
+      .spyOn(EvmLightNodeUtils, 'registerLocalAddresses')
+      .mockResolvedValue(undefined);
+
+    customRender(<ChainSelectorPageComponent hideTitle />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        chain: fallbackChain,
+      },
+    });
+
+    await user.click(await screen.findByText('Polygon'));
+
+    await waitFor(() => {
+      expect(ChainUtils.addChainToSetupChains).toHaveBeenCalledWith(
+        expect.objectContaining({ chainId: '0x89' }),
+      );
+      expect(registerSpy).toHaveBeenCalledWith('0x89');
+    });
+
+    registerSpy.mockClear();
+    await user.click(screen.getByText('Ethereum'));
+
+    expect(registerSpy).not.toHaveBeenCalled();
   });
 
   it('saves supported EVM chain edits as default-chain overrides', async () => {

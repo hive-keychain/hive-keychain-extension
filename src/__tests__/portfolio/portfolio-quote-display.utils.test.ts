@@ -55,6 +55,8 @@ const createQuote = (overrides: Partial<PortfolioQuote> = {}): PortfolioQuote =>
   requiresRedirect: false,
   executionType: 'in_app',
   routeMetadata: null,
+  approval: null,
+  permit: null,
   transaction: null,
   paymentMethod: null,
   kyc: 'never',

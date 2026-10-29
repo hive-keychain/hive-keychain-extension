@@ -1,8 +1,12 @@
-import { BackgroundMessage } from '@background/multichain/background-message.interface';
+import {
+  BackgroundMessage,
+  BaseBackgroundMessage,
+} from '@background/multichain/background-message.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { Screen } from '@interfaces/screen.interface';
 import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
 import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
+import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { setAccounts } from '@popup/hive/actions/account.actions';
 import { activateHiveAccount } from '@popup/hive/actions/active-account.actions';
@@ -18,13 +22,22 @@ import {
   EvmChain,
 } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface.utils';
-import { Store } from 'redux';
+import { AnyAction, Store } from 'redux';
+import { ThunkDispatch } from 'redux-thunk';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import FileUtils from 'src/utils/file.utils';
+import Logger from 'src/utils/logger.utils';
 
 type ImportAccountsStore = Store<RootState>;
+type ImportAccountsDispatch = ThunkDispatch<RootState, unknown, AnyAction>;
+
+// useStore() types dispatch as plain actions. Popup stores include thunk middleware.
+const getImportAccountsDispatch = (
+  reduxStore: ImportAccountsStore,
+): ImportAccountsDispatch => reduxStore.dispatch as ImportAccountsDispatch;
 
 const IMPORT_ACCOUNTS_PAGE = 'import-accounts.html';
 
@@ -73,7 +86,9 @@ const openImportAccountsWindow = (): void => {
   });
 };
 
-const getImportErrorMessage = (value: BackgroundMessage['value']): string => {
+const getImportErrorMessage = (
+  value: BaseBackgroundMessage['value'],
+): string => {
   if (typeof value === 'string') {
     return value;
   }
@@ -85,7 +100,52 @@ const activateImportedHiveAccount = async (
   reduxStore: ImportAccountsStore,
   hiveAccount: LocalAccount,
 ): Promise<void> => {
-  await reduxStore.dispatch(activateHiveAccount(hiveAccount));
+  await getImportAccountsDispatch(reduxStore)(activateHiveAccount(hiveAccount));
+};
+
+const resolveImportedAccountsRegisterChainId = async (
+  activeChain: RootState['chain'],
+): Promise<string | undefined> => {
+  if (
+    activeChain?.type === ChainType.EVM &&
+    (activeChain as EvmChain).isCustom !== true
+  ) {
+    return activeChain.chainId;
+  }
+
+  const setupChains = await ChainUtils.getAllSetupChainsForType<EvmChain>(
+    ChainType.EVM,
+  );
+  return setupChains.find(
+    (setupChain) =>
+      setupChain.type === ChainType.EVM && setupChain.isCustom !== true,
+  )?.chainId;
+};
+
+const registerImportedEvmAccounts = async (
+  evmAccounts: Array<{ wallet?: { address?: string } }>,
+  activeChain: RootState['chain'],
+) => {
+  const hasAddress = evmAccounts.some((account) =>
+    Boolean(account.wallet?.address?.trim()),
+  );
+  if (!hasAddress) {
+    return;
+  }
+
+  const chainId = await resolveImportedAccountsRegisterChainId(activeChain);
+  if (!chainId) {
+    return;
+  }
+
+  try {
+    await EvmLightNodeUtils.registerLocalAddresses(chainId);
+  } catch (error) {
+    Logger.error(
+      'Error while registering imported EVM addresses with light node',
+      error,
+    );
+  }
 };
 
 const applyImportedAccountsMessage = async (
@@ -96,6 +156,7 @@ const applyImportedAccountsMessage = async (
     return false;
   }
 
+  const dispatch = getImportAccountsDispatch(reduxStore);
   const { mk, chain } = reduxStore.getState();
 
   if (
@@ -110,18 +171,19 @@ const applyImportedAccountsMessage = async (
     EvmWalletUtils.invalidateRebuildAccountsCache();
     const evmAccounts =
       await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
-    reduxStore.dispatch(setAccounts(hiveAccounts));
-    reduxStore.dispatch(setEvmAccounts(evmAccounts));
+    dispatch(setAccounts(hiveAccounts));
+    dispatch(setEvmAccounts(evmAccounts));
+    await registerImportedEvmAccounts(evmAccounts, chain);
     if (hiveAccounts[0]) {
       await activateImportedHiveAccount(reduxStore, hiveAccounts[0]);
     } else if (chain?.type === ChainType.EVM && evmAccounts[0]) {
-      await reduxStore.dispatch(
+      await dispatch(
         loadEvmActiveAccount(chain as EvmChain, evmAccounts[0].wallet),
       );
     }
-    reduxStore.dispatch(resetTitleContainerProperties());
-    reduxStore.dispatch(setSuccessMessage('import_html_success'));
-    reduxStore.dispatch(navigateTo(Screen.HOME_PAGE, true));
+    dispatch(resetTitleContainerProperties());
+    dispatch(setSuccessMessage('import_html_success'));
+    dispatch(navigateTo(Screen.HOME_PAGE, true));
     return true;
   }
 
@@ -133,15 +195,16 @@ const applyImportedAccountsMessage = async (
     EvmWalletUtils.invalidateRebuildAccountsCache();
     const evmAccounts =
       await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
-    reduxStore.dispatch(setEvmAccounts(evmAccounts));
+    dispatch(setEvmAccounts(evmAccounts));
+    await registerImportedEvmAccounts(evmAccounts, chain);
     if (chain?.type === ChainType.EVM && evmAccounts[0]) {
-      await reduxStore.dispatch(
+      await dispatch(
         loadEvmActiveAccount(chain as EvmChain, evmAccounts[0].wallet),
       );
     }
-    reduxStore.dispatch(resetTitleContainerProperties());
-    reduxStore.dispatch(setSuccessMessage('import_html_success'));
-    reduxStore.dispatch(navigateTo(Screen.HOME_PAGE, true));
+    dispatch(resetTitleContainerProperties());
+    dispatch(setSuccessMessage('import_html_success'));
+    dispatch(navigateTo(Screen.HOME_PAGE, true));
     return true;
   }
 
@@ -150,15 +213,15 @@ const applyImportedAccountsMessage = async (
     message.value?.accountType !== 'evm' &&
     message.value?.accounts?.length
   ) {
-    reduxStore.dispatch(setAccounts(message.value.accounts));
-    reduxStore.dispatch(resetTitleContainerProperties());
+    dispatch(setAccounts(message.value.accounts));
+    dispatch(resetTitleContainerProperties());
     await activateImportedHiveAccount(reduxStore, message.value.accounts[0]);
-    reduxStore.dispatch(setSuccessMessage('import_html_success'));
-    reduxStore.dispatch(navigateTo(Screen.HOME_PAGE, true));
+    dispatch(setSuccessMessage('import_html_success'));
+    dispatch(navigateTo(Screen.HOME_PAGE, true));
     return true;
   }
 
-  reduxStore.dispatch(setErrorMessage(getImportErrorMessage(message.value)));
+  dispatch(setErrorMessage(getImportErrorMessage(message.value)));
   return true;
 };
 

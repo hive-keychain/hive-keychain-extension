@@ -609,15 +609,92 @@ export const portfolioRowMatchesCanonicalAsset = (
   );
 };
 
+type CanonicalAssetLookup = {
+  firstByEcosystemAndSymbol: Map<string, PortfolioCanonicalAsset>;
+  evmBySymbol: Map<string, PortfolioCanonicalAsset[]>;
+  evmByContract: Map<string, PortfolioCanonicalAsset[]>;
+  assetIds: Set<string>;
+};
+
+const canonicalAssetLookups = new WeakMap<
+  readonly PortfolioCanonicalAsset[],
+  CanonicalAssetLookup
+>();
+
+const pushCanonicalAssetBucket = (
+  buckets: Map<string, PortfolioCanonicalAsset[]>,
+  key: string,
+  asset: PortfolioCanonicalAsset,
+) => {
+  const bucket = buckets.get(key);
+  if (bucket) {
+    bucket.push(asset);
+    return;
+  }
+
+  buckets.set(key, [asset]);
+};
+
+/**
+ * Indexes one catalog array in source order. Later calls with the same array
+ * reuse it, and the first matching asset still wins.
+ */
+const getCanonicalAssetLookup = (
+  assets: readonly PortfolioCanonicalAsset[],
+): CanonicalAssetLookup => {
+  const cached = canonicalAssetLookups.get(assets);
+  if (cached) {
+    return cached;
+  }
+
+  const lookup: CanonicalAssetLookup = {
+    firstByEcosystemAndSymbol: new Map(),
+    evmBySymbol: new Map(),
+    evmByContract: new Map(),
+    assetIds: new Set(),
+  };
+
+  for (const asset of assets) {
+    const ecosystemAndSymbol = `${asset.ecosystem}:${asset.symbol.toUpperCase()}`;
+    if (!lookup.firstByEcosystemAndSymbol.has(ecosystemAndSymbol)) {
+      lookup.firstByEcosystemAndSymbol.set(ecosystemAndSymbol, asset);
+    }
+
+    lookup.assetIds.add(asset.assetId);
+
+    if (asset.ecosystem !== 'evm') {
+      continue;
+    }
+
+    pushCanonicalAssetBucket(
+      lookup.evmBySymbol,
+      asset.symbol.toUpperCase(),
+      asset,
+    );
+
+    const contractAddress = getContractAddressFromAssetId(asset.assetId);
+    if (contractAddress) {
+      pushCanonicalAssetBucket(lookup.evmByContract, contractAddress, asset);
+    }
+  }
+
+  canonicalAssetLookups.set(assets, lookup);
+  return lookup;
+};
+
 export const resolvePortfolioRowToSwapFromAssetId = (
   row: PortfolioFlowRow,
   swapFromAssets: PortfolioCanonicalAsset[],
   chains: EvmChain[] = [],
   portfolioChains: PortfolioChainDisplayRecord = {},
-): string | undefined =>
-  swapFromAssets.find((asset) =>
+): string | undefined => {
+  const candidates = getCanonicalAssetLookup(swapFromAssets).evmBySymbol.get(
+    row.symbol.toUpperCase(),
+  );
+  return candidates?.find((asset) =>
     portfolioRowMatchesCanonicalAsset(row, asset, chains, portfolioChains),
   )?.assetId;
+};
 
 const resolveEvmPortfolioRowToCanonicalAsset = (
   row: PortfolioFlowRow,
@@ -630,42 +707,27 @@ const resolveEvmPortfolioRowToCanonicalAsset = (
     return undefined;
   }
 
-  const normalizedSymbol = row.symbol.toUpperCase();
+  const lookup = getCanonicalAssetLookup(assets);
 
   if (parsedRow.contractAddress) {
-    return assets.find((asset) => {
-      if (asset.ecosystem !== 'evm') {
-        return false;
-      }
-
-      const assetContractAddress = getContractAddressFromAssetId(asset.assetId);
-      if (assetContractAddress !== parsedRow.contractAddress) {
-        return false;
-      }
-
-      return assetChainMatchesRow(
-        asset,
-        parsedRow.chainReference,
-        chains,
-        portfolioChains,
+    return lookup.evmByContract
+      .get(parsedRow.contractAddress)
+      ?.find((asset) =>
+        assetChainMatchesRow(
+          asset,
+          parsedRow.chainReference,
+          chains,
+          portfolioChains,
+        ),
       );
-    });
   }
 
-  return assets.find((asset) => {
-    if (asset.ecosystem !== 'evm') {
-      return false;
-    }
-
+  return lookup.evmBySymbol.get(row.symbol.toUpperCase())?.find((asset) => {
     if (!isNativeCanonicalAsset(asset)) {
       return false;
     }
 
     if (getContractAddressFromAssetId(asset.assetId)) {
-      return false;
-    }
-
-    if (asset.symbol.toUpperCase() !== normalizedSymbol) {
       return false;
     }
 
@@ -705,6 +767,35 @@ const HIVE_CHAIN_FILTER_VALUE = 'hive';
 const HIVE_ENGINE_CHAIN_FILTER_VALUE = 'hive_engine';
 const EVM_CHAIN_FILTER_PREFIX = 'evm:';
 
+const portfolioChainsByNormalizedId = new WeakMap<
+  PortfolioChainDisplayRecord,
+  Map<string, PortfolioChainDisplay>
+>();
+
+/**
+ * First chain.id wins, matching the previous full scan. Record-key lookup
+ * still happens before this map.
+ */
+const getPortfolioChainsByNormalizedId = (
+  portfolioChains: PortfolioChainDisplayRecord,
+): Map<string, PortfolioChainDisplay> => {
+  const cached = portfolioChainsByNormalizedId.get(portfolioChains);
+  if (cached) {
+    return cached;
+  }
+
+  const chainsById = new Map<string, PortfolioChainDisplay>();
+  for (const chain of Object.values(portfolioChains)) {
+    const normalizedId = chain.id.toLowerCase();
+    if (!chainsById.has(normalizedId)) {
+      chainsById.set(normalizedId, chain);
+    }
+  }
+
+  portfolioChainsByNormalizedId.set(portfolioChains, chainsById);
+  return chainsById;
+};
+
 const resolvePortfolioChainDisplay = (
   chainId: string | null | undefined,
   portfolioChains: PortfolioChainDisplayRecord = {},
@@ -724,8 +815,8 @@ const resolvePortfolioChainDisplay = (
     return undefined;
   }
 
-  return Object.values(portfolioChains).find(
-    (chain) => chain.id.toLowerCase() === normalizedChainId,
+  return getPortfolioChainsByNormalizedId(portfolioChains).get(
+    normalizedChainId,
   );
 };
 
@@ -813,10 +904,8 @@ export const resolvePortfolioRowToCanonicalAsset = (
 
   const normalizedSymbol = row.symbol.toUpperCase();
   const ecosystem = getHivePortfolioRowEcosystem(row.symbol);
-  return assets.find(
-    (asset) =>
-      asset.ecosystem === ecosystem &&
-      asset.symbol.toUpperCase() === normalizedSymbol,
+  return getCanonicalAssetLookup(assets).firstByEcosystemAndSymbol.get(
+    `${ecosystem}:${normalizedSymbol}`,
   );
 };
 
@@ -1291,14 +1380,52 @@ export const sortCanonicalAssetsByPriceUsd = (
 ): PortfolioCanonicalAsset[] =>
   [...assets].sort(compareCanonicalAssetsByPriceUsd);
 
+type CanonicalAssetRankSortKey = {
+  asset: PortfolioCanonicalAsset;
+  rankScore: number;
+  chainRankScore: number;
+  priceUsd: number;
+};
+
+const compareCanonicalAssetRankSortKeys = (
+  left: CanonicalAssetRankSortKey,
+  right: CanonicalAssetRankSortKey,
+): number => {
+  const rankDiff = right.rankScore - left.rankScore;
+  if (rankDiff !== 0) {
+    return rankDiff;
+  }
+
+  const chainRankDiff = right.chainRankScore - left.chainRankScore;
+  if (chainRankDiff !== 0) {
+    return chainRankDiff;
+  }
+
+  const priceDiff = right.priceUsd - left.priceUsd;
+  if (priceDiff !== 0) {
+    return priceDiff;
+  }
+
+  return left.asset.symbol.localeCompare(right.asset.symbol);
+};
+
 /** Sorts by API `rankScore` (desc), then chain `rankScore`, then `priceUsd`, then symbol. */
 export const sortCanonicalAssetsByRank = (
   assets: PortfolioCanonicalAsset[],
   portfolioChains: PortfolioChainDisplayRecord = {},
-): PortfolioCanonicalAsset[] =>
-  [...assets].sort((left, right) =>
-    compareCanonicalAssetsByRank(left, right, portfolioChains),
+): PortfolioCanonicalAsset[] => {
+  const rankedAssets = assets.map(
+    (asset): CanonicalAssetRankSortKey => ({
+      asset,
+      rankScore: getCanonicalAssetRankScore(asset),
+      chainRankScore: getCanonicalAssetChainRankScore(asset, portfolioChains),
+      priceUsd: getCanonicalAssetPriceUsd(asset),
+    }),
   );
+
+  rankedAssets.sort(compareCanonicalAssetRankSortKeys);
+  return rankedAssets.map((entry) => entry.asset);
+};
 
 const compareCanonicalAssetsByTextFilter = (
   left: PortfolioCanonicalAsset,
@@ -1727,7 +1854,9 @@ export const resolveFromRowKeyToCanonicalAssetId = (
 ): string | undefined => {
   const row = rows.find((item) => item.key === rowKey);
   if (!row) {
-    return assets.some((asset) => asset.assetId === rowKey) ? rowKey : undefined;
+    return getCanonicalAssetLookup(assets).assetIds.has(rowKey)
+      ? rowKey
+      : undefined;
   }
 
   return resolvePortfolioRowToCanonicalAssetId(

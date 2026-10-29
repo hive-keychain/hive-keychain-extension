@@ -27,7 +27,7 @@ const PortfolioConfirmationStep = ({
   tokens,
 }: Props) => {
   if (context.kind === 'evm') {
-    if (context.approveTransactionData) {
+    if (context.allowanceSteps.length > 0) {
       return (
         <div className="portfolio-confirmation-step">
           <PortfolioEvmApprovalConfirmation
