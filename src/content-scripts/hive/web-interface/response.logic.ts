@@ -128,10 +128,6 @@ export const sendResponseToEvm = (response: any) => {
     window.location.href = response.data.redirect_uri;
   } else {
     try {
-      const requestId = response.requestId ?? response.request_id;
-      Logger.info(
-        `[EVM request ${requestId ?? 'unknown'}] content script posting provider response to page`,
-      );
       window.postMessage(
         {
           type: 'evm_keychain_response',

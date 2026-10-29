@@ -64,9 +64,7 @@ export const initEvmRequestHandler = async (
   dappInfo: EvmDappInfo,
   requestHandler: EvmRequestHandler,
 ) => {
-  Logger.info(
-    `Initializing EVM request logic: requestId=${request.request_id}, method=${request.method}`,
-  );
+  Logger.info('Initializing EVM request logic');
 
   const resolvedRequestChainId = resolveRequestChainId(request);
   const currentProviderChainId = await EvmChainUtils.getLastEvmChainIdForOrigin(
@@ -130,16 +128,6 @@ export const initEvmRequestHandler = async (
         (c) => c.chainId.toLowerCase() === normalizedChainId,
       ) as EvmChain);
   }
-
-  Logger.info(
-    `[EVM request ${request.request_id}] chain resolution: currentProvider=${
-      currentProviderChainId ?? 'none'
-    }, requestProvider=${request.chainId ?? 'none'}, requested=${
-      resolvedRequestChainId ?? 'none'
-    }, matched=${chain?.chainId ?? 'none'}, setupChains=${setupChains
-      .map((setupChain) => setupChain.chainId)
-      .join(',') || 'none'}`,
-  );
 
   if (EvmWatchAssetUtils.isWatchAssetRequest(request)) {
     if (!EvmWatchAssetUtils.isValidWatchAssetRequest(request)) {
@@ -276,22 +264,9 @@ export const initEvmRequestHandler = async (
         await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
       requestHandler.accounts = rebuiltAccounts;
     }
-    Logger.info(
-      `[EVM request ${request.request_id}] wallet state: unlocked=${Boolean(
-        mk,
-      )}, storedAccountPayload=${
-        accounts === undefined || accounts === null ? 'missing' : typeof accounts
-      }, rebuiltAccounts=${requestHandler.accounts.length}`,
-    );
     if (!accounts) {
-      Logger.warn(
-        `[EVM request ${request.request_id}] routing to no-wallet dialog because EVM_ACCOUNTS is missing`,
-      );
       initializeWallet(requestHandler, tab!, request);
     } else if (!mk) {
-      Logger.info(
-        `[EVM request ${request.request_id}] routing to unlock dialog`,
-      );
       await unlockWallet(
         requestHandler,
         tab!,
@@ -323,16 +298,12 @@ export const initEvmRequestHandler = async (
       }
     } else if (EvmRestrictedMethods.includes(request.method)) {
       if (request.method === EvmRequestMethod.REQUEST_ACCOUNTS) {
-        const hasAccountsPermission = await EvmWalletUtils.hasPermission(
-          dappInfo.origin,
-          EvmRequestPermission.ETH_ACCOUNTS,
-        );
-        Logger.info(
-          `[EVM request ${request.request_id}] account permission: ${hasAccountsPermission}; routing=${
-            hasAccountsPermission ? 'response' : 'confirmation'
-          }`,
-        );
-        if (hasAccountsPermission) {
+        if (
+          await EvmWalletUtils.hasPermission(
+            dappInfo.origin,
+            EvmRequestPermission.ETH_ACCOUNTS,
+          )
+        ) {
           await evmRequestWithoutConfirmation(
             requestHandler,
             tab!,

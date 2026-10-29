@@ -15,7 +15,6 @@ import {
   normalizeEvmAccounts,
   normalizeEvmChainId,
 } from 'src/utils/evm-provider-value.utils';
-import Logger from 'src/utils/logger.utils';
 
 const ProviderInfo: EIP6963ProviderInfo = {
   uuid: '03e583ef-0285-4bd0-afaf-7032f5f61b3a',
@@ -116,11 +115,6 @@ export class EvmProvider extends EventEmitter {
           const requestId =
             event.data.response.requestId ?? event.data.response.request_id;
           if (requestId !== null && requestId !== undefined) {
-            Logger.info(
-              `[EVM request ${requestId}] injected provider received response: pendingCallback=${Boolean(
-                this._requests[requestId],
-              )}`,
-            );
             if (this._requests[requestId]) {
               this._requests[requestId]({
                 hasResult: Object.prototype.hasOwnProperty.call(

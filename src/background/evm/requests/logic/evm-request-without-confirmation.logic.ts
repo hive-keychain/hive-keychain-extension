@@ -208,11 +208,5 @@ export const evmRequestWithoutConfirmation = async (
     tab,
     origin: dappInfo.origin,
   });
-  const resultCount = Array.isArray(message.value?.result)
-    ? message.value.result.length
-    : 'not-array';
-  Logger.info(
-    `[EVM request ${request.request_id}] dispatching ${message.command} to tab=${tab}, resultCount=${resultCount}`,
-  );
-  await CommunicationUtils.tabsSendMessage(tab, message);
+  CommunicationUtils.tabsSendMessage(tab, message);
 };

@@ -29,7 +29,6 @@ import {
 } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
-import Logger from 'src/utils/logger.utils';
 import { isWhitelisted } from 'src/utils/preferences.utils';
 import {
   anonymousRequests,
@@ -530,9 +529,6 @@ const buildEvmConfirmationMessage = async (
     !evmRequestHandler.accounts.length &&
     request.method !== EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN
   ) {
-    Logger.warn(
-      `[EVM request ${request.request_id}] dialog message skipped: no rebuilt EVM accounts for method=${request.method}`,
-    );
     return null;
   }
 
@@ -541,13 +537,6 @@ const buildEvmConfirmationMessage = async (
       ChainType.EVM,
     );
     if (!setupChains.find((chain) => chain.chainId === request.chainId)) {
-      Logger.warn(
-        `[EVM request ${request.request_id}] dialog message skipped: providerChain=${
-          request.chainId
-        } is not in setupChains=${
-          setupChains.map((chain) => chain.chainId).join(',') || 'none'
-        } for method=${request.method}`,
-      );
       return null;
     }
   }
