@@ -544,6 +544,32 @@ describe('AddChain', () => {
     });
   });
 
+  it('does not recheck RPC URLs accepted during request initialization', async () => {
+    jest.spyOn(ChainUtils, 'getSetupChains').mockResolvedValue([]);
+    const filterValidRpcsSpy = jest
+      .spyOn(EvmRpcUtils, 'filterValidRpcsForChainId')
+      .mockResolvedValue(['https://rpc.example.com']);
+
+    render(<AddChain request={request} data={data} afterCancel={jest.fn()} />);
+
+    await waitFor(() => {
+      expect(mockCustomEvmChainForm).toHaveBeenCalledWith(
+        expect.objectContaining({
+          rpcValidationPending: false,
+          validatedRpcUrls: ['https://rpc.example.com'],
+        }),
+      );
+    });
+
+    const formProps = mockCustomEvmChainForm.mock.calls.at(-1)?.[0];
+    await formProps.onSubmit(mockSubmittedChain, {
+      validatedRpcUrls: formProps.validatedRpcUrls,
+    });
+
+    expect(filterValidRpcsSpy).toHaveBeenCalledTimes(1);
+    expect(ChainUtils.addCustomChain).toHaveBeenCalledWith(mockSubmittedChain);
+  });
+
   it('adds a Chainlist-backed chain and prefers a valid Chainlist RPC for activation', async () => {
     jest.spyOn(ChainUtils, 'getSetupChains').mockResolvedValue([]);
     jest

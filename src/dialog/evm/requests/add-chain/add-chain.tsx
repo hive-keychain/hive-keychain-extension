@@ -112,6 +112,13 @@ export const AddChain = (props: Props) => {
     return [...new Set(rpcUrls)];
   };
 
+  const getValidatedRpcUrls = (): string[] => {
+    return getUniqueRpcUrls([
+      ...(validatedDappRpcUrls ?? []),
+      ...(chainListChainToAdd?.rpcs.map((rpc) => rpc.url) ?? []),
+    ]);
+  };
+
   const getChainWithValidatedRpcs = async (
     evmChain: EvmChain,
     dappRpcUrls: string[],
@@ -252,15 +259,27 @@ export const AddChain = (props: Props) => {
     });
   };
 
-  const handleSubmitNewChain = async (chain: EvmChain) => {
-    let rpcUrls: string[];
+  const handleSubmitNewChain = async (
+    chain: EvmChain,
+    submission?: { validatedRpcUrls: string[] },
+  ) => {
+    const submittedRpcUrls = getUniqueRpcUrls(
+      chain.rpcs.map((rpc) => rpc.url.trim()).filter(Boolean),
+    );
+    EvmRpcUrlUtils.assertValidHttpsRpcUrls(submittedRpcUrls);
+
+    const rpcUrls = submission
+      ? submittedRpcUrls.filter((rpcUrl) =>
+          submission.validatedRpcUrls.includes(rpcUrl),
+        )
+      : await EvmRpcUtils.filterValidRpcsForChainId(
+          submittedRpcUrls,
+          chain.chainId,
+        );
+    assertHasValidRpcUrls(rpcUrls);
+
     let chainToSave = chain;
     if (chainListChainToAdd) {
-      rpcUrls = await EvmRpcUtils.filterValidRpcsForChainId(
-        chain.rpcs.map((rpc) => rpc.url),
-        chain.chainId,
-      );
-      assertHasValidRpcUrls(rpcUrls);
       chainToSave = {
         ...chainListChainToAdd,
         name: chain.name,
@@ -274,18 +293,11 @@ export const AddChain = (props: Props) => {
         rpcs: getRpcs(rpcUrls),
       };
     } else {
-      rpcUrls = await EvmRpcUtils.filterValidRpcsForChainId(
-        chain.rpcs.map((rpc) => rpc.url),
-        chain.chainId,
-      );
-      assertHasValidRpcUrls(rpcUrls);
       chainToSave = {
         ...chain,
         rpcs: getRpcs(rpcUrls),
       };
     }
-    EvmRpcUrlUtils.assertValidHttpsRpcUrls(rpcUrls);
-
     await ChainUtils.addCustomChain(chainToSave);
     await EvmRpcUtils.addCustomRpcsFromList(rpcUrls, chainToSave);
     await EvmRpcUtils.setActiveRpc(chainToSave.rpcs[0], chainToSave);
@@ -323,6 +335,7 @@ export const AddChain = (props: Props) => {
             onSubmit={handleSubmitNewChain}
             initialChain={chainListChainToAdd ?? initialChain}
             rpcValidationPending={isResolvingRequestedChain}
+            validatedRpcUrls={getValidatedRpcUrls()}
             submitLabel="dialog_confirm"
           />
         </Card>

@@ -115,7 +115,10 @@ const resolveChainForAddPrefill = async (
 };
 
 export interface CustomEvmChainFormProps {
-  onSubmit: (chain: EvmChain) => Promise<void> | void;
+  onSubmit: (
+    chain: EvmChain,
+    submission?: { validatedRpcUrls: string[] },
+  ) => Promise<void> | void;
   onCancel: () => void;
   onResetToDefault?: () => Promise<void> | void;
   chainToEdit?: EvmChain;
@@ -126,6 +129,7 @@ export interface CustomEvmChainFormProps {
   setErrorMessage?: (key: string) => void;
   submitLabel?: string;
   rpcValidationPending?: boolean;
+  validatedRpcUrls?: string[];
 }
 
 export const CustomEvmChainForm = ({
@@ -139,6 +143,7 @@ export const CustomEvmChainForm = ({
   setErrorMessage,
   submitLabel,
   rpcValidationPending = false,
+  validatedRpcUrls,
 }: CustomEvmChainFormProps) => {
   const isEdit = !!chainToEdit;
   /** Locked when editing a saved chain or when the caller fixed the id (e.g. dapp add-chain request). */
@@ -387,13 +392,16 @@ export const CustomEvmChainForm = ({
           .map((u, index) => ({ index, url: u.trim() }))
           .filter(({ url }) => url.length > 0);
 
+        const validatedRpcUrlSet = new Set(
+          (validatedRpcUrls ?? []).map((url) => url.trim()),
+        );
         const rpcCheckResults = await Promise.all(
-          rpcCheckRows.map(({ index, url }) =>
-            EvmRpcUtils.isValidRpcForChainId(url, chainId).then((ok) => ({
-              index,
-              ok,
-            })),
-          ),
+          rpcCheckRows.map(async ({ index, url }) => ({
+            index,
+            ok:
+              validatedRpcUrlSet.has(url) ||
+              (await EvmRpcUtils.isValidRpcForChainId(url, chainId)),
+          })),
         );
 
         const failedIndices = rpcCheckResults
@@ -448,7 +456,11 @@ export const CustomEvmChainForm = ({
         chain.manualDiscoverAvailable = false;
       }
 
-      await onSubmit(chain);
+      if (validatedRpcUrls !== undefined) {
+        await onSubmit(chain, { validatedRpcUrls: cleanedRpcs });
+      } else {
+        await onSubmit(chain);
+      }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : '';
       if (msg === 'duplicate_custom_chain') {

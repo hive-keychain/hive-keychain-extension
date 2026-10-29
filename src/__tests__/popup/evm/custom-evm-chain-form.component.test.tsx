@@ -132,6 +132,32 @@ describe('CustomEvmChainForm', () => {
     ).toBe(false);
   });
 
+  it('does not recheck RPC URLs that were already validated', async () => {
+    const onSubmit = jest.fn().mockResolvedValue(undefined);
+    jest.spyOn(EvmRpcUtils, 'isValidRpcForChainId').mockResolvedValue(false);
+
+    render(
+      <CustomEvmChainForm
+        onCancel={jest.fn()}
+        onSubmit={onSubmit}
+        initialChain={prefilledChain}
+        validatedRpcUrls={prefilledChain.rpcs.map((rpc) => rpc.url)}
+      />,
+    );
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('custom-evm-chain-submit'));
+    });
+
+    expect(EvmRpcUtils.isValidRpcForChainId).not.toHaveBeenCalled();
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining(prefilledChain),
+      {
+        validatedRpcUrls: prefilledChain.rpcs.map((rpc) => rpc.url),
+      },
+    );
+  });
+
   it('keeps the chain id field editable when adding a chain manually', () => {
     render(
       <CustomEvmChainForm onCancel={jest.fn()} onSubmit={jest.fn()} />,
