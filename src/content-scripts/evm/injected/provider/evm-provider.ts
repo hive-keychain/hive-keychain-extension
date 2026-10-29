@@ -15,6 +15,7 @@ import {
   normalizeEvmAccounts,
   normalizeEvmChainId,
 } from 'src/utils/evm-provider-value.utils';
+import Logger from 'src/utils/logger.utils';
 
 const ProviderInfo: EIP6963ProviderInfo = {
   uuid: '03e583ef-0285-4bd0-afaf-7032f5f61b3a',
@@ -34,6 +35,10 @@ export class EvmProvider extends EventEmitter {
   private _accounts: string[] = [];
   private _current_id = 1;
   private _requests = {} as { [id: number]: any };
+
+  get selectedAddress(): string | null {
+    return this._accounts[0] ?? null;
+  }
 
   _isConnected = true;
   _initialized = true;
@@ -111,6 +116,11 @@ export class EvmProvider extends EventEmitter {
           const requestId =
             event.data.response.requestId ?? event.data.response.request_id;
           if (requestId !== null && requestId !== undefined) {
+            Logger.info(
+              `[EVM request ${requestId}] injected provider received response: pendingCallback=${Boolean(
+                this._requests[requestId],
+              )}`,
+            );
             if (this._requests[requestId]) {
               this._requests[requestId]({
                 hasResult: Object.prototype.hasOwnProperty.call(
@@ -184,7 +194,7 @@ export class EvmProvider extends EventEmitter {
 
       const result = await this.processRequest(args);
       if (args.method === EvmRequestMethod.REQUEST_ACCOUNTS) {
-        return normalizeEvmAccounts(result);
+        return this.applyAccounts(result, { emit: true });
       }
       return result;
     } catch (err) {

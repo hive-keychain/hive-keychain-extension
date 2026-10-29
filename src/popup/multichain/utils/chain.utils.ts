@@ -622,7 +622,11 @@ const removeChainIdFromOriginChainWhitelist = (
   whitelist: Record<string, unknown> | null | undefined,
   chainIdToRemove: string,
 ): Record<string, string[]> | undefined => {
-  if (whitelist == null || typeof whitelist !== 'object' || Array.isArray(whitelist)) {
+  if (
+    whitelist == null ||
+    typeof whitelist !== 'object' ||
+    Array.isArray(whitelist)
+  ) {
     return undefined;
   }
   const removeLower = chainIdToRemove.toLowerCase();
@@ -832,8 +836,7 @@ const updateCustomChain = async (
   next[idx] = {
     ...enrichedChain,
     customMinGasPriceInGwei:
-      enrichedChain.customMinGasPriceInGwei ??
-      previous.customMinGasPriceInGwei,
+      enrichedChain.customMinGasPriceInGwei ?? previous.customMinGasPriceInGwei,
     isCustom: true,
   };
   await LocalStorageUtils.saveValueInLocalStorage(

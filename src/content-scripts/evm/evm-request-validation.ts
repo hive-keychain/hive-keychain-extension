@@ -48,6 +48,13 @@ const assertEvmAddressParam = (address: unknown) => {
   }
 };
 
+const getSafeAddChainRpcUrls = (rpcUrls: unknown[]): string[] =>
+  rpcUrls.filter(
+    (rpcUrl): rpcUrl is string =>
+      typeof rpcUrl === 'string' &&
+      EvmRpcUrlUtils.isValidHttpsRpcUrl(rpcUrl),
+  );
+
 export const validateEvmRequest = (request: unknown): EvmRequest => {
   if (!request || typeof request !== 'object') {
     throw getProviderRpcError('nonValidRequest', 'Missing request.');
@@ -77,12 +84,26 @@ export const validateEvmRequest = (request: unknown): EvmRequest => {
 
   const params = evmRequest.params ?? [];
   assertParamsArray(params);
-  validateRequest(evmRequest.method as EvmRequestMethod, params);
+  const method = evmRequest.method as EvmRequestMethod;
+  validateRequest(method, params);
+
+  const validatedParams =
+    method === EvmRequestMethod.WALLET_ADD_ETH_CHAIN
+      ? [
+          {
+            ...(params[0] as AddChainRequest),
+            rpcUrls: getSafeAddChainRpcUrls(
+              (params[0] as AddChainRequest).rpcUrls,
+            ),
+          },
+          ...params.slice(1),
+        ]
+      : params;
 
   return {
     ...evmRequest,
-    method: evmRequest.method as EvmRequestMethod,
-    params,
+    method,
+    params: validatedParams,
   } as EvmRequest;
 };
 
@@ -245,13 +266,7 @@ export const validateRequest = (
         );
       }
 
-      if (
-        addChainParams.rpcUrls.some(
-          (rpcUrl) =>
-            typeof rpcUrl !== 'string' ||
-            !EvmRpcUrlUtils.isValidHttpsRpcUrl(rpcUrl),
-        )
-      ) {
+      if (getSafeAddChainRpcUrls(addChainParams.rpcUrls).length === 0) {
         throw getProviderRpcError(
           'invalidMethodParams',
           'Invalid parameter. RPC URLs must use HTTPS.',

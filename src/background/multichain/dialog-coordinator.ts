@@ -14,6 +14,7 @@ import {
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
 
 let lastDispatchedDialogMessage: ConfirmDialogMessage | null = null;
 let dialogRequestOrderMutationQueue: Promise<void> = Promise.resolve();
@@ -69,7 +70,15 @@ export const syncSharedDialogWindow = async (
     return;
   }
 
-  if (!message) return;
+  if (!message) {
+    const currentRequest = visibleRequests[0];
+    Logger.warn(
+      `Dialog sync skipped: ${visibleRequests.length} visible request(s), but no message was built for ${
+        currentRequest?.chain ?? 'unknown'
+      } requestId=${currentRequest?.requestId ?? 'unknown'}`,
+    );
+    return;
+  }
 
   const windowId = await getDialogWindowId();
   const confirmMessage = message as ConfirmDialogMessage;
