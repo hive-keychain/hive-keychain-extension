@@ -197,6 +197,26 @@ describe('AddChain', () => {
     jest.restoreAllMocks();
   });
 
+  it('renders the form immediately while validating its RPC URLs', () => {
+    jest
+      .spyOn(EvmRpcUtils, 'filterValidRpcsForChainId')
+      .mockReturnValue(new Promise(() => undefined));
+
+    render(<AddChain request={request} data={data} afterCancel={jest.fn()} />);
+
+    expect(screen.getByTestId('custom-evm-chain-form')).toBeInTheDocument();
+    expect(mockCustomEvmChainForm).toHaveBeenCalledWith(
+      expect.objectContaining({
+        rpcValidationPending: true,
+        initialChain: expect.objectContaining({
+          name: 'Local Chain',
+          chainId: '0x539',
+          rpcs: [{ url: 'https://rpc.example.com', isDefault: true }],
+        }),
+      }),
+    );
+  });
+
   it('adds custom RPCs without activating them when updating an existing chain', async () => {
     jest.spyOn(ChainUtils, 'getSetupChains').mockResolvedValue([chain]);
 
@@ -217,7 +237,9 @@ describe('AddChain', () => {
     expect(EvmRpcUtils.setActiveRpc).not.toHaveBeenCalled();
     expect(ChainUtils.addCustomChain).not.toHaveBeenCalled();
     expect(EvmLightNodeUtils.registerLocalAddresses).not.toHaveBeenCalled();
-    expect(mockCustomEvmChainForm).not.toHaveBeenCalled();
+    expect(
+      screen.queryByTestId('custom-evm-chain-form'),
+    ).not.toBeInTheDocument();
     expect(CommunicationUtils.runtimeSendMessage).toHaveBeenCalledWith({
       command: BackgroundCommand.SEND_EVM_RESPONSE_TO_SW,
       value: {
@@ -335,7 +357,9 @@ describe('AddChain', () => {
         }),
       ]),
     });
-    expect(mockCustomEvmChainForm).not.toHaveBeenCalled();
+    expect(
+      screen.queryByTestId('custom-evm-chain-form'),
+    ).not.toBeInTheDocument();
   });
 
   it('registers local addresses after a default chain is approved', async () => {

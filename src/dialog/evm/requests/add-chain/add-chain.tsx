@@ -51,7 +51,11 @@ export const AddChain = (props: Props) => {
     EvmRpcUrlUtils.isValidHttpsRpcUrl(url),
   );
 
-  const dappRpcUrlsForDisplay = validatedDappRpcUrls ?? [];
+  const dappRpcUrlsForDisplay =
+    validatedDappRpcUrls ??
+    addChainRequest.rpcUrls.filter((url) =>
+      EvmRpcUrlUtils.isValidHttpsRpcUrl(url),
+    );
   const initialChain: EvmChain = {
     name: chainName,
     type: ChainType.EVM,
@@ -298,7 +302,11 @@ export const AddChain = (props: Props) => {
     sendSuccessResponse();
   };
 
-  if (isUpdatingChain === false && !defaultChainToAdd) {
+  const isResolvingRequestedChain = isUpdatingChain === undefined;
+  if (
+    isResolvingRequestedChain ||
+    (isUpdatingChain === false && !defaultChainToAdd)
+  ) {
     return (
       <div className="request-add-custom-chain-page">
         <Card className="request-add-custom-chain-card">
@@ -314,15 +322,12 @@ export const AddChain = (props: Props) => {
             onCancel={handleCancel}
             onSubmit={handleSubmitNewChain}
             initialChain={chainListChainToAdd ?? initialChain}
+            rpcValidationPending={isResolvingRequestedChain}
             submitLabel="dialog_confirm"
           />
         </Card>
       </div>
     );
-  }
-
-  if (isUpdatingChain === undefined) {
-    return null;
   }
 
   return (

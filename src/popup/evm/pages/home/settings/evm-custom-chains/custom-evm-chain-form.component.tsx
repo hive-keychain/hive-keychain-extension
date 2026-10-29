@@ -125,6 +125,7 @@ export interface CustomEvmChainFormProps {
   onUpdateRpc?: () => void;
   setErrorMessage?: (key: string) => void;
   submitLabel?: string;
+  rpcValidationPending?: boolean;
 }
 
 export const CustomEvmChainForm = ({
@@ -137,6 +138,7 @@ export const CustomEvmChainForm = ({
   onUpdateRpc,
   setErrorMessage,
   submitLabel,
+  rpcValidationPending = false,
 }: CustomEvmChainFormProps) => {
   const isEdit = !!chainToEdit;
   /** Locked when editing a saved chain or when the caller fixed the id (e.g. dapp add-chain request). */
@@ -612,9 +614,19 @@ export const CustomEvmChainForm = ({
               </span>
             </button>
           ) : (
-            <div className="add-custom-evm-chain-form__rpc-label">
-              {I18nUtils.getMessage('evm_custom_chains_field_rpc')}
-            </div>
+            <>
+              <div className="add-custom-evm-chain-form__rpc-label">
+                {I18nUtils.getMessage('evm_custom_chains_field_rpc')}
+              </div>
+              {rpcValidationPending && (
+                <span
+                  className="add-custom-evm-chain-form__chainlist-hint-spinner"
+                  role="status"
+                  aria-label={I18nUtils.getMessage('popup_html_loading')}
+                  data-testid="custom-evm-chain-rpc-validation-loading"
+                />
+              )}
+            </>
           )}
         </div>
         {showRpcInputs &&
@@ -625,6 +637,7 @@ export const CustomEvmChainForm = ({
                 placeholder="evm_custom_chains_field_rpc_placeholder"
                 value={rpcUrl}
                 onChange={(v) => setRpcAt(index, v)}
+                disabled={rpcValidationPending}
                 dataTestId={`custom-evm-chain-rpc-${index}`}
                 classname={
                   failedRpcRowIndices.includes(index)
@@ -637,7 +650,7 @@ export const CustomEvmChainForm = ({
                   type="button"
                   className="add-custom-evm-chain-form__rpc-add-icon"
                   onClick={addRpcRow}
-                  disabled={saving}
+                  disabled={saving || rpcValidationPending}
                   aria-label={addRpcAriaLabel}
                   title={addRpcAriaLabel}
                   data-testid="add-custom-chain-rpc-row">
@@ -649,7 +662,7 @@ export const CustomEvmChainForm = ({
                   type="button"
                   className="add-custom-evm-chain-form__rpc-remove-icon"
                   onClick={() => removeRpcRow(index)}
-                  disabled={saving}
+                  disabled={saving || rpcValidationPending}
                   aria-label={removeRpcAriaLabel}
                   title={removeRpcAriaLabel}
                   data-testid={`remove-custom-chain-rpc-row-${index}`}>
@@ -712,7 +725,7 @@ export const CustomEvmChainForm = ({
             (isEdit ? 'evm_custom_chains_update' : 'evm_custom_chains_save')
           }
           onClick={() => submit()}
-          disabled={saving || resetting}
+          disabled={saving || resetting || rpcValidationPending}
           dataTestId="custom-evm-chain-submit"
         />
       </div>

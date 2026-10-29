@@ -10,6 +10,16 @@ import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
 
+jest.mock('src/common-ui/svg-icon/svg-icon.component', () => ({
+  SVGIcon: () => null,
+}));
+jest.mock('src/utils/html.utils', () => ({
+  HtmlUtils: {
+    escapeHtml: (value: string) => value,
+    getSafeI18nHtml: (value: string) => value,
+  },
+}));
+
 const prefilledChain: EvmChain = {
   type: ChainType.EVM,
   chainId: '0x539',
@@ -93,6 +103,33 @@ describe('CustomEvmChainForm', () => {
         rpcs: [{ url: 'https://rpc.local', isDefault: true }],
       }),
     );
+  });
+
+  it('limits the loading state to RPC validation', () => {
+    render(
+      <CustomEvmChainForm
+        onCancel={jest.fn()}
+        onSubmit={jest.fn()}
+        initialChain={prefilledChain}
+        rpcValidationPending
+      />,
+    );
+
+    expect(
+      screen.getByTestId('custom-evm-chain-rpc-validation-loading'),
+    ).not.toBeNull();
+    expect(
+      (screen.getByTestId('custom-evm-chain-rpc-0') as HTMLInputElement)
+        .disabled,
+    ).toBe(true);
+    expect(
+      (screen.getByTestId('custom-evm-chain-submit') as HTMLButtonElement)
+        .disabled,
+    ).toBe(true);
+    expect(
+      (screen.getByTestId('custom-evm-chain-name') as HTMLInputElement)
+        .disabled,
+    ).toBe(false);
   });
 
   it('keeps the chain id field editable when adding a chain manually', () => {
