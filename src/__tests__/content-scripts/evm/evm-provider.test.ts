@@ -84,10 +84,7 @@ describe('evm-provider tests:\n', () => {
   });
 
   it('emits initial chain and accounts once on provider init', async () => {
-    const cleanup = installRequestResponder({
-      [EvmRequestMethod.GET_CHAIN]: { result: '0x1' },
-      [EvmRequestMethod.GET_ACCOUNTS]: { result: ['0xAbC123'] },
-    });
+    const cleanup = installRequestResponder({});
     const provider = new EvmProvider();
     const chainChangedListener = jest.fn();
     const accountsChangedListener = jest.fn();
@@ -96,6 +93,11 @@ describe('evm-provider tests:\n', () => {
     provider.on(EvmEventName.ACCOUNT_CHANGED, accountsChangedListener);
 
     await waitForInit();
+    dispatchRoutedEvent({
+      eventType: EvmEventName.INITIALIZE_PROVIDER_RESPONSE,
+      args: { chainId: '0x1', accounts: ['0xAbC123'] },
+      origin: window.location.origin,
+    });
 
     expect(chainChangedListener).toHaveBeenCalledTimes(1);
     expect(chainChangedListener).toHaveBeenCalledWith('0x1');
@@ -339,6 +341,11 @@ describe('evm-provider tests:\n', () => {
 
     provider.on(EvmEventName.CHAIN_CHANGED, chainChangedListener);
     await waitForInit();
+    dispatchRoutedEvent({
+      eventType: EvmEventName.INITIALIZE_PROVIDER_RESPONSE,
+      args: { chainId: '0x1', accounts: [] },
+      origin: window.location.origin,
+    });
 
     chainChangedListener.mockClear();
 
@@ -413,6 +420,95 @@ describe('evm-provider tests:\n', () => {
     });
 
     expect(accountsChangedListener).not.toHaveBeenCalled();
+    cleanup();
+  });
+
+  it('emits connect once and exposes the decimal network version', async () => {
+    const cleanup = installRequestResponder({});
+    const provider = new EvmProvider();
+    const connectListener = jest.fn();
+
+    provider.on('connect', connectListener);
+    await waitForInit();
+
+    dispatchRoutedEvent({
+      eventType: EvmEventName.INITIALIZE_PROVIDER_RESPONSE,
+      args: { chainId: '0x1', accounts: ['0xAbC123'] },
+      origin: window.location.origin,
+    });
+
+    expect(connectListener).toHaveBeenCalledTimes(1);
+    expect(connectListener).toHaveBeenCalledWith({ chainId: '0x1' });
+    expect(provider.networkVersion).toBe('1');
+    expect(provider.selectedAddress).toBe('0xabc123');
+
+    dispatchRoutedEvent({
+      eventType: EvmEventName.CHAIN_CHANGED,
+      args: '0xa4b1',
+      origin: window.location.origin,
+    });
+
+    expect(connectListener).toHaveBeenCalledTimes(1);
+    expect(provider.chainId).toBe('0xa4b1');
+    expect(provider.networkVersion).toBe('42161');
+    cleanup();
+  });
+
+  it('serves legacy send, sendAsync, and enable through request', async () => {
+    const responses = {
+      [EvmRequestMethod.GET_CHAIN]: { result: '0x1' },
+      [EvmRequestMethod.GET_ACCOUNTS]: { result: ['0xAbC123'] },
+      [EvmRequestMethod.REQUEST_ACCOUNTS]: { result: ['0xAbC123'] },
+    };
+    const cleanup = installRequestResponder(responses);
+    const provider = new EvmProvider();
+    await waitForInit();
+
+    await expect(
+      provider.send(EvmRequestMethod.GET_ACCOUNTS, []),
+    ).resolves.toEqual(['0xabc123']);
+
+    await expect(
+      provider.send({
+        id: 4,
+        method: EvmRequestMethod.GET_ACCOUNTS,
+        params: [],
+      }),
+    ).resolves.toEqual(['0xabc123']);
+
+    const asyncResponse = await new Promise((resolve) => {
+      provider.sendAsync(
+        {
+          id: 7,
+          jsonrpc: '2.0',
+          method: EvmRequestMethod.GET_ACCOUNTS,
+          params: [],
+        },
+        (_error, response) => resolve(response),
+      );
+    });
+    expect(asyncResponse).toEqual({
+      id: 7,
+      jsonrpc: '2.0',
+      result: ['0xabc123'],
+    });
+
+    const invalidParamsError = await new Promise((resolve) => {
+      provider.send(
+        {
+          id: 8,
+          method: EvmRequestMethod.WALLET_ADD_ETH_CHAIN,
+          params: [],
+        },
+        (error) => resolve(error),
+      );
+    });
+    expect(invalidParamsError).toEqual(
+      expect.objectContaining({ code: -32602 }),
+    );
+
+    await expect(provider.enable()).resolves.toEqual(['0xabc123']);
+    expect(provider.selectedAddress).toBe('0xabc123');
     cleanup();
   });
 });

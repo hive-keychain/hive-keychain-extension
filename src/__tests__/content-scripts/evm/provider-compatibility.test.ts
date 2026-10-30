@@ -353,19 +353,26 @@ describe('provider-compatibility tests:\n', () => {
     jest.useFakeTimers();
     let keychainCalls = 0;
     const keychainProvider = makeProvider('keychain');
-    (
-      keychainProvider as LegacyEthereumProvider & {
-        request: (args: unknown) => string;
-      }
-    ).request = () => {
+    const keychainState = keychainProvider as LegacyEthereumProvider & {
+      request: (args: unknown) => string;
+      selectedAddress: string | null;
+      chainId: string;
+    };
+    keychainState.request = () => {
       keychainCalls += 1;
       return 'keychain';
     };
+    keychainState.selectedAddress = '0xkeychain';
+    keychainState.chainId = '0x89';
     const lockedProvider: {
       currentProvider?: { request?: (args: unknown) => unknown };
       request: (args: unknown) => string;
+      selectedAddress: string | null;
+      chainId: string;
     } = {
       request: () => 'external',
+      selectedAddress: '0xexternal',
+      chainId: '0x1',
     };
     const lockedProxy = new Proxy(lockedProvider, {
       get(target, key, receiver) {
@@ -390,6 +397,10 @@ describe('provider-compatibility tests:\n', () => {
     expect(injectedWindow.ethereum).toBe(lockedProxy);
     expect(injectedWindow.ethereum?.request?.({})).toBe('keychain');
     expect(keychainCalls).toBe(1);
+    expect(injectedWindow.ethereum?.selectedAddress).toBe('0xkeychain');
+    expect(injectedWindow.ethereum?.chainId).toBe('0x89');
+    keychainState.selectedAddress = '0xnext';
+    expect(injectedWindow.ethereum?.selectedAddress).toBe('0xnext');
     expect(injectedWindow.hiveKeychainEthereum).toBe(keychainProvider);
 
     jest.runOnlyPendingTimers();
@@ -399,7 +410,123 @@ describe('provider-compatibility tests:\n', () => {
     controller.configure('yielding');
 
     expect(injectedWindow.ethereum?.request?.({})).toBe('external');
+    expect(injectedWindow.ethereum?.selectedAddress).toBe('0xexternal');
+    expect(injectedWindow.ethereum?.chainId).toBe('0x1');
     expect(keychainCalls).toBe(2);
+  });
+
+  it('forwards subscriptions and legacy state when ethereum is locked', () => {
+    jest.useFakeTimers();
+    const keychainListeners = new Map<
+      string,
+      Set<(...args: unknown[]) => void>
+    >();
+    const externalListeners = new Map<
+      string,
+      Set<(...args: unknown[]) => void>
+    >();
+    const keychainProvider = makeProvider('keychain');
+    const keychainState = keychainProvider as LegacyEthereumProvider & {
+      isConnected: () => boolean;
+      send: (method: string) => string;
+      enable: () => string;
+      networkVersion: string;
+      emit: (event: string, ...args: unknown[]) => void;
+    };
+    const bindKeychainListener =
+      (register: boolean) =>
+      (event: string, listener: (...args: unknown[]) => void) => {
+        const listeners = keychainListeners.get(event) ?? new Set();
+        if (register) listeners.add(listener);
+        else listeners.delete(listener);
+        keychainListeners.set(event, listeners);
+        return keychainProvider;
+      };
+    keychainState.isConnected = () => true;
+    keychainState.send = (method) => `keychain:${method}`;
+    keychainState.enable = () => 'keychain-enable';
+    keychainState.networkVersion = '137';
+    keychainState.on = bindKeychainListener(true);
+    keychainState.removeListener = bindKeychainListener(false);
+    keychainState.emit = (event, ...args) => {
+      keychainListeners.get(event)?.forEach((listener) => listener(...args));
+    };
+
+    const lockedProvider: {
+      currentProvider?: { request?: (args: unknown) => unknown };
+      isConnected: () => boolean;
+      send: (method: string) => string;
+      enable: () => string;
+      networkVersion: string;
+      on: (event: string, listener: (...args: unknown[]) => void) => unknown;
+      removeListener: (
+        event: string,
+        listener: (...args: unknown[]) => void,
+      ) => unknown;
+      emit: (event: string, ...args: unknown[]) => void;
+    } = {
+      isConnected: () => false,
+      send: (method) => `external:${method}`,
+      enable: () => 'external-enable',
+      networkVersion: '1',
+      on: (event, listener) => {
+        const listeners = externalListeners.get(event) ?? new Set();
+        listeners.add(listener);
+        externalListeners.set(event, listeners);
+        return lockedProvider;
+      },
+      removeListener: (event, listener) => {
+        externalListeners.get(event)?.delete(listener);
+        return lockedProvider;
+      },
+      emit: (event, ...args) => {
+        externalListeners.get(event)?.forEach((listener) => listener(...args));
+      },
+    };
+    const lockedProxy = new Proxy(lockedProvider, {
+      get(target, key, receiver) {
+        if (target.currentProvider) {
+          return Reflect.get(target.currentProvider, key, receiver);
+        }
+        return Reflect.get(target, key, receiver);
+      },
+    });
+    const injectedWindow = {} as InjectedWindow;
+    Object.defineProperty(injectedWindow, 'ethereum', {
+      configurable: false,
+      enumerable: true,
+      get: () => lockedProxy,
+    });
+
+    const controller = ensureProviderCompatibility(
+      injectedWindow,
+      keychainProvider as unknown as EvmProvider,
+    );
+    const ethereum = injectedWindow.ethereum;
+    const accountsChanged = jest.fn();
+
+    expect(ethereum?.isConnected?.()).toBe(true);
+    expect(ethereum?.send?.('eth_accounts')).toBe('keychain:eth_accounts');
+    expect(ethereum?.enable?.()).toBe('keychain-enable');
+    expect(ethereum?.networkVersion).toBe('137');
+    expect(ethereum?.on?.('accountsChanged', accountsChanged)).toBe(ethereum);
+    keychainState.emit('accountsChanged', ['0xkeychain']);
+    expect(accountsChanged).toHaveBeenCalledWith(['0xkeychain']);
+    ethereum?.removeListener?.('accountsChanged', accountsChanged);
+    keychainState.emit('accountsChanged', ['0xother']);
+    expect(accountsChanged).toHaveBeenCalledTimes(1);
+
+    controller.configure('yielding');
+
+    expect(ethereum?.isConnected?.()).toBe(false);
+    expect(ethereum?.send?.('eth_accounts')).toBe('external:eth_accounts');
+    expect(ethereum?.enable?.()).toBe('external-enable');
+    expect(ethereum?.networkVersion).toBe('1');
+    ethereum?.on?.('accountsChanged', accountsChanged);
+    lockedProvider.emit('accountsChanged', ['0xexternal']);
+    expect(accountsChanged).toHaveBeenCalledWith(['0xexternal']);
+    keychainState.emit('accountsChanged', ['0xkeychain']);
+    expect(accountsChanged).toHaveBeenCalledTimes(2);
   });
 
   it('stores the compatibility controller on a shared non-enumerable symbol', () => {

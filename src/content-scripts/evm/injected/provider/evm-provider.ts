@@ -16,6 +16,33 @@ import {
   normalizeEvmChainId,
 } from 'src/utils/evm-provider-value.utils';
 
+type LegacyRpcPayload = {
+  id?: string | number | null;
+  jsonrpc?: string;
+  method: string;
+  params?: unknown[] | object;
+};
+
+type LegacyRpcCallback = (error: unknown, response?: unknown) => void;
+
+const toDecimalChainId = (chainId: string) => {
+  const decimalChainId = parseInt(chainId, 16);
+  if (Number.isNaN(decimalChainId)) return null;
+  return `${decimalChainId}`;
+};
+
+const toLegacyRpcResponse = (payload: LegacyRpcPayload, result: unknown) => ({
+  id: payload.id,
+  jsonrpc: payload.jsonrpc ?? '2.0',
+  result,
+});
+
+const toLegacyRpcError = (payload: LegacyRpcPayload, error: unknown) => ({
+  id: payload.id,
+  jsonrpc: payload.jsonrpc ?? '2.0',
+  error,
+});
+
 const ProviderInfo: EIP6963ProviderInfo = {
   uuid: '03e583ef-0285-4bd0-afaf-7032f5f61b3a',
   name: 'Hive Keychain',
@@ -35,8 +62,15 @@ export class EvmProvider extends EventEmitter {
   private _current_id = 1;
   private _requests = {} as { [id: number]: any };
 
+  private hasEmittedConnect = false;
+
   get selectedAddress(): string | null {
     return this._accounts[0] ?? null;
+  }
+
+  get networkVersion(): string | null {
+    if (!this.chainId) return null;
+    return toDecimalChainId(this.chainId);
   }
 
   _isConnected = true;
@@ -74,13 +108,23 @@ export class EvmProvider extends EventEmitter {
     const shouldEmit =
       options.emit && !areEvmChainIdsEqual(this.chainId, nextChainId);
     this.chainId = nextChainId;
+    this.emitConnect(nextChainId);
 
     if (shouldEmit) {
       this.emit(EvmEventName.CHAIN_CHANGED, nextChainId);
-      this.emit('networkChanged', `${parseInt(nextChainId, 16)}`);
+      const networkVersion = toDecimalChainId(nextChainId);
+      if (networkVersion) {
+        this.emit('networkChanged', networkVersion);
+      }
     }
 
     return this.chainId;
+  };
+
+  private emitConnect = (chainId: string) => {
+    if (this.hasEmittedConnect) return;
+    this.hasEmittedConnect = true;
+    this.emit('connect', { chainId });
   };
 
   private applyAccounts = (
@@ -172,6 +216,69 @@ export class EvmProvider extends EventEmitter {
       },
       false,
     );
+  };
+
+  enable = () => {
+    return this.request({ method: EvmRequestMethod.REQUEST_ACCOUNTS });
+  };
+
+  sendAsync = (
+    payload: LegacyRpcPayload | LegacyRpcPayload[],
+    callback: LegacyRpcCallback,
+  ) => {
+    if (typeof callback !== 'function') return;
+
+    if (Array.isArray(payload)) {
+      Promise.all(
+        payload.map(async (item) => {
+          try {
+            return toLegacyRpcResponse(
+              item,
+              await this.requestFromPayload(item),
+            );
+          } catch (error) {
+            return toLegacyRpcError(item, error);
+          }
+        }),
+      ).then((responses) => callback(null, responses));
+      return;
+    }
+
+    this.requestFromPayload(payload)
+      .then((result) => callback(null, toLegacyRpcResponse(payload, result)))
+      .catch((error) => callback(error, toLegacyRpcError(payload, error)));
+  };
+
+  send = (
+    methodOrPayload: string | LegacyRpcPayload | LegacyRpcPayload[],
+    paramsOrCallback?: unknown[] | LegacyRpcCallback,
+  ): Promise<unknown> | void => {
+    if (typeof methodOrPayload === 'string') {
+      return this.request({
+        method: methodOrPayload as EvmRequestMethod,
+        params: Array.isArray(paramsOrCallback) ? paramsOrCallback : undefined,
+      });
+    }
+
+    if (typeof paramsOrCallback === 'function') {
+      this.sendAsync(methodOrPayload, paramsOrCallback);
+      return;
+    }
+
+    if (Array.isArray(methodOrPayload)) {
+      return Promise.all(
+        methodOrPayload.map((payload) => this.requestFromPayload(payload)),
+      );
+    }
+
+    return this.requestFromPayload(methodOrPayload);
+  };
+
+  private requestFromPayload = (payload: LegacyRpcPayload) => {
+    return this.request({
+      method: payload.method as EvmRequestMethod,
+      params: payload.params,
+    });
   };
 
   async request(args: RequestArguments): Promise<any> {
