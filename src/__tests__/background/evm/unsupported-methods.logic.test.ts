@@ -1,4 +1,5 @@
 import { describe, expect, it, jest, beforeEach } from '@jest/globals';
+import { EvmDeprecatedMethods } from '@background/evm/evm-methods/evm-deprecated-methods.list';
 import { handleDeprecatedMethods } from '@background/evm/requests/logic/handle-deprecated-methods.logic';
 import { handleNonExistingMethod } from '@background/evm/requests/logic/handle-non-existing-methods.logic';
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
@@ -70,6 +71,10 @@ describe('unsupported EVM methods', () => {
       tab: 7,
       origin: 'https://example.app',
     });
+  });
+
+  it('treats unversioned eth_signTypedData as deprecated', () => {
+    expect(EvmDeprecatedMethods).toContain(EvmRequestMethod.ETH_SIGN_DATA);
   });
 
   it('answers deprecated methods to the dapp without showing dialog feedback', async () => {
