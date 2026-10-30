@@ -47,5 +47,8 @@
       "all_frames": true
     }
   ],
-  "manifest_version": 3
+  "manifest_version": 3,
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'"
+  }
 }
