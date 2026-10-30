@@ -3,6 +3,7 @@ import {
   EvmRequestHandler,
   EvmRequestLocator,
 } from '@background/evm/requests/evm-request-handler';
+import { EvmRequestAccountUtils } from '@background/evm/requests/evm-request-account.utils';
 import { handleEvmError } from '@background/evm/requests/logic/handle-evm-error.logic';
 import { resolveRequestChainId } from '@background/evm/requests/logic/resolve-request-chain-id.logic';
 import {
@@ -20,6 +21,7 @@ import { sendEvmTransaction } from '@background/evm/requests/operations/ops/send
 import { signData } from '@background/evm/requests/operations/ops/sign-data';
 import {
   EvmRequest,
+  getEvmProviderRpcFullError,
   getErrorFromEtherJS,
 } from '@interfaces/evm-provider.interface';
 import { SignTypedDataVersion } from '@metamask/eth-sig-util';
@@ -115,6 +117,26 @@ export const performEvmOperation = async (
   };
 
   Logger.info('Perform evm operation');
+
+  if (
+    EvmRequestAccountUtils.requiresAccountAuthorization(request) &&
+    !(await EvmRequestAccountUtils.isRequestedAccountAuthorizedForOrigin(
+      request,
+      origin,
+    ))
+  ) {
+    const providerError = getEvmProviderRpcFullError('unauthorized');
+    await handleEvmError(
+      requestHandler,
+      tab,
+      request,
+      providerError,
+      providerError.message,
+      [],
+      origin,
+    );
+    return;
+  }
 
   try {
     switch (request.method) {

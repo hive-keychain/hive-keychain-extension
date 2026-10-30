@@ -6,12 +6,30 @@ import { EvmRequestHandler } from 'src/background/evm/requests/evm-request-handl
 
 const initEvmRequestHandlerMock = jest.fn();
 const getNextDialogRequestOrderMock = jest.fn();
+const requiresAccountAuthorizationMock = jest.fn();
+const isRequestedAccountAuthorizedForOriginMock = jest.fn();
+const tabsSendMessageMock = jest.fn();
 var mockGetValueFromLocalStorage: jest.Mock;
 var mockSaveValueInLocalStorage: jest.Mock;
 var mockRemoveFromLocalStorage: jest.Mock;
 
 jest.mock('@background/evm/requests/init', () => ({
   initEvmRequestHandler: (...args: any[]) => initEvmRequestHandlerMock(...args),
+}));
+
+jest.mock('@background/evm/requests/evm-request-account.utils', () => ({
+  EvmRequestAccountUtils: {
+    requiresAccountAuthorization: (...args: any[]) =>
+      requiresAccountAuthorizationMock(...args),
+    isRequestedAccountAuthorizedForOrigin: (...args: any[]) =>
+      isRequestedAccountAuthorizedForOriginMock(...args),
+  },
+}));
+
+jest.mock('src/utils/communication.utils', () => ({
+  CommunicationUtils: {
+    tabsSendMessage: (...args: any[]) => tabsSendMessageMock(...args),
+  },
 }));
 
 jest.mock('@background/multichain/dialog-coordinator', () => ({
@@ -58,6 +76,8 @@ describe('evm-request-handler tests:\n', () => {
     storage = {};
     getNextDialogRequestOrderMock.mockResolvedValue(1);
     initEvmRequestHandlerMock.mockResolvedValue(undefined);
+    requiresAccountAuthorizationMock.mockReturnValue(false);
+    isRequestedAccountAuthorizedForOriginMock.mockResolvedValue(true);
     mockGetValueFromLocalStorage.mockImplementation(async (key) => storage[key]);
     mockSaveValueInLocalStorage.mockImplementation(async (key, value) => {
       storage[key as LocalStorageKeyEnum] = value;
@@ -100,6 +120,46 @@ describe('evm-request-handler tests:\n', () => {
       }),
       handler,
     );
+  });
+
+  it('rejects unauthorized account requests before persisting them', async () => {
+    requiresAccountAuthorizationMock.mockReturnValue(true);
+    isRequestedAccountAuthorizedForOriginMock.mockResolvedValue(false);
+    const handler = new EvmRequestHandler();
+    const request = {
+      request_id: 12,
+      method: EvmRequestMethod.SEND_TRANSACTION,
+      params: [
+        { from: '0x0000000000000000000000000000000000000001' },
+      ],
+    };
+
+    await handler.sendRequest(sender, {
+      command: BackgroundCommand.SEND_EVM_REQUEST,
+      request,
+      request_id: request.request_id,
+      dappInfo,
+    });
+
+    expect(isRequestedAccountAuthorizedForOriginMock).toHaveBeenCalledWith(
+      request,
+      'https://iframe.example',
+    );
+    expect(tabsSendMessageMock).toHaveBeenCalledWith(7, {
+      command: BackgroundCommand.SEND_EVM_ERROR,
+      value: {
+        requestId: 12,
+        error: {
+          code: 4100,
+          message:
+            'The requested method and/or account has not been authorized by the user',
+        },
+      },
+    });
+    expect(mockSaveValueInLocalStorage).not.toHaveBeenCalled();
+    expect(getNextDialogRequestOrderMock).not.toHaveBeenCalled();
+    expect(initEvmRequestHandlerMock).not.toHaveBeenCalled();
+    expect(handler.requestsData).toEqual([]);
   });
 
   it('serializes concurrent request adds from separate stale handler instances', async () => {

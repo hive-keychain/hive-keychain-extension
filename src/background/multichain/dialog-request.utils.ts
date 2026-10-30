@@ -7,6 +7,7 @@ import {
   EvmRequestData,
   EvmRequestHandler,
 } from '@background/evm/requests/evm-request-handler';
+import { EvmRequestAccountUtils } from '@background/evm/requests/evm-request-account.utils';
 import {
   HiveRequestData,
   HiveRequestsHandler,
@@ -152,6 +153,16 @@ export const isEvmDialogVisibleRequest = async (
   if (!request) return false;
 
   if (EvmUnrestrictedMethods.includes(request.method)) return false;
+
+  if (
+    EvmRequestAccountUtils.requiresAccountAuthorization(request) &&
+    !(await EvmRequestAccountUtils.isRequestedAccountAuthorizedForOrigin(
+      request,
+      requestData.dappInfo?.origin ?? '',
+    ))
+  ) {
+    return false;
+  }
 
   if (
     request.method === EvmRequestMethod.REQUEST_ACCOUNTS &&

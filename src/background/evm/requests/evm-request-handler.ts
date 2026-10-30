@@ -1,4 +1,5 @@
 import { initEvmRequestHandler } from '@background/evm/requests/init';
+import { EvmRequestAccountUtils } from '@background/evm/requests/evm-request-account.utils';
 import {
   getNextDialogRequestOrder,
   syncSharedDialogWindow,
@@ -8,9 +9,11 @@ import {
   EvmDappInfo,
   EvmRequest,
   KeychainEvmRequestWrapper,
+  ProviderRpcErrorList,
 } from '@interfaces/evm-provider.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
@@ -18,6 +21,7 @@ import {
   getHostnameFromMessageSender,
   getOriginFromMessageSender,
 } from 'src/utils/browser-origin.utils';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
@@ -95,6 +99,24 @@ export class EvmRequestHandler {
       getOriginFromMessageSender(sender) ?? msg.dappInfo.origin;
     const canonicalDomain =
       getHostnameFromMessageSender(sender) ?? msg.dappInfo.domain ?? '';
+
+    if (
+      EvmRequestAccountUtils.requiresAccountAuthorization(msg.request) &&
+      !(await EvmRequestAccountUtils.isRequestedAccountAuthorizedForOrigin(
+        msg.request,
+        canonicalOrigin,
+      ))
+    ) {
+      CommunicationUtils.tabsSendMessage(sender.tab!.id!, {
+        command: BackgroundCommand.SEND_EVM_ERROR,
+        value: {
+          requestId: msg.request.request_id,
+          error: ProviderRpcErrorList.unauthorized,
+        },
+      });
+      return;
+    }
+
     await EvmRequestHandler.withPersistedRequestsData(
       this,
       async (requestsData) => {

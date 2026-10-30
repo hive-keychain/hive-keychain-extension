@@ -16,6 +16,17 @@ const willCloseDialogWindowAfterRemovingRequestMock = jest.fn();
 const delayMsMock = jest.fn();
 const addWhitelistedChainForOriginMock = jest.fn();
 const setChainIdForOriginMock = jest.fn();
+const requiresAccountAuthorizationMock = jest.fn();
+const isRequestedAccountAuthorizedForOriginMock = jest.fn();
+
+jest.mock('@background/evm/requests/evm-request-account.utils', () => ({
+  EvmRequestAccountUtils: {
+    requiresAccountAuthorization: (...args: unknown[]) =>
+      requiresAccountAuthorizationMock(...args),
+    isRequestedAccountAuthorizedForOrigin: (...args: unknown[]) =>
+      isRequestedAccountAuthorizedForOriginMock(...args),
+  },
+}));
 
 jest.mock('src/utils/communication.utils', () => ({
   CommunicationUtils: {
@@ -82,6 +93,11 @@ describe('performEvmOperation', () => {
     delayMsMock.mockResolvedValue(undefined);
     addWhitelistedChainForOriginMock.mockResolvedValue(['0x539']);
     setChainIdForOriginMock.mockResolvedValue('0x539');
+    requiresAccountAuthorizationMock.mockImplementation(
+      (request: { method: EvmRequestMethod }) =>
+        request.method === EvmRequestMethod.SEND_TRANSACTION,
+    );
+    isRequestedAccountAuthorizedForOriginMock.mockResolvedValue(true);
     getChainMock.mockResolvedValue(undefined);
     updateCustomChainMinGasPriceMock.mockResolvedValue(undefined);
   });
@@ -222,6 +238,53 @@ describe('performEvmOperation', () => {
     expect(runtimeSendMessageMock).not.toHaveBeenCalled();
     expect(tabsSendMessageMock).toHaveBeenCalled();
     expect(removeRequestByLocator).toHaveBeenCalled();
+  });
+
+  it('rejects the operation when account permission was revoked before acceptance', async () => {
+    isRequestedAccountAuthorizedForOriginMock.mockResolvedValue(false);
+    const { handleEvmError } = await import(
+      '@background/evm/requests/logic/handle-evm-error.logic'
+    );
+    const { performEvmOperation } = await import(
+      '@background/evm/requests/operations/perform-operation'
+    );
+    const request = {
+      request_id: 9,
+      method: EvmRequestMethod.SEND_TRANSACTION,
+      params: [
+        { from: '0x0000000000000000000000000000000000000001' },
+      ],
+    };
+    const requestHandler = { removeRequestByLocator } as any;
+
+    await performEvmOperation(
+      requestHandler,
+      request as any,
+      2,
+      'example.com',
+      'https://example.com',
+      { gasFee: {} },
+    );
+
+    expect(isRequestedAccountAuthorizedForOriginMock).toHaveBeenCalledWith(
+      request,
+      'https://example.com',
+    );
+    expect(handleEvmError).toHaveBeenCalledWith(
+      requestHandler,
+      2,
+      request,
+      {
+        code: 4100,
+        message:
+          'The requested method and/or account has not been authorized by the user',
+      },
+      'The requested method and/or account has not been authorized by the user',
+      [],
+      'https://example.com',
+    );
+    expect(sendEvmTransactionMock).not.toHaveBeenCalled();
+    expect(tabsSendMessageMock).not.toHaveBeenCalled();
   });
 
   it('whitelists and switches chain when wallet_switchEthereumChain is approved', async () => {

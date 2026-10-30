@@ -1,13 +1,13 @@
 import { EvmDeprecatedMethods } from '@background/evm/evm-methods/evm-deprecated-methods.list';
 import {
   doesMethodExist,
-  EvmMethodPermissionMap,
   EvmNeedPermissionMethods,
   EvmRequestMethod,
   EvmRestrictedMethods,
   EvmUnrestrictedMethods,
 } from '@background/evm/evm-methods/evm-methods.list';
 import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
+import { EvmRequestAccountUtils } from '@background/evm/requests/evm-request-account.utils';
 import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
 import { evmRequestWithConfirmation } from '@background/evm/requests/logic/evm-request-with-confirmation.logic';
 import { evmRequestWithoutConfirmation } from '@background/evm/requests/logic/evm-request-without-confirmation.logic';
@@ -238,6 +238,27 @@ export const initEvmRequestHandler = async (
     EvmNeedPermissionMethods.includes(request.method)
   ) {
     if (
+      EvmRequestAccountUtils.requiresAccountAuthorization(request) &&
+      !(await EvmRequestAccountUtils.isRequestedAccountAuthorizedForOrigin(
+        request,
+        dappInfo.origin,
+      ))
+    ) {
+      const providerError = getEvmProviderRpcFullError('unauthorized');
+      await handleEvmError(
+        requestHandler,
+        tab!,
+        request,
+        providerError,
+        providerError.message,
+        [],
+        dappInfo.origin,
+        true,
+      );
+      return;
+    }
+
+    if (
       request.method !== EvmRequestMethod.REQUEST_ACCOUNTS &&
       (await DappRequestUtils.isDappLocked(dappInfo.domain))
     ) {
@@ -284,18 +305,12 @@ export const initEvmRequestHandler = async (
     ) {
       await requestAddEvmChain(requestHandler, tab!, request, dappInfo);
     } else if (EvmNeedPermissionMethods.includes(request.method)) {
-      const hasPermission = await EvmWalletUtils.hasPermission(
-        dappInfo.origin,
-        EvmMethodPermissionMap[request.method]!,
+      await evmRequestWithConfirmation(
+        requestHandler,
+        tab!,
+        request,
+        dappInfo,
       );
-      if (hasPermission) {
-        await evmRequestWithConfirmation(
-          requestHandler,
-          tab!,
-          request,
-          dappInfo,
-        );
-      }
     } else if (EvmRestrictedMethods.includes(request.method)) {
       if (request.method === EvmRequestMethod.REQUEST_ACCOUNTS) {
         if (

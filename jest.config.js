@@ -25,7 +25,23 @@ module.exports = {
   ],
   transform: {
     '^.+\\.(ts|tsx)?$': 'ts-jest',
+    // sanitize-html 2.18 depends on an ESM-only htmlparser2 tree.
+    'node_modules[\\\\/](htmlparser2|dom-serializer|domelementtype|domhandler|domutils|entities)[\\\\/].+\\.js$':
+      [
+        'ts-jest',
+        {
+          isolatedModules: true,
+          tsconfig: {
+            allowJs: true,
+            esModuleInterop: true,
+            module: 'commonjs',
+          },
+        },
+      ],
   },
+  transformIgnorePatterns: [
+    '/node_modules/(?!.*(htmlparser2|dom-serializer|domelementtype|domhandler|domutils|entities)/)',
+  ],
   moduleDirectories: ['node_modules', 'src'],
   moduleNameMapper: {
     '^@background/index$': '<rootDir>/src/background/test-compat/index.ts',
