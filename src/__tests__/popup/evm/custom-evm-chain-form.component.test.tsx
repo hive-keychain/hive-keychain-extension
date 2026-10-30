@@ -122,9 +122,14 @@ describe('CustomEvmChainForm', () => {
       (screen.getByTestId('custom-evm-chain-rpc-0') as HTMLInputElement)
         .disabled,
     ).toBe(true);
+    const submitButton = screen.getByTestId(
+      'custom-evm-chain-submit',
+    ) as HTMLButtonElement;
+    expect(submitButton.disabled).toBe(true);
     expect(
-      (screen.getByTestId('custom-evm-chain-submit') as HTMLButtonElement)
-        .disabled,
+      submitButton.classList.contains(
+        'add-custom-evm-chain-form__submit-validating',
+      ),
     ).toBe(true);
     expect(
       (screen.getByTestId('custom-evm-chain-name') as HTMLInputElement)

@@ -739,6 +739,11 @@ export const CustomEvmChainForm = ({
           onClick={() => submit()}
           disabled={saving || resetting || rpcValidationPending}
           dataTestId="custom-evm-chain-submit"
+          additionalClass={
+            rpcValidationPending
+              ? 'add-custom-evm-chain-form__submit-validating'
+              : undefined
+          }
         />
       </div>
     </div>

@@ -393,6 +393,31 @@
       min-width: 0;
     }
 
+    .add-custom-evm-chain-form__submit-validating {
+      background: var(--button-background-color);
+      cursor: wait;
+
+      .button-label {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+
+        &::after {
+          content: '';
+          flex-shrink: 0;
+          width: 14px;
+          height: 14px;
+          border: 2px solid rgba(255, 255, 255, 0.45);
+          border-top-color: white;
+          border-radius: 50%;
+          box-sizing: border-box;
+          animation: add-custom-evm-chain-form-chainlist-spin 0.75s linear
+            infinite;
+        }
+      }
+    }
+
     .add-custom-evm-chain-form__reset-default-button {
       flex-basis: 100%;
     }
