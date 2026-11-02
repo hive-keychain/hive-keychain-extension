@@ -17,6 +17,8 @@ import {
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
+import { getPendingRequestMessageOptions } from '@background/multichain/pending-request.interface';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
 export const handleNonSupportedChain = async (
@@ -26,6 +28,7 @@ export const handleNonSupportedChain = async (
   chainId: string,
   origin: string,
   errorMessage: string = 'evm_chain_non_supported',
+  source?: PendingRequestSource,
 ) => {
   Logger.warn(`Chain ${chainId} is not supported, rawError: ${errorMessage}`);
 
@@ -36,7 +39,11 @@ export const handleNonSupportedChain = async (
       error: ProviderRpcErrorList.invalidMethodParams,
     },
   };
-  CommunicationUtils.tabsSendMessage(tab, message);
+  CommunicationUtils.tabsSendMessage(
+    tab,
+    message,
+    getPendingRequestMessageOptions(source),
+  );
 
   const callback = async () => {
     CommunicationUtils.runtimeSendMessage({
@@ -44,7 +51,9 @@ export const handleNonSupportedChain = async (
       msg: {
         display_msg: await I18nUtils.getMessage(errorMessage, [chainId]),
         tab,
+        request_id: request.request_id,
       },
+      ...(source ? { requestSource: source } : {}),
     });
 
     const handlers = await getRequestHandlers();
@@ -62,6 +71,8 @@ export const handleNonSupportedChain = async (
       requestId: request.request_id,
       tab,
       origin,
+      frameId: source?.frameId,
+      documentId: source?.documentId,
     });
   };
   createOrUpdateDialog(callback, requestHandler);

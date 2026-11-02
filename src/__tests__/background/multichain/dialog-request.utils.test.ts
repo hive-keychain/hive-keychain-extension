@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
 const requiresAccountAuthorizationMock = jest.fn();
 const isRequestedAccountAuthorizedForOriginMock = jest.fn();
@@ -75,5 +76,32 @@ describe('dialog request visibility', () => {
         },
       }),
     ).resolves.toBe(true);
+  });
+
+  it('treats matching public ids from different documents as different dialog heads', async () => {
+    const { isSameDialogQueueHead } = await import(
+      '@background/multichain/dialog-request.utils'
+    );
+    const getMessage = (documentId: string) =>
+      ({
+        command: DialogCommand.SEND_DIALOG_CONFIRM,
+        request: { request_id: 7, type: 'transfer' },
+        domain: 'example.app',
+        origin: 'https://example.app',
+        tab: 4,
+        requestSource: {
+          tab: 4,
+          frameId: 2,
+          documentId,
+          origin: 'https://example.app',
+        },
+      }) as any;
+
+    expect(
+      isSameDialogQueueHead(
+        getMessage('document-a'),
+        getMessage('document-b'),
+      ),
+    ).toBe(false);
   });
 });

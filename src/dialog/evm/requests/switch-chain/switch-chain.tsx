@@ -52,6 +52,7 @@ export const SwitchChain = ({ request, data, afterCancel }: Props) => {
       request={request}
       domain={data.dappInfo.domain}
       origin={data.dappInfo.origin}
+      requestSource={data.dappInfo.requestSource}
       tab={data.tab}
       afterCancel={handleCancel}
       title={I18nUtils.getMessage('evm_switch_chain')}

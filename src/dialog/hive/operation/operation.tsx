@@ -5,6 +5,7 @@ import {
   KeychainRequestTypes,
 } from '@interfaces/keychain.interface';
 import { TransactionOptions } from '@interfaces/keys.interface';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
@@ -34,6 +35,7 @@ type Props = {
   data: KeychainRequest;
   domain: string;
   tab: number;
+  requestSource?: PendingRequestSource;
   canWhitelist?: boolean;
   header?: string;
   checkboxLabelOverride?: string;
@@ -51,6 +53,7 @@ const Operation = ({
   afterCancel,
   domain,
   tab,
+  requestSource,
   data,
   header,
   checkboxLabelOverride,
@@ -179,6 +182,7 @@ const Operation = ({
         data: data,
         tab: tab,
         domain: domain,
+        requestSource,
         keep,
         options: { metaData: metadata } as TransactionOptions,
       },
@@ -196,6 +200,7 @@ const Operation = ({
         message: await I18nUtils.getMessage(`bgd_lifecycle_request_canceled`),
         request_id: data.request_id,
         tab: tab,
+        requestSource,
       },
     });
     afterCancel(data.request_id, tab);

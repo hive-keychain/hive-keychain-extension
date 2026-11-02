@@ -88,6 +88,7 @@ export const initEvmRequestHandler = async (
       [],
       dappInfo.origin,
       true,
+      dappInfo.requestSource,
     );
     return;
   }
@@ -107,6 +108,7 @@ export const initEvmRequestHandler = async (
       [],
       dappInfo.origin,
       true,
+      dappInfo.requestSource,
     );
     return;
   }
@@ -137,6 +139,7 @@ export const initEvmRequestHandler = async (
         request,
         dappInfo.origin,
         EvmWatchAssetUtils.WATCH_ASSET_INVALID_PARAMS_ERROR,
+        dappInfo.requestSource,
       );
       return;
     }
@@ -148,6 +151,7 @@ export const initEvmRequestHandler = async (
         request,
         dappInfo.origin,
         EvmWatchAssetUtils.WATCH_ASSET_CUSTOM_CHAIN_ERROR,
+        dappInfo.requestSource,
       );
       return;
     }
@@ -169,6 +173,7 @@ export const initEvmRequestHandler = async (
         [],
         dappInfo.origin,
         true,
+        dappInfo.requestSource,
       );
     } else {
       await handleNonSupportedChain(
@@ -177,6 +182,8 @@ export const initEvmRequestHandler = async (
         request,
         chainId,
         dappInfo.origin,
+        undefined,
+        dappInfo.requestSource,
       );
     }
   } else if (EvmDeprecatedMethods.includes(request.method)) {
@@ -204,6 +211,7 @@ export const initEvmRequestHandler = async (
         [],
         dappInfo.origin,
         true,
+        dappInfo.requestSource,
       );
     } else if (
       resolvedRequestChainId &&
@@ -254,6 +262,7 @@ export const initEvmRequestHandler = async (
         [],
         dappInfo.origin,
         true,
+        dappInfo.requestSource,
       );
       return;
     }
@@ -272,6 +281,7 @@ export const initEvmRequestHandler = async (
         [],
         dappInfo.origin,
         true,
+        dappInfo.requestSource,
       );
       return;
     }

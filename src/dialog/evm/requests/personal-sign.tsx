@@ -102,6 +102,7 @@ export const PersonalSign = (props: Props) => {
       request={request}
       domain={data.dappInfo.domain}
       origin={data.dappInfo.origin}
+      requestSource={data.dappInfo.requestSource}
       tab={data.tab}
       title={I18nUtils.getMessage('dialog_evm_sign_request')}
       caption={I18nUtils.getMessage('dialog_signature_request_caption', [

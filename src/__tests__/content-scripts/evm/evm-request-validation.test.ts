@@ -103,6 +103,21 @@ describe('evm-request-validation tests:\n', () => {
     });
   });
 
+  it.each([0, -1, 1.5, Number.MAX_SAFE_INTEGER + 1, NaN, Infinity])(
+    'rejects invalid request_id %s',
+    (requestId) => {
+      expect(
+        getThrownError(() =>
+          validateEvmRequest({
+            request_id: requestId,
+            method: EvmRequestMethod.GET_CHAIN,
+            params: [],
+          }),
+        ),
+      ).toMatchObject({ code: -32600 });
+    },
+  );
+
   it('rejects an unknown method', () => {
     expect(
       getThrownError(() =>

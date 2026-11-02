@@ -115,6 +115,7 @@ export const ConnectAccounts = (props: Props) => {
           requestId: request.request_id,
           tab: data.tab,
           origin: data.dappInfo.origin,
+          requestSource: data.dappInfo.requestSource,
           result: result,
           providerState: {
             accounts: normalizedAddresses,
@@ -153,6 +154,7 @@ export const ConnectAccounts = (props: Props) => {
         request={request}
         domain={data.dappInfo.domain}
         origin={data.dappInfo.origin}
+        requestSource={data.dappInfo.requestSource}
         tab={data.tab}
         title={I18nUtils.getMessage('evm_connect_wallet')}
         onConfirm={saveInStorage}

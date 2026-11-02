@@ -4,6 +4,7 @@ import sendErrors from '@background/multichain/errors';
 import { removeRequestAfterDialogFeedback } from '@background/multichain/remove-request-after-dialog-feedback.logic';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
@@ -17,6 +18,7 @@ export const anonymousRequests = (
   domain: string,
   accounts: LocalAccount[],
   current_rpc: Rpc,
+  source?: PendingRequestSource,
 ) => {
   const filterKey = getRequiredWifType(request);
   const account_candidates = accounts
@@ -30,11 +32,13 @@ export const anonymousRequests = (
         await I18nUtils.getMessage('bgd_auth_canceled'),
         await I18nUtils.getMessage('bgd_auth_no_active'),
         request,
+        source,
       );
       await removeRequestAfterDialogFeedback(
         requestHandler,
         request.request_id,
         tab,
+        source,
       );
     }, requestHandler);
   } else {
@@ -43,6 +47,7 @@ export const anonymousRequests = (
         command: DialogCommand.SEND_DIALOG_CONFIRM,
         request,
         domain,
+        ...(source ? { requestSource: source } : {}),
         accounts: account_candidates,
         tab,
         rpc: current_rpc,

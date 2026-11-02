@@ -3,6 +3,7 @@ import { KeylessKeychainModule } from '@background/keyless-keychain.module';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
 import React, { useState } from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -16,6 +17,7 @@ export interface KeylessUsernameMessage {
   data: KeychainRequest;
   tab: number;
   domain: string;
+  requestSource?: PendingRequestSource;
 }
 
 interface Props {
@@ -23,7 +25,7 @@ interface Props {
 }
 
 const KeylessUsername = (props: Props) => {
-  const { requestHandler, data, domain, tab } = props.data;
+  const { requestHandler, data, domain, tab, requestSource } = props.data;
   const [username, setUsername] = useState('');
 
   const handleSubmit = async () => {
@@ -46,6 +48,7 @@ const KeylessUsername = (props: Props) => {
         data,
         domain,
         tab,
+        requestSource,
       },
     });
   };
@@ -57,6 +60,7 @@ const KeylessUsername = (props: Props) => {
         data,
         domain,
         tab,
+        requestSource,
       },
     });
   };

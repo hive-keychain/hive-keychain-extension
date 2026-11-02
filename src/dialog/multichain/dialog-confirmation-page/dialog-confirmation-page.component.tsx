@@ -24,6 +24,7 @@ import {
   KeylessUsernameMessage,
 } from '@dialog/pages/keyless-username/keyless-username';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
 import React, { useEffect, useState } from 'react';
 
 interface Props {
@@ -63,17 +64,45 @@ export const DialogConfirmationPage = ({
     }
 
     if (isConfirmMessage(queuedMessage)) {
-      return `${queuedMessage.command}-${queuedMessage.tab}-${queuedMessage.request.request_id}`;
+      const source = getMessageRequestSource(queuedMessage);
+      return `${queuedMessage.command}-${queuedMessage.tab}-${source?.frameId ?? 0}-${source?.documentId ?? 'legacy'}-${queuedMessage.request.request_id}`;
     }
 
     return `${queuedMessage.command}-${index}`;
   };
 
-  const removeRequestFromQueue = (requestId: number, tab: number) => {
+  const getMessageRequestSource = (
+    queuedMessage: HiveRequestMessage | EvmRequestMessage,
+  ) =>
+    queuedMessage.command === DialogCommand.SEND_DIALOG_CONFIRM
+      ? queuedMessage.requestSource
+      : queuedMessage.dappInfo.requestSource;
+
+  const isSameQueuedRequest = (
+    item: DialogQueueMessage,
+    requestId: number,
+    tab: number,
+    source?: PendingRequestSource,
+  ) => {
+    if (item.request.request_id !== requestId || item.tab !== tab) return false;
+    if (!source) return true;
+    const itemSource = getMessageRequestSource(item);
+    return (
+      itemSource?.frameId === source.frameId &&
+      itemSource?.documentId === source.documentId &&
+      itemSource?.origin === source.origin
+    );
+  };
+
+  const removeRequestFromQueue = (
+    requestId: number,
+    tab: number,
+    source?: PendingRequestSource,
+  ) => {
     setHasQueueState(true);
     setRequestQueue((previousQueue) => {
       const removedIndex = previousQueue.findIndex(
-        (item) => item.request.request_id === requestId && item.tab === tab,
+        (item) => isSameQueuedRequest(item, requestId, tab, source),
       );
 
       if (removedIndex === -1) {
@@ -81,7 +110,7 @@ export const DialogConfirmationPage = ({
       }
 
       const nextQueue = previousQueue.filter(
-        (item) => item.request.request_id !== requestId || item.tab !== tab,
+        (item) => !isSameQueuedRequest(item, requestId, tab, source),
       );
 
       setSelectedIndex((currentIndex) => {
@@ -111,8 +140,12 @@ export const DialogConfirmationPage = ({
               const existingIndex = next.findIndex(
                 (item) =>
                   item.command === message.command &&
-                  item.tab === message.tab &&
-                  item.request.request_id === message.request.request_id,
+                  isSameQueuedRequest(
+                    item,
+                    message.request.request_id,
+                    message.tab,
+                    getMessageRequestSource(message),
+                  ),
               );
               if (existingIndex >= 0) {
                 next[existingIndex] = message;
@@ -147,9 +180,13 @@ export const DialogConfirmationPage = ({
     }
   }, [requestQueue, selectedIndex]);
 
-  const afterCancel = (requestId: number, tab: number) => {
+  const afterCancel = (
+    requestId: number,
+    tab: number,
+    source?: PendingRequestSource,
+  ) => {
     const hasRemainingRequests = requestQueue.some(
-      (item) => item.request.request_id !== requestId || item.tab !== tab,
+      (item) => !isSameQueuedRequest(item, requestId, tab, source),
     );
 
     if (!hasRemainingRequests) {
@@ -157,7 +194,7 @@ export const DialogConfirmationPage = ({
       return;
     }
 
-    removeRequestFromQueue(requestId, tab);
+    removeRequestFromQueue(requestId, tab, source);
   };
 
   const closeFeedBackMessage = () => {
@@ -165,10 +202,13 @@ export const DialogConfirmationPage = ({
       (feedBackMessage as any)?.msg?.request_id ??
       (feedBackMessage as any)?.msg?.data?.request_id;
     const tab = (feedBackMessage as any)?.msg?.tab;
+    const source = (feedBackMessage as any)?.requestSource as
+      | PendingRequestSource
+      | undefined;
 
     if (requestId !== undefined && tab !== undefined) {
       const hasRemainingRequests = requestQueue.some(
-        (item) => item.request.request_id !== requestId || item.tab !== tab,
+        (item) => !isSameQueuedRequest(item, requestId, tab, source),
       );
 
       if (!hasRemainingRequests) {
@@ -176,7 +216,7 @@ export const DialogConfirmationPage = ({
         return;
       }
 
-      removeRequestFromQueue(requestId, tab);
+      removeRequestFromQueue(requestId, tab, source);
     } else if (!requestQueue.length) {
       window.close();
       return;
@@ -196,7 +236,15 @@ export const DialogConfirmationPage = ({
         return (
           <RequestConfirmation
             message={displayedMessage as HiveRequestMessage | EvmRequestMessage}
-            afterCancel={afterCancel}
+            afterCancel={(requestId, tab) =>
+              afterCancel(
+                requestId,
+                tab,
+                getMessageRequestSource(
+                  displayedMessage as HiveRequestMessage | EvmRequestMessage,
+                ),
+              )
+            }
             isActive={displayedMessage === queueItems[selectedIndex]}
             activationKey={`${selectedIndex}-${queuePosition}-${queueSize}`}
           />

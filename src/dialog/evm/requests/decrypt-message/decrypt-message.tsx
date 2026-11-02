@@ -93,6 +93,7 @@ export const DecryptMessage = (props: Props) => {
       request={request}
       domain={data.dappInfo.domain}
       origin={data.dappInfo.origin}
+      requestSource={data.dappInfo.requestSource}
       tab={data.tab}
       title={I18nUtils.getMessage('dialog_evm_decrypt_message_title')}
       caption={I18nUtils.getMessage('dialog_evm_decrypt_message_caption', [

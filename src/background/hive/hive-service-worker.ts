@@ -11,10 +11,12 @@ import SettingsModule from '@background/hive/modules/settings.module';
 import { initHiveRequestHandler } from '@background/hive/requests/init';
 import { KeylessKeychainModule } from '@background/keyless-keychain.module';
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
+import { getPendingRequestMessageOptions } from '@background/multichain/pending-request.interface';
 import {
   KeychainRequest,
   KeychainRequestWrapper,
 } from '@interfaces/keychain.interface';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -82,11 +84,19 @@ const chromeMessageHandler = async (
           const requestHandler =
             await HiveRequestsHandler.getFromLocalStorage();
           for (const requestData of requestHandler.requestsData) {
+            if (
+              requestData.tab == null ||
+              !requestData.request ||
+              !requestData.domain
+            ) {
+              continue;
+            }
             initHiveRequestHandler(
-              requestData.request!,
-              tab,
-              requestData.domain!,
+              requestData.request,
+              requestData.tab,
+              requestData.domain,
               requestHandler,
+              requestData.source,
             );
           }
         } else {
@@ -100,13 +110,15 @@ const chromeMessageHandler = async (
       break;
     }
     case BackgroundCommand.REGISTER_FROM_DIALOG: {
-      const { mk, domain, data, tab } = backgroundMessage.value;
+      const { mk, domain, data, tab, requestSource } =
+        backgroundMessage.value;
       MkModule.saveMk(mk);
       initHiveRequestHandler(
         data,
         tab,
         domain,
         await HiveRequestsHandler.getFromLocalStorage(),
+        requestSource,
       );
       break;
     }
@@ -129,18 +141,34 @@ const chromeMessageHandler = async (
         keep,
         'dialog',
         options,
+        resolved.source,
       );
       break;
     }
     case BackgroundCommand.REJECT_TRANSACTION: {
       const messageValue = backgroundMessage.value;
-      const { request_id, tab } = messageValue;
+      const { request_id, tab, domain, requestSource } = messageValue;
+      const origin = requestSource?.origin ?? domain;
+      if (request_id == null || tab == null || !origin) {
+        Logger.warn('Cannot reject Hive operation: missing request locator');
+        break;
+      }
       const requestHandler = await HiveRequestsHandler.getFromLocalStorage();
-      chrome.tabs.sendMessage(messageValue.tab!, {
-        command: DialogCommand.ANSWER_REQUEST,
-        msg: messageValue,
+      await CommunicationUtils.tabsSendMessage(
+        messageValue.tab!,
+        {
+          command: DialogCommand.ANSWER_REQUEST,
+          msg: messageValue,
+        },
+        getPendingRequestMessageOptions(requestSource),
+      );
+      await requestHandler.removeRequestByLocator({
+        requestId: request_id,
+        tab,
+        origin,
+        frameId: requestSource?.frameId,
+        documentId: requestSource?.documentId,
       });
-      requestHandler.removeRequestById(request_id, tab);
       break;
     }
     case BackgroundCommand.UPDATE_AUTOLOCK:
@@ -167,6 +195,7 @@ const chromeMessageHandler = async (
         resolved.request,
         resolved.domain,
         resolved.tab,
+        resolved.source,
       );
       break;
     }
@@ -188,6 +217,7 @@ const chromeMessageHandler = async (
         resolved.request,
         resolved.domain,
         resolved.tab,
+        resolved.source,
       );
       break;
     }
@@ -212,14 +242,18 @@ export const performOperationFromIndex = async (
   requestHandler: HiveRequestsHandler,
   tab: number,
   request: KeychainRequest,
+  domain?: string,
+  source?: PendingRequestSource,
 ) => {
   await performHiveOperation(
     requestHandler,
     request,
     tab!,
-    request.domain,
+    domain ?? request.domain,
     true,
     'silent',
+    undefined,
+    source,
   );
 };
 
@@ -232,8 +266,15 @@ export const performKeylessOperation = async (
   tab: number,
   request: KeychainRequest,
   domain: string,
+  source: PendingRequestSource,
 ) => {
-  KeylessKeychainModule.handleOperation(requestHandler, request, domain, tab);
+  KeylessKeychainModule.handleOperation(
+    requestHandler,
+    request,
+    domain,
+    tab,
+    source,
+  );
 };
 
 chrome.runtime.onMessage.addListener(chromeMessageHandler);

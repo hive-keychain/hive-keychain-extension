@@ -1,6 +1,7 @@
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
 import React, { useState } from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import {
@@ -30,6 +31,7 @@ type RegisterMessage = {
   };
   tab: number;
   domain: string;
+  requestSource?: PendingRequestSource;
 };
 
 const Register = ({ data }: Props) => {
@@ -54,6 +56,7 @@ const Register = ({ data }: Props) => {
             tab: data.tab,
             mk: password,
             domain: data.domain,
+            requestSource: data.requestSource,
             request_id: data.msg.data.request_id,
           },
         });

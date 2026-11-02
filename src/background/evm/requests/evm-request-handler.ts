@@ -1,9 +1,13 @@
 import { initEvmRequestHandler } from '@background/evm/requests/init';
 import { EvmRequestAccountUtils } from '@background/evm/requests/evm-request-account.utils';
+import { syncSharedDialogWindow } from '@background/multichain/dialog-coordinator';
+import { PendingRequestAdmission } from '@background/multichain/pending-request-admission';
 import {
-  getNextDialogRequestOrder,
-  syncSharedDialogWindow,
-} from '@background/multichain/dialog-coordinator';
+  getPendingRequestLocator,
+  getPendingRequestMessageOptions,
+  getPendingRequestSource,
+  isPendingRequestSourceMatch,
+} from '@background/multichain/pending-request.interface';
 import { removeWindow } from '@background/multichain/dialog-lifecycle';
 import {
   EvmDappInfo,
@@ -11,18 +15,21 @@ import {
   KeychainEvmRequestWrapper,
   ProviderRpcErrorList,
 } from '@interfaces/evm-provider.interface';
+import {
+  PendingRequestLocator,
+  PendingRequestSource,
+} from '@interfaces/pending-request.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
-import {
-  getHostnameFromMessageSender,
-  getOriginFromMessageSender,
-} from 'src/utils/browser-origin.utils';
+import { getHostnameFromMessageSender } from 'src/utils/browser-origin.utils';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
+import { RequestPayloadUtils } from 'src/utils/request-payload.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
 if (!process.env.IS_FIREFOX) {
@@ -42,11 +49,7 @@ export type EvmRequestData = {
   dialogData?: Record<string, unknown>;
 };
 
-export type EvmRequestLocator = {
-  requestId: number;
-  tab: number;
-  origin: string;
-};
+export type EvmRequestLocator = PendingRequestLocator;
 
 export class EvmRequestHandler {
   requestsData: EvmRequestData[];
@@ -95,10 +98,32 @@ export class EvmRequestHandler {
     sender: chrome.runtime.MessageSender,
     msg: KeychainEvmRequestWrapper,
   ) {
-    const canonicalOrigin =
-      getOriginFromMessageSender(sender) ?? msg.dappInfo.origin;
-    const canonicalDomain =
-      getHostnameFromMessageSender(sender) ?? msg.dappInfo.domain ?? '';
+    const source = getPendingRequestSource(sender);
+    if (!source) {
+      return;
+    }
+    const canonicalOrigin = source.origin;
+    const canonicalDomain = getHostnameFromMessageSender(sender) ?? '';
+    const canonicalDappInfo: EvmDappInfo = {
+      ...msg.dappInfo,
+      origin: canonicalOrigin,
+      domain: canonicalDomain,
+      protocol: new URL(canonicalOrigin).protocol,
+      requestSource: source,
+    };
+    const payloadSize = RequestPayloadUtils.getRequestPayloadSize({
+      ...msg,
+      dappInfo: canonicalDappInfo,
+    });
+
+    if (!payloadSize.isValid) {
+      await this.sendAdmissionError(
+        source,
+        msg.request.request_id,
+        ProviderRpcErrorList.requestLimitExceeded,
+      );
+      return;
+    }
 
     if (
       EvmRequestAccountUtils.requiresAccountAuthorization(msg.request) &&
@@ -107,46 +132,83 @@ export class EvmRequestHandler {
         canonicalOrigin,
       ))
     ) {
-      CommunicationUtils.tabsSendMessage(sender.tab!.id!, {
-        command: BackgroundCommand.SEND_EVM_ERROR,
-        value: {
-          requestId: msg.request.request_id,
-          error: ProviderRpcErrorList.unauthorized,
-        },
-      });
+      await this.sendAdmissionError(
+        source,
+        msg.request.request_id,
+        ProviderRpcErrorList.unauthorized,
+      );
       return;
     }
 
-    await EvmRequestHandler.withPersistedRequestsData(
-      this,
-      async (requestsData) => {
-        const arrivalOrder = await getNextDialogRequestOrder();
-        return [
-          ...requestsData,
-          {
-            tab: sender.tab!.id,
-            request: msg.request,
-            request_id: msg.request_id,
-            dappInfo: {
-              ...msg.dappInfo,
-              origin: canonicalOrigin,
-              domain: canonicalDomain,
-            },
-            arrivalOrder,
-          },
-        ];
-      },
-    );
+    let admissionResult;
+    try {
+      admissionResult = await PendingRequestAdmission.admit(
+        {
+          chain: 'evm',
+          requestId: msg.request_id,
+          method: msg.request.method,
+          source,
+          byteSize: payloadSize.byteSize,
+        },
+        async (arrivalOrder) => {
+          await EvmRequestHandler.withPersistedRequestsData(
+            this,
+            (requestsData) => [
+              ...requestsData,
+              {
+                tab: source.tab,
+                request: msg.request,
+                request_id: msg.request_id,
+                dappInfo: canonicalDappInfo,
+                arrivalOrder,
+              },
+            ],
+          );
+        },
+      );
+    } catch (error) {
+      Logger.warn(
+        `Unable to persist EVM request for ${source.origin} (${msg.request.method}, ${payloadSize.byteSize} bytes)`,
+      );
+      await this.sendAdmissionError(
+        source,
+        msg.request.request_id,
+        ProviderRpcErrorList.requestLimitExceeded,
+      );
+      return;
+    }
+
+    if (!admissionResult.accepted) {
+      await this.sendAdmissionError(
+        source,
+        msg.request.request_id,
+        admissionResult.reason === 'request_pending'
+          ? ProviderRpcErrorList.requestAlreadyPending
+          : ProviderRpcErrorList.requestLimitExceeded,
+      );
+      return;
+    }
 
     await initEvmRequestHandler(
       msg.request,
-      sender.tab!.id,
-      {
-        ...msg.dappInfo,
-        origin: canonicalOrigin,
-        domain: canonicalDomain,
-      },
+      source.tab,
+      canonicalDappInfo,
       this,
+    );
+  }
+
+  private async sendAdmissionError(
+    source: PendingRequestSource,
+    requestId: number,
+    error: { code: number; message: string },
+  ) {
+    await CommunicationUtils.tabsSendMessage(
+      source.tab,
+      {
+        command: BackgroundCommand.SEND_EVM_ERROR,
+        value: { requestId, error },
+      },
+      getPendingRequestMessageOptions(source),
     );
   }
 
@@ -160,6 +222,28 @@ export class EvmRequestHandler {
     return this.requestsData.find((requestData) =>
       EvmRequestHandler.isRequestLocatorMatch(requestData, locator),
     );
+  }
+
+  getRequestLocator(requestData: EvmRequestData): EvmRequestLocator | null {
+    if (
+      requestData.request_id === undefined ||
+      requestData.tab === undefined ||
+      !requestData.dappInfo?.origin
+    ) {
+      return null;
+    }
+
+    return requestData.dappInfo.requestSource
+      ? getPendingRequestLocator(
+          requestData.request_id,
+          requestData.dappInfo.requestSource,
+        )
+      : {
+          requestId: requestData.request_id,
+          tab: requestData.tab,
+          frameId: 0,
+          origin: requestData.dappInfo.origin,
+        };
   }
 
   getRequest(requestId: number) {
@@ -211,11 +295,9 @@ export class EvmRequestHandler {
     tab: number,
     shouldSyncDialog = true,
   ) {
-    await EvmRequestHandler.withPersistedRequestsData(this, (requestsData) =>
-      requestsData.filter(
-        (requestData: EvmRequestData) =>
-          requestData.request_id !== requestId || requestData.tab !== tab,
-      ),
+    await this.removeRequests(
+      (requestData) =>
+        requestData.request_id === requestId && requestData.tab === tab,
     );
     if (shouldSyncDialog) {
       await syncSharedDialogWindow();
@@ -226,15 +308,32 @@ export class EvmRequestHandler {
     locator: EvmRequestLocator,
     shouldSyncDialog = true,
   ) {
-    await EvmRequestHandler.withPersistedRequestsData(this, (requestsData) =>
-      requestsData.filter(
-        (requestData: EvmRequestData) =>
-          !EvmRequestHandler.isRequestLocatorMatch(requestData, locator),
-      ),
+    await this.removeRequests((requestData) =>
+      EvmRequestHandler.isRequestLocatorMatch(requestData, locator),
     );
     if (shouldSyncDialog) {
       await syncSharedDialogWindow();
     }
+  }
+
+  async removeRequestsForTab(tab: number) {
+    return this.removeRequests((requestData) => requestData.tab === tab);
+  }
+
+  async removeRequestsForNavigation(
+    tab: number,
+    frameId: number,
+    documentId?: string,
+  ) {
+    return this.removeRequests((requestData) => {
+      if (requestData.tab !== tab) return false;
+      const source = requestData.dappInfo?.requestSource;
+      if (!source) return frameId === 0;
+      return (
+        source.frameId === frameId &&
+        (!documentId || source.documentId !== documentId)
+      );
+    });
   }
 
   // Local storage methods
@@ -265,11 +364,9 @@ export class EvmRequestHandler {
   }
 
   async saveInLocalStorage() {
-    await LocalStorageUtils.saveValueInLocalStorage(
-      LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
-      {
-        requestsData: this.requestsData,
-      },
+    await EvmRequestHandler.withPersistedRequestsData(
+      this,
+      (persistedRequestsData) => persistedRequestsData,
     );
   }
 
@@ -292,12 +389,30 @@ export class EvmRequestHandler {
         await LocalStorageUtils.getValueFromLocalStorage(
           LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
         );
-      const requestsData = requestHandlersParams?.requestsData ?? [];
+      const requestsData =
+        requestHandlersParams?.requestsData ?? handler.requestsData;
       const nextRequestsData = await mutate(requestsData);
 
+      await LocalStorageUtils.saveValueInLocalStorage(
+        LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
+        { requestsData: nextRequestsData },
+      );
       handler.requestsData = nextRequestsData;
-      await handler.saveInLocalStorage();
     });
+  }
+
+  private async removeRequests(
+    matches: (requestData: EvmRequestData) => boolean,
+  ) {
+    let removedCount = 0;
+    await EvmRequestHandler.withPersistedRequestsData(this, (requestsData) =>
+      requestsData.filter((requestData) => {
+        if (!matches(requestData)) return true;
+        removedCount += 1;
+        return false;
+      }),
+    );
+    return removedCount;
   }
 
   private static enqueueStorageMutation<T>(mutation: () => Promise<T>) {
@@ -316,10 +431,23 @@ export class EvmRequestHandler {
     requestData: EvmRequestData,
     locator: EvmRequestLocator,
   ) {
-    return (
+    if (
       requestData.request_id === locator.requestId &&
       requestData.tab === locator.tab &&
       requestData.dappInfo?.origin === locator.origin
-    );
+    ) {
+      const source = requestData.dappInfo?.requestSource;
+      if (!source) {
+        return locator.frameId === undefined || locator.frameId === 0;
+      }
+      if (locator.frameId === undefined) return true;
+      return isPendingRequestSourceMatch(source, {
+        tab: locator.tab,
+        frameId: locator.frameId,
+        documentId: locator.documentId,
+        origin: locator.origin,
+      });
+    }
+    return false;
   }
 }

@@ -7,6 +7,7 @@ import {
   RequestTransfer,
 } from '@interfaces/keychain.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
@@ -20,6 +21,7 @@ export const transferRequest = (
   accounts: LocalAccount[],
   current_rpc: Rpc,
   account?: LocalAccount,
+  source?: PendingRequestSource,
 ) => {
   const active_accounts = accounts
     .filter((e) => !!e.keys.active)
@@ -38,11 +40,13 @@ export const transferRequest = (
         await I18nUtils.getMessage('bgd_auth_canceled'),
         await I18nUtils.getMessage('bgd_auth_transfer_no_active', [username]),
         request as KeychainRequest,
+        source,
       );
       await removeRequestAfterDialogFeedback(
         requestHandler,
         (request as KeychainRequest).request_id,
         tab,
+        source,
       );
     }, requestHandler);
   } else if (account && encode && !account.keys.memo) {
@@ -54,11 +58,13 @@ export const transferRequest = (
         await I18nUtils.getMessage('bgd_auth_canceled'),
         await I18nUtils.getMessage('bgd_auth_transfer_no_memo', [username!]),
         request as KeychainRequest,
+        source,
       );
       await removeRequestAfterDialogFeedback(
         requestHandler,
         (request as KeychainRequest).request_id,
         tab,
+        source,
       );
     }, requestHandler);
   } else if (active_accounts.length == 0) {
@@ -72,11 +78,13 @@ export const transferRequest = (
           username!,
         ]),
         request as KeychainRequest,
+        source,
       );
       await removeRequestAfterDialogFeedback(
         requestHandler,
         (request as KeychainRequest).request_id,
         tab,
+        source,
       );
     }, requestHandler);
   } else {
@@ -85,6 +93,7 @@ export const transferRequest = (
         command: DialogCommand.SEND_DIALOG_CONFIRM,
         request,
         domain,
+        ...(source ? { requestSource: source } : {}),
         accounts: encode || enforce ? undefined : active_accounts,
         tab,
         rpc: current_rpc,

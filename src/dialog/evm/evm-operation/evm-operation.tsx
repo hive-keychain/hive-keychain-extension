@@ -1,5 +1,7 @@
 import { MessageContainerComponent } from '@common-ui/message-container/message-container.component';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
+import { isPendingRequestSourceMatch } from '@background/multichain/pending-request.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React, { useEffect, useState } from 'react';
@@ -28,6 +30,7 @@ type Props = {
   request: EvmRequest;
   domain: string;
   origin: string;
+  requestSource?: PendingRequestSource;
   tab: number;
   header?: string;
   redHeader?: boolean;
@@ -46,6 +49,7 @@ export const EvmOperation = ({
   onConfirm,
   domain,
   origin,
+  requestSource,
   tab,
   request,
   header,
@@ -70,6 +74,7 @@ export const EvmOperation = ({
     const clearConfirmLoading = (msg: {
       command?: string;
       msg?: { request_id?: number };
+      requestSource?: PendingRequestSource;
     }) => {
       if (
         msg?.command !== DialogCommand.ANSWER_EVM_REQUEST &&
@@ -81,13 +86,20 @@ export const EvmOperation = ({
       if (msg.msg?.request_id !== request.request_id) {
         return;
       }
+      if (
+        msg.requestSource &&
+        requestSource &&
+        !isPendingRequestSourceMatch(msg.requestSource, requestSource)
+      ) {
+        return;
+      }
       setLoading(false);
     };
     chrome.runtime.onMessage.addListener(clearConfirmLoading);
     return () => {
       chrome.runtime.onMessage.removeListener(clearConfirmLoading);
     };
-  }, [request.request_id]);
+  }, [request.request_id, requestSource]);
 
   const genericOnConfirm = () => {
     if (transactionHook && transactionHook.hasWarning()) {
@@ -102,6 +114,7 @@ export const EvmOperation = ({
           tab: tab,
           domain: domain,
           origin,
+          requestSource,
           keep,
         },
       });
@@ -117,6 +130,7 @@ export const EvmOperation = ({
         tab,
         domain,
         origin,
+        requestSource,
       },
     });
   };

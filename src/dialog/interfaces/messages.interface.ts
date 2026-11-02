@@ -4,6 +4,7 @@ import { Rpc } from '@interfaces/rpc.interface';
 import { EvmAccountPublic } from '@popup/evm/interfaces/wallet.interface';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
 import { KeychainRequest } from 'hive-keychain-commons';
 
 export type DialogQueueMessage = HiveRequestMessage | EvmRequestMessage;
@@ -14,6 +15,7 @@ export type HiveRequestMessage = {
   rpc: Rpc;
   tab: number;
   domain: string;
+  requestSource?: PendingRequestSource;
   accounts?: string[];
   hiveEngineConfig: HiveEngineConfig;
   queueSize?: number;
@@ -52,6 +54,7 @@ export type RequestAddCustomEvmChainMessage = {
 export type ErrorMessage = {
   msg: { display_msg: string; tab?: number; request_id?: number };
   command: DialogCommand.SEND_DIALOG_ERROR;
+  requestSource?: PendingRequestSource;
 };
 
 export type ResultMessage = {
@@ -65,6 +68,7 @@ export type ResultMessage = {
     tab?: number;
   };
   command: DialogCommand.ANSWER_REQUEST | DialogCommand.ANSWER_EVM_REQUEST;
+  requestSource?: PendingRequestSource;
 };
 
 export type FeedbackMessage = ResultMessage | ErrorMessage;

@@ -22,6 +22,7 @@ import {
 } from 'src/background/evm/evm-provider-state.utils';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
+import { getPendingRequestMessageOptions } from '@background/multichain/pending-request.interface';
 
 export const evmRequestWithoutConfirmation = async (
   requestHandler: EvmRequestHandler,
@@ -207,6 +208,12 @@ export const evmRequestWithoutConfirmation = async (
     requestId: request.request_id,
     tab,
     origin: dappInfo.origin,
+    frameId: dappInfo.requestSource?.frameId,
+    documentId: dappInfo.requestSource?.documentId,
   });
-  CommunicationUtils.tabsSendMessage(tab, message);
+  CommunicationUtils.tabsSendMessage(
+    tab,
+    message,
+    getPendingRequestMessageOptions(dappInfo.requestSource),
+  );
 };

@@ -1,9 +1,7 @@
 // Content script interfacing the website and the extension
 /* istanbul ignore file */
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
-import schemas, {
-  commonRequestParams,
-} from 'src/content-scripts/hive/web-interface/input-validation';
+import { validateHiveRequest } from 'src/content-scripts/hive/web-interface/hive-request-validation';
 import {
   sendIncompleteDataResponse,
   sendRequestToBackground,
@@ -40,7 +38,6 @@ document.addEventListener('swHandshake_hive', () => {
     window.location.origin,
   );
 });
-
 // Answering the requests
 type KeychainRequestWrapper = {
   detail: KeychainRequest;
@@ -48,15 +45,15 @@ type KeychainRequestWrapper = {
 document.addEventListener('swRequest_hive', (request: object) => {
   // const prevReq = req;
   const req = (request as KeychainRequestWrapper).detail;
-  const validation = validateRequest(req);
+  const validation = validateHiveRequest(req);
   const { error, value } = validation;
-  if (!error) {
+  if (!error && value) {
     sendRequestToBackground(value, chrome);
     // if (prevReq) {
     //   cancelPreviousRequest(prevReq);
     // }
   } else {
-    sendIncompleteDataResponse(value!, error);
+    sendIncompleteDataResponse(value!, error ?? 'Invalid request.');
     // req = prevReq;
   }
 });
@@ -71,11 +68,3 @@ chrome.runtime.onMessage.addListener(function (obj, sender, sendResp) {
     // req = null;
   }
 });
-
-// Request validation
-const validateRequest = (req: KeychainRequest) => {
-  if (!req) return { value: req, error: 'Missing request.' };
-  if (!req.type) return { value: req, error: 'Missing request type.' };
-  //@ts-ignore
-  return schemas[req.type].append(commonRequestParams).validate(req);
-};

@@ -57,6 +57,7 @@ describe('App no_wallet dialog error close behavior', () => {
             request_id: 123,
           },
           tab: 9,
+          origin: 'https://dapp.example',
         },
         {},
         jest.fn(),

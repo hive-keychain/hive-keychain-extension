@@ -7,6 +7,7 @@ import {
   RequestSignBuffer,
 } from '@interfaces/keychain.interface';
 import { KeylessRequest } from '@interfaces/keyless-keychain.interface';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import Config from 'src/config';
 import HiveAuthUtils from 'src/utils/hive-auth.utils';
@@ -17,18 +18,21 @@ const handleOperation = async (
   request: KeychainRequest,
   domain: string,
   tab: number,
+  source?: PendingRequestSource,
 ) => {
   await HiveAuthUtils.connect();
 
   switch (request.type) {
     case KeychainRequestTypes.signBuffer:
-      HiveAuthUtils.challengeRequest(requestHandler, request, domain, tab);
-      break;
     case KeychainRequestTypes.encode:
-      HiveAuthUtils.challengeRequest(requestHandler, request, domain, tab);
-      break;
     case KeychainRequestTypes.decode:
-      HiveAuthUtils.challengeRequest(requestHandler, request, domain, tab);
+      HiveAuthUtils.challengeRequest(
+        requestHandler,
+        request,
+        domain,
+        tab,
+        source,
+      );
       break;
     case KeychainRequestTypes.swap:
     case KeychainRequestTypes.encodeWithKeys:
@@ -45,7 +49,7 @@ const handleOperation = async (
       });
       break;
     default:
-      HiveAuthUtils.signRequest(requestHandler, request, domain, tab);
+      HiveAuthUtils.signRequest(requestHandler, request, domain, tab, source);
   }
 };
 
@@ -54,6 +58,7 @@ const register = async (
   request: KeychainRequest,
   domain: string,
   tab: number,
+  source?: PendingRequestSource,
 ) => {
   await HiveAuthUtils.connect();
   if (!request.username) {
@@ -115,6 +120,7 @@ const register = async (
       username,
       keylessRequest,
       tab,
+      source,
     );
   }
 };

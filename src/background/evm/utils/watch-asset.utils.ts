@@ -5,6 +5,7 @@ import {
   EvmRequest,
   ProviderRpcErrorList,
 } from '@interfaces/evm-provider.interface';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
 import { ethers } from 'ethers';
 
 const WATCH_ASSET_CUSTOM_CHAIN_ERROR =
@@ -72,6 +73,7 @@ const rejectWatchAssetRequest = async (
   request: EvmRequest,
   origin: string,
   message: string,
+  source?: PendingRequestSource,
 ) => {
   await handleEvmError(
     requestHandler,
@@ -85,6 +87,7 @@ const rejectWatchAssetRequest = async (
     [],
     origin,
     true,
+    source,
   );
 };
 

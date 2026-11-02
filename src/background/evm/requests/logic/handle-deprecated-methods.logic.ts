@@ -8,6 +8,7 @@ import {
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
+import { getPendingRequestMessageOptions } from '@background/multichain/pending-request.interface';
 
 export const handleDeprecatedMethods = async (
   requestHandler: EvmRequestHandler,
@@ -25,10 +26,16 @@ export const handleDeprecatedMethods = async (
       error: ProviderRpcErrorList.unsupportedMethod,
     },
   };
-  CommunicationUtils.tabsSendMessage(tab, message);
+  CommunicationUtils.tabsSendMessage(
+    tab,
+    message,
+    getPendingRequestMessageOptions(dappInfo.requestSource),
+  );
   await requestHandler.removeRequestByLocator({
     requestId: request.request_id,
     tab,
     origin: dappInfo.origin,
+    frameId: dappInfo.requestSource?.frameId,
+    documentId: dappInfo.requestSource?.documentId,
   });
 };

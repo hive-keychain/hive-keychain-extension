@@ -2,6 +2,7 @@ import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
@@ -17,6 +18,7 @@ const sendErrors = async (
   message: string,
   display_msg: string,
   request: KeychainRequest | EvmRequest,
+  requestSource?: PendingRequestSource,
 ) => {
   if (!(request as KeychainRequest).type) {
     const req = request as KeychainRequest;
@@ -41,6 +43,7 @@ const sendErrors = async (
           request_id: request.request_id,
         },
         tab: tab,
+        ...(requestSource ? { requestSource } : {}),
       });
     }
   } else {
@@ -56,6 +59,7 @@ const sendErrors = async (
         request_id: request.request_id,
       },
       tab: tab,
+      ...(requestSource ? { requestSource } : {}),
     });
   }
 };

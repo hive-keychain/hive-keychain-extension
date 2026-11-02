@@ -11,6 +11,7 @@ import {
 import { VaultCommand } from '@reference-data/vault-message-key.enum';
 import { KeychainRequestData } from 'hive-keychain-commons';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
 
 export type BaseBackgroundMessage = {
   command: BackgroundCommand | VaultCommand;
@@ -35,17 +36,20 @@ export interface MultisigDialogMessage {
 export type BaseDialogMessage = {
   command: DialogCommand;
   msg?: any;
+  requestSource?: PendingRequestSource;
 };
 
 export type AnswerDialogMessage = {
   command: DialogCommand.ANSWER_EVM_REQUEST;
   msg: any;
+  requestSource?: PendingRequestSource;
 };
 
 export type SendConfirmHiveMessage = {
   command: DialogCommand.SEND_DIALOG_CONFIRM;
   request: KeychainRequestData;
   domain: string;
+  requestSource?: PendingRequestSource;
   tab: number;
   accounts?: string[] | undefined;
   rpc?: Rpc;
@@ -98,12 +102,14 @@ export type RegisterDialogMessage = {
   msg: any;
   tab: number;
   domain: string;
+  requestSource?: PendingRequestSource;
 };
 
 export type SendDialogErrorMessage = {
   command: DialogCommand.SEND_DIALOG_ERROR;
   msg: any;
   tab: number;
+  requestSource?: PendingRequestSource;
 };
 
 export type ReturnLedgerSignatureMessage = {

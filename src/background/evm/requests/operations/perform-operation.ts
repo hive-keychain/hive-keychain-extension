@@ -39,6 +39,8 @@ import {
 import { KeychainError } from 'src/keychain-error';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
+import { getPendingRequestMessageOptions } from '@background/multichain/pending-request.interface';
 
 const getMinimumGasPriceInGwei = (error: unknown): string | undefined => {
   const minimumGasPriceWei =
@@ -64,6 +66,7 @@ const handleRecoverableCustomGasPriceError = async (
   error: unknown,
   request: EvmRequest,
   tab: number,
+  source?: PendingRequestSource,
 ) => {
   const chainId = resolveRequestChainId(request);
   if (
@@ -96,6 +99,7 @@ const handleRecoverableCustomGasPriceError = async (
         updatedChain?.customMinGasPriceInGwei ?? minimumGasPriceInGwei,
       message: 'evm_gas_fee_warning_updated_after_insufficient_price',
     },
+    ...(source ? { requestSource: source } : {}),
   });
   return true;
 };
@@ -107,6 +111,7 @@ export const performEvmOperation = async (
   domain: string,
   origin: string,
   extraData: any,
+  source?: PendingRequestSource,
 ) => {
   let message = null;
   let result = null;
@@ -114,6 +119,8 @@ export const performEvmOperation = async (
     requestId: request.request_id,
     tab,
     origin,
+    frameId: source?.frameId,
+    documentId: source?.documentId,
   };
 
   Logger.info('Perform evm operation');
@@ -134,6 +141,8 @@ export const performEvmOperation = async (
       providerError.message,
       [],
       origin,
+      false,
+      source,
     );
     return;
   }
@@ -206,12 +215,18 @@ export const performEvmOperation = async (
         break;
       }
     }
-    CommunicationUtils.tabsSendMessage(tab, {
-      command: BackgroundCommand.SEND_EVM_RESPONSE,
-      value: { requestId: request.request_id, result: result },
-    });
+    CommunicationUtils.tabsSendMessage(
+      tab,
+      {
+        command: BackgroundCommand.SEND_EVM_RESPONSE,
+        value: { requestId: request.request_id, result: result },
+      },
+      getPendingRequestMessageOptions(source),
+    );
     if (message) {
-      await CommunicationUtils.runtimeSendMessage(message);
+      await CommunicationUtils.runtimeSendMessage(
+        source ? { ...message, requestSource: source } : message,
+      );
       const handlers = await getRequestHandlers();
       if (
         await willCloseDialogWindowAfterRemovingRequest(
@@ -227,7 +242,14 @@ export const performEvmOperation = async (
     await requestHandler.removeRequestByLocator(locator);
   } catch (err) {
     const error = err as any;
-    if (await handleRecoverableCustomGasPriceError(error, request, tab)) {
+    if (
+      await handleRecoverableCustomGasPriceError(
+        error,
+        request,
+        tab,
+        source,
+      )
+    ) {
       return;
     }
 
@@ -245,6 +267,8 @@ export const performEvmOperation = async (
       errorMessage,
       errorMessageParams,
       origin,
+      false,
+      source,
     );
   }
 };

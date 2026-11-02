@@ -18,6 +18,8 @@ import {
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
+import { getPendingRequestMessageOptions } from '@background/multichain/pending-request.interface';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
 export const handleNonAuthorizedMethods = async (
@@ -26,14 +28,9 @@ export const handleNonAuthorizedMethods = async (
   request: EvmRequest,
   domain: string,
   origin: string,
+  source?: PendingRequestSource,
 ) => {
-  Logger.warn(
-    `${
-      request.method
-    } doesn't have authorization, rawError: dialog_evm_not_authorized_method, params: ${JSON.stringify(
-      request.params,
-    )}`,
-  );
+  Logger.warn(`${request.method} doesn't have authorization`);
 
   let shouldCreatePopup = false;
 
@@ -49,7 +46,11 @@ export const handleNonAuthorizedMethods = async (
       result: ProviderRpcErrorList.nonExistingMethod,
     },
   };
-  CommunicationUtils.tabsSendMessage(tab, message);
+  CommunicationUtils.tabsSendMessage(
+    tab,
+    message,
+    getPendingRequestMessageOptions(source),
+  );
 
   const callback = async () => {
     CommunicationUtils.runtimeSendMessage({
@@ -60,7 +61,9 @@ export const handleNonAuthorizedMethods = async (
           [request.method],
         ),
         tab,
+        request_id: request.request_id,
       },
+      ...(source ? { requestSource: source } : {}),
     });
     const handlers = await getRequestHandlers();
     if (
@@ -76,6 +79,8 @@ export const handleNonAuthorizedMethods = async (
       requestId: request.request_id,
       tab,
       origin,
+      frameId: source?.frameId,
+      documentId: source?.documentId,
     });
   };
   createOrUpdateDialog(callback, requestHandler);

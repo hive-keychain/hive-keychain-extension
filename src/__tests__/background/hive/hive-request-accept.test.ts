@@ -104,6 +104,7 @@ describe('ACCEPT_TRANSACTION stored request', () => {
       true,
       'dialog',
       { metaData: '2fa' },
+      { tab: 7, frameId: 0, origin: 'dapp.example' },
     );
   });
 

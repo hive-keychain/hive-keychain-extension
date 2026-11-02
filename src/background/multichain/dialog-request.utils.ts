@@ -22,6 +22,7 @@ import {
   RequestTransfer,
 } from '@interfaces/keychain.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { KeysUtils } from '@popup/hive/utils/keys.utils';
 import {
@@ -31,6 +32,7 @@ import {
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { isWhitelisted } from 'src/utils/preferences.utils';
+import { isPendingRequestSourceMatch } from '@background/multichain/pending-request.interface';
 import {
   anonymousRequests,
   getRequiredWifType,
@@ -49,6 +51,7 @@ export type VisibleDialogRequest =
       arrivalOrder: number;
       requestId: number;
       tab: number;
+      origin: string;
       data: HiveRequestData;
     }
   | {
@@ -105,11 +108,14 @@ const hasActiveKey = (account?: LocalAccount) => !!account?.keys.active;
 
 const hasMemoKey = (account?: LocalAccount) => !!account?.keys.memo;
 
+const getHiveRequestOrigin = (requestData: HiveRequestData) =>
+  requestData.source?.origin ?? requestData.domain ?? '';
+
 export const isHiveDialogVisibleRequest = async (
   requestData: HiveRequestData,
 ) => {
   const request = requestData.request;
-  if (!request) return false;
+  if (!request || !getHiveRequestOrigin(requestData)) return false;
 
   if (requestData.isKeyless) return true;
 
@@ -188,8 +194,8 @@ export const getVisibleDialogRequests = async (
     await Promise.all(
       hiveRequestHandler.requestsData.map(async (requestData) => {
         if (
-          !requestData.request_id ||
-          !requestData.tab ||
+          requestData.request_id == null ||
+          requestData.tab == null ||
           !(await isHiveDialogVisibleRequest(requestData))
         ) {
           return null;
@@ -202,6 +208,7 @@ export const getVisibleDialogRequests = async (
           ),
           requestId: requestData.request_id,
           tab: requestData.tab,
+          origin: getHiveRequestOrigin(requestData),
           data: requestData,
         };
       }),
@@ -212,8 +219,8 @@ export const getVisibleDialogRequests = async (
     await Promise.all(
       evmRequestHandler.requestsData.map(async (requestData) => {
         if (
-          !requestData.request_id ||
-          !requestData.tab ||
+          requestData.request_id == null ||
+          requestData.tab == null ||
           !(await isEvmDialogVisibleRequest(requestData))
         ) {
           return null;
@@ -253,7 +260,7 @@ export const willCloseDialogWindowAfterRemovingRequest = async (
   return (
     only.requestId === requestId &&
     only.tab === tab &&
-    (only.chain !== 'evm' || origin === undefined || only.origin === origin)
+    (origin === undefined || only.origin === origin)
   );
 };
 
@@ -282,6 +289,27 @@ const isSameDialogMessage = (
       ? message.msg.request.request_id
       : (message.request as any).request_id;
 
+  const getRequestSource = (
+    message: ConfirmDialogMessage,
+  ): PendingRequestSource | undefined => {
+    if (message.command === DialogCommand.SEND_DIALOG_CONFIRM) {
+      return message.requestSource;
+    }
+    if (message.command === DialogCommand.SEND_DIALOG_CONFIRM_EVM) {
+      return message.dappInfo.requestSource;
+    }
+    return message.msg.dappInfo.requestSource;
+  };
+
+  const leftSource = getRequestSource(left);
+  const rightSource = getRequestSource(right);
+  const isSameSource =
+    !leftSource && !rightSource
+      ? true
+      : !!leftSource &&
+        !!rightSource &&
+        isPendingRequestSourceMatch(leftSource, rightSource);
+
   return (
     left.command === right.command &&
     left.tab === right.tab &&
@@ -291,7 +319,8 @@ const isSameDialogMessage = (
     (left.command !== DialogCommand.REQUEST_ADD_CUSTOM_EVM_CHAIN ||
       right.command !== DialogCommand.REQUEST_ADD_CUSTOM_EVM_CHAIN ||
       left.msg.dappInfo.origin === right.msg.dappInfo.origin) &&
-    getRequestId(left) === getRequestId(right)
+    getRequestId(left) === getRequestId(right) &&
+    isSameSource
   );
 };
 
@@ -332,7 +361,13 @@ const buildHiveTransferMessage = (
   hiveRequestHandler: HiveRequestsHandler,
 ): SendConfirmHiveMessage | null => {
   const request = requestData.request as RequestTransfer | undefined;
-  if (!request || !requestData.tab || !requestData.domain || !requestData.rpc) {
+  if (
+    !request ||
+    requestData.tab == null ||
+    !requestData.domain ||
+    !getHiveRequestOrigin(requestData) ||
+    !requestData.rpc
+  ) {
     return null;
   }
 
@@ -362,6 +397,7 @@ const buildHiveTransferMessage = (
     command: DialogCommand.SEND_DIALOG_CONFIRM,
     request,
     domain: requestData.domain,
+    requestSource: requestData.source,
     accounts: encode || enforced ? undefined : activeAccounts,
     tab: requestData.tab,
     rpc: requestData.rpc,
@@ -377,7 +413,13 @@ const buildHiveAnonymousMessage = (
   hiveRequestHandler: HiveRequestsHandler,
 ): SendConfirmHiveMessage | null => {
   const request = requestData.request;
-  if (!request || !requestData.tab || !requestData.domain || !requestData.rpc) {
+  if (
+    !request ||
+    requestData.tab == null ||
+    !requestData.domain ||
+    !getHiveRequestOrigin(requestData) ||
+    !requestData.rpc
+  ) {
     return null;
   }
 
@@ -392,6 +434,7 @@ const buildHiveAnonymousMessage = (
     command: DialogCommand.SEND_DIALOG_CONFIRM,
     request,
     domain: requestData.domain,
+    requestSource: requestData.source,
     accounts,
     tab: requestData.tab,
     rpc: requestData.rpc,
@@ -407,7 +450,13 @@ const buildHiveConfirmationMessage = (
   hiveRequestHandler: HiveRequestsHandler,
 ): SendConfirmHiveMessage | null => {
   const request = requestData.request;
-  if (!request || !requestData.tab || !requestData.domain) return null;
+  if (
+    !request ||
+    requestData.tab == null ||
+    !requestData.domain ||
+    !getHiveRequestOrigin(requestData)
+  )
+    return null;
 
   if (requestData.isKeyless) return null;
 
@@ -423,6 +472,7 @@ const buildHiveConfirmationMessage = (
       command: DialogCommand.SEND_DIALOG_CONFIRM,
       request,
       domain: requestData.domain,
+      requestSource: requestData.source,
       tab: requestData.tab,
       rpc: requestData.rpc!,
       hiveEngineConfig: hiveRequestHandler.hiveEngineConfig,
@@ -469,6 +519,7 @@ const buildHiveConfirmationMessage = (
       command: DialogCommand.SEND_DIALOG_CONFIRM,
       request: { ...request, key: request.key ?? typeWif },
       domain: requestData.domain,
+      requestSource: requestData.source,
       tab: requestData.tab,
       rpc: requestData.rpc,
       hiveEngineConfig: hiveRequestHandler.hiveEngineConfig,
@@ -488,7 +539,7 @@ const buildEvmConfirmationMessage = async (
   SendConfirmEvmMessage | RequestAddCustomEvmChainDialogMessage | null
 > => {
   const request = requestData.request;
-  if (!request || !requestData.tab || !requestData.dappInfo) return null;
+  if (!request || requestData.tab == null || !requestData.dappInfo) return null;
 
   if (
     requestData.dialogCommand === DialogCommand.REQUEST_ADD_CUSTOM_EVM_CHAIN

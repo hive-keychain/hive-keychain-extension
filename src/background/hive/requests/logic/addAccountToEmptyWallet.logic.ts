@@ -1,6 +1,7 @@
 import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
 import { createOrUpdateDialog } from '@background/multichain/dialog-lifecycle';
 import { KeychainRequest } from '@interfaces/keychain.interface';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 
@@ -10,6 +11,7 @@ export const addAccountToEmptyWallet = (
   tab: number,
   request: KeychainRequest,
   domain: string,
+  source?: PendingRequestSource,
 ) => {
   /* istanbul ignore next */
   createOrUpdateDialog(async () => {
@@ -25,6 +27,7 @@ export const addAccountToEmptyWallet = (
       },
       tab,
       domain,
+      ...(source ? { requestSource: source } : {}),
     });
   }, requestHandler);
 };

@@ -16,6 +16,7 @@ import { AddChainRequest } from '@popup/evm/interfaces/evm-requests.interfaces';
 import { EvmRpcUrlUtils } from '@popup/evm/utils/evm-rpc-url.utils';
 import { EvmAddressUtils } from 'src/utils/evm/evm-address.utils';
 import { EvmEncryptedMessageUtils } from 'src/utils/evm/evm-encrypted-message.utils';
+import { RequestPayloadUtils } from 'src/utils/request-payload.utils';
 
 const EVM_CHAIN_ID_REGEX = /^0x[1-9a-fA-F][0-9a-fA-F]*$/;
 
@@ -61,10 +62,7 @@ export const validateEvmRequest = (request: unknown): EvmRequest => {
   }
 
   const evmRequest = request as Partial<EvmRequest>;
-  if (
-    typeof evmRequest.request_id !== 'number' ||
-    !Number.isFinite(evmRequest.request_id)
-  ) {
+  if (!RequestPayloadUtils.isValidRequestId(evmRequest.request_id)) {
     throw getProviderRpcError(
       'nonValidRequest',
       'Invalid request. Missing or invalid request_id.',

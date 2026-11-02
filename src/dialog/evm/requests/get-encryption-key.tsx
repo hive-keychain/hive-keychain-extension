@@ -84,6 +84,7 @@ export const GetEncryptionKey = (props: Props) => {
       request={request}
       domain={data.dappInfo.domain}
       origin={data.dappInfo.origin}
+      requestSource={data.dappInfo.requestSource}
       tab={data.tab}
       title={I18nUtils.getMessage('dialog_evm_get_encryption_key_title')}
       fields={<EvmTransactionWarningsComponent warningHook={transactionHook} />}

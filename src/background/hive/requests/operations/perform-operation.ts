@@ -1,4 +1,7 @@
-import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
+import {
+  HiveRequestLocator,
+  HiveRequestsHandler,
+} from '@background/hive/requests/hive-request-handler';
 import { addAccount } from '@background/hive/requests/operations/ops/add-account';
 import {
   broadcastAddAccountAuthority,
@@ -44,6 +47,8 @@ import {
   KeychainRequestTypes,
 } from '@interfaces/keychain.interface';
 import { TransactionOptions } from '@interfaces/keys.interface';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
+import { getPendingRequestMessageOptions } from '@background/multichain/pending-request.interface';
 import {
   DIALOG_FEEDBACK_DISPLAY_MS,
   delayMs,
@@ -54,6 +59,7 @@ import Logger from 'src/utils/logger.utils';
 import { addToWhitelist } from 'src/utils/preferences.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
+import { config } from 'hive-tx';
 export type HiveOperationDelivery = 'dialog' | 'silent';
 
 export const performHiveOperation = async (
@@ -64,8 +70,32 @@ export const performHiveOperation = async (
   shouldWhitelist: boolean,
   delivery: HiveOperationDelivery,
   options?: TransactionOptions,
+  source?: PendingRequestSource,
 ) => {
   let message = null;
+  const queueHandler = requestHandler;
+  const origin = source?.origin;
+  const locator: HiveRequestLocator | undefined =
+    origin && request.request_id != null
+      ? {
+          requestId: request.request_id,
+          tab,
+          origin,
+          frameId: source?.frameId,
+          documentId: source?.documentId,
+        }
+      : undefined;
+  const requestData = locator
+    ? queueHandler.getRequestDataByLocator(locator)
+    : undefined;
+  if (requestData) {
+    // Existing operations look up request state by public id. Give them a
+    // one-request view so identical ids from other documents stay isolated.
+    requestHandler = Object.assign(Object.create(queueHandler), {
+      requestsData: [requestData],
+    });
+    if (requestData.rpc?.uri) config.node = requestData.rpc.uri;
+  }
   try {
     Logger.info('-- PERFORMING HIVE TRANSACTION --');
     switch (request.type) {
@@ -194,21 +224,32 @@ export const performHiveOperation = async (
         delivery === 'silent'
           ? { ...message, command: DialogCommand.SEND_HIVE_RESPONSE }
           : message;
-      await CommunicationUtils.tabsSendMessage(tab, tabMessage);
+      await CommunicationUtils.tabsSendMessage(
+        tab,
+        tabMessage,
+        getPendingRequestMessageOptions(source),
+      );
       if (delivery === 'dialog') {
-        await CommunicationUtils.runtimeSendMessage(message);
+        await CommunicationUtils.runtimeSendMessage(
+          source ? { ...message, requestSource: source } : message,
+        );
         const handlers = await getRequestHandlers();
         if (
           await willCloseDialogWindowAfterRemovingRequest(
             handlers,
             request.request_id,
             tab,
+            origin,
           )
         ) {
           await delayMs(DIALOG_FEEDBACK_DISPLAY_MS);
         }
       }
-      await requestHandler.removeRequestById(request.request_id, tab);
+      if (locator) {
+        await queueHandler.removeRequestByLocator(locator);
+      } else {
+        await queueHandler.removeRequestById(request.request_id, tab);
+      }
     }
   } catch (e) {
     Logger.error(e);
@@ -218,6 +259,7 @@ export const performHiveOperation = async (
       await I18nUtils.getMessage('unknown_error'),
       await I18nUtils.getMessage('unknown_error'),
       request,
+      source,
     );
     const handlers = await getRequestHandlers();
     if (
@@ -225,17 +267,22 @@ export const performHiveOperation = async (
         handlers,
         request.request_id,
         tab,
+        origin,
       )
     ) {
       await delayMs(DIALOG_FEEDBACK_DISPLAY_MS);
     }
-    await requestHandler.removeRequestById(request.request_id, tab);
+    if (locator) {
+      await queueHandler.removeRequestByLocator(locator);
+    } else {
+      await queueHandler.removeRequestById(request.request_id, tab);
+    }
   } finally {
     if (shouldWhitelist) {
       await addToWhitelist(request.username!, domain, request.type);
     }
     if (shouldWhitelist && delivery === 'dialog') {
-      await requestHandler.reprocessPendingRequests();
+      await queueHandler.reprocessPendingRequests();
     }
   }
 };

@@ -61,6 +61,33 @@ describe('response.logic tests:\n', () => {
         request_id: req.request_id,
       });
     });
+
+    it('returns incomplete when the request cannot be serialized', () => {
+      const cyclicRequest = {
+        request_id: 3,
+        type: KeychainRequestTypes.convert,
+      } as KeychainRequest & { self?: unknown };
+      cyclicRequest.self = cyclicRequest;
+      const sendMessage = jest.spyOn(chrome.runtime, 'sendMessage');
+      const postMessage = jest
+        .spyOn(window, 'postMessage')
+        .mockImplementation(() => {});
+
+      sendRequestToBackground(cyclicRequest, chrome);
+
+      expect(sendMessage).not.toHaveBeenCalled();
+      expect(postMessage).toHaveBeenCalledWith(
+        {
+          type: 'hive_keychain_response',
+          response: expect.objectContaining({
+            error: 'incomplete',
+            message: 'Invalid request.',
+            request_id: 3,
+          }),
+        },
+        window.location.origin,
+      );
+    });
   });
   describe('sendEvmRequestToBackground cases:\n', () => {
     it('Must include the page origin and hostname in dappInfo', async () => {

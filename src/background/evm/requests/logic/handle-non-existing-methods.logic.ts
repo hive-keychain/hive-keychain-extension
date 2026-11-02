@@ -8,6 +8,7 @@ import {
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
+import { getPendingRequestMessageOptions } from '@background/multichain/pending-request.interface';
 
 export const handleNonExistingMethod = async (
   requestHandler: EvmRequestHandler,
@@ -15,13 +16,7 @@ export const handleNonExistingMethod = async (
   request: EvmRequest,
   dappInfo: EvmDappInfo,
 ) => {
-  Logger.warn(
-    `${
-      request.method
-    } doesn't exist, rawError: dialog_evm_non_existing_method, params: ${JSON.stringify(
-      request.params,
-    )}`,
-  );
+  Logger.warn(`${request.method} doesn't exist`);
 
   const message: BackgroundMessage = {
     command: BackgroundCommand.SEND_EVM_ERROR,
@@ -30,10 +25,16 @@ export const handleNonExistingMethod = async (
       error: ProviderRpcErrorList.nonExistingMethod,
     },
   };
-  CommunicationUtils.tabsSendMessage(tab, message);
+  CommunicationUtils.tabsSendMessage(
+    tab,
+    message,
+    getPendingRequestMessageOptions(dappInfo.requestSource),
+  );
   await requestHandler.removeRequestByLocator({
     requestId: request.request_id,
     tab,
     origin: dappInfo.origin,
+    frameId: dappInfo.requestSource?.frameId,
+    documentId: dappInfo.requestSource?.documentId,
   });
 };

@@ -4,6 +4,7 @@ import sendErrors from '@background/multichain/errors';
 import { removeRequestAfterDialogFeedback } from '@background/multichain/remove-request-after-dialog-feedback.logic';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 
@@ -14,6 +15,7 @@ export const addAccountRequest = (
   request: KeychainRequest,
   domain: string,
   account?: LocalAccount,
+  source?: PendingRequestSource,
 ) => {
   if (account) {
     /* istanbul ignore next */
@@ -26,11 +28,13 @@ export const addAccountRequest = (
           account.name,
         ]),
         request,
+        source,
       );
       await removeRequestAfterDialogFeedback(
         requestHandler,
         request.request_id,
         tab,
+        source,
       );
     }, requestHandler);
   } else {
@@ -39,6 +43,7 @@ export const addAccountRequest = (
         command: DialogCommand.SEND_DIALOG_CONFIRM,
         request,
         domain,
+        ...(source ? { requestSource: source } : {}),
         tab,
       });
     };

@@ -1,5 +1,8 @@
 import MkModule from '@background/hive/modules/mk.module';
-import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
+import {
+  HiveRequestLocator,
+  HiveRequestsHandler,
+} from '@background/hive/requests/hive-request-handler';
 import {
   KeychainRequest,
   KeychainRequestTypes,
@@ -8,6 +11,7 @@ import {
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Config from 'src/config';
@@ -25,10 +29,20 @@ import * as Logic from './logic';
 
 export const initHiveRequestHandler = async (
   request: KeychainRequest,
-  tab: number | undefined,
+  tab: number,
   domain: string,
   requestHandler: HiveRequestsHandler,
+  source?: PendingRequestSource,
 ) => {
+  const requestSource = source ?? {
+    tab,
+    frameId: 0,
+    origin: domain,
+  };
+  const locator: HiveRequestLocator | undefined =
+    request.request_id != null
+      ? { requestId: request.request_id, ...requestSource }
+      : undefined;
   const items: {
     accounts: string;
     current_rpc?: Rpc;
@@ -57,10 +71,16 @@ export const initHiveRequestHandler = async (
     !items.KEYLESS_KEYCHAIN_ENABLED
   ) {
     // Wallet not initialized
-    Logic.initializeWallet(requestHandler, tab!, request);
+    Logic.initializeWallet(requestHandler, tab, request, requestSource);
   } else if (!items.accounts && !mk && !items.KEYLESS_KEYCHAIN_ENABLED) {
     // Wallet not initialized for adding first account
-    Logic.addAccountToEmptyWallet(requestHandler, tab!, request, domain);
+    Logic.addAccountToEmptyWallet(
+      requestHandler,
+      tab,
+      request,
+      domain,
+      requestSource,
+    );
   } else if (!mk) {
     // if locked
     Logic.unlockWallet(
@@ -71,7 +91,13 @@ export const initHiveRequestHandler = async (
       DialogCommand.UNLOCK,
     );
   } else if (items.KEYLESS_KEYCHAIN_ENABLED) {
-    Logic.keylessKeychainRequest(requestHandler, tab!, request, domain);
+    Logic.keylessKeychainRequest(
+      requestHandler,
+      tab,
+      request,
+      domain,
+      requestSource,
+    );
   } else {
     const decryptedAccounts = items.accounts
       ? await EncryptUtils.decryptToJson(items.accounts, mk!)
@@ -89,25 +115,37 @@ export const initHiveRequestHandler = async (
       );
     }
 
-    await requestHandler.initializeParameters(
-      accounts,
-      rpc,
-      items.no_confirm || [],
-      request.request_id!,
-    );
+    if (locator) {
+      await requestHandler.initializeParameters(
+        accounts,
+        rpc,
+        items.no_confirm || [],
+        locator,
+      );
+    } else {
+      requestHandler.accounts = accounts;
+    }
 
     let account = accounts.find((e) => e.name === username);
     if (type === KeychainRequestTypes.addAccount) {
-      Logic.addAccountRequest(requestHandler, tab!, request, domain, account);
+      Logic.addAccountRequest(
+        requestHandler,
+        tab,
+        request,
+        domain,
+        account,
+        requestSource,
+      );
     } else if (type === KeychainRequestTypes.transfer) {
       Logic.transferRequest(
         requestHandler,
-        tab!,
+        tab,
         request as RequestTransfer,
         domain,
         accounts,
         rpc,
         account,
+        requestSource,
       );
     } else if (anonymousRequests.includes(type) && !username) {
       // if no username specified for anonymous requests
@@ -118,23 +156,39 @@ export const initHiveRequestHandler = async (
         domain,
         accounts,
         rpc,
+        requestSource,
       );
     } else {
       // Default case
       if (!account) {
-        Logic.missingUser(requestHandler, tab!, request, username!);
+        Logic.missingUser(
+          requestHandler,
+          tab,
+          request,
+          username!,
+          requestSource,
+        );
       } else {
         let typeWif = getRequiredWifType(request);
         let req = request;
         req.key = typeWif;
 
         if (!account.keys[typeWif]) {
-          Logic.missingKey(requestHandler, tab!, request, username!, typeWif);
+          Logic.missingKey(
+            requestHandler,
+            tab,
+            request,
+            username!,
+            typeWif,
+            requestSource,
+          );
         } else {
           //@ts-ignore
           const publicKey: Key = account.keys[`${typeWif}Pubkey`]!;
           const key = account.keys[typeWif];
-          requestHandler.setKeys(key!, publicKey!, request.request_id!);
+          if (locator) {
+            requestHandler.setKeys(key!, publicKey!, locator);
+          }
           if (
             !isWhitelisted(items.no_confirm, req, domain, rpc) ||
             KeysUtils.requireManualConfirmation(key!)
@@ -145,13 +199,20 @@ export const initHiveRequestHandler = async (
               req,
               domain,
               rpc,
+              requestSource,
             );
           } else {
-            Logic.requestWithoutConfirmation(requestHandler, tab!, req);
+            Logic.requestWithoutConfirmation(
+              requestHandler,
+              tab,
+              req,
+              domain,
+              requestSource,
+            );
           }
         }
       }
     }
   }
-  requestHandler.saveInLocalStorage();
+  await requestHandler.saveInLocalStorage();
 };

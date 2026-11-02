@@ -106,6 +106,7 @@ describe('KeylessKeychainModule', () => {
         expect.any(Object),
         'd',
         2,
+        undefined,
       );
     });
 
@@ -140,14 +141,16 @@ describe('KeylessKeychainModule', () => {
         expect.any(Object),
         'd',
         2,
+        undefined,
       );
     });
 
     it('answers with failure for unsupported swap / encodeWithKeys', async () => {
-      (I18nUtils.getMessage as jest.Mock).mockImplementation(
-        (_key: string, subs?: string[]) =>
+      jest
+        .spyOn(I18nUtils, 'getMessage')
+        .mockImplementation((_key: string, subs?: string[]) =>
           subs ? `unsupported:${subs[0]}` : 'unsupported',
-      );
+        );
 
       await KeylessKeychainModule.handleOperation(
         handler,
@@ -237,6 +240,7 @@ describe('KeylessKeychainModule', () => {
         'alice',
         expect.any(Object),
         7,
+        undefined,
       );
     });
 

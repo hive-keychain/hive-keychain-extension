@@ -122,6 +122,38 @@ describe('evm-request-handler tests:\n', () => {
     );
   });
 
+  it('returns MetaMask-compatible request-pending error for an exact duplicate', async () => {
+    const handler = new EvmRequestHandler();
+    const request = {
+      request_id: 12,
+      method: EvmRequestMethod.GET_CHAIN,
+      params: [],
+    };
+    const message = {
+      command: BackgroundCommand.SEND_EVM_REQUEST,
+      request,
+      request_id: request.request_id,
+      dappInfo,
+    };
+
+    await handler.sendRequest(sender, message);
+    await handler.sendRequest(sender, message);
+
+    expect(handler.requestsData).toHaveLength(1);
+    expect(initEvmRequestHandlerMock).toHaveBeenCalledTimes(1);
+    expect(tabsSendMessageMock).toHaveBeenCalledWith(
+      7,
+      {
+        command: BackgroundCommand.SEND_EVM_ERROR,
+        value: {
+          requestId: 12,
+          error: { code: -32002, message: 'Request already pending.' },
+        },
+      },
+      { frameId: 0 },
+    );
+  });
+
   it('rejects unauthorized account requests before persisting them', async () => {
     requiresAccountAuthorizationMock.mockReturnValue(true);
     isRequestedAccountAuthorizedForOriginMock.mockResolvedValue(false);
@@ -145,17 +177,21 @@ describe('evm-request-handler tests:\n', () => {
       request,
       'https://iframe.example',
     );
-    expect(tabsSendMessageMock).toHaveBeenCalledWith(7, {
-      command: BackgroundCommand.SEND_EVM_ERROR,
-      value: {
-        requestId: 12,
-        error: {
-          code: 4100,
-          message:
-            'The requested method and/or account has not been authorized by the user',
+    expect(tabsSendMessageMock).toHaveBeenCalledWith(
+      7,
+      {
+        command: BackgroundCommand.SEND_EVM_ERROR,
+        value: {
+          requestId: 12,
+          error: {
+            code: 4100,
+            message:
+              'The requested method and/or account has not been authorized by the user',
+          },
         },
       },
-    });
+      { frameId: 0 },
+    );
     expect(mockSaveValueInLocalStorage).not.toHaveBeenCalled();
     expect(getNextDialogRequestOrderMock).not.toHaveBeenCalled();
     expect(initEvmRequestHandlerMock).not.toHaveBeenCalled();
@@ -320,5 +356,129 @@ describe('evm-request-handler tests:\n', () => {
         dialogData: { retried: true },
       }),
     ]);
+  });
+
+  it('allows the same request id from different documents', async () => {
+    const handler = new EvmRequestHandler();
+    const request = {
+      request_id: 16,
+      method: EvmRequestMethod.GET_CHAIN,
+      params: [],
+    };
+
+    await handler.sendRequest(
+      { ...sender, frameId: 2, documentId: 'document-a' },
+      {
+        command: BackgroundCommand.SEND_EVM_REQUEST,
+        request,
+        request_id: request.request_id,
+        dappInfo,
+      },
+    );
+    await handler.sendRequest(
+      { ...sender, frameId: 2, documentId: 'document-b' },
+      {
+        command: BackgroundCommand.SEND_EVM_REQUEST,
+        request,
+        request_id: request.request_id,
+        dappInfo,
+      },
+    );
+
+    expect(handler.requestsData).toHaveLength(2);
+    expect(
+      handler.requestsData.map(
+        (data) => data.dappInfo?.requestSource?.documentId,
+      ),
+    ).toEqual(['document-a', 'document-b']);
+  });
+
+  it('returns a limit error without a ghost entry when storage fails', async () => {
+    mockSaveValueInLocalStorage.mockRejectedValueOnce(
+      new Error('QUOTA_BYTES exceeded'),
+    );
+    const handler = new EvmRequestHandler();
+    const request = {
+      request_id: 17,
+      method: EvmRequestMethod.GET_CHAIN,
+      params: [],
+    };
+
+    await handler.sendRequest(sender, {
+      command: BackgroundCommand.SEND_EVM_REQUEST,
+      request,
+      request_id: request.request_id,
+      dappInfo,
+    });
+
+    expect(handler.requestsData).toEqual([]);
+    expect(initEvmRequestHandlerMock).not.toHaveBeenCalled();
+    expect(tabsSendMessageMock).toHaveBeenCalledWith(
+      7,
+      {
+        command: BackgroundCommand.SEND_EVM_ERROR,
+        value: {
+          requestId: 17,
+          error: { code: -32005, message: 'Request limit exceeded.' },
+        },
+      },
+      { frameId: 0 },
+    );
+  });
+
+  it('removes only requests from the previous frame document', async () => {
+    storage[LocalStorageKeyEnum.__EVM_REQUEST_HANDLER] = {
+      requestsData: [
+        {
+          request_id: 1,
+          tab: 7,
+          dappInfo: {
+            origin: 'https://iframe.example',
+            requestSource: {
+              tab: 7,
+              frameId: 2,
+              documentId: 'old-document',
+              origin: 'https://iframe.example',
+            },
+          },
+        },
+        {
+          request_id: 2,
+          tab: 7,
+          dappInfo: {
+            origin: 'https://iframe.example',
+            requestSource: {
+              tab: 7,
+              frameId: 2,
+              documentId: 'new-document',
+              origin: 'https://iframe.example',
+            },
+          },
+        },
+        {
+          request_id: 3,
+          tab: 7,
+          dappInfo: {
+            origin: 'https://iframe.example',
+            requestSource: {
+              tab: 7,
+              frameId: 3,
+              documentId: 'other-frame',
+              origin: 'https://iframe.example',
+            },
+          },
+        },
+      ],
+    };
+    const handler = new EvmRequestHandler();
+
+    await expect(
+      handler.removeRequestsForNavigation(7, 2, 'new-document'),
+    ).resolves.toBe(1);
+    expect(
+      storage[LocalStorageKeyEnum.__EVM_REQUEST_HANDLER].requestsData.map(
+        (data: any) => data.request_id,
+      ),
+    ).toEqual([2, 3]);
   });
 });

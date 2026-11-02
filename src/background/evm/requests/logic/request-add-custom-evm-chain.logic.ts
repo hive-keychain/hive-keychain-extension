@@ -16,6 +16,8 @@ export const requestAddCustomEvmChain = async (
       requestId: request.request_id,
       tab,
       origin: dappInfo.origin,
+      frameId: dappInfo.requestSource?.frameId,
+      documentId: dappInfo.requestSource?.documentId,
     },
     DialogCommand.REQUEST_ADD_CUSTOM_EVM_CHAIN,
     {

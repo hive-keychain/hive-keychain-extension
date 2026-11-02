@@ -1,5 +1,8 @@
 import { performKeylessOperation } from '@background/hive/hive-service-worker';
-import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
+import {
+  HiveRequestLocator,
+  HiveRequestsHandler,
+} from '@background/hive/requests/hive-request-handler';
 import { KeylessKeychainModule } from '@background/keyless-keychain.module';
 import { createOrUpdateDialog } from '@background/multichain/dialog-lifecycle';
 import {
@@ -7,15 +10,25 @@ import {
   KeychainRequestTypes,
 } from '@interfaces/keychain.interface';
 import { KeylessAuthData } from '@interfaces/keyless-keychain.interface';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { anonymousRequests } from 'src/utils/requests.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
+const toLocator = (
+  request: KeychainRequest,
+  source: PendingRequestSource,
+): HiveRequestLocator | undefined => {
+  if (request.request_id == null) return undefined;
+  return { requestId: request.request_id, ...source };
+};
+
 export const keylessKeychainRequest = async (
   requestHandler: HiveRequestsHandler,
   tab: number,
   request: KeychainRequest,
   domain: string,
+  source: PendingRequestSource,
 ) => {
   const keylessAuthData =
     await KeylessKeychainModule.getKeylessRegistrationInfo(
@@ -33,18 +46,37 @@ export const keylessKeychainRequest = async (
       request,
       domain,
       keylessAuthData,
+      source,
     );
   } else if (request.type === KeychainRequestTypes.addAccount) {
-    createAddAccountPopup(requestHandler, tab, request, domain);
+    createAddAccountPopup(requestHandler, tab, request, domain, source);
   } else if (request.type === KeychainRequestTypes.swap) {
-    createUnsupportedOperationPopup(requestHandler, tab, request, domain);
+    createUnsupportedOperationPopup(
+      requestHandler,
+      tab,
+      request,
+      domain,
+      source,
+    );
   } else if (request.type === KeychainRequestTypes.encodeWithKeys) {
-    createUnsupportedOperationPopup(requestHandler, tab, request, domain);
+    createUnsupportedOperationPopup(
+      requestHandler,
+      tab,
+      request,
+      domain,
+      source,
+    );
   } else {
     if (!keylessAuthData) {
-      createRegisterKeylessKeychainPopup(requestHandler, tab, request, domain);
+      createRegisterKeylessKeychainPopup(
+        requestHandler,
+        tab,
+        request,
+        domain,
+        source,
+      );
     } else {
-      performKeylessOperation(requestHandler, tab, request, domain);
+      performKeylessOperation(requestHandler, tab, request, domain, source);
     }
   }
 };
@@ -55,12 +87,16 @@ const createAnonymousKeylessOpPopup = async (
   request: KeychainRequest,
   domain: string,
   keylessAuthData: KeylessAuthData | undefined,
+  source: PendingRequestSource,
 ) => {
-  await requestHandler.setIsKeyless(true, request.request_id!);
-  await requestHandler.setIsWaitingForConfirmation(
-    !keylessAuthData,
-    request.request_id!,
-  );
+  const locator = toLocator(request, source);
+  if (locator) {
+    await requestHandler.setIsKeyless(true, locator);
+    await requestHandler.setIsWaitingForConfirmation(
+      !keylessAuthData,
+      locator,
+    );
+  }
   const callback = async () => {
     chrome.runtime.sendMessage({
       command: DialogCommand.ANONYMOUS_KEYLESS_OP,
@@ -68,6 +104,7 @@ const createAnonymousKeylessOpPopup = async (
       data: request,
       tab,
       domain,
+      requestSource: source,
     });
   };
   createOrUpdateDialog(callback, requestHandler);
@@ -78,6 +115,7 @@ const createAddAccountPopup = (
   tab: number,
   request: KeychainRequest,
   domain: string,
+  source: PendingRequestSource,
 ) => {
   const callback = async () => {
     chrome.runtime.sendMessage({
@@ -86,6 +124,7 @@ const createAddAccountPopup = (
       data: request,
       tab,
       domain,
+      requestSource: source,
     });
   };
   createOrUpdateDialog(callback, requestHandler);
@@ -96,9 +135,13 @@ const createRegisterKeylessKeychainPopup = async (
   tab: number,
   request: KeychainRequest,
   domain: string,
+  source: PendingRequestSource,
 ) => {
-  await requestHandler.setIsKeyless(true, request.request_id!);
-  await requestHandler.setIsWaitingForConfirmation(true, request.request_id!);
+  const locator = toLocator(request, source);
+  if (locator) {
+    await requestHandler.setIsKeyless(true, locator);
+    await requestHandler.setIsWaitingForConfirmation(true, locator);
+  }
   const callback = async () => {
     chrome.runtime.sendMessage({
       command: DialogCommand.REGISTER_KEYLESS_KEYCHAIN,
@@ -106,6 +149,7 @@ const createRegisterKeylessKeychainPopup = async (
       data: request,
       tab,
       domain,
+      requestSource: source,
     });
   };
   createOrUpdateDialog(callback, requestHandler);
@@ -116,6 +160,7 @@ const createUnsupportedOperationPopup = (
   tab: number,
   request: KeychainRequest,
   domain: string,
+  source: PendingRequestSource,
 ) => {
   const callback = async () => {
     chrome.runtime.sendMessage({
@@ -132,7 +177,9 @@ const createUnsupportedOperationPopup = (
           ],
         ),
         tab: tab,
+        request_id: request.request_id,
       },
+      requestSource: source,
     });
   };
   createOrUpdateDialog(callback, requestHandler);

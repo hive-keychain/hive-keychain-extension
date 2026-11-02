@@ -268,6 +268,7 @@ export const AddChain = (props: Props) => {
         requestId: request.request_id,
         tab: data.tab,
         origin: data.dappInfo.origin,
+        requestSource: data.dappInfo.requestSource,
         result: true,
       },
     });
@@ -362,6 +363,7 @@ export const AddChain = (props: Props) => {
       request={request}
       domain={data.dappInfo.domain}
       origin={data.dappInfo.origin}
+      requestSource={data.dappInfo.requestSource}
       tab={data.tab}
       afterCancel={handleCancel}
       title={I18nUtils.getMessage(

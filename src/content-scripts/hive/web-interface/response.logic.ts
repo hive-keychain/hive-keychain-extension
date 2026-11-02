@@ -3,6 +3,7 @@ import {
   EvmEventName,
   EvmRequest,
   KeychainEvmRequestWrapper,
+  ProviderRpcErrorList,
   RoutedEvmEvent,
 } from '@interfaces/evm-provider.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
@@ -18,6 +19,7 @@ import {
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import KeychainifyUtils from 'src/utils/keychainify.utils';
 import Logger from 'src/utils/logger.utils';
+import { RequestPayloadUtils } from 'src/utils/request-payload.utils';
 
 export const cancelPreviousRequest = (prevReq: KeychainRequest) => {
   const response = {
@@ -35,12 +37,30 @@ export const sendRequestToBackground = (
   req: KeychainRequest,
   chrome: typeof globalThis.chrome,
 ) => {
-  CommunicationUtils.runtimeSendMessage({
+  const message = {
     command: BackgroundCommand.SEND_REQUEST,
     request: req,
     domain: getWindowHostname(),
     request_id: req.request_id,
-  });
+  } as const;
+  const payloadSize = RequestPayloadUtils.getRequestPayloadSize(message);
+  if (payloadSize.byteSize === null) {
+    sendIncompleteDataResponse(req, 'Invalid request.');
+    return;
+  }
+  if (!payloadSize.isValid) {
+    sendResponse({
+      success: false,
+      error: 'request_limit',
+      result: null,
+      message: 'Request size limit exceeded.',
+      data: req,
+      request_id: req.request_id,
+    });
+    return;
+  }
+
+  CommunicationUtils.runtimeSendMessage(message);
 };
 
 export const sendEvmRequestToBackground = async (
@@ -49,7 +69,7 @@ export const sendEvmRequestToBackground = async (
 ) => {
   const link = document.querySelector("link[rel='icon']");
 
-  CommunicationUtils.runtimeSendMessage({
+  const message = {
     command: BackgroundCommand.SEND_EVM_REQUEST,
     request: req,
     dappInfo: {
@@ -59,7 +79,17 @@ export const sendEvmRequestToBackground = async (
       logo: (link as any)?.href,
     },
     request_id: req.request_id,
-  } as KeychainEvmRequestWrapper);
+  } as KeychainEvmRequestWrapper;
+  if (!RequestPayloadUtils.getRequestPayloadSize(message).isValid) {
+    sendErrorToEvm({
+      requestId: req.request_id,
+      request_id: req.request_id,
+      error: ProviderRpcErrorList.requestLimitExceeded,
+    });
+    return;
+  }
+
+  CommunicationUtils.runtimeSendMessage(message);
 };
 export const sendEvmChainToBackground = async (
   chainData: string | { chainId: string | null } | null,

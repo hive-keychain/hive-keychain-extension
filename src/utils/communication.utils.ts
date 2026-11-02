@@ -14,10 +14,13 @@ const isNoReceiverError = (error: unknown) => {
 const tabsSendMessage = async (
   tabId: number,
   message: BackgroundMessage | DialogMessage,
+  options?: chrome.tabs.MessageSendOptions,
   onFail?: Function,
 ) => {
   try {
-    const res = await chrome.tabs.sendMessage(tabId, message);
+    const res = options
+      ? await chrome.tabs.sendMessage(tabId, message, options)
+      : await chrome.tabs.sendMessage(tabId, message);
   } catch (err) {
     if (!isNoReceiverError(err)) {
       Logger.error(err, 'error in tabsSendMessage');

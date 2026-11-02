@@ -18,6 +18,8 @@ import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
+import { getPendingRequestMessageOptions } from '@background/multichain/pending-request.interface';
 export const handleEvmError = async (
   requestHandler: EvmRequestHandler,
   tab: number,
@@ -26,7 +28,8 @@ export const handleEvmError = async (
   errorMessage: string,
   errorMessageParams: string[],
   origin: string,
-  hideDialog?: boolean,
+  hideDialog = false,
+  source?: PendingRequestSource,
 ) => {
   const message: BackgroundMessage = {
     command: BackgroundCommand.SEND_EVM_ERROR,
@@ -35,7 +38,11 @@ export const handleEvmError = async (
       error: { code: providerError.code, message: providerError.message },
     },
   };
-  CommunicationUtils.tabsSendMessage(tab, message);
+  CommunicationUtils.tabsSendMessage(
+    tab,
+    message,
+    getPendingRequestMessageOptions(source),
+  );
 
   if (!hideDialog) {
     const callback = async () => {
@@ -49,6 +56,7 @@ export const handleEvmError = async (
           tab,
           request_id: request.request_id,
         },
+        ...(source ? { requestSource: source } : {}),
       });
       const handlers = await getRequestHandlers();
       if (
@@ -65,6 +73,8 @@ export const handleEvmError = async (
         requestId: request.request_id,
         tab,
         origin,
+        frameId: source?.frameId,
+        documentId: source?.documentId,
       });
     };
     createOrUpdateDialog(callback, requestHandler);
@@ -73,6 +83,8 @@ export const handleEvmError = async (
       requestId: request.request_id,
       tab,
       origin,
+      frameId: source?.frameId,
+      documentId: source?.documentId,
     });
   }
 };

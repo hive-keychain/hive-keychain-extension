@@ -1,23 +1,14 @@
 import {
-  getOriginFromMessageSender,
-} from 'src/utils/browser-origin.utils';
+  PendingRequestLocator,
+  PendingRequestSource,
+} from '@interfaces/pending-request.interface';
+import { getOriginFromMessageSender } from 'src/utils/browser-origin.utils';
 
-export type PendingRequestChain = 'hive' | 'evm';
-
-export type PendingRequestSource = {
-  tab: number;
-  frameId: number;
-  documentId?: string;
-  origin: string;
-};
-
-export type PendingRequestLocator = PendingRequestSource & {
-  requestId: number;
-};
-
-export type PendingRequestWithSource<T> = T & {
-  requestSource?: PendingRequestSource;
-};
+export type {
+  PendingRequestChain,
+  PendingRequestLocator,
+  PendingRequestSource,
+} from '@interfaces/pending-request.interface';
 
 export const getPendingRequestSource = (
   sender: chrome.runtime.MessageSender,

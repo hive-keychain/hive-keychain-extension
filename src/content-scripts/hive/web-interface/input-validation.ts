@@ -382,7 +382,7 @@ const schemas = {
 };
 
 export const commonRequestParams = {
-  request_id: Joi.number().required(),
+  request_id: Joi.number().integer().positive().unsafe(false).required(),
   type: Joi.string().required(),
 };
 

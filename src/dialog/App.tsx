@@ -99,6 +99,9 @@ const App = () => {
           ),
           request_id: globalError.msg.request_id,
           tab: globalError.tab ?? globalError.msg.tab,
+          ...(globalError.requestSource
+            ? { requestSource: globalError.requestSource }
+            : {}),
         },
       });
     }

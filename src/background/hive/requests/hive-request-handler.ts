@@ -1,17 +1,27 @@
 import { BgdHiveEngineConfigModule } from '@background/hive/modules/hive-engine-config.module';
 import { initHiveRequestHandler } from '@background/hive/requests/init';
 import {
-  getNextDialogRequestOrder,
   syncSharedDialogWindow,
 } from '@background/multichain/dialog-coordinator';
 import { removeWindow } from '@background/multichain/dialog-lifecycle';
+import { PendingRequestAdmission } from '@background/multichain/pending-request-admission';
+import {
+  getPendingRequestMessageOptions,
+  getPendingRequestSource,
+  isPendingRequestSourceMatch,
+} from '@background/multichain/pending-request.interface';
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import { Key } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
+import {
+  PendingRequestLocator,
+  PendingRequestSource,
+} from '@interfaces/pending-request.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import EncryptUtils from '@popup/hive/utils/encrypt.utils';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
 import { config } from 'hive-tx';
@@ -22,7 +32,11 @@ import {
   KeychainRequestTypes,
   KeychainRequestWrapper,
 } from 'src/interfaces/keychain.interface';
+import { getHostnameFromMessageSender } from 'src/utils/browser-origin.utils';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
+import { RequestPayloadUtils } from 'src/utils/request-payload.utils';
 import { getRequiredWifType } from 'src/utils/requests.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
@@ -30,6 +44,8 @@ if (!process.env.IS_FIREFOX && !global.window) {
   //@ts-ignore
   global.window = { crypto };
 }
+
+let hiveRequestHandlerMutationQueue: Promise<void> = Promise.resolve();
 
 export type HiveRequestData = {
   tab?: number;
@@ -47,6 +63,35 @@ export type HiveRequestData = {
   isKeyless?: boolean;
   domain?: string;
   arrivalOrder?: number;
+  source?: PendingRequestSource;
+};
+
+export type HiveRequestLocator = PendingRequestLocator;
+
+const answerRejectedHiveRequest = async (
+  tab: number,
+  request: KeychainRequest | undefined,
+  requestId: number | undefined,
+  error: string,
+  source?: PendingRequestSource,
+  message = error,
+) => {
+  const response = {
+    command: DialogCommand.ANSWER_REQUEST,
+    msg: {
+      success: false,
+      error,
+      result: null,
+      data: request,
+      message,
+      request_id: requestId,
+    },
+  };
+  await CommunicationUtils.tabsSendMessage(
+    tab,
+    response,
+    getPendingRequestMessageOptions(source),
+  );
 };
 export class HiveRequestsHandler {
   requestsData: HiveRequestData[];
@@ -83,78 +128,52 @@ export class HiveRequestsHandler {
 
   async setIsWaitingForConfirmation(
     isWaitingForConfirmation: boolean,
-    requestId: number,
+    locator: HiveRequestLocator,
   ) {
-    // this.data.isWaitingForConfirmation = isWaitingForConfirmation;
-    for (const requestData of this.requestsData) {
-      if (requestData.request_id === requestId) {
-        requestData.isWaitingForConfirmation = isWaitingForConfirmation;
-        break;
-      }
-    }
-    this.saveInLocalStorage();
+    await this.mutateRequestByLocator(locator, (requestData) => {
+      requestData.isWaitingForConfirmation = isWaitingForConfirmation;
+    });
   }
 
-  isWaitingForConfirmation(requestId: number) {
-    const request = this.requestsData.find(
-      (request) => request.request_id === requestId,
-    );
-    return request?.isWaitingForConfirmation;
+  isWaitingForConfirmation(locator: HiveRequestLocator) {
+    return this.getRequestDataByLocator(locator)?.isWaitingForConfirmation;
   }
 
-  async setIsMultisig(isMultisig: boolean, requestId: number) {
-    for (const requestData of this.requestsData) {
-      if (requestData.request_id === requestId) {
-        requestData.isMultisig = isMultisig;
-        break;
-      }
-    }
-    this.saveInLocalStorage();
+  async setIsMultisig(isMultisig: boolean, locator: HiveRequestLocator) {
+    await this.mutateRequestByLocator(locator, (requestData) => {
+      requestData.isMultisig = isMultisig;
+    });
   }
 
-  isMultisig(requestId: number) {
-    const request = this.requestsData.find(
-      (request) => request.request_id === requestId,
-    );
-    return request?.isMultisig;
+  isMultisig(locator: HiveRequestLocator) {
+    return this.getRequestDataByLocator(locator)?.isMultisig;
   }
 
-  async setIsKeyless(isKeyless: boolean, requestId: number) {
-    for (const requestData of this.requestsData) {
-      if (requestData.request_id === requestId) {
-        requestData.isKeyless = isKeyless;
-        break;
-      }
-    }
-    this.saveInLocalStorage();
+  async setIsKeyless(isKeyless: boolean, locator: HiveRequestLocator) {
+    await this.mutateRequestByLocator(locator, (requestData) => {
+      requestData.isKeyless = isKeyless;
+    });
   }
 
-  isKeyless(requestId: number) {
-    const request = this.requestsData.find(
-      (request) => request.request_id === requestId,
-    );
-    return request?.isKeyless;
+  isKeyless(locator: HiveRequestLocator) {
+    return this.getRequestDataByLocator(locator)?.isKeyless;
   }
 
   async initializeParameters(
     accounts: LocalAccount[],
     rpc: Rpc,
     noConfirmPreferences: NoConfirm,
-    requestId: number,
+    locator: HiveRequestLocator,
   ) {
     this.accounts = accounts;
-    for (const requestData of this.requestsData) {
-      if (requestData.request_id === requestId) {
-        requestData.accounts = accounts;
-        requestData.rpc = rpc;
-        await this.setupHiveEngine();
-        requestData.preferences = noConfirmPreferences;
-        break;
-      }
-    }
+    await this.setupHiveEngine();
+    await this.mutateRequestByLocator(locator, (requestData) => {
+      requestData.accounts = accounts;
+      requestData.rpc = rpc;
+      requestData.preferences = noConfirmPreferences;
+    });
 
     config.node = rpc.uri;
-    this.saveInLocalStorage();
   }
 
   closeWindow() {
@@ -169,56 +188,134 @@ export class HiveRequestsHandler {
       config.node = this.defaultRpcConfig.node;
       HiveRequestsHandler.clearLocalStorage();
     } else {
-      this.requestsData = [];
-      this.saveInLocalStorage();
+      void HiveRequestsHandler.withPersistedRequestsData(this, () => []);
     }
   }
 
-  setConfirmed(confirmed: boolean, requestId: number) {
-    for (const requestData of this.requestsData) {
-      if (requestData.request_id === requestId) {
-        requestData.confirmed = confirmed;
-        break;
-      }
-    }
-    this.saveInLocalStorage();
+  async setConfirmed(confirmed: boolean, locator: HiveRequestLocator) {
+    await this.mutateRequestByLocator(locator, (requestData) => {
+      requestData.confirmed = confirmed;
+    });
   }
 
   setWindowId(windowId?: number) {
     this.windowId = windowId;
   }
 
-  setKeys(key: string, publicKey: string, requestId: number) {
-    for (const requestData of this.requestsData) {
-      if (requestData.request_id === requestId) {
-        requestData.key = key;
-        requestData.publicKey = publicKey;
-        break;
-      }
-    }
+  setKeys(key: string, publicKey: string, locator: HiveRequestLocator) {
+    const requestData = this.getRequestDataByLocator(locator);
+    if (!requestData) return;
+    requestData.key = key;
+    requestData.publicKey = publicKey;
   }
 
   async sendRequest(
     sender: chrome.runtime.MessageSender,
     msg: KeychainRequestWrapper,
   ) {
-    const arrivalOrder = await getNextDialogRequestOrder();
-    const requestData: HiveRequestData = {
-      tab: sender.tab!.id,
-      request: msg.request,
-      request_id: msg.request_id,
-      confirmed: false,
-      isWaitingForConfirmation: false,
-      domain: msg.domain,
-      arrivalOrder,
-    };
-    if (msg.request.rpc) {
-      requestData.rpc = { uri: msg.request.rpc, testnet: false };
+    const tab = sender.tab?.id;
+    const source = getPendingRequestSource(sender);
+    const origin = source?.origin;
+    const domain = getHostnameFromMessageSender(sender);
+    if (tab == null || !origin || !domain || !source) {
+      if (tab != null) {
+        await answerRejectedHiveRequest(
+          tab,
+          msg.request,
+          msg.request_id,
+          'invalid_sender',
+          source ?? undefined,
+        );
+      }
+      return;
     }
-    this.requestsData.push(requestData);
-    await this.saveInLocalStorage();
+    const rejectRequest = (error: string, message: string) =>
+      answerRejectedHiveRequest(
+        tab,
+        msg.request,
+        msg.request_id,
+        error,
+        source,
+        message,
+      );
+    if (
+      !msg.request ||
+      !RequestPayloadUtils.isValidRequestId(msg.request_id) ||
+      msg.request.request_id !== msg.request_id ||
+      !Object.values(KeychainRequestTypes).includes(msg.request.type)
+    ) {
+      await rejectRequest('incomplete', 'Invalid request.');
+      return;
+    }
 
-    await initHiveRequestHandler(msg.request, sender.tab!.id, msg.domain, this);
+    const payloadSize = RequestPayloadUtils.getRequestPayloadSize({
+      ...msg,
+      domain,
+    });
+    if (payloadSize.byteSize === null) {
+      await rejectRequest('incomplete', 'Invalid request.');
+      return;
+    }
+    if (!payloadSize.isValid) {
+      await rejectRequest('request_limit', 'Request size limit exceeded.');
+      return;
+    }
+
+    let admissionResult;
+    try {
+      admissionResult = await PendingRequestAdmission.admit(
+        {
+          chain: 'hive',
+          requestId: msg.request_id,
+          method: msg.request.type,
+          source,
+          byteSize: payloadSize.byteSize,
+        },
+        async (arrivalOrder) => {
+          const requestData: HiveRequestData = {
+            tab,
+            request: msg.request,
+            request_id: msg.request_id,
+            confirmed: false,
+            isWaitingForConfirmation: false,
+            domain,
+            source,
+            arrivalOrder,
+          };
+          if (msg.request.rpc) {
+            requestData.rpc = { uri: msg.request.rpc, testnet: false };
+          }
+          await HiveRequestsHandler.withPersistedRequestsData(
+            this,
+            (requestsData) => [...requestsData, requestData],
+          );
+        },
+      );
+    } catch {
+      Logger.warn(
+        `Unable to persist Hive request for ${origin} (${msg.request.type}, ${payloadSize.byteSize} bytes)`,
+      );
+      await rejectRequest('request_limit', 'Request limit exceeded.');
+      return;
+    }
+
+    if (!admissionResult.accepted) {
+      await rejectRequest(
+        admissionResult.reason,
+        admissionResult.reason === 'request_pending'
+          ? 'Request already pending.'
+          : 'Request limit exceeded.',
+      );
+      return;
+    }
+
+    await initHiveRequestHandler(
+      msg.request,
+      tab,
+      domain,
+      this,
+      source,
+    );
   }
 
   getUserKeyPair(username: string, keyType: KeychainKeyTypesLC) {
@@ -234,25 +331,47 @@ export class HiveRequestsHandler {
     return this.accounts?.find((e) => e.name === username)?.keys[keyType];
   }
 
+  /** Id-only lookup kept for the single-slot test handler. Pending Hive requests use getRequestDataByLocator. */
   getRequestData(requestId: number) {
     return this.requestsData.find(
       (request) => request.request_id === requestId,
     );
   }
 
+  getRequestDataByLocator(locator: HiveRequestLocator) {
+    return this.requestsData.find((requestData) =>
+      HiveRequestsHandler.isRequestLocatorMatch(requestData, locator),
+    );
+  }
+
+  getRequestLocator(requestData: HiveRequestData): HiveRequestLocator | null {
+    if (
+      requestData.request_id == null ||
+      requestData.tab == null ||
+      !requestData.domain
+    ) {
+      return null;
+    }
+    return requestData.source
+      ? { requestId: requestData.request_id, ...requestData.source }
+      : {
+          requestId: requestData.request_id,
+          tab: requestData.tab,
+          origin: requestData.domain,
+          frameId: 0,
+        };
+  }
+
+  /** Id-only lookup kept for the single-slot test handler. */
   getRequest(requestId: number) {
     const requestData = this.getRequestData(requestId);
     return requestData?.request;
   }
 
-  setRequest(requestId: number, request: KeychainRequest) {
-    for (const requestData of this.requestsData) {
-      if (requestData.request_id === requestId) {
-        requestData.request = request;
-        break;
-      }
-    }
-    // this.saveInLocalStorage();
+  async setRequest(locator: HiveRequestLocator, request: KeychainRequest) {
+    await this.mutateRequestByLocator(locator, (requestData) => {
+      requestData.request = request;
+    });
   }
 
   async removeRequestById(
@@ -260,24 +379,44 @@ export class HiveRequestsHandler {
     tabId: number,
     shouldSyncDialog = true,
   ) {
-    // Reconcile with latest persisted queue to avoid dropping requests that were
-    // added by another concurrent handler instance while feedback delay is active.
-    const latestHandler = await HiveRequestsHandler.getFromLocalStorage();
-    this.requestsData = latestHandler.requestsData;
-
-    this.requestsData = this.requestsData.filter(
-      (requestData: HiveRequestData) => {
-        if (requestData.request_id === requestId && requestData.tab! === tabId) {
-          return false;
-        }
-        return true;
-      },
+    await this.removeRequests(
+      (requestData) =>
+        requestData.request_id === requestId && requestData.tab === tabId,
     );
-
-    await this.saveInLocalStorage();
     if (shouldSyncDialog) {
       await syncSharedDialogWindow();
     }
+  }
+
+  async removeRequestByLocator(
+    locator: HiveRequestLocator,
+    shouldSyncDialog = true,
+  ) {
+    await this.removeRequests((requestData) =>
+      HiveRequestsHandler.isRequestLocatorMatch(requestData, locator),
+    );
+    if (shouldSyncDialog) {
+      await syncSharedDialogWindow();
+    }
+  }
+
+  async removeRequestsForTab(tab: number) {
+    return this.removeRequests((requestData) => requestData.tab === tab);
+  }
+
+  async removeRequestsForNavigation(
+    tab: number,
+    frameId: number,
+    documentId?: string,
+  ) {
+    return this.removeRequests((requestData) => {
+      if (requestData.tab !== tab) return false;
+      if (!requestData.source) return frameId === 0;
+      return (
+        requestData.source.frameId === frameId &&
+        (!documentId || requestData.source.documentId !== documentId)
+      );
+    });
   }
 
   async reprocessPendingRequests() {
@@ -293,11 +432,15 @@ export class HiveRequestsHandler {
         continue;
       }
 
-      const isStillPending = this.requestsData.some(
-        (currentRequestData) =>
-          currentRequestData.request_id === requestData.request_id &&
-          currentRequestData.tab === requestData.tab,
-      );
+      const locator = this.getRequestLocator(requestData);
+      const isStillPending =
+        locator &&
+        this.requestsData.some((currentRequestData) =>
+          HiveRequestsHandler.isRequestLocatorMatch(
+            currentRequestData,
+            locator,
+          ),
+        );
 
       if (!isStillPending) {
         continue;
@@ -308,6 +451,7 @@ export class HiveRequestsHandler {
         requestData.tab,
         requestData.domain,
         this,
+        requestData.source,
       );
     }
 
@@ -333,13 +477,13 @@ export class HiveRequestsHandler {
       for (const rd of requestsData) {
         if (rd.request && rd.request.type === KeychainRequestTypes.addAccount) {
           const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
-          rd.request = {
-            ...rd.request,
-            keys: await EncryptUtils.decryptToJson(
-              params.data.request.encryptedKeys,
-              mk!,
-            ),
-          };
+          const encryptedKeys = (rd.request as any).encryptedKeys;
+          if (mk && encryptedKeys) {
+            rd.request = {
+              ...rd.request,
+              keys: await EncryptUtils.decryptToJson(encryptedKeys, mk),
+            };
+          }
         }
       }
 
@@ -358,7 +502,8 @@ export class HiveRequestsHandler {
           const publicKey: Key = selectedAccount.keys[`${typeWif}Pubkey`]!;
           const key = selectedAccount.keys[typeWif];
 
-          handler.setKeys(key!, publicKey!, requestData.request_id!);
+          const locator = handler.getRequestLocator(requestData);
+          if (locator) handler.setKeys(key!, publicKey!, locator);
         }
       }
     }
@@ -366,9 +511,18 @@ export class HiveRequestsHandler {
   }
 
   async saveInLocalStorage() {
+    await HiveRequestsHandler.withPersistedRequestsData(
+      this,
+      (persistedRequestsData) => persistedRequestsData,
+    );
+  }
+
+  private async saveRequestsDataInLocalStorage(
+    requestsData: HiveRequestData[],
+  ) {
     const requestsDataToSave: Partial<HiveRequestData>[] = [];
 
-    for (const rd of this.requestsData) {
+    for (const rd of requestsData) {
       const requestData: HiveRequestData = {
         tab: rd.tab,
         request: rd.request,
@@ -382,6 +536,7 @@ export class HiveRequestsHandler {
         isKeyless: rd.isKeyless,
         domain: rd.domain,
         arrivalOrder: rd.arrivalOrder,
+        source: rd.source,
       };
       if (rd.request?.type === KeychainRequestTypes.addAccount) {
         const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
@@ -411,9 +566,126 @@ export class HiveRequestsHandler {
     );
   }
 
-  static async clearLocalStorage() {
-    await LocalStorageUtils.removeFromLocalStorage(
-      LocalStorageKeyEnum.__REQUEST_HANDLER,
+  private async mutateRequestByLocator(
+    locator: HiveRequestLocator,
+    mutate: (requestData: HiveRequestData) => void,
+  ) {
+    await HiveRequestsHandler.withPersistedRequestsData(
+      this,
+      (requestsData) =>
+        requestsData.map((requestData) => {
+          if (!HiveRequestsHandler.isRequestLocatorMatch(requestData, locator)) {
+            return requestData;
+          }
+          const nextRequestData = { ...requestData };
+          mutate(nextRequestData);
+          return nextRequestData;
+        }),
     );
+  }
+
+  private async removeRequests(
+    matches: (requestData: HiveRequestData) => boolean,
+  ) {
+    let removedCount = 0;
+    await HiveRequestsHandler.withPersistedRequestsData(this, (requestsData) =>
+      requestsData.filter((requestData) => {
+        if (!matches(requestData)) return true;
+        removedCount += 1;
+        return false;
+      }),
+    );
+    return removedCount;
+  }
+
+  private static async withPersistedRequestsData(
+    handler: HiveRequestsHandler,
+    mutate: (
+      requestsData: HiveRequestData[],
+    ) => HiveRequestData[] | Promise<HiveRequestData[]>,
+  ) {
+    await HiveRequestsHandler.enqueueStorageMutation(async () => {
+      const params = await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.__REQUEST_HANDLER,
+      );
+      const persistedRequestsData: HiveRequestData[] =
+        params?.requestsData ?? handler.requestsData;
+      const requestsData = persistedRequestsData.map((requestData) => {
+        const currentRequestData = handler.requestsData.find((current) =>
+          HiveRequestsHandler.isSameRequestData(current, requestData),
+        );
+        return currentRequestData
+          ? {
+              ...currentRequestData,
+              ...requestData,
+              accounts: currentRequestData.accounts,
+              key: currentRequestData.key,
+              publicKey: currentRequestData.publicKey,
+            }
+          : requestData;
+      });
+      const nextRequestsData = await mutate(requestsData);
+      await handler.saveRequestsDataInLocalStorage(nextRequestsData);
+      handler.requestsData = nextRequestsData;
+    });
+  }
+
+  private static enqueueStorageMutation<T>(mutation: () => Promise<T>) {
+    const runMutation = hiveRequestHandlerMutationQueue.then(
+      mutation,
+      mutation,
+    );
+    hiveRequestHandlerMutationQueue = runMutation.then(
+      () => undefined,
+      () => undefined,
+    );
+    return runMutation;
+  }
+
+  private static isRequestLocatorMatch(
+    requestData: HiveRequestData,
+    locator: HiveRequestLocator,
+  ) {
+    if (
+      requestData.request_id !== locator.requestId ||
+      requestData.tab !== locator.tab ||
+      (requestData.source?.origin ?? requestData.domain) !== locator.origin
+    ) {
+      return false;
+    }
+    if (!requestData.source) {
+      return locator.frameId === undefined || locator.frameId === 0;
+    }
+    if (locator.frameId === undefined) return true;
+    return isPendingRequestSourceMatch(requestData.source, {
+      tab: locator.tab,
+      frameId: locator.frameId,
+      documentId: locator.documentId,
+      origin: locator.origin,
+    });
+  }
+
+  private static isSameRequestData(
+    left: HiveRequestData,
+    right: HiveRequestData,
+  ) {
+    if (
+      left.request_id !== right.request_id ||
+      left.tab !== right.tab ||
+      (left.source?.origin ?? left.domain) !==
+        (right.source?.origin ?? right.domain)
+    ) {
+      return false;
+    }
+    if (!left.source || !right.source) return true;
+    return isPendingRequestSourceMatch(left.source, right.source);
+  }
+
+  static async clearLocalStorage() {
+    await HiveRequestsHandler.enqueueStorageMutation(async () => {
+      await LocalStorageUtils.removeFromLocalStorage(
+        LocalStorageKeyEnum.__REQUEST_HANDLER,
+      );
+    });
   }
 }

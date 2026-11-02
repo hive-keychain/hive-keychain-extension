@@ -3,7 +3,6 @@ import {
   PendingRequestSource,
   isPendingRequestSourceMatch,
 } from '@background/multichain/pending-request.interface';
-import { getNextDialogRequestOrder } from '@background/multichain/dialog-coordinator';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { RequestPayloadUtils } from 'src/utils/request-payload.utils';
@@ -30,7 +29,9 @@ export type PendingRequestAdmissionResult =
   | { accepted: true; arrivalOrder: number }
   | { accepted: false; reason: PendingRequestAdmissionReason };
 
-type StoredPendingRequest = PendingRequestCandidate;
+type StoredPendingRequest = PendingRequestCandidate & {
+  arrivalOrder: number;
+};
 
 let pendingRequestAdmissionQueue: Promise<void> = Promise.resolve();
 
@@ -50,14 +51,16 @@ const getLegacyOrigin = (chain: PendingRequestChain, domain?: string) =>
   `legacy:${chain}:${domain ?? 'unknown'}`;
 
 const getStoredPendingRequests = async (): Promise<StoredPendingRequest[]> => {
-  const values = await LocalStorageUtils.getMultipleValueFromLocalStorage([
-    LocalStorageKeyEnum.__REQUEST_HANDLER,
-    LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
+  const [hiveHandler, evmHandler] = await Promise.all([
+    LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.__REQUEST_HANDLER,
+    ),
+    LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.__EVM_REQUEST_HANDLER,
+    ),
   ]);
-  const hiveRequests = values?.[LocalStorageKeyEnum.__REQUEST_HANDLER]
-    ?.requestsData ?? [];
-  const evmRequests = values?.[LocalStorageKeyEnum.__EVM_REQUEST_HANDLER]
-    ?.requestsData ?? [];
+  const hiveRequests = hiveHandler?.requestsData ?? [];
+  const evmRequests = evmHandler?.requestsData ?? [];
 
   return [
     ...hiveRequests.map((requestData: any) => ({
@@ -72,13 +75,14 @@ const getStoredPendingRequests = async (): Promise<StoredPendingRequest[]> => {
           origin: getLegacyOrigin('hive', requestData.domain),
         } as PendingRequestSource),
       byteSize: null,
+      arrivalOrder: requestData.arrivalOrder ?? requestData.request_id,
     })),
     ...evmRequests.map((requestData: any) => ({
       chain: 'evm' as const,
       requestId: requestData.request_id,
       method: requestData.request?.method ?? 'unknown',
       source:
-        requestData.source ??
+        requestData.dappInfo?.requestSource ??
         ({
           tab: requestData.tab ?? -1,
           frameId: 0,
@@ -87,9 +91,20 @@ const getStoredPendingRequests = async (): Promise<StoredPendingRequest[]> => {
             getLegacyOrigin('evm', requestData.dappInfo?.domain),
         } as PendingRequestSource),
       byteSize: null,
+      arrivalOrder: requestData.arrivalOrder ?? requestData.request_id,
     })),
   ];
 };
+
+const getNextArrivalOrder = (requests: StoredPendingRequest[]) =>
+  requests.reduce(
+    (highestOrder, request) =>
+      Number.isSafeInteger(request.arrivalOrder) &&
+      request.arrivalOrder > highestOrder
+        ? request.arrivalOrder
+        : highestOrder,
+    0,
+  ) + 1;
 
 const isDuplicate = (
   storedRequest: StoredPendingRequest,
@@ -139,7 +154,7 @@ const admit = async (
       return { accepted: false, reason: 'request_limit' };
     }
 
-    const arrivalOrder = await getNextDialogRequestOrder();
+    const arrivalOrder = getNextArrivalOrder(requests);
     await persist(arrivalOrder);
     return { accepted: true, arrivalOrder };
   });

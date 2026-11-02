@@ -43,6 +43,10 @@ import {
   getOriginFromUrl,
 } from 'src/utils/browser-origin.utils';
 import { CommunicationUtils } from 'src/utils/communication.utils';
+import {
+  getPendingRequestMessageOptions,
+  getPendingRequestSource,
+} from '@background/multichain/pending-request.interface';
 import Logger from 'src/utils/logger.utils';
 
 const initializeServiceWorker = async () => {
@@ -176,14 +180,19 @@ const chromeMessageHandler = async (
       } catch (error) {
         if (sender.tab?.id !== undefined) {
           const requestId = evmMessage.request?.request_id;
-          CommunicationUtils.tabsSendMessage(sender.tab.id, {
-            command: BackgroundCommand.SEND_EVM_ERROR,
-            value: {
-              requestId,
-              request_id: requestId,
-              error,
+          const source = getPendingRequestSource(sender) ?? undefined;
+          CommunicationUtils.tabsSendMessage(
+            sender.tab.id,
+            {
+              command: BackgroundCommand.SEND_EVM_ERROR,
+              value: {
+                requestId,
+                request_id: requestId,
+                error,
+              },
             },
-          });
+            getPendingRequestMessageOptions(source),
+          );
         }
         break;
       }
@@ -227,7 +236,7 @@ const chromeMessageHandler = async (
     case BackgroundCommand.SEND_EVM_RESPONSE_TO_SW: {
       const message = backgroundMessage.value;
       const requestId = message.requestId ?? message.request_id;
-      const { tab, origin } = message;
+      const { tab, origin, requestSource } = message;
       if (
         requestId === null ||
         requestId === undefined ||
@@ -237,7 +246,13 @@ const chromeMessageHandler = async (
       ) {
         break;
       }
-      const locator: EvmRequestLocator = { requestId, tab, origin };
+      const locator: EvmRequestLocator = {
+        requestId,
+        tab,
+        origin,
+        frameId: requestSource?.frameId,
+        documentId: requestSource?.documentId,
+      };
       const requestHandler = await EvmRequestHandler.getFromLocalStorage();
       const requestData = requestHandler?.getRequestDataByLocator(locator);
       if (requestData?.tab === null || requestData?.tab === undefined) {
@@ -270,18 +285,23 @@ const chromeMessageHandler = async (
 
       await requestHandler.removeRequestByLocator(locator);
 
-      CommunicationUtils.tabsSendMessage(requestData?.tab!, {
+      const responseMessage = {
         command: BackgroundCommand.SEND_EVM_RESPONSE,
         value: {
           requestId,
           result: message.result,
         },
-      });
+      } as BackgroundMessage;
+      await CommunicationUtils.tabsSendMessage(
+        requestData.tab,
+        responseMessage,
+        getPendingRequestMessageOptions(requestData.dappInfo?.requestSource),
+      );
 
       break;
     }
     case BackgroundCommand.ACCEPT_EVM_TRANSACTION:
-      const { request, tab, domain, origin, extraData } =
+      const { request, tab, domain, origin, extraData, requestSource } =
         backgroundMessage.value;
       if (!origin) {
         break;
@@ -291,6 +311,8 @@ const chromeMessageHandler = async (
         requestId: request.request_id,
         tab,
         origin,
+        frameId: requestSource?.frameId,
+        documentId: requestSource?.documentId,
       };
       const requestData = requestHandler.getRequestDataByLocator(locator);
       if (!requestData?.request) {
@@ -304,27 +326,36 @@ const chromeMessageHandler = async (
         requestData.dappInfo?.domain ?? domain,
         origin,
         extraData,
+        requestData.dappInfo?.requestSource,
       );
 
       break;
 
     case BackgroundCommand.REJECT_EVM_TRANSACTION: {
-      const { request, tab, domain, origin } = backgroundMessage.value;
+      const { request, tab, domain, origin, requestSource } =
+        backgroundMessage.value;
       if (!origin) {
         break;
       }
       const requestHandler = await EvmRequestHandler.getFromLocalStorage();
-      CommunicationUtils.tabsSendMessage(tab, {
+      const rejectionMessage = {
         command: BackgroundCommand.SEND_EVM_ERROR,
         value: {
           requestId: request.request_id,
           error: ProviderRpcErrorList.userReject as ProviderRpcError,
         },
-      });
+      } as BackgroundMessage;
+      await CommunicationUtils.tabsSendMessage(
+        tab,
+        rejectionMessage,
+        getPendingRequestMessageOptions(requestSource),
+      );
       await requestHandler.removeRequestByLocator({
         requestId: request.request_id,
         tab,
         origin,
+        frameId: requestSource?.frameId,
+        documentId: requestSource?.documentId,
       });
       break;
     }
@@ -394,6 +425,8 @@ const chromeMessageHandler = async (
           requestId: request.request_id,
           tab,
           origin: dappInfo.origin,
+          frameId: dappInfo.requestSource?.frameId,
+          documentId: dappInfo.requestSource?.documentId,
         },
         undefined,
         undefined,

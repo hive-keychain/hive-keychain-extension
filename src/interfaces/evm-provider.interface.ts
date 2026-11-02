@@ -1,6 +1,7 @@
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
 
 export interface RequestArguments {
   id?: string;
@@ -49,6 +50,7 @@ export interface EvmDappInfo {
   domain: string;
   protocol: string;
   logo: string;
+  requestSource?: PendingRequestSource;
 }
 export interface KeychainEvmRequestWrapper {
   command: BackgroundCommand;
@@ -130,6 +132,10 @@ export const ProviderRpcErrorList: { [key: string]: ProviderRpcErrorItem } = {
   resourceUnavailable: {
     code: -32002,
     message: 'Resource unavailable.',
+  },
+  requestAlreadyPending: {
+    code: -32002,
+    message: 'Request already pending.',
   },
   transactionRejected: {
     code: -32003,

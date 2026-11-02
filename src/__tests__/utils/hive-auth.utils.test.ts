@@ -18,18 +18,20 @@ const mockCreateMessage = jest.fn<
     unknown,
     unknown,
     Record<string, unknown>,
-    string | null,
-    string | null | undefined,
-    string | null | undefined,
+    number,
+    unknown,
+    unknown,
+    unknown,
   ]
 >(
   async (
     err: unknown,
     result: unknown,
     data: Record<string, unknown>,
-    successMessage: string | null,
-    failMessage?: string | null,
-    publicKey?: string | null,
+    tab: number,
+    successMessage: unknown,
+    failMessage?: unknown,
+    publicKey?: unknown,
   ) => ({
     command: 'answer_request',
     msg: {
@@ -39,6 +41,7 @@ const mockCreateMessage = jest.fn<
       data,
       message: err ? failMessage : successMessage,
       publicKey,
+      tab,
     },
   }),
 );
@@ -72,18 +75,22 @@ const mockRemoveKeylessAuthData = jest.fn();
 const mockUpdateAuthenticatedKeylessAuthData = jest.fn();
 
 jest.mock('@background/requests/operations/operations.utils', () => ({
+  feedbackI18n: (key: string) => key,
+  feedbackPlain: (message: string) => message,
   createMessage: (
     err: unknown,
     result: unknown,
     data: Record<string, unknown>,
-    successMessage: string | null,
-    failMessage?: string | null,
-    publicKey?: string | null,
+    tab: number,
+    successMessage: unknown,
+    failMessage?: unknown,
+    publicKey?: unknown,
   ) =>
     mockCreateMessage(
       err,
       result,
       data,
+      tab,
       successMessage,
       failMessage,
       publicKey,
@@ -540,7 +547,8 @@ describe('hive-auth.utils pre-correlation gate', () => {
       false,
       expect.objectContaining({ uuid: 'wrong-sign-uuid' }),
       request,
-      expect.any(String),
+      11,
+      'bgd_ops_keyless_broadcast_success',
       null,
       null,
     );
@@ -564,7 +572,8 @@ describe('hive-auth.utils pre-correlation gate', () => {
       false,
       expect.objectContaining({ uuid: 'sign-uuid' }),
       request,
-      expect.any(String),
+      11,
+      'bgd_ops_keyless_broadcast_success',
       null,
       null,
     );

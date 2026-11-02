@@ -2,6 +2,8 @@ import { BalanceChangeCard } from '@dialog/components/balance-change-card/balanc
 import { BalanceChangeCardUtils } from '@dialog/components/balance-change-card/balance-change-card.utils';
 import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
+import { isPendingRequestSourceMatch } from '@background/multichain/pending-request.interface';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAccountPublic } from '@popup/evm/interfaces/wallet.interface';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
@@ -86,6 +88,7 @@ export const SendTransaction = (props: Props) => {
     const clearPostConfirmationLoading = (msg: {
       command?: string;
       msg?: { request_id?: number };
+      requestSource?: PendingRequestSource;
     }) => {
       if (
         msg?.command !== DialogCommand.ANSWER_EVM_REQUEST &&
@@ -97,6 +100,14 @@ export const SendTransaction = (props: Props) => {
       if (msg.msg?.request_id !== request.request_id) {
         return;
       }
+      const requestSource = data.dappInfo.requestSource;
+      if (
+        msg.requestSource &&
+        requestSource &&
+        !isPendingRequestSourceMatch(msg.requestSource, requestSource)
+      ) {
+        return;
+      }
       setPostConfirmationLoading(false);
       transactionHook.setLoading(false);
     };
@@ -104,7 +115,11 @@ export const SendTransaction = (props: Props) => {
     return () => {
       chrome.runtime.onMessage.removeListener(clearPostConfirmationLoading);
     };
-  }, [request.request_id, transactionHook.setLoading]);
+  }, [
+    data.dappInfo.requestSource,
+    request.request_id,
+    transactionHook.setLoading,
+  ]);
 
   useEffect(() => {
     const handleGasFeeUpdate = (msg: {
@@ -114,10 +129,19 @@ export const SendTransaction = (props: Props) => {
         minGasPriceInGwei?: string;
         message?: string;
       };
+      requestSource?: PendingRequestSource;
     }) => {
       if (
         msg?.command !== DialogCommand.UPDATE_EVM_GAS_FEES ||
         msg.msg?.request_id !== request.request_id
+      ) {
+        return;
+      }
+      const requestSource = data.dappInfo.requestSource;
+      if (
+        msg.requestSource &&
+        requestSource &&
+        !isPendingRequestSourceMatch(msg.requestSource, requestSource)
       ) {
         return;
       }
@@ -140,6 +164,7 @@ export const SendTransaction = (props: Props) => {
     };
   }, [
     applyCustomMinGasPrice,
+    data.dappInfo.requestSource,
     request.request_id,
     transactionHook.setErrorMessage,
   ]);
@@ -189,6 +214,7 @@ export const SendTransaction = (props: Props) => {
           request={request}
           domain={data.dappInfo.domain}
           origin={data.dappInfo.origin}
+          requestSource={data.dappInfo.requestSource}
           tab={data.tab}
           title={transactionHook.fields.operationName!}
           caption={caption}
