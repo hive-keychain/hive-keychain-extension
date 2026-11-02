@@ -49,10 +49,19 @@ import {
 } from '@background/multichain/pending-request.interface';
 import Logger from 'src/utils/logger.utils';
 
+let pendingRequestRehydration: Promise<void> = Promise.resolve();
+
 const initializeServiceWorker = async () => {
   Object.assign(global, { contextType: 'service_worker' });
 
   Logger.info('Starting EVM service worker');
+  pendingRequestRehydration = EvmRequestHandler.getFromLocalStorage()
+    .then((requestHandler) =>
+      requestHandler.rehydrateNonInteractiveRequests(),
+    )
+    .catch((error) => {
+      Logger.error('Unable to rehydrate pending EVM requests', error);
+    });
   initializeEvmProviderRegistration();
   EvmIncomingTransactionsModule.start();
   EvmPendingTransactionsNotifications.registerClickListener();
@@ -135,6 +144,7 @@ const chromeMessageHandler = async (
   sender: chrome.runtime.MessageSender,
   sendResp: (response?: any) => void,
 ) => {
+  await pendingRequestRehydration;
   Logger.log(
     'Background message evm service worker',
     backgroundMessage.command,

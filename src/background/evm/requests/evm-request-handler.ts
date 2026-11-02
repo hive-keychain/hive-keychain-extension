@@ -1,5 +1,6 @@
 import { initEvmRequestHandler } from '@background/evm/requests/init';
 import { EvmRequestAccountUtils } from '@background/evm/requests/evm-request-account.utils';
+import { EvmUnrestrictedMethods } from '@background/evm/evm-methods/evm-methods.list';
 import { syncSharedDialogWindow } from '@background/multichain/dialog-coordinator';
 import { PendingRequestAdmission } from '@background/multichain/pending-request-admission';
 import {
@@ -334,6 +335,32 @@ export class EvmRequestHandler {
         (!documentId || source.documentId !== documentId)
       );
     });
+  }
+
+  async rehydrateNonInteractiveRequests() {
+    const pendingRequests = [...this.requestsData];
+
+    for (const requestData of pendingRequests) {
+      const { request, tab, dappInfo } = requestData;
+      if (
+        !request ||
+        tab == null ||
+        !dappInfo ||
+        !EvmUnrestrictedMethods.includes(request.method)
+      ) {
+        continue;
+      }
+
+      const locator = this.getRequestLocator(requestData);
+      if (!locator || !this.getRequestDataByLocator(locator)) continue;
+
+      if (!dappInfo.requestSource) {
+        await this.removeRequestByLocator(locator, false);
+        continue;
+      }
+
+      await initEvmRequestHandler(request, tab, dappInfo, this);
+    }
   }
 
   // Local storage methods

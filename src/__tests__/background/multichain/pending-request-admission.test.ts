@@ -104,11 +104,11 @@ describe('PendingRequestAdmission', () => {
   });
 
   it('enforces the per-origin-and-method limit across concurrent admissions', async () => {
-    await admit(getCandidate({ requestId: 1 }));
-    await admit(getCandidate({ requestId: 2 }));
-    await admit(getCandidate({ requestId: 3 }));
+    for (let requestId = 1; requestId <= 5; requestId += 1) {
+      await admit(getCandidate({ requestId }));
+    }
 
-    await expect(admit(getCandidate({ requestId: 4 }))).resolves.toEqual({
+    await expect(admit(getCandidate({ requestId: 6 }))).resolves.toEqual({
       accepted: false,
       reason: 'request_limit',
     });

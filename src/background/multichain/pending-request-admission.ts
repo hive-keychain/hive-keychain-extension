@@ -10,7 +10,7 @@ import { RequestPayloadUtils } from 'src/utils/request-payload.utils';
 export const PENDING_REQUEST_LIMITS = {
   total: 20,
   perOrigin: 5,
-  perOriginAndMethod: 3,
+  perOriginAndMethod: 5,
 } as const;
 
 export type PendingRequestAdmissionReason =

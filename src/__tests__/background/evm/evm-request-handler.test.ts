@@ -481,4 +481,81 @@ describe('evm-request-handler tests:\n', () => {
       ),
     ).toEqual([2, 3]);
   });
+
+  it('removes legacy non-interactive requests during rehydration', async () => {
+    storage[LocalStorageKeyEnum.__EVM_REQUEST_HANDLER] = {
+      requestsData: [
+        {
+          request_id: 21,
+          tab: 7,
+          request: {
+            request_id: 21,
+            method: EvmRequestMethod.CALL,
+            params: [],
+          },
+          dappInfo: { origin: 'https://legacy.example' },
+        },
+        {
+          request_id: 22,
+          tab: 7,
+          request: {
+            request_id: 22,
+            method: EvmRequestMethod.PERSONAL_SIGN,
+            params: [],
+          },
+          dappInfo: { origin: 'https://legacy.example' },
+        },
+      ],
+    };
+    const handler = new EvmRequestHandler();
+    await handler.initFromLocalStorage(
+      storage[LocalStorageKeyEnum.__EVM_REQUEST_HANDLER]!.requestsData,
+    );
+
+    await handler.rehydrateNonInteractiveRequests();
+
+    expect(
+      storage[LocalStorageKeyEnum.__EVM_REQUEST_HANDLER]!.requestsData.map(
+        (requestData: any) => requestData.request_id,
+      ),
+    ).toEqual([22]);
+    expect(initEvmRequestHandlerMock).not.toHaveBeenCalled();
+  });
+
+  it('reprocesses document-scoped non-interactive requests during rehydration', async () => {
+    const source = {
+      tab: 7,
+      frameId: 2,
+      documentId: 'document-a',
+      origin: 'https://iframe.example',
+    };
+    const request = {
+      request_id: 23,
+      method: EvmRequestMethod.CALL,
+      params: [],
+    };
+    const requestData = {
+      request_id: request.request_id,
+      tab: source.tab,
+      request,
+      dappInfo: {
+        origin: source.origin,
+        domain: 'iframe.example',
+        protocol: 'https:',
+        logo: '',
+        requestSource: source,
+      },
+    };
+    const handler = new EvmRequestHandler();
+    await handler.initFromLocalStorage([requestData]);
+
+    await handler.rehydrateNonInteractiveRequests();
+
+    expect(initEvmRequestHandlerMock).toHaveBeenCalledWith(
+      request,
+      source.tab,
+      requestData.dappInfo,
+      handler,
+    );
+  });
 });
