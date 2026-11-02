@@ -24,6 +24,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import VaultUtils from 'src/utils/vault.utils';
 import MkModule from './modules/mk.module';
+import { resolveAcceptedHiveRequest } from './requests/hive-request-dialog-edits';
 import { HiveRequestsHandler } from './requests/hive-request-handler';
 import { performHiveOperation } from './requests/operations/perform-operation';
 
@@ -109,18 +110,28 @@ const chromeMessageHandler = async (
       );
       break;
     }
-    case BackgroundCommand.ACCEPT_TRANSACTION:
-      const { keep, data, tab, domain, options } = backgroundMessage.value;
+    case BackgroundCommand.ACCEPT_TRANSACTION: {
+      const { keep, options } = backgroundMessage.value;
+      const requestHandler = await HiveRequestsHandler.getFromLocalStorage();
+      const resolved = resolveAcceptedHiveRequest(
+        requestHandler,
+        backgroundMessage.value,
+      );
+      if (!resolved) {
+        Logger.warn('Cannot perform Hive operation: pending request not found');
+        break;
+      }
       performHiveOperation(
-        await HiveRequestsHandler.getFromLocalStorage(),
-        data,
-        tab,
-        domain,
+        requestHandler,
+        resolved.request,
+        resolved.tab,
+        resolved.domain,
         keep,
         'dialog',
         options,
       );
       break;
+    }
     case BackgroundCommand.REJECT_TRANSACTION: {
       const messageValue = backgroundMessage.value;
       const { request_id, tab } = messageValue;
@@ -142,21 +153,41 @@ const chromeMessageHandler = async (
       break;
     case BackgroundCommand.KEYLESS_KEYCHAIN: {
       const requestHandler = await HiveRequestsHandler.getFromLocalStorage();
+      const resolved = resolveAcceptedHiveRequest(
+        requestHandler,
+        backgroundMessage.value,
+        true,
+      );
+      if (!resolved) {
+        Logger.warn('Cannot perform keyless Hive operation: pending request not found');
+        break;
+      }
       KeylessKeychainModule.handleOperation(
         requestHandler,
-        backgroundMessage.value.data,
-        backgroundMessage.value.domain,
-        backgroundMessage.value.tab,
+        resolved.request,
+        resolved.domain,
+        resolved.tab,
       );
       break;
     }
     case BackgroundCommand.KEYLESS_KEYCHAIN_REGISTER: {
       const requestHandler = await HiveRequestsHandler.getFromLocalStorage();
+      const resolved = resolveAcceptedHiveRequest(
+        requestHandler,
+        backgroundMessage.value,
+        true,
+      );
+      if (!resolved) {
+        Logger.warn(
+          'Cannot register keyless Hive operation: pending request not found',
+        );
+        break;
+      }
       KeylessKeychainModule.register(
         requestHandler,
-        backgroundMessage.value.data,
-        backgroundMessage.value.domain,
-        backgroundMessage.value.tab,
+        resolved.request,
+        resolved.domain,
+        resolved.tab,
       );
       break;
     }

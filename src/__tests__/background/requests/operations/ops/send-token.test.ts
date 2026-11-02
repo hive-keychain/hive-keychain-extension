@@ -39,6 +39,7 @@ describe('send-token tests:\n', () => {
     jest.resetAllMocks();
   });
   beforeEach(() => {
+    jest.spyOn(TokensUtils, 'getTokenPrecision').mockResolvedValue(3);
     jest
       .spyOn(AccountUtils, 'getExtendedAccount')
       .mockResolvedValue(accounts.extended);

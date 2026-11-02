@@ -36,10 +36,10 @@ export const broadcastSwap = async (
       endToken,
       steps,
       amount,
-      swapAccount,
       partnerUsername,
       partnerFee,
     } = data;
+    const swapAccount = (await SwapTokenUtils.getConfig())?.account;
     const key = requestHandler.getUserPrivateKey(
       username!,
       KeychainKeyTypesLC.active,

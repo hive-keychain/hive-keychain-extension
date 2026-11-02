@@ -35,6 +35,11 @@ export const broadcastSendToken = async (
     KeychainKeyTypesLC.memo,
   )[0];
   try {
+    const precision = await TokensUtils.getTokenPrecision(data.currency);
+    const parsedAmount = parseFloat(data.amount);
+    if (!Number.isNaN(parsedAmount)) {
+      data.amount = parsedAmount.toFixed(precision);
+    }
     let memo = data.memo || '';
 
     const receiver = await AccountUtils.getExtendedAccount(data.to);

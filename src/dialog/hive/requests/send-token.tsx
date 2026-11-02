@@ -40,11 +40,10 @@ const SendToken = (props: Props) => {
   }
 
   useEffect(() => {
-    TokensUtils.getTokenPrecision(data.currency).then((precision) => {
-      data.amount = parseFloat(data.amount).toFixed(precision);
-      setPrecision(precision);
+    TokensUtils.getTokenPrecision(data.currency).then((tokenPrecision) => {
+      setPrecision(tokenPrecision);
     });
-  }, []);
+  }, [data.currency]);
 
   const renderUsername = () => {
     return !accounts && data.username ? (
