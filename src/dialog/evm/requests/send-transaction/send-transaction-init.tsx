@@ -23,6 +23,7 @@ import {
   EvmInputDisplayType,
   EvmTransactionParserUtils,
 } from '@popup/evm/utils/evm-transaction-parser.utils';
+import { EvmSpendingPermissionUtils } from '@popup/evm/utils/evm-spending-permission.utils';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
@@ -841,6 +842,37 @@ export async function runSendTransactionInit(
                   value: <img src={src} />,
                 });
               }
+            }
+
+            const spendingPermission =
+              EvmSpendingPermissionUtils.classifyDecodedCall({
+                method: decodedTransactionData.name,
+                inputs: decodedTransactionData.fragment.inputs?.map(
+                  (input) => ({
+                    name: input.name,
+                    type: input.type,
+                  }),
+                ),
+                args: decodedTransactionData.fragment.inputs?.map(
+                  (_input, index) => decodedTransactionData.args[index],
+                ),
+                tokenAddress: tokenAddress ?? undefined,
+                tokenSymbol: usedToken.symbol,
+                tokenType: usedToken.type,
+              });
+            if (spendingPermission) {
+              transactionConfirmationFields.operationName =
+                I18nUtils.getMessage(spendingPermission.operationNameKey);
+              transactionConfirmationFields.otherFields =
+                EvmSpendingPermissionUtils.applyDecodedFields(
+                  transactionConfirmationFields.otherFields,
+                  spendingPermission,
+                  (symbol) =>
+                    I18nUtils.getMessage(
+                      'evm_history_unlimited_approval_value',
+                      [symbol],
+                    ),
+                );
             }
 
             if (

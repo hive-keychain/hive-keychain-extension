@@ -5902,6 +5902,30 @@
     "message": "Approuver",
     "description": "Evm transaction operation : approve"
   },
+  "evm_operation_unlimited_approval": {
+    "message": "Approbation illimitée",
+    "description": "Evm transaction operation : unlimited token approval"
+  },
+  "evm_operation_revoke_operator": {
+    "message": "Révoquer l'opérateur",
+    "description": "Evm transaction operation : revoke NFT operator"
+  },
+  "evm_operation_approve_nft": {
+    "message": "Approuver le NFT",
+    "description": "Evm transaction operation : approve one NFT"
+  },
+  "evm_warning_unlimited_approval": {
+    "message": "Ceci autorise $1 à dépenser un montant illimité de $2.",
+    "description": "Warning when a token approval is unlimited"
+  },
+  "evm_warning_approve_operator": {
+    "message": "Ceci autorise $1 à déplacer tous les NFT de $2.",
+    "description": "Warning when an NFT operator approval is granted"
+  },
+  "evm_spending_permission_token": {
+    "message": "Jeton",
+    "description": "Token field on a spending permission confirmation"
+  },
   "evm_operation_transferFrom": {
     "message": "Transférer depuis",
     "description": "Evm transaction operation : transfer from"

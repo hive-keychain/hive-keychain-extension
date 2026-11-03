@@ -7,6 +7,11 @@ import {
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAccountPublic } from '@popup/evm/interfaces/wallet.interface';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import {
+  ClassifiedSpendingPermission,
+  EvmSpendingPermissionUtils,
+  SpendingPermissionEntry,
+} from '@popup/evm/utils/evm-spending-permission.utils';
 import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import {
   EvmInputDisplayType,
@@ -59,6 +64,16 @@ export const SignTypedData = (props: Props) => {
   const [target, setTarget] = useState<string>(request.params[TARGET_INDEX]);
 
   const transactionHook = useTransactionHook(data, request);
+
+  const buildSpendingPermissionFields = (
+    permission: ClassifiedSpendingPermission,
+  ): TransactionConfirmationField[] => {
+    const summary: TransactionConfirmationField[] = [];
+    for (const entry of permission.entries) {
+      summary.push(...buildSpendingPermissionEntryFields(entry));
+    }
+    return summary;
+  };
 
   useEffect(() => {
     init();
@@ -140,31 +155,43 @@ export const SignTypedData = (props: Props) => {
       value: I18nUtils.getMessage('evm_sign_typed_data_message'),
     });
 
-    let otherFields = [];
+    const spendingPermission =
+      EvmSpendingPermissionUtils.classifyTypedData(message);
+    if (spendingPermission) {
+      transactionConfirmationFields.operationName = I18nUtils.getMessage(
+        spendingPermission.operationNameKey,
+      );
+    }
 
-    otherFields.push({
-      type: EvmInputDisplayType.STRING,
-      name: I18nUtils.getMessage('evm_sign_typed_data_message_primary_type'),
-      value: message.primaryType,
-    } as TransactionConfirmationField);
+    const summaryFields = spendingPermission
+      ? buildSpendingPermissionFields(spendingPermission)
+      : [];
+    const parsedFields: TransactionConfirmationField[] = [
+      {
+        type: EvmInputDisplayType.STRING,
+        name: I18nUtils.getMessage('evm_sign_typed_data_message_primary_type'),
+        value: message.primaryType,
+      },
+    ];
 
     try {
       const baseType = message.types[message.primaryType];
       if (baseType) {
-        parseTypes(baseType, message.message, otherFields, 0);
+        parseTypes(baseType, message.message, parsedFields, 0);
         transactionConfirmationFields.otherFields = [
           ...transactionConfirmationFields.otherFields,
-          ...otherFields,
+          ...summaryFields,
+          ...parsedFields,
         ];
       } else {
-        transactionConfirmationFields.otherFields.push({
+        transactionConfirmationFields.otherFields.push(...summaryFields, {
           type: EvmInputDisplayType.LONG_TEXT,
           name: 'evm_raw_data',
           value: JSON.stringify(message),
         });
       }
     } catch (e) {
-      transactionConfirmationFields.otherFields.push({
+      transactionConfirmationFields.otherFields.push(...summaryFields, {
         type: EvmInputDisplayType.LONG_TEXT,
         name: 'evm_raw_data',
         value: JSON.stringify(message),
@@ -234,6 +261,64 @@ export const SignTypedData = (props: Props) => {
     }
   };
 
+  const buildSpendingPermissionEntryFields = (
+    entry: SpendingPermissionEntry,
+  ): TransactionConfirmationField[] => {
+    const fields: TransactionConfirmationField[] = [];
+    if (entry.tokenAddress) {
+      fields.push({
+        type: EvmInputDisplayType.STRING,
+        name: 'evm_spending_permission_token',
+        value: entry.tokenSymbol
+          ? `${entry.tokenSymbol} (${entry.tokenAddress})`
+          : entry.tokenAddress,
+        address: entry.tokenAddress,
+      });
+    }
+    if (entry.spender) {
+      fields.push({
+        type: EvmInputDisplayType.STRING,
+        name: 'evm_operation_spender',
+        value: entry.spender,
+        address: entry.spender,
+      });
+    }
+    if (entry.tokenId) {
+      fields.push({
+        type: EvmInputDisplayType.STRING,
+        name: 'evm_nft_token_id',
+        value: entry.tokenId,
+      });
+    }
+    if (
+      entry.kind === 'erc20-allowance' &&
+      (entry.unlimited || entry.amountRaw !== undefined)
+    ) {
+      const warning = EvmSpendingPermissionUtils.buildWarning(entry);
+      const amountLabel = entry.tokenSymbol || entry.tokenAddress || '';
+      fields.push({
+        type: EvmInputDisplayType.STRING,
+        name: 'evm_operation_amount',
+        value: entry.unlimited
+          ? I18nUtils.getMessage('evm_history_unlimited_approval_value', [
+              amountLabel,
+            ])
+          : FormatUtils.withCommas(entry.amountRaw!.toString(), 0),
+        warnings: warning ? [warning] : undefined,
+      });
+    }
+    if (entry.kind === 'operator-approval' || entry.kind === 'operator-revoke') {
+      const warning = EvmSpendingPermissionUtils.buildWarning(entry);
+      fields.push({
+        type: EvmInputDisplayType.STRING,
+        name: 'evm_nft_approve_all',
+        value: entry.kind === 'operator-approval' ? 'true' : 'false',
+        warnings: warning ? [warning] : undefined,
+      });
+    }
+    return fields;
+  };
+
   const formatValue = (value: any, inputDisplayType: EvmInputDisplayType) => {
     let formatedValue;
     switch (inputDisplayType) {
@@ -276,9 +361,19 @@ export const SignTypedData = (props: Props) => {
         formatedValue = String(value);
         break;
       }
-      default:
+      default: {
+        const displayType = String(inputDisplayType);
+        if (displayType.startsWith('uint')) {
+          formatedValue = FormatUtils.withCommas(String(value), 0);
+          break;
+        }
+        if (displayType === 'bool' || displayType === 'boolean') {
+          formatedValue = String(value);
+          break;
+        }
         Logger.error('Type is not correct');
         throw new Error();
+      }
     }
     return formatedValue;
   };

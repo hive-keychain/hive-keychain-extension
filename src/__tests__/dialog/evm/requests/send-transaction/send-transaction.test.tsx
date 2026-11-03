@@ -1313,6 +1313,117 @@ describe('send-transaction proxy tests:\n', () => {
           value: '1,000  USDC',
         }),
       );
+      expect(fields.operationName).toBe('evm_operation_approve');
+      expect(amountField.warnings ?? []).toEqual([]);
+    });
+  });
+
+  it('labels an unlimited ERC20 approve and requires a high warning', async () => {
+    const spenderAddress = '0x00000000000000000000000000000000000000ab';
+    const allowanceAmount = (BigInt(1) << BigInt(256)) - BigInt(1);
+    const approveAbi = [
+      {
+        inputs: [
+          { name: 'spender', type: 'address' },
+          { name: 'amount', type: 'uint256' },
+        ],
+        name: 'approve',
+        outputs: [],
+        type: 'function',
+      },
+    ];
+
+    jest.spyOn(EvmLightNodeUtils, 'getAbi').mockResolvedValue(approveAbi);
+    jest.spyOn(EvmLightNodeUtils, 'getContract').mockResolvedValue(null as any);
+    jest
+      .spyOn(EvmTransactionParserUtils, 'verifyTransactionInformation')
+      .mockResolvedValue({} as any);
+    jest
+      .spyOn(EvmTransactionParserUtils, 'enrichVerificationForAddresses')
+      .mockImplementation(async (verification) => verification);
+    jest
+      .spyOn(EvmTransactionParserUtils, 'getSmartContractWarningAndInfo')
+      .mockResolvedValue({ information: [], warnings: [] });
+    jest
+      .spyOn(EvmTransactionParserUtils, 'getFieldWarnings')
+      .mockResolvedValue([]);
+    jest.spyOn(EvmAddressesUtils, 'validateTransferRecipient').mockResolvedValue({
+      address: spenderAddress,
+      valid: true,
+    } as any);
+    jest.spyOn(EvmTransactionParserUtils, 'parseArgs').mockReturnValue([
+      spenderAddress,
+      allowanceAmount,
+    ]);
+    mockParseTransaction.mockReturnValue({
+      args: {
+        0: spenderAddress,
+        1: allowanceAmount,
+        toArray: () => [spenderAddress, allowanceAmount],
+      },
+      fragment: {
+        inputs: [
+          { name: 'spender', type: 'address' },
+          { name: 'amount', type: 'uint256' },
+        ],
+      },
+      name: 'approve',
+      signature: 'approve(address,uint256)',
+      value: 0,
+    });
+
+    render(
+      <SendTransaction
+        accounts={[
+          {
+            wallet: {
+              address: '0x00000000000000000000000000000000000000ff',
+              mnemonic: { phrase: 'test phrase' },
+            },
+          } as any,
+        ]}
+        afterCancel={jest.fn()}
+        data={{ dappInfo: { domain: 'app.example' }, tab: 1 } as any}
+        request={
+          {
+            chainId: '1',
+            params: [
+              {
+                data: '0x095ea7b3',
+                from: '0x00000000000000000000000000000000000000ff',
+                gasLimit: 21000,
+                maxFeePerGas: '1',
+                maxPriorityFeePerGas: '1',
+                to: proxyAddress,
+                type: EvmTransactionType.EIP_1559,
+                value: '0',
+              },
+            ],
+            request_id: 1,
+          } as any
+        }
+      />,
+    );
+
+    await waitFor(() =>
+      expect(transactionHook.setFields.mock.calls.length).toBeGreaterThan(1),
+    );
+
+    await waitFor(() => {
+      const fields = lastSetFieldsPayload();
+      const amountField = fields.otherFields.find(
+        (field: any) => field.name === 'evm_operation_amount',
+      );
+      expect(fields.operationName).toBe('evm_operation_unlimited_approval');
+      expect(amountField.value).toBe('evm_history_unlimited_approval_value');
+      expect(amountField.warnings).toEqual([
+        expect.objectContaining({
+          ignored: false,
+          level: 'high',
+          message: 'evm_warning_unlimited_approval',
+          messageParams: [spenderAddress, 'USDC'],
+        }),
+      ]);
     });
   });
 
@@ -1668,12 +1779,19 @@ describe('send-transaction proxy tests:\n', () => {
     expect(
       fields.otherFields.some((field: any) => field.name === 'approved'),
     ).toBe(false);
-    expect(
-      fields.otherFields.some(
-        (field: any) =>
-          field.name === 'evm_nft_approve_all' && field.value === 'true',
-      ),
-    ).toBe(true);
+    const operatorField = fields.otherFields.find(
+      (field: any) => field.name === 'evm_nft_approve_all',
+    );
+    expect(operatorField.value).toBe('true');
+    expect(fields.operationName).toBe('evm_operation_approve');
+    expect(operatorField.warnings).toEqual([
+      expect.objectContaining({
+        ignored: false,
+        level: 'high',
+        message: 'evm_warning_approve_operator',
+        messageParams: [operatorAddress, 'TNFT'],
+      }),
+    ]);
   });
 
   it('localizes numberOfTokens as Number of Tokens', async () => {

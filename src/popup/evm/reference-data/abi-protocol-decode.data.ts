@@ -7,10 +7,11 @@ import { Interface } from 'ethers';
 const parseIface = (fragments: string[]) =>
   JSON.parse(new Interface(fragments).formatJson()) as any[];
 
-/** EIP-2612 + compact permit(bytes) overload for decoding only. */
+/** EIP-2612, DAI `allowed`, and compact permit(bytes) overloads for decoding only. */
 export const Erc20Eip2612PermitAbi = parseIface([
   'function permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s)',
   'function permit(address owner, address spender, uint256 value, uint256 deadline, bytes signature)',
+  'function permit(address holder, address spender, uint256 nonce, uint256 expiry, bool allowed)',
   'function nonces(address owner) view returns (uint256)',
   'function DOMAIN_SEPARATOR() view returns (bytes32)',
 ]);

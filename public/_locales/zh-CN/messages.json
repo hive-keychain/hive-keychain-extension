@@ -5902,6 +5902,30 @@
     "message": "批准",
     "description": "Evm transaction operation : approve"
   },
+  "evm_operation_unlimited_approval": {
+    "message": "无限授权",
+    "description": "Evm transaction operation : unlimited token approval"
+  },
+  "evm_operation_revoke_operator": {
+    "message": "撤销操作者",
+    "description": "Evm transaction operation : revoke NFT operator"
+  },
+  "evm_operation_approve_nft": {
+    "message": "授权 NFT",
+    "description": "Evm transaction operation : approve one NFT"
+  },
+  "evm_warning_unlimited_approval": {
+    "message": "这将允许 $1 无限花费 $2。",
+    "description": "Warning when a token approval is unlimited"
+  },
+  "evm_warning_approve_operator": {
+    "message": "这将允许 $1 转移 $2 中的全部 NFT。",
+    "description": "Warning when an NFT operator approval is granted"
+  },
+  "evm_spending_permission_token": {
+    "message": "代币",
+    "description": "Token field on a spending permission confirmation"
+  },
   "evm_operation_transferFrom": {
     "message": "转自",
     "description": "Evm transaction operation : transfer from"
