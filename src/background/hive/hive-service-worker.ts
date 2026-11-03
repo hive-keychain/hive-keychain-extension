@@ -24,6 +24,7 @@ import { VaultKey } from '@reference-data/vault-message-key.enum';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
+import { RuntimeMessageSenderUtils } from 'src/utils/runtime-message-sender.utils';
 import VaultUtils from 'src/utils/vault.utils';
 import MkModule from './modules/mk.module';
 import { resolveAcceptedHiveRequest } from './requests/hive-request-dialog-edits';
@@ -56,6 +57,13 @@ const chromeMessageHandler = async (
   sender: chrome.runtime.MessageSender,
   sendResp: (response?: any) => void,
 ) => {
+  if (
+    backgroundMessage.command !== BackgroundCommand.SEND_REQUEST &&
+    !RuntimeMessageSenderUtils.isInternalExtensionSender(sender)
+  ) {
+    return;
+  }
+
   switch (backgroundMessage.command) {
     case BackgroundCommand.IMPORT_ACCOUNTS:
       AccountModule.sendBackImportedAccounts(backgroundMessage.value);

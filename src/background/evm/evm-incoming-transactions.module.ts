@@ -15,6 +15,7 @@ import { Socket, io } from 'socket.io-client';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 import Logger from 'src/utils/logger.utils';
+import { RuntimeMessageSenderUtils } from 'src/utils/runtime-message-sender.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
 const REGISTER_ACCOUNTS_EVENT = 'register_accounts';
@@ -218,14 +219,11 @@ const handleIncomingTransaction = async (payload: unknown) => {
   });
 };
 
-const isInternalSender = (sender: chrome.runtime.MessageSender) =>
-  sender.id === chrome.runtime.id;
-
 const onRuntimeMessage = (
   message: BackgroundMessage,
   sender: chrome.runtime.MessageSender,
 ) => {
-  if (!isInternalSender(sender)) {
+  if (!RuntimeMessageSenderUtils.isInternalExtensionSender(sender)) {
     return;
   }
   if (

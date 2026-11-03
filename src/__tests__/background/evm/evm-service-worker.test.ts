@@ -25,6 +25,11 @@ const createDeferred = () => {
 };
 
 const flushAsync = () => new Promise((resolve) => setTimeout(resolve, 0));
+const getInternalSender = () =>
+  ({
+    id: chrome.runtime.id,
+    url: chrome.runtime.getURL('dialog.html'),
+  }) as chrome.runtime.MessageSender;
 
 jest.mock('@background/evm/requests/init', () => ({
   initEvmRequestHandler: (...args: any[]) => initEvmRequestHandlerMock(...args),
@@ -81,6 +86,13 @@ describe('evm service worker', () => {
   beforeEach(() => {
     jest.resetModules();
     jest.clearAllMocks();
+    Object.defineProperty(chrome.runtime, 'id', {
+      configurable: true,
+      value: 'keychain-test-extension',
+    });
+    (chrome.runtime.getURL as jest.Mock).mockImplementation(
+      (path: string) => `chrome-extension://keychain-test-extension/${path}`,
+    );
     initEvmRequestHandlerMock.mockResolvedValue(undefined);
     performEvmOperationMock.mockResolvedValue(undefined);
     setAccountsForOriginMock.mockResolvedValue([]);
@@ -179,7 +191,7 @@ describe('evm service worker', () => {
           requestedChain,
         },
       } as any,
-      {} as any,
+      getInternalSender(),
       jest.fn(),
     );
 
@@ -237,7 +249,7 @@ describe('evm service worker', () => {
           requestedChain,
         },
       } as any,
-      {} as any,
+      getInternalSender(),
       jest.fn(),
     );
 
@@ -258,7 +270,7 @@ describe('evm service worker', () => {
           chainId: '0x2105',
         },
       } as any,
-      {} as any,
+      getInternalSender(),
       jest.fn(),
     );
 
@@ -267,6 +279,56 @@ describe('evm service worker', () => {
       '0x2105',
       { tabId: 12 },
     );
+  });
+
+  it('rejects privileged commands from content scripts', async () => {
+    const listener = await importListener();
+
+    await listener(
+      {
+        command: BackgroundCommand.SET_EVM_PROVIDER_CHAIN,
+        value: {
+          origin: 'https://example.app',
+          tabId: 12,
+          chainId: '0x2105',
+        },
+      } as any,
+      {
+        id: chrome.runtime.id,
+        url: 'https://malicious.example/',
+      } as chrome.runtime.MessageSender,
+      jest.fn(),
+    );
+
+    expect(setChainIdForOriginMock).not.toHaveBeenCalled();
+  });
+
+  it('rejects decrypt previews from content scripts', async () => {
+    const listener = await importListener();
+    const sendResponse = jest.fn();
+
+    const result = listener(
+      {
+        command: BackgroundCommand.PREVIEW_EVM_DECRYPT,
+        value: {
+          request_id: 7,
+          tab: 12,
+          origin: 'https://example.app',
+        },
+      } as any,
+      {
+        id: chrome.runtime.id,
+        url: 'https://malicious.example/',
+      } as chrome.runtime.MessageSender,
+      sendResponse,
+    );
+
+    expect(result).toBe(true);
+    expect(sendResponse).toHaveBeenCalledWith({
+      success: false,
+      error: 'Unauthorized sender',
+    });
+    expect(getFromLocalStorageMock).not.toHaveBeenCalled();
   });
 
   it('initializes provider state for the sender document origin', async () => {
@@ -350,7 +412,7 @@ describe('evm service worker', () => {
           providerState: { accounts: ['0xabc123'] },
         },
       } as any,
-      {} as any,
+      getInternalSender(),
       jest.fn(),
     ).then(() => {
       settled = true;
@@ -411,7 +473,7 @@ describe('evm service worker', () => {
           result: ['0xabc123'],
         },
       } as any,
-      {} as any,
+      getInternalSender(),
       jest.fn(),
     );
 
@@ -437,7 +499,7 @@ describe('evm service worker', () => {
           result: ['0xabc123'],
         },
       } as any,
-      {} as any,
+      getInternalSender(),
       jest.fn(),
     );
 
@@ -473,7 +535,7 @@ describe('evm service worker', () => {
           origin: 'https://example.app',
         },
       } as any,
-      {} as any,
+      getInternalSender(),
       jest.fn(),
     ).then(() => {
       settled = true;
@@ -537,7 +599,7 @@ describe('evm service worker', () => {
           extraData: { gasLimit: '0x5208' },
         },
       } as any,
-      {} as any,
+      getInternalSender(),
       jest.fn(),
     ).then(() => {
       settled = true;
@@ -601,7 +663,7 @@ describe('evm service worker', () => {
           extraData: { gasLimit: '0x5208' },
         },
       } as any,
-      {} as any,
+      getInternalSender(),
       jest.fn(),
     );
 
@@ -646,7 +708,7 @@ describe('evm service worker', () => {
           extraData: { gasLimit: '0x5208' },
         },
       } as any,
-      {} as any,
+      getInternalSender(),
       jest.fn(),
     );
 

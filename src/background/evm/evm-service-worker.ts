@@ -48,9 +48,16 @@ import {
   getPendingRequestSource,
 } from '@background/multichain/pending-request.interface';
 import Logger from 'src/utils/logger.utils';
+import { RuntimeMessageSenderUtils } from 'src/utils/runtime-message-sender.utils';
 
 let pendingRequestRehydration: Promise<void> = Promise.resolve();
 const ENS_HOSTNAME_PATTERN = /^(?:[a-z0-9-]+\.)+eth$/i;
+const CONTENT_SCRIPT_COMMANDS: ReadonlySet<BackgroundMessage['command']> =
+  new Set([
+    BackgroundCommand.SEND_EVM_INITIALIZE_PROVIDER_REQUEST,
+    BackgroundCommand.SEND_EVM_REQUEST,
+    BackgroundCommand.SEND_BACK_CHAIN_FROM_PROVIDER,
+  ]);
 
 const handleEnsNavigationError = (
   details: chrome.webNavigation.WebNavigationFramedErrorCallbackDetails,
@@ -161,6 +168,13 @@ const chromeMessageHandler = async (
   sender: chrome.runtime.MessageSender,
   sendResp: (response?: any) => void,
 ) => {
+  if (
+    !CONTENT_SCRIPT_COMMANDS.has(backgroundMessage.command) &&
+    !RuntimeMessageSenderUtils.isInternalExtensionSender(sender)
+  ) {
+    return;
+  }
+
   await pendingRequestRehydration;
   Logger.log(
     'Background message evm service worker',
@@ -500,6 +514,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     (message as BackgroundMessage).command ===
       BackgroundCommand.PREVIEW_EVM_DECRYPT
   ) {
+    if (!RuntimeMessageSenderUtils.isInternalExtensionSender(sender)) {
+      sendResponse({ success: false, error: 'Unauthorized sender' });
+      return true;
+    }
+
     const value = (
       message as {
         value?: { request_id?: number; tab?: number; origin?: string };

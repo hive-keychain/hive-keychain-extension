@@ -127,6 +127,13 @@ describe('hive-push-notifications.module', () => {
   beforeEach(() => {
     jest.resetModules();
     jest.clearAllMocks();
+    Object.defineProperty(chrome.runtime, 'id', {
+      configurable: true,
+      value: 'keychain-test-extension',
+    });
+    (chrome.runtime.getURL as jest.Mock).mockImplementation(
+      (path: string) => `chrome-extension://keychain-test-extension/${path}`,
+    );
     mockEventSources.clear();
     (global as { EventSource?: typeof EventSource }).EventSource =
       MockEventSource as unknown as typeof EventSource;
@@ -336,7 +343,10 @@ describe('hive-push-notifications.module', () => {
         command: 'syncHivePushNotifications',
         value: { username: USERNAME, config: savedConfig, deleted: false },
       },
-      { id: chrome.runtime.id },
+      {
+        id: chrome.runtime.id,
+        url: chrome.runtime.getURL('popup.html'),
+      },
     );
     await flushAsync();
 
@@ -373,7 +383,10 @@ describe('hive-push-notifications.module', () => {
         command: 'syncHivePushNotifications',
         value: { username: USERNAME, deleted: true },
       },
-      { id: chrome.runtime.id },
+      {
+        id: chrome.runtime.id,
+        url: chrome.runtime.getURL('popup.html'),
+      },
     );
     await flushAsync();
 

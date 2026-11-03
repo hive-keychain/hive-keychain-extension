@@ -24,6 +24,13 @@ describe('ACCEPT_TRANSACTION stored request', () => {
   };
 
   beforeAll(async () => {
+    Object.defineProperty(chrome.runtime, 'id', {
+      configurable: true,
+      value: 'keychain-test-extension',
+    });
+    (chrome.runtime.getURL as jest.Mock).mockImplementation(
+      (path: string) => `chrome-extension://keychain-test-extension/${path}`,
+    );
     const listeners: Array<(...args: any[]) => unknown> = [];
     jest
       .spyOn(chrome.runtime.onMessage, 'addListener')
@@ -58,7 +65,10 @@ describe('ACCEPT_TRANSACTION stored request', () => {
         command: BackgroundCommand.ACCEPT_TRANSACTION,
         value,
       },
-      {} as chrome.runtime.MessageSender,
+      {
+        id: chrome.runtime.id,
+        url: chrome.runtime.getURL('dialog.html'),
+      } as chrome.runtime.MessageSender,
       jest.fn(),
     );
 
@@ -106,6 +116,25 @@ describe('ACCEPT_TRANSACTION stored request', () => {
       { metaData: '2fa' },
       { tab: 7, frameId: 0, origin: 'dapp.example' },
     );
+  });
+
+  it('rejects transaction approval from a content script', async () => {
+    await listener(
+      {
+        command: BackgroundCommand.ACCEPT_TRANSACTION,
+        value: {
+          tab: 7,
+          data: storedRequest,
+        },
+      },
+      {
+        id: chrome.runtime.id,
+        url: 'https://malicious.example/',
+      } as chrome.runtime.MessageSender,
+      jest.fn(),
+    );
+
+    expect(performHiveOperationMock).not.toHaveBeenCalled();
   });
 
   it('does not perform an operation when the locator is missing or unknown', async () => {

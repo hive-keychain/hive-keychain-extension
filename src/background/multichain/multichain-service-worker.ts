@@ -17,6 +17,7 @@ import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { ensureEcosystemDappsCached } from 'src/utils/ecosystem-dapps-cache.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 import Logger from 'src/utils/logger.utils';
+import { RuntimeMessageSenderUtils } from 'src/utils/runtime-message-sender.utils';
 import { SidePanelPreferenceUtils } from 'src/utils/side-panel-preference.utils';
 
 Object.assign(global, { contextType: 'service_worker' });
@@ -66,14 +67,6 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
   void ensureEcosystemDappsCached();
 })();
 
-const isInternalExtensionSender = (sender: chrome.runtime.MessageSender) => {
-  return (
-    sender.id === chrome.runtime.id &&
-    !!sender.url &&
-    sender.url.startsWith(chrome.runtime.getURL(''))
-  );
-};
-
 const chromeMessageHandler = async (
   backgroundMessage: BackgroundMessage,
   sender: chrome.runtime.MessageSender,
@@ -87,7 +80,7 @@ const chromeMessageHandler = async (
     const vaultMessage = backgroundMessage as BaseBackgroundMessage;
     if (
       vaultMessage.key !== VaultKey.__MK ||
-      !isInternalExtensionSender(sender)
+      !RuntimeMessageSenderUtils.isInternalExtensionSender(sender)
     )
       return;
   }

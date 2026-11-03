@@ -19,6 +19,13 @@ jest.mock('src/utils/vault.utils', () => ({
 
 describe('PortfolioSwapCatalogCacheModule', () => {
   it('warms on startup and unlock without creating an hourly alarm', async () => {
+    Object.defineProperty(chrome.runtime, 'id', {
+      configurable: true,
+      value: 'keychain-test-extension',
+    });
+    (chrome.runtime.getURL as jest.Mock).mockImplementation(
+      (path: string) => `chrome-extension://keychain-test-extension/${path}`,
+    );
     let walletLockStateListener: (() => void) | undefined;
     let runtimeMessageListener:
       | ((
@@ -64,7 +71,10 @@ describe('PortfolioSwapCatalogCacheModule', () => {
     (VaultUtils.getValueFromVault as jest.Mock).mockResolvedValueOnce('mk');
     runtimeMessageListener?.(
       { command: BackgroundCommand.VAULT_LOADED },
-      { id: chrome.runtime.id },
+      {
+        id: chrome.runtime.id,
+        url: chrome.runtime.getURL('vault.html'),
+      },
     );
     await Promise.resolve();
     await Promise.resolve();

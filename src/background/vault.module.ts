@@ -1,15 +1,22 @@
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import Logger from 'src/utils/logger.utils';
+import { RuntimeMessageSenderUtils } from 'src/utils/runtime-message-sender.utils';
 
 const init = async () => {
   if (!chrome.offscreen) {
     return;
   }
 
-  let offscreenDocumentLoadedListener: (msg: any) => void;
+  let offscreenDocumentLoadedListener: (
+    msg: any,
+    sender: chrome.runtime.MessageSender,
+  ) => void;
   const loadPromise = new Promise((resolve) => {
-    offscreenDocumentLoadedListener = (msg) => {
-      if (msg.command === BackgroundCommand.VAULT_LOADED) {
+    offscreenDocumentLoadedListener = (msg, sender) => {
+      if (
+        msg.command === BackgroundCommand.VAULT_LOADED &&
+        RuntimeMessageSenderUtils.isInternalExtensionSender(sender)
+      ) {
         Logger.log('Vault loaded');
         chrome.runtime.onMessage.removeListener(
           offscreenDocumentLoadedListener,

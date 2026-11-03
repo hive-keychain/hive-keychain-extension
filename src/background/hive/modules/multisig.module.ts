@@ -44,6 +44,7 @@ import { AsyncUtils } from 'src/utils/async.utils';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
+import { RuntimeMessageSenderUtils } from 'src/utils/runtime-message-sender.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 const signature = require('@hiveio/hive-js/lib/auth/ecc');
 
@@ -95,7 +96,8 @@ const setupRefreshConnections = () => {
     ) => {
       if (
         backgroundMessage.command ===
-        BackgroundCommand.MULTISIG_REFRESH_CONNECTIONS
+          BackgroundCommand.MULTISIG_REFRESH_CONNECTIONS &&
+        RuntimeMessageSenderUtils.isInternalExtensionSender(sender)
       ) {
         const value = backgroundMessage.value as ConnectDisconnectMessage;
         const multisigConfig: MultisigConfig =
@@ -137,7 +139,8 @@ const setupPopupListener = () => {
     ) => {
       if (
         backgroundMessage.command ===
-        BackgroundCommand.MULTISIG_REQUEST_SIGNATURES
+          BackgroundCommand.MULTISIG_REQUEST_SIGNATURES &&
+        RuntimeMessageSenderUtils.isInternalExtensionSender(sender)
       ) {
         const data = backgroundMessage.value as MultisigRequestSignatures;
         await createConnectionIfNeeded(data);
@@ -593,6 +596,9 @@ const unlockWallet = async (signer: Signer) => {
       sender: chrome.runtime.MessageSender,
       sendResp: (response?: any) => void,
     ) => {
+      if (!RuntimeMessageSenderUtils.isInternalExtensionSender(sender)) {
+        return;
+      }
       if (
         backgroundMessage.command === BackgroundCommand.MULTISIG_UNLOCK_WALLET
       ) {
@@ -646,6 +652,9 @@ const requestSignTransactionFromUser = (
       sender: chrome.runtime.MessageSender,
       sendResp: (response?: any) => void,
     ) => {
+      if (!RuntimeMessageSenderUtils.isInternalExtensionSender(sender)) {
+        return;
+      }
       if (
         backgroundMessage.command ===
           BackgroundCommand.MULTISIG_ACCEPT_RESPONSE &&

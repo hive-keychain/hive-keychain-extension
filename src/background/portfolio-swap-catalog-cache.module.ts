@@ -3,6 +3,7 @@ import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
 import { PortfolioSwapCatalogCacheUtils } from 'src/portfolio/portfolio-swap-catalog-cache.utils';
 import Logger from 'src/utils/logger.utils';
+import { RuntimeMessageSenderUtils } from 'src/utils/runtime-message-sender.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
 let initialized = false;
@@ -25,7 +26,7 @@ const onRuntimeMessage = (
   message: BackgroundMessage,
   sender: chrome.runtime.MessageSender,
 ) => {
-  if (sender.id !== chrome.runtime.id) {
+  if (!RuntimeMessageSenderUtils.isInternalExtensionSender(sender)) {
     return;
   }
 

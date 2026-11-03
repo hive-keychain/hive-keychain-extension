@@ -16,6 +16,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
 import { I18nUtils } from 'src/utils/i18n.utils';
 import Logger from 'src/utils/logger.utils';
+import { RuntimeMessageSenderUtils } from 'src/utils/runtime-message-sender.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
 const NOTIFICATION_ID_PREFIX = 'hive-push';
@@ -291,14 +292,11 @@ const syncConnectionWithWalletState = async () => {
   }
 };
 
-const isInternalSender = (sender: chrome.runtime.MessageSender) =>
-  sender.id === chrome.runtime.id;
-
 const onRuntimeMessage = (
   message: BackgroundMessage,
   sender: chrome.runtime.MessageSender,
 ) => {
-  if (!isInternalSender(sender)) {
+  if (!RuntimeMessageSenderUtils.isInternalExtensionSender(sender)) {
     return;
   }
   if (message.command === BackgroundCommand.VAULT_LOADED) {
