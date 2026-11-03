@@ -16,6 +16,16 @@ import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
 import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
 import { AccountSelectorComponent } from 'src/common-ui/account-selector/account-selector.component';
+
+jest.mock('@popup/multichain/utils/provider-chain-bootstrap.utils', () => {
+  const actual = jest.requireActual(
+    '@popup/multichain/utils/provider-chain-bootstrap.utils',
+  );
+  return {
+    ...actual,
+    syncProviderChainForActiveTab: jest.fn().mockResolvedValue(undefined),
+  };
+});
 import AccountSelectorOrderUtils from '@popup/multichain/utils/account-selector-order.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import { EvmAccountSource } from 'src/popup/evm/interfaces/wallet.interface';
@@ -26,6 +36,7 @@ import { EvmScreen } from 'src/popup/evm/reference-data/evm-screen.enum';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import Logger from 'src/utils/logger.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { MANAGE_ACCOUNT_SELECTED_NAME_PARAM } from 'src/popup/hive/pages/app-container/settings/accounts/manage-account/manage-account-selection.utils';
 import {
   MANAGE_EVM_SELECTED_ADDRESS_ID_PARAM,
@@ -647,6 +658,10 @@ describe('AccountSelectorComponent', () => {
     jest
       .spyOn(EvmWalletUtils, 'getAccountsFromLocalStorage')
       .mockResolvedValue([importedSource]);
+
+    jest
+      .spyOn(LocalStorageUtils, 'getMultipleValueFromLocalStorage')
+      .mockResolvedValue({});
 
     let exportedBlob: Blob | undefined;
     const originalCreateObjectUrl = (window.URL as any).createObjectURL;

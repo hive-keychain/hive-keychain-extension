@@ -306,10 +306,10 @@ describe('EvmDappsConnectionsComponent', () => {
 
     await user.click(screen.getByText('alpha.example'));
     expect(screen.getByTestId('evm-dapps-open-addresses')).toHaveTextContent(
-      'evm_dapps_connections_addresses_option',
+      'Addresses',
     );
     expect(screen.getByTestId('evm-dapps-open-chains')).toHaveTextContent(
-      'evm_dapps_connections_chains_option',
+      'Chains',
     );
 
     await user.click(screen.getByTestId('evm-dapps-open-addresses'));
@@ -333,7 +333,7 @@ describe('EvmDappsConnectionsComponent', () => {
     await user.click(screen.getByTestId('evm-dapps-open-addresses'));
 
     expect(screen.getByTestId('evm-dapps-stale-account')).toHaveTextContent(
-      'evm_dapps_connections_unknown_account',
+      'Unknown account',
     );
   });
 
@@ -521,7 +521,7 @@ describe('EvmDappsConnectionsComponent', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('evm-dapps-no-chains')).toHaveTextContent(
-        'evm_dapps_connections_no_chains',
+        'No allowed chains.',
       );
     });
     expect(originChainWhitelist).toEqual({
@@ -558,7 +558,7 @@ describe('EvmDappsConnectionsComponent', () => {
     await waitFor(() => {
       expect(
         screen.getByTestId('evm-dapps-connections-empty'),
-      ).toHaveTextContent('evm_dapps_connections_empty');
+      ).toHaveTextContent('No connected dApp yet.');
     });
   });
 });

@@ -25,6 +25,6 @@ describe('home.component dropdown hp tests:\n', () => {
     await act(async () => {
       await userEvent.click(row);
     });
-    expect(row).toHaveClass('opened');
+    expect(row.closest('.wallet-info-row')).toHaveClass('opened');
   });
 });

@@ -14,8 +14,8 @@ import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import manipulateStrings from 'src/__tests__/utils-for-testing/helpers/manipulate-strings';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
+import { openManageAccountsPage } from 'src/__tests__/utils-for-testing/helpers/settings-navigation';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
@@ -54,16 +54,7 @@ describe('add-key.component tests:\n', () => {
       },
     );
     await act(async () => {
-      const menu = await waitFor(() =>
-        screen.getByTestId(dataTestIdButton.menu),
-      );
-      await userEvent.click(menu);
-      await userEvent.click(
-        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
-      );
-      await userEvent.click(
-        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.MANAGE_ACCOUNTS),
-      );
+      await openManageAccountsPage();
     });
   });
 

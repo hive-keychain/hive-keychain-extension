@@ -5,6 +5,7 @@ import {
 } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import { EvmSettingsUtils } from '@popup/evm/utils/evm-settings.utils';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import {
   ChainType,
   EvmChain,
@@ -46,6 +47,7 @@ describe('evm-tokens-history.utils tests:\n', () => {
       fullAddress: '0x2222222222222222222222222222222222222222',
       label: undefined,
     } as any);
+    jest.spyOn(EvmWalletUtils, 'getAllLocalAccounts').mockResolvedValue([]);
   });
 
   it('hides history items when every flow is filtered by EVM settings', () => {
@@ -322,15 +324,14 @@ describe('evm-tokens-history.utils tests:\n', () => {
       catchupStatus: CatchupStatus.DONE,
     } as any);
 
+    const getMessageSpy = jest.spyOn(I18nUtils, 'getMessage');
     const history = await EvmTokensHistoryUtils.fetchHistory2(
       '0x1111111111111111111111111111111111111111',
       chain,
     );
 
-    expect(history.events[0].label).toBe(
-      'evm_history_operation_transfer_out',
-    );
-    expect(I18nUtils.getMessage).toHaveBeenCalledWith(
+    expect(history.events[0].label).toBe('You sent 10 USDC to Alice');
+    expect(getMessageSpy).toHaveBeenCalledWith(
       'evm_history_operation_transfer_out',
       ['10', 'USDC', 'Alice'],
     );
@@ -437,7 +438,7 @@ describe('evm-tokens-history.utils tests:\n', () => {
     expect(history.events[0]).toMatchObject({
       pageTitle: 'evm_history_smart_contract',
       type: 'SMART_CONTRACT',
-      label: 'evm_history_operation_generic_smart_contract_messages_out',
+      label: 'Called Deposit',
     });
     expect(history.events[0].detailFields).toEqual(
       expect.arrayContaining([
@@ -505,7 +506,7 @@ describe('evm-tokens-history.utils tests:\n', () => {
     expect(history.events[0]).toMatchObject({
       pageTitle: 'evm_history_smart_contract',
       type: 'SMART_CONTRACT',
-      label: 'evm_history_operation_generic_smart_contract_messages_out',
+      label: 'Called Withdraw',
     });
     expect(history.events[0].detailFields).toEqual(
       expect.arrayContaining([

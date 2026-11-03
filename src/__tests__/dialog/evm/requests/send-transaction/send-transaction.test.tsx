@@ -412,6 +412,7 @@ describe('send-transaction proxy tests:\n', () => {
       'dialog_evm_domain',
       'evm_operation_smart_contract_address',
       'dialog_account',
+      'evm_operation_action',
     ]);
 
     expect(contractField.information).toEqual([
@@ -1564,12 +1565,13 @@ describe('send-transaction proxy tests:\n', () => {
       );
 
       expect(decodedArgumentFields.map((field: any) => field.name)).toEqual([
+        'evm_operation_action',
         'evm_operation_to',
         'evm_nft_token_id',
       ]);
-      expect(decodedArgumentFields[0].value.type).toBe(EvmAddressComponent);
-      expect(decodedArgumentFields[0].value.props.address).toBe(approvedAddress);
-      expect(decodedArgumentFields[1].value).toBe(tokenId.toString());
+      expect(decodedArgumentFields[1].value.type).toBe(EvmAddressComponent);
+      expect(decodedArgumentFields[1].value.props.address).toBe(approvedAddress);
+      expect(decodedArgumentFields[2].value).toBe(tokenId.toString());
     });
   });
 

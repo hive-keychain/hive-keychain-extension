@@ -42,7 +42,7 @@ describe('EvmOperation', () => {
       />,
     );
 
-    fireEvent.click(screen.getByText('dialog_confirm'));
+    fireEvent.click(screen.getByText('Confirm'));
 
     expect(screen.getByTestId('loading-caption')).toHaveTextContent(
       'popup_html_validate_transaction_on_ledger',
@@ -63,7 +63,7 @@ describe('EvmOperation', () => {
       />,
     );
 
-    fireEvent.click(screen.getByText('dialog_confirm'));
+    fireEvent.click(screen.getByText('Confirm'));
     expect(screen.getByTestId('loading-caption')).toBeInTheDocument();
 
     await act(async () => {

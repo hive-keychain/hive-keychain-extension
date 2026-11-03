@@ -7,12 +7,12 @@ import userEvent from '@testing-library/user-event';
 import { KeychainKeyTypesLC } from 'hive-keychain-commons';
 import React from 'react';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import { openGovernancePage } from 'src/__tests__/utils-for-testing/helpers/settings-navigation';
 import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
@@ -39,10 +39,7 @@ describe('proxy-tab.component tests:\n', () => {
           },
         );
         await act(async () => {
-          await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
-          await userEvent.click(
-            screen.getByTestId(dataTestIdButton.menuPreFix + Icons.GOVERNANCE),
-          );
+          await openGovernancePage();
         });
         await screen.findByText(I18nUtils.getMessage('popup_html_witness'));
         await act(async () => {
@@ -55,9 +52,7 @@ describe('proxy-tab.component tests:\n', () => {
       it('Must show intro message for empty proxy', async () => {
         expect(
           await screen.findByText(
-            chrome.i18n
-              .getMessage('html_popup_witness_proxy_definition')
-              .trim(),
+            I18nUtils.getMessage('html_popup_witness_proxy_definition').trim(),
             { exact: true },
           ),
         ).toBeInTheDocument();
@@ -146,10 +141,7 @@ describe('proxy-tab.component tests:\n', () => {
           },
         );
         await act(async () => {
-          await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
-          await userEvent.click(
-            screen.getByTestId(dataTestIdButton.menuPreFix + Icons.GOVERNANCE),
-          );
+          await openGovernancePage();
         });
         await screen.findByText(I18nUtils.getMessage('popup_html_witness'));
         await act(async () => {
@@ -200,10 +192,7 @@ describe('proxy-tab.component tests:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
-        await userEvent.click(
-          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.GOVERNANCE),
-        );
+        await openGovernancePage();
       });
       await screen.findByText(I18nUtils.getMessage('popup_html_witness'));
       await act(async () => {

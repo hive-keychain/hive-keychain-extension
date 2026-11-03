@@ -6,9 +6,9 @@ import React from 'react';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/fake-store';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import { openAddAccountPage } from 'src/__tests__/utils-for-testing/helpers/settings-navigation';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
-import { Icons } from 'src/common-ui/icons.enum';
 import { EvmChainUtils } from 'src/popup/evm/utils/evm-chain.utils';
 import { EvmWalletUtils } from 'src/popup/evm/utils/wallet.utils';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
@@ -88,24 +88,14 @@ describe('add-account-main.component tests:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(await screen.findByTestId('clickable-settings'));
-        await userEvent.click(
-          await screen.findByTestId(
-            'menu-settings-button-' + Icons.ACCOUNTS,
-          ),
-        );
-        await userEvent.click(
-          await screen.findByTestId(
-            'menu-settings-button-' + Icons.ADD_ACCOUNT,
-          ),
-        );
+        await openAddAccountPage();
       });
     });
 
     it('Must navigate to add-by-auth', async () => {
       await act(async () => {
         await userEvent.click(
-          await screen.findByText('Use an authorized account'),
+          await screen.findByText('Import through an authorized account'),
         );
       });
       expect(

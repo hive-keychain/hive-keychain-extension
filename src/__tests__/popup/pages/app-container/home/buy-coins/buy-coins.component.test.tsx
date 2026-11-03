@@ -1,4 +1,3 @@
-import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -7,6 +6,7 @@ import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-t
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import { ExtensionPageUtils } from '@popup/multichain/utils/extension-page.utils';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
 describe('buy-coins.component tests:\n', () => {
@@ -32,6 +32,10 @@ describe('buy-coins.component tests:\n', () => {
   });
 
   it('Must open buy coins page from the home action bar', async () => {
+    const openInTab = jest
+      .spyOn(ExtensionPageUtils, 'openInTab')
+      .mockImplementation(() => undefined);
+
     await act(async () => {
       await userEvent.click(
         screen.getByTestId(
@@ -39,8 +43,7 @@ describe('buy-coins.component tests:\n', () => {
         ),
       );
     });
-    expect(
-      await screen.findByTestId(`${Screen.BUY_COINS_PAGE}-page`),
-    ).toBeInTheDocument();
+
+    expect(openInTab).toHaveBeenCalledWith('portfolio.html#buy');
   });
 });

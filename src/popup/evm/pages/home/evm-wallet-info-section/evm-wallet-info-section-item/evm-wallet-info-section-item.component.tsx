@@ -209,6 +209,8 @@ export const WalletInfoSectionItem = ({
       <EvmTokenLogo tokenInfo={token.tokenInfo} />
     );
 
+  const mainValueText = mainValue?.toString() ?? '';
+
   return (
     <div className={`wallet-info-row ${isPanelOpen ? 'opened' : ''}`}>
       <button
@@ -255,9 +257,9 @@ export const WalletInfoSectionItem = ({
         </div>
         <div className="value">
           <div className="main-value">
-            {mainValue.toString().length > 10
-              ? `${mainValue.toString().slice(0, 10)}...`
-              : mainValue}
+            {mainValueText.length > 10
+              ? `${mainValueText.slice(0, 10)}...`
+              : mainValueText}
           </div>
           {!!subValue &&
             parseFloat(FormatUtils.formatCurrencyValue(subValue)) !== 0 && (

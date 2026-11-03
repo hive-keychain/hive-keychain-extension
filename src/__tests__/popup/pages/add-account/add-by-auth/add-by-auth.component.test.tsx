@@ -11,8 +11,8 @@ import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
+import { openAddAccountPage } from 'src/__tests__/utils-for-testing/helpers/settings-navigation';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
@@ -40,15 +40,7 @@ describe('add-by-auth tests:\n', () => {
       },
     );
     await act(async () => {
-      await userEvent.click(await screen.findByTestId(dataTestIdButton.menu));
-      await userEvent.click(
-        await screen.findByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
-      );
-      await userEvent.click(
-        await screen.findByTestId(
-          dataTestIdButton.menuPreFix + Icons.ADD_ACCOUNT,
-        ),
-      );
+      await openAddAccountPage();
       await userEvent.click(
         await screen.findByTestId(dataTestIdButton.addByAuth),
       );

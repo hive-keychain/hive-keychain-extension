@@ -14,8 +14,8 @@ import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import { openManageAccountsPage } from 'src/__tests__/utils-for-testing/helpers/settings-navigation';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { Icons } from 'src/common-ui/icons.enum';
 import { COPY_TOAST_AUTO_CLOSE_MS } from 'src/common-ui/toast/copy-toast.component';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
@@ -57,18 +57,7 @@ describe('account-keys-list.component tests:\n', () => {
         },
       );
       await act(async () => {
-        const menu = await waitFor(() =>
-          screen.getByTestId(dataTestIdButton.menu),
-        );
-        await userEvent.click(menu);
-        await userEvent.click(
-          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
-        );
-        await userEvent.click(
-          screen.getByTestId(
-            dataTestIdButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
-          ),
-        );
+        await openManageAccountsPage();
       });
     });
     it('Must show selected private key when clicking to show', async () => {
@@ -207,18 +196,7 @@ describe('account-keys-list.component tests:\n', () => {
         },
       );
       await act(async () => {
-        const menu = await waitFor(() =>
-          screen.getByTestId(dataTestIdButton.menu),
-        );
-        await userEvent.click(menu);
-        await userEvent.click(
-          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
-        );
-        await userEvent.click(
-          screen.getByTestId(
-            dataTestIdButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
-          ),
-        );
+        await openManageAccountsPage();
       });
     });
     it('Must remove active key', async () => {
@@ -274,15 +252,7 @@ describe('account-keys-list.component tests:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
-        await userEvent.click(
-          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
-        );
-        await userEvent.click(
-          screen.getByTestId(
-            dataTestIdButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
-          ),
-        );
+        await openManageAccountsPage();
       });
     });
 

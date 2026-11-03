@@ -11,8 +11,8 @@ import React from 'react';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
 import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import { openNetworkSettings } from 'src/__tests__/utils-for-testing/helpers/settings-navigation';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
@@ -30,13 +30,7 @@ describe('rpc-nodes.component Hive Engine settings tests:\n', () => {
 
   const openRpcSettingsPage = async () => {
     await act(async () => {
-      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
-      await userEvent.click(
-        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.SETTINGS),
-      );
-      await userEvent.click(
-        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.RPC),
-      );
+      await openNetworkSettings();
     });
     expect(screen.getByTestId(`${Screen.SETTINGS_RPC_NODES}-page`)).toBeInTheDocument();
   };
@@ -45,7 +39,7 @@ describe('rpc-nodes.component Hive Engine settings tests:\n', () => {
     fireEvent.click(
       screen
         .getByTestId('hive-engine-rpc-select-handle')
-        .closest('[aria-label="Dropdown select"]') as HTMLElement,
+        .closest('[role="combobox"]') as HTMLElement,
     );
   };
 
@@ -61,7 +55,7 @@ describe('rpc-nodes.component Hive Engine settings tests:\n', () => {
     fireEvent.click(
       screen
         .getByTestId('hive-account-history-api-select-handle')
-        .closest('[aria-label="Dropdown select"]') as HTMLElement,
+        .closest('[role="combobox"]') as HTMLElement,
     );
   };
 

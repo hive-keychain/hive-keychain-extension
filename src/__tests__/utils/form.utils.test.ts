@@ -22,7 +22,7 @@ describe('form.utils', () => {
     });
 
     it('maps known Joi types to i18n messages', () => {
-      jest.spyOn(chrome.i18n, 'getMessage').mockReturnValue('translated');
+      jest.spyOn(I18nUtils, 'getMessage').mockReturnValue('translated');
       jest.spyOn(Logger, 'error').mockImplementation(() => {});
 
       const err = {
@@ -51,7 +51,7 @@ describe('form.utils', () => {
     });
 
     it('passes ref value into i18n when present', () => {
-      jest.spyOn(chrome.i18n, 'getMessage').mockReturnValue('with ref');
+      jest.spyOn(I18nUtils, 'getMessage').mockReturnValue('with ref');
       jest.spyOn(Logger, 'error').mockImplementation(() => {});
 
       const err = {

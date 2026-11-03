@@ -57,19 +57,25 @@ describe('unsupported EVM methods', () => {
 
     await handleNonExistingMethod(requestHandler, 7, request, dappInfo);
 
-    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(7, {
-      command: BackgroundCommand.SEND_EVM_ERROR,
-      value: {
-        requestId: 12,
-        error: expect.objectContaining({ code: -32601 }),
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(
+      7,
+      {
+        command: BackgroundCommand.SEND_EVM_ERROR,
+        value: {
+          requestId: 12,
+          error: expect.objectContaining({ code: -32601 }),
+        },
       },
-    });
+      undefined,
+    );
     expect(CommunicationUtils.runtimeSendMessage).not.toHaveBeenCalled();
     expect(createOrUpdateDialog).not.toHaveBeenCalled();
     expect(requestHandler.removeRequestByLocator).toHaveBeenCalledWith({
       requestId: 12,
       tab: 7,
       origin: 'https://example.app',
+      frameId: undefined,
+      documentId: undefined,
     });
   });
 
@@ -91,19 +97,25 @@ describe('unsupported EVM methods', () => {
 
     await handleDeprecatedMethods(requestHandler, 8, request, dappInfo);
 
-    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(8, {
-      command: BackgroundCommand.SEND_EVM_ERROR,
-      value: {
-        requestId: 13,
-        error: expect.objectContaining({ code: 4200 }),
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(
+      8,
+      {
+        command: BackgroundCommand.SEND_EVM_ERROR,
+        value: {
+          requestId: 13,
+          error: expect.objectContaining({ code: 4200 }),
+        },
       },
-    });
+      undefined,
+    );
     expect(CommunicationUtils.runtimeSendMessage).not.toHaveBeenCalled();
     expect(createOrUpdateDialog).not.toHaveBeenCalled();
     expect(requestHandler.removeRequestByLocator).toHaveBeenCalledWith({
       requestId: 13,
       tab: 8,
       origin: 'https://example.app',
+      frameId: undefined,
+      documentId: undefined,
     });
   });
 });

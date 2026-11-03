@@ -13,6 +13,16 @@ import { ModalComponent } from 'src/common-ui/modal/modal.component';
 import { RootState } from '@popup/multichain/store';
 import { ModalProperties } from '@popup/multichain/interfaces/modal.interface';
 import { ChainSelectorPageComponent } from 'src/popup/multichain/pages/chain-selector/chain-selector.component';
+
+jest.mock('@popup/multichain/utils/provider-chain-bootstrap.utils', () => {
+  const actual = jest.requireActual(
+    '@popup/multichain/utils/provider-chain-bootstrap.utils',
+  );
+  return {
+    ...actual,
+    syncProviderChainForActiveTab: jest.fn().mockResolvedValue(undefined),
+  };
+});
 import {
   customRender,
   screen,
