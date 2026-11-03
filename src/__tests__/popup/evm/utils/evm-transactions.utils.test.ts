@@ -10,6 +10,8 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Decimal from 'decimal.js';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { EvmSubmissionClientUtils } from 'src/utils/evm/evm-submission-client.utils';
+
 import { I18nUtils } from 'src/utils/i18n.utils';
 jest.mock('ethers', () => {
   const actual = jest.requireActual('ethers');
@@ -65,6 +67,7 @@ describe('evm transactions utils', () => {
     getTransactionCount: jest.Mock;
     getTransactionReceipt: jest.Mock;
     getTransaction: jest.Mock;
+    broadcastTransaction: jest.Mock;
   };
 
   const buildGasFee = (
@@ -92,7 +95,14 @@ describe('evm transactions utils', () => {
       getTransactionCount: jest.fn(),
       getTransactionReceipt: jest.fn().mockResolvedValue(null),
       getTransaction: jest.fn().mockResolvedValue(null),
+      broadcastTransaction: jest.fn(),
     };
+
+    jest
+      .spyOn(EvmSubmissionClientUtils, 'reserve')
+      .mockResolvedValue({ token: 'reservation', nonce: 0 });
+    jest.spyOn(EvmSubmissionClientUtils, 'send').mockResolvedValue(undefined);
+    jest.spyOn(EvmSignerUtils, 'signTransaction').mockResolvedValue('0xsigned');
 
     I18nUtils.getMessage = jest.fn((key: string) => key);
 
@@ -425,7 +435,7 @@ describe('evm transactions utils', () => {
       });
 
     provider.getTransactionCount.mockResolvedValue(0);
-    jest.spyOn(EvmSignerUtils, 'sendTransaction').mockResolvedValue({
+    provider.broadcastTransaction.mockResolvedValue({
       hash: '0xcustom',
       nonce: 0,
       chainId: customChain.chainId,
@@ -555,7 +565,7 @@ describe('evm transactions utils', () => {
 
   it('stores a display item when adding a sent transaction to pending storage', async () => {
     provider.getTransactionCount.mockResolvedValue(0);
-    jest.spyOn(EvmSignerUtils, 'sendTransaction').mockResolvedValue({
+    provider.broadcastTransaction.mockResolvedValue({
       hash: '0xdisplay',
       nonce: 0,
       chainId: chain.chainId,
@@ -597,18 +607,17 @@ describe('evm transactions utils', () => {
 
   it('broadcasts legacy selected gas fees as legacy transaction requests', async () => {
     provider.getTransactionCount.mockResolvedValue(0);
-    const sendTransactionSpy = jest
-      .spyOn(EvmSignerUtils, 'sendTransaction')
-      .mockResolvedValue({
+    const sendTransactionSpy = jest.mocked(EvmSignerUtils.signTransaction);
+    provider.broadcastTransaction.mockResolvedValue({
+      hash: '0xlegacy',
+      nonce: 0,
+      chainId: chain.chainId,
+      toJSON: () => ({
         hash: '0xlegacy',
         nonce: 0,
         chainId: chain.chainId,
-        toJSON: () => ({
-          hash: '0xlegacy',
-          nonce: 0,
-          chainId: chain.chainId,
-        }),
-      } as any);
+      }),
+    } as any);
 
     await EvmTransactionsUtils.send(
       { address: walletAddress } as any,
@@ -634,18 +643,17 @@ describe('evm transactions utils', () => {
 
   it('broadcasts EIP-1559 selected gas fees as EIP-1559 transaction requests', async () => {
     provider.getTransactionCount.mockResolvedValue(0);
-    const sendTransactionSpy = jest
-      .spyOn(EvmSignerUtils, 'sendTransaction')
-      .mockResolvedValue({
+    const sendTransactionSpy = jest.mocked(EvmSignerUtils.signTransaction);
+    provider.broadcastTransaction.mockResolvedValue({
+      hash: '0xeip1559',
+      nonce: 0,
+      chainId: chain.chainId,
+      toJSON: () => ({
         hash: '0xeip1559',
         nonce: 0,
         chainId: chain.chainId,
-        toJSON: () => ({
-          hash: '0xeip1559',
-          nonce: 0,
-          chainId: chain.chainId,
-        }),
-      } as any);
+      }),
+    } as any);
 
     await EvmTransactionsUtils.send(
       { address: walletAddress } as any,

@@ -22,6 +22,7 @@ import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { ContextType } from '@reference-data/context-type.enum';
+import { EvmSubmissionClientUtils } from 'src/utils/evm/evm-submission-client.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Decimal from 'decimal.js';
 import {
@@ -285,14 +286,19 @@ const send = async (
       }
     }
 
+  const provider = await EthersUtils.getProvider(chain as EvmChain);
+  const reservation = await EvmSubmissionClientUtils.reserve(
+    walletAddress,
+    chainId,
+    forceNounce,
+  );
   let transactionRequest: TransactionRequest;
   transactionRequest = {
     value: request.value ?? '0x0',
     data: getTransactionData(request.data),
     to: request.to,
     from: walletAddress,
-    nonce:
-      forceNounce ?? (await EvmRequestsUtils.getNonce(walletAddress, chain)),
+    nonce: reservation.nonce,
     gasLimit: gasFee ? BigInt(gasFee.gasLimit.toFixed(0)) : null,
     chainId: chain.chainId,
     type: transactionType,
@@ -308,15 +314,23 @@ const send = async (
     }
   }
 
-  const provider = await EthersUtils.getProvider(chain as EvmChain);
-
-  const transactionResponse: TransactionResponse =
-    await EvmSignerUtils.sendTransaction(wallet, transactionRequest, provider)
-      .catch((err) => {
-        Logger.error('Error in send', err);
-        throw err;
-      })
-      .then((transaction) => transaction);
+  let raw: string;
+  try {
+    raw = await EvmSignerUtils.signTransaction(wallet, transactionRequest);
+    await EvmSubmissionClientUtils.send({
+      action: 'commit',
+      token: reservation.token,
+      raw: [raw],
+    });
+  } catch (error) {
+    await EvmSubmissionClientUtils.send({
+      action: 'release',
+      token: reservation.token,
+    });
+    throw error;
+  }
+  // Keep committed bytes on ambiguous RPC failure; recovery rebroadcasts this exact hash.
+  const transactionResponse = await provider.broadcastTransaction(raw);
   if (transactionResponse) {
     const displayItem =
       await EvmTransactionDisplayUtils.buildDisplayItemFromBroadcast(
@@ -332,6 +346,10 @@ const send = async (
       displayItem,
     );
   }
+  await EvmSubmissionClientUtils.send({
+    action: 'broadcast',
+    token: reservation.token,
+  });
   return transactionResponse;
 };
 
@@ -370,6 +388,13 @@ const addPendingTransaction = async (
 ) => {
   let transactions = await getAllPendingTransactions();
 
+  if (
+    transactions.some(
+      (transaction) =>
+        transaction.txResponseParams.hash === transactionResponse.hash,
+    )
+  )
+    return;
   transactions.push({
     txResponseParams: transactionResponse.toJSON(),
     walletAddress: walletAddress,
@@ -702,6 +727,7 @@ const rehydratePendingTransactions = async () => {
 };
 
 export const EvmTransactionsUtils = {
+  getWeiFromGwei,
   cancel,
   getHighestNonceInPendingTransaction,
   getPendingTransaction,

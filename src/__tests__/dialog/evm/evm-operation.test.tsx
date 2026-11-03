@@ -78,3 +78,17 @@ describe('EvmOperation', () => {
     expect(screen.queryByTestId('loading-caption')).toBeNull();
   });
 });
+
+it('embeds the standard review without individual approval or cancellation actions', () => {
+  render(<EvmOperation
+    title="Call" request={{ request_id: 1 } as any}
+    domain="example.com" origin="https://example.com" tab={1}
+    afterCancel={jest.fn()} reviewOnly
+    fields={<div>Transaction fields</div>}
+    bottomPanel={<div>Gas fee panel</div>}
+  />);
+  expect(screen.getByText('Transaction fields')).toBeInTheDocument();
+  expect(screen.getByText('Gas fee panel')).toBeInTheDocument();
+  expect(screen.queryByText('dialog_confirm')).toBeNull();
+  expect(screen.queryByText('dialog_cancel')).toBeNull();
+});

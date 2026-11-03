@@ -146,17 +146,14 @@ const signTypedMessage = async (
   });
 };
 
-const sendTransaction = async (
+const signTransaction = async (
   wallet: EvmWallet,
   transactionRequest: TransactionRequest,
-  provider: Provider,
-): Promise<TransactionResponse> => {
+): Promise<string> => {
   if (!isLedgerWallet(wallet)) {
-    const connectedWallet = new Wallet(
-      (wallet as HDNodeWallet).signingKey,
-      provider,
+    return new Wallet((wallet as HDNodeWallet).signingKey).signTransaction(
+      transactionRequest,
     );
-    return connectedWallet.sendTransaction(transactionRequest);
   }
 
   const unsignedTransaction = ethers.Transaction.from(
@@ -170,7 +167,23 @@ const sendTransaction = async (
     unsignedTransaction.unsignedSerialized,
   );
   signedTransaction.signature = formatLedgerSignature(signature);
-  return provider.broadcastTransaction(signedTransaction.serialized);
+  return signedTransaction.serialized;
+};
+
+const sendTransaction = async (
+  wallet: EvmWallet,
+  transactionRequest: TransactionRequest,
+  provider: Provider,
+): Promise<TransactionResponse> => {
+  if (!isLedgerWallet(wallet)) {
+    return new Wallet(
+      (wallet as HDNodeWallet).signingKey,
+      provider,
+    ).sendTransaction(transactionRequest);
+  }
+  return provider.broadcastTransaction(
+    await signTransaction(wallet, transactionRequest),
+  );
 };
 
 export const EvmSignerUtils = {
@@ -179,4 +192,5 @@ export const EvmSignerUtils = {
   signMessage,
   signTypedMessage,
   sendTransaction,
+  signTransaction,
 };

@@ -24,6 +24,8 @@ import {
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
 import { getPendingRequestMessageOptions } from '@background/multichain/pending-request.interface';
+import { EvmCallBatchModule } from '@background/evm/evm-call-batch.module';
+import { EvmTransactionSubmissionModule } from '@background/evm/evm-transaction-submission.module';
 
 export const evmRequestWithoutConfirmation = async (
   requestHandler: EvmRequestHandler,
@@ -57,7 +59,44 @@ export const evmRequestWithoutConfirmation = async (
       break;
     }
     case EvmRequestMethod.WALLET_GET_CAPABILITIES: {
-      message.value.result = await EvmRequestsUtils.getWalletCapabilities();
+      try {
+        message.value.result = await EvmCallBatchModule.getCapabilities(
+          request.params,
+          dappInfo.origin,
+        );
+      } catch (error) {
+        const rpcError = error as { code?: number; message?: string };
+        message = {
+          command: BackgroundCommand.SEND_EVM_ERROR,
+          value: {
+            requestId: request.request_id,
+            error: {
+              code: typeof rpcError.code === 'number' ? rpcError.code : -32000,
+              message: rpcError.message ?? 'Capability discovery failed',
+            },
+          },
+        };
+      }
+      break;
+    }
+    case EvmRequestMethod.WALLET_GET_CALLS_STATUS: {
+      try {
+        message.value.result = await EvmTransactionSubmissionModule.getStatus(
+          request.params[0],
+          dappInfo.origin,
+        );
+        void EvmTransactionSubmissionModule.reconcile().catch(() =>
+          Logger.warn('EVM submission recovery failed'),
+        );
+      } catch {
+        message = {
+          command: BackgroundCommand.SEND_EVM_ERROR,
+          value: {
+            requestId: request.request_id,
+            error: { code: 5730, message: 'Unknown batch identifier' },
+          },
+        };
+      }
       break;
     }
     case EvmRequestMethod.GET_CHAIN: {

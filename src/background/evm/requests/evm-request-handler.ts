@@ -1,7 +1,8 @@
-import { initEvmRequestHandler } from '@background/evm/requests/init';
-import { EvmRequestAccountUtils } from '@background/evm/requests/evm-request-account.utils';
 import { EvmUnrestrictedMethods } from '@background/evm/evm-methods/evm-methods.list';
+import { EvmRequestAccountUtils } from '@background/evm/requests/evm-request-account.utils';
+import { initEvmRequestHandler } from '@background/evm/requests/init';
 import { syncSharedDialogWindow } from '@background/multichain/dialog-coordinator';
+import { removeWindow } from '@background/multichain/dialog-lifecycle';
 import { PendingRequestAdmission } from '@background/multichain/pending-request-admission';
 import {
   getPendingRequestLocator,
@@ -9,7 +10,6 @@ import {
   getPendingRequestSource,
   isPendingRequestSourceMatch,
 } from '@background/multichain/pending-request.interface';
-import { removeWindow } from '@background/multichain/dialog-lifecycle';
 import {
   EvmDappInfo,
   EvmRequest,
@@ -464,10 +464,7 @@ export class EvmRequestHandler {
   }
 
   private static enqueueStorageMutation<T>(mutation: () => Promise<T>) {
-    const runMutation = evmRequestHandlerMutationQueue.then(
-      mutation,
-      mutation,
-    );
+    const runMutation = evmRequestHandlerMutationQueue.then(mutation, mutation);
     evmRequestHandlerMutationQueue = runMutation.then(
       () => undefined,
       () => undefined,

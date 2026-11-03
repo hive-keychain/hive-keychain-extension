@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
+import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 
 const addCustomChainMock = jest.fn();
@@ -111,9 +111,8 @@ describe('evm service worker', () => {
   };
 
   it('redirects failed top-frame ENS navigation to the ENS manager', async () => {
-    const { handleEnsNavigationError } = await import(
-      'src/background/evm/evm-service-worker'
-    );
+    const { handleEnsNavigationError } =
+      await import('src/background/evm/evm-service-worker');
 
     handleEnsNavigationError({
       frameId: 0,
@@ -131,9 +130,8 @@ describe('evm service worker', () => {
     ['ENS-looking path', 0, 'https://example.com/alice.eth/'],
     ['unrelated hostname', 0, 'https://example.com/'],
   ])('ignores failed %s', async (_case, frameId, url) => {
-    const { handleEnsNavigationError } = await import(
-      'src/background/evm/evm-service-worker'
-    );
+    const { handleEnsNavigationError } =
+      await import('src/background/evm/evm-service-worker');
 
     handleEnsNavigationError({
       frameId,
@@ -151,9 +149,8 @@ describe('evm service worker', () => {
     getFromLocalStorageMock.mockResolvedValue(requestHandler);
 
     const listener = await importListener();
-    const { EvmLightNodeUtils } = await import(
-      '@popup/evm/utils/evm-light-node.utils'
-    );
+    const { EvmLightNodeUtils } =
+      await import('@popup/evm/utils/evm-light-node.utils');
     const registerSpy = jest
       .spyOn(EvmLightNodeUtils, 'registerLocalAddresses')
       .mockResolvedValue(undefined);
@@ -221,9 +218,8 @@ describe('evm service worker', () => {
   it('registers local addresses when a known chain is approved', async () => {
     addChainToSetupChainsMock.mockResolvedValue(undefined);
     const listener = await importListener();
-    const { EvmLightNodeUtils } = await import(
-      '@popup/evm/utils/evm-light-node.utils'
-    );
+    const { EvmLightNodeUtils } =
+      await import('@popup/evm/utils/evm-light-node.utils');
     const registerSpy = jest
       .spyOn(EvmLightNodeUtils, 'registerLocalAddresses')
       .mockResolvedValue(undefined);
@@ -684,6 +680,71 @@ describe('evm service worker', () => {
       expect.anything(),
       expect.anything(),
     );
+  });
+
+  it.each([
+    BackgroundCommand.PREVIEW_EVM_CALLS,
+    BackgroundCommand.GET_EVM_CALLS_STATUS,
+    BackgroundCommand.EVM_TRANSACTION_SUBMISSION,
+  ])(
+    'rejects batch internal command %s from a content script',
+    async (command) => {
+      const listener = await importListener();
+      const response = jest.fn();
+      expect(
+        listener(
+          { command, value: {} },
+          {
+            id: chrome.runtime.id,
+            url: 'https://example.app',
+            tab: { id: 1 },
+          } as any,
+          response,
+        ),
+      ).toBe(false);
+      expect(response).toHaveBeenCalledWith({
+        success: false,
+        error: { code: 4100, message: 'Extension page required' },
+      });
+      expect(getFromLocalStorageMock).not.toHaveBeenCalled();
+    },
+  );
+
+  it('does not execute duplicate batch confirmations while the first is running', async () => {
+    const request = {
+      request_id: 999,
+      method: EvmRequestMethod.WALLET_SEND_CALLS,
+      params: [],
+    };
+    const requestData = {
+      request,
+      dappInfo: { origin: 'https://example.app', domain: 'example.app' },
+    };
+    getFromLocalStorageMock.mockResolvedValue({
+      getRequestDataByLocator: jest.fn(() => requestData),
+    });
+    const operation = createDeferred();
+    performEvmOperationMock.mockReturnValue(operation.promise);
+    const listener = await importListener();
+    const message = {
+      command: BackgroundCommand.ACCEPT_EVM_TRANSACTION,
+      value: {
+        request,
+        origin: 'https://example.app',
+        domain: 'example.app',
+        tab: 1,
+      },
+    };
+    const sender = {
+      id: chrome.runtime.id,
+      url: chrome.runtime.getURL('dialog.html'),
+    };
+    const first = listener(message, sender, jest.fn());
+    const second = listener(message, sender, jest.fn());
+    await flushAsync();
+    expect(performEvmOperationMock).toHaveBeenCalledTimes(1);
+    operation.resolve();
+    await Promise.all([first, second]);
   });
 
   it('does not perform an EVM operation when the accepted request locator does not match', async () => {

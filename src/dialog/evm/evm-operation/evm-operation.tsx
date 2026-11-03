@@ -38,9 +38,17 @@ type Props = {
   fields?: any;
   bottomPanel?: any;
   transactionHook?: useTransactionHook;
+  batchWarnings?: {
+    warnings: EvmTransactionWarning[];
+    warningCount: number;
+    onReviewClick: () => void;
+  };
+  batchUnableToReachBackend?: boolean;
+  batchShouldDisplayBlockButton?: boolean;
   confirmDisabled?: boolean;
   hideConfirm?: boolean;
   loadingCaption?: string;
+  submitting?: boolean;
   afterCancel: (requestId: number, tab: number) => void;
 };
 
@@ -58,9 +66,13 @@ export const EvmOperation = ({
   fields,
   bottomPanel,
   transactionHook,
+  batchWarnings,
+  batchUnableToReachBackend,
+  batchShouldDisplayBlockButton,
   confirmDisabled,
   hideConfirm,
   loadingCaption,
+  submitting = false,
   afterCancel,
 }: Props) => {
   const [keep, setKeep] = useState(false);
@@ -166,6 +178,9 @@ export const EvmOperation = ({
           {transactionHook?.unableToReachBackend && (
             <EvmRiskStaticAlert message="evm_unable_to_reach_verify_transaction" />
           )}
+          {batchUnableToReachBackend && (
+            <EvmRiskStaticAlert message="evm_unable_to_reach_verify_transaction" />
+          )}
 
           {transactionHook &&
             (bannerWarningCount > 0 || duplicateWarning) && (
@@ -189,6 +204,12 @@ export const EvmOperation = ({
               </div>
             )}
 
+          {batchWarnings && batchWarnings.warningCount > 0 && (
+            <div className="evm-risk-alerts-stack">
+              <EvmRiskAlertBanner {...batchWarnings} />
+            </div>
+          )}
+
           {caption && <DialogCaption text={caption} />}
 
           {fields && (
@@ -200,7 +221,7 @@ export const EvmOperation = ({
           {bottomPanel && <>{bottomPanel}</>}
         </div>
 
-        {!loading && (
+        {!loading && !submitting && (
           <div className={`operation-buttons `}>
             <ButtonComponent
               label="dialog_cancel"
@@ -220,7 +241,8 @@ export const EvmOperation = ({
           </div>
         )}
         {/* add button to cancel request and block dapp */}
-        {transactionHook?.shouldDisplayBlockButton && (
+        {(transactionHook?.shouldDisplayBlockButton ||
+            batchShouldDisplayBlockButton) && (
           <ButtonComponent
             label="evm_too_many_transaction_button"
             labelParams={[REQUEST_LOCK_TIME_IN_MINUTE.toString()]}
@@ -230,7 +252,10 @@ export const EvmOperation = ({
           />
         )}
 
-        <LoadingComponent hide={!loading} caption={loadingCaption} />
+        <LoadingComponent
+          hide={!loading && !submitting}
+          caption={loadingCaption}
+        />
         {transactionHook?.message && (
           <MessageContainerComponent
             message={transactionHook.message}

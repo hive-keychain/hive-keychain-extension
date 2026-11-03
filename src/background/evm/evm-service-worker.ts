@@ -1,5 +1,6 @@
-import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
+import { EvmCallBatchModule } from '@background/evm/evm-call-batch.module';
 import { EvmIncomingTransactionsModule } from '@background/evm/evm-incoming-transactions.module';
+import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { initializeEvmProviderRegistration } from '@background/evm/evm-provider-registration';
 import {
   addWhitelistedChainForOrigin,
@@ -9,6 +10,7 @@ import {
   setAccountsForOrigin,
   setChainIdForOrigin,
 } from '@background/evm/evm-provider-state.utils';
+import { EvmTransactionSubmissionModule } from '@background/evm/evm-transaction-submission.module';
 import {
   EvmRequestHandler,
   EvmRequestLocator,
@@ -18,6 +20,10 @@ import { performEvmOperation } from '@background/evm/requests/operations/perform
 import MkModule from '@background/hive/modules/mk.module';
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import {
+  getPendingRequestMessageOptions,
+  getPendingRequestSource,
+} from '@background/multichain/pending-request.interface';
+import {
   EvmEventName,
   KeychainEvmRequestWrapper,
   ProviderRpcError,
@@ -25,9 +31,9 @@ import {
   RoutedEvmEvent,
 } from '@interfaces/evm-provider.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
-import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
@@ -43,10 +49,7 @@ import {
   getOriginFromUrl,
 } from 'src/utils/browser-origin.utils';
 import { CommunicationUtils } from 'src/utils/communication.utils';
-import {
-  getPendingRequestMessageOptions,
-  getPendingRequestSource,
-} from '@background/multichain/pending-request.interface';
+import { EvmSubmissionClientUtils } from 'src/utils/evm/evm-submission-client.utils';
 import Logger from 'src/utils/logger.utils';
 import { RuntimeMessageSenderUtils } from 'src/utils/runtime-message-sender.utils';
 
@@ -82,15 +85,14 @@ const handleEnsNavigationError = (
     return;
   }
 };
+const executingBatches = new Set<string>();
 
 const initializeServiceWorker = async () => {
   Object.assign(global, { contextType: 'service_worker' });
 
   Logger.info('Starting EVM service worker');
   pendingRequestRehydration = EvmRequestHandler.getFromLocalStorage()
-    .then((requestHandler) =>
-      requestHandler.rehydrateNonInteractiveRequests(),
-    )
+    .then((requestHandler) => requestHandler.rehydrateNonInteractiveRequests())
     .catch((error) => {
       Logger.error('Unable to rehydrate pending EVM requests', error);
     });
@@ -98,6 +100,14 @@ const initializeServiceWorker = async () => {
   EvmIncomingTransactionsModule.start();
   EvmPendingTransactionsNotifications.registerClickListener();
   void EvmTransactionsUtils.rehydratePendingTransactions();
+  EvmTransactionSubmissionModule.initialize(async (transaction, chainId) => {
+    const chain = await ChainUtils.getChain<EvmChain>(chainId);
+    await EvmTransactionsUtils.addPendingTransaction(
+      transaction.from,
+      transaction,
+      chain,
+    );
+  });
 
   chrome.webNavigation.onErrorOccurred.addListener(handleEnsNavigationError, {
     url: [{ schemes: ['http', 'https'], hostSuffix: '.eth' }],
@@ -156,10 +166,7 @@ const registerApprovedEvmChain = async (requestedChain: EvmChain) => {
   try {
     await EvmLightNodeUtils.registerLocalAddresses(requestedChain.chainId);
   } catch (error) {
-    Logger.error(
-      'Error while registering EVM address with light node',
-      error,
-    );
+    Logger.error('Error while registering EVM address with light node', error);
   }
 };
 
@@ -360,15 +367,24 @@ const chromeMessageHandler = async (
         Logger.warn('Cannot perform EVM operation: pending request not found');
         break;
       }
-      await performEvmOperation(
-        requestHandler,
-        requestData.request,
-        tab,
-        requestData.dappInfo?.domain ?? domain,
-        origin,
-        extraData,
-        requestData.dappInfo?.requestSource,
-      );
+      const batchExecutionKey = JSON.stringify(locator);
+      if (requestData.request.method === EvmRequestMethod.WALLET_SEND_CALLS) {
+        if (executingBatches.has(batchExecutionKey)) break;
+        executingBatches.add(batchExecutionKey);
+      }
+      try {
+        await performEvmOperation(
+          requestHandler,
+          requestData.request,
+          tab,
+          requestData.dappInfo?.domain ?? domain,
+          origin,
+          extraData,
+          requestData.dappInfo?.requestSource,
+        );
+      } finally {
+        executingBatches.delete(batchExecutionKey);
+      }
 
       break;
 
@@ -497,8 +513,7 @@ const previewEvmDecryptMessage = async (
   }
   const account = requestHandler.accounts.find((account: EvmAccount) => {
     return (
-      account.wallet.address.toLowerCase() ===
-      accountAddress.toLowerCase()
+      account.wallet.address.toLowerCase() === accountAddress.toLowerCase()
     );
   });
   if (!account) {
@@ -508,6 +523,84 @@ const previewEvmDecryptMessage = async (
 };
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  const isExtensionPage =
+    sender.id === chrome.runtime.id &&
+    !!sender.url &&
+    sender.url.startsWith(chrome.runtime.getURL(''));
+  if (
+    [
+      BackgroundCommand.EVM_TRANSACTION_SUBMISSION,
+      BackgroundCommand.PREVIEW_EVM_CALLS,
+      BackgroundCommand.GET_EVM_CALLS_STATUS,
+    ].includes(message?.command)
+  ) {
+    if (!isExtensionPage) {
+      sendResponse({
+        success: false,
+        error: { code: 4100, message: 'Extension page required' },
+      });
+      return false;
+    }
+    void (async () => {
+      await pendingRequestRehydration;
+      if (message.command === BackgroundCommand.EVM_TRANSACTION_SUBMISSION) {
+        return EvmSubmissionClientUtils.execute(message.value);
+      }
+      const handler = await EvmRequestHandler.getFromLocalStorage();
+      const record = handler.getRequestDataByLocator(message.value.locator);
+      if (!record?.request || !record.dappInfo)
+        throw { code: 4100, message: 'Pending request not found' };
+      const locator = handler.getRequestLocator(record)!;
+      if (
+        message.command === BackgroundCommand.PREVIEW_EVM_CALLS &&
+        record.request.method === EvmRequestMethod.WALLET_SEND_CALLS
+      ) {
+        const accounts = await EvmCallBatchModule.getEligibleAccounts(
+          record.dappInfo.origin,
+        );
+        const addresses = accounts.map((account) => account.wallet.address);
+        try {
+          const preview = await EvmCallBatchModule.prepare(
+            record.request,
+            locator,
+            message.value.from,
+          );
+          return { preview, addresses };
+        } catch {
+          return { addresses };
+        }
+      }
+      if (
+        message.command === BackgroundCommand.GET_EVM_CALLS_STATUS &&
+        record.request.method === EvmRequestMethod.WALLET_SHOW_CALLS_STATUS
+      ) {
+        return EvmTransactionSubmissionModule.getStatus(
+          record.request.params[0],
+          record.dappInfo.origin,
+        );
+      }
+      throw { code: -32602, message: 'Unexpected batch request' };
+    })()
+      .then((result) => sendResponse({ success: true, result }))
+      .catch((error) =>
+        sendResponse({
+          success: false,
+          error: {
+            code: typeof error?.code === 'number' ? error.code : -32000,
+            message:
+              typeof error?.message === 'string'
+                ? error.message
+                : 'Unable to prepare batch',
+          },
+        }),
+      );
+    return true;
+  }
+  if (
+    message?.command === BackgroundCommand.ACCEPT_EVM_TRANSACTION &&
+    !isExtensionPage
+  )
+    return false;
   if (
     message &&
     typeof message === 'object' &&

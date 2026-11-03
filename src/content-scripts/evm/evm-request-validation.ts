@@ -7,14 +7,15 @@ import {
   ProviderRpcError,
   ProviderRpcErrorList,
 } from '@interfaces/evm-provider.interface';
+import { AddChainRequest } from '@popup/evm/interfaces/evm-requests.interfaces';
 import {
   EvmTransactionType,
   getAllTransactionTypes,
   ProviderTransactionData,
 } from '@popup/evm/interfaces/evm-transactions.interface';
-import { AddChainRequest } from '@popup/evm/interfaces/evm-requests.interfaces';
 import { EvmRpcUrlUtils } from '@popup/evm/utils/evm-rpc-url.utils';
 import { EvmAddressUtils } from 'src/utils/evm/evm-address.utils';
+import { EvmCallBatchValidationUtils } from 'src/utils/evm/evm-call-batch-validation.utils';
 import { EvmEncryptedMessageUtils } from 'src/utils/evm/evm-encrypted-message.utils';
 import { RequestPayloadUtils } from 'src/utils/request-payload.utils';
 
@@ -52,8 +53,7 @@ const assertEvmAddressParam = (address: unknown) => {
 const getSafeAddChainRpcUrls = (rpcUrls: unknown[]): string[] =>
   rpcUrls.filter(
     (rpcUrl): rpcUrl is string =>
-      typeof rpcUrl === 'string' &&
-      EvmRpcUrlUtils.isValidHttpsRpcUrl(rpcUrl),
+      typeof rpcUrl === 'string' && EvmRpcUrlUtils.isValidHttpsRpcUrl(rpcUrl),
   );
 
 export const validateEvmRequest = (request: unknown): EvmRequest => {
@@ -109,7 +109,26 @@ export const validateRequest = (
   method: EvmRequestMethod,
   params: any,
 ): boolean => {
+  console.log('validateRequest', method, params);
   switch (method) {
+    case EvmRequestMethod.WALLET_SEND_CALLS:
+      EvmCallBatchValidationUtils.validateSendCalls(assertParamsArray(params));
+      break;
+    case EvmRequestMethod.WALLET_GET_CAPABILITIES:
+      EvmCallBatchValidationUtils.validateGetCapabilities(
+        assertParamsArray(params),
+      );
+      break;
+    case EvmRequestMethod.WALLET_GET_CALLS_STATUS:
+    case EvmRequestMethod.WALLET_SHOW_CALLS_STATUS:
+      if (assertParamsArray(params).length !== 1) {
+        throw EvmCallBatchValidationUtils.error(
+          -32602,
+          'Expected a batch identifier',
+        );
+      }
+      EvmCallBatchValidationUtils.assertId(params[0]);
+      break;
     case EvmRequestMethod.SEND_TRANSACTION: {
       const requestParams = assertParamsArray(params ?? []);
       const transactionParams = requestParams[0] as

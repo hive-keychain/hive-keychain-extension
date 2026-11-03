@@ -1,3 +1,5 @@
+import { SendCalls } from 'src/dialog/evm/requests/send-calls/send-calls.component';
+import { CallsStatus } from 'src/dialog/evm/requests/send-calls/calls-status.component';
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
 import { AddChain } from '@dialog/evm/requests/add-chain/add-chain';
@@ -378,6 +380,19 @@ export const RequestConfirmation = ({
             />
           );
         }
+
+        case EvmRequestMethod.WALLET_SEND_CALLS:
+          return (
+            <SendCalls
+              request={request}
+              data={displayedMessage}
+              afterCancel={afterCancel}
+              isActive={isActive}
+              activationKey={activationKey}
+            />
+          );
+        case EvmRequestMethod.WALLET_SHOW_CALLS_STATUS:
+          return <CallsStatus data={displayedMessage} />;
 
         case EvmRequestMethod.WALLET_REQUEST_PERMISSIONS: {
           const requestedPermission = Object.keys(request.params[0])[0];
