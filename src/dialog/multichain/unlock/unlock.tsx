@@ -1,8 +1,10 @@
+import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
-import React, { useEffect, useState } from 'react';
+import { VaultKey } from '@reference-data/vault-message-key.enum';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
@@ -12,8 +14,9 @@ import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { DialogCaption } from 'src/dialog/components/dialog-caption/dialog-caption.component';
 import { DialogHeader } from 'src/dialog/components/dialog-header/dialog-header.component';
 import { CommunicationUtils } from 'src/utils/communication.utils';
-
 import { I18nUtils } from 'src/utils/i18n.utils';
+import VaultUtils from 'src/utils/vault.utils';
+
 type Props = {
   data: UnlockMessage;
   wrongMk?: boolean;
@@ -38,29 +41,71 @@ export default ({ data, index }: Props) => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [wrongMk, setWrongMk] = useState(false);
+  const isLoginPendingRef = useRef(false);
+  const isVaultCheckPendingRef = useRef(false);
 
   useEffect(() => {
     setWrongMk(data.msg.wrongMk!);
     if (data.msg.wrongMk && password.length > 0) {
       setLoading(false);
+      isLoginPendingRef.current = false;
     } else if (password.length === 0) {
       setLoading(false);
+      isLoginPendingRef.current = false;
     }
   }, [data]);
 
-  const login = () => {
+  const sendUnlockRequest = useCallback((mk: string) => {
+    if (isLoginPendingRef.current) {
+      return;
+    }
+
+    isLoginPendingRef.current = true;
     setLoading(true);
-    CommunicationUtils.runtimeSendMessage({
+    void CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.UNLOCK_FROM_DIALOG,
       value: {
         data,
         tab: data.tab,
-        mk: password,
+        mk,
         domain: data.domain,
         request_id: data.msg.data.request_id,
       },
     });
-  };
+  }, [data]);
+
+  useEffect(() => {
+    let isCancelled = false;
+    const onWalletLockStateChanged = (message: BackgroundMessage) => {
+      if (
+        message.command !==
+          BackgroundCommand.EVM_WALLET_LOCK_STATE_CHANGED ||
+        isLoginPendingRef.current ||
+        isVaultCheckPendingRef.current
+      ) {
+        return;
+      }
+
+      isVaultCheckPendingRef.current = true;
+      void VaultUtils.getValueFromVault(VaultKey.__MK)
+        .then((mkFromStorage) => {
+          if (!isCancelled && mkFromStorage && !isLoginPendingRef.current) {
+            sendUnlockRequest(mkFromStorage);
+          }
+        })
+        .finally(() => {
+          isVaultCheckPendingRef.current = false;
+        });
+    };
+
+    chrome.runtime.onMessage.addListener(onWalletLockStateChanged);
+    return () => {
+      isCancelled = true;
+      chrome.runtime.onMessage.removeListener(onWalletLockStateChanged);
+    };
+  }, [sendUnlockRequest]);
+
+  const login = () => sendUnlockRequest(password);
 
   return (
     <div className="unlock-page">

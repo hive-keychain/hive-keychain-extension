@@ -1,5 +1,6 @@
-import { act, waitFor } from '@testing-library/react';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { act, waitFor } from '@testing-library/react';
 import React from 'react';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/fake-store';
 import {
@@ -22,6 +23,8 @@ describe('ChainRouter startup', () => {
   beforeEach(() => {
     LoadingValuesConfiguration.set();
     jest.useFakeTimers();
+    chrome.runtime.onMessage.addListener = jest.fn();
+    chrome.runtime.onMessage.removeListener = jest.fn();
     jest.spyOn(VaultUtils, 'getValueFromVault').mockResolvedValue('');
     jest
       .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
@@ -89,5 +92,113 @@ describe('ChainRouter startup', () => {
     await waitFor(() => {
       expect(queryByTestId('unlocked-app')).not.toBeNull();
     });
+  });
+
+  it('unlocks an open surface when the wallet is unlocked from a dialog', async () => {
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockImplementation(async (key) => {
+        if (key === LocalStorageKeyEnum.HAS_FINISHED_SIGNUP) return true;
+        if (key === LocalStorageKeyEnum.KEYLESS_KEYCHAIN_ENABLED) return false;
+        return undefined;
+      });
+    const getMkSpy = jest.spyOn(VaultUtils, 'getValueFromVault');
+    const { queryByTestId, store } = customRender(
+      <ChainRouterComponent screen={undefined as any} />,
+      {
+        initialState: {
+          ...initialEmptyStateStore,
+          mk: '',
+          hasFinishedSignup: true,
+        },
+      },
+    );
+
+    await waitFor(() => {
+      expect(queryByTestId('sign-in-page')).not.toBeNull();
+    });
+
+    getMkSpy.mockResolvedValue('dialog-mk');
+    const walletLockStateListener = (
+      chrome.runtime.onMessage.addListener as jest.Mock
+    ).mock.calls[0][0];
+
+    await act(async () => {
+      walletLockStateListener({
+        command: BackgroundCommand.EVM_WALLET_LOCK_STATE_CHANGED,
+      });
+      await Promise.resolve();
+    });
+
+    await waitFor(() => {
+      expect(store.getState().mk).toBe('dialog-mk');
+      expect(queryByTestId('unlocked-app')).not.toBeNull();
+    });
+  });
+
+  it('stays locked when the vault has no master key', async () => {
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockImplementation(async (key) => {
+        if (key === LocalStorageKeyEnum.HAS_FINISHED_SIGNUP) return true;
+        if (key === LocalStorageKeyEnum.KEYLESS_KEYCHAIN_ENABLED) return false;
+        return undefined;
+      });
+    const { queryByTestId, store } = customRender(
+      <ChainRouterComponent screen={undefined as any} />,
+      {
+        initialState: {
+          ...initialEmptyStateStore,
+          mk: '',
+          hasFinishedSignup: true,
+        },
+      },
+    );
+
+    await waitFor(() => {
+      expect(queryByTestId('sign-in-page')).not.toBeNull();
+    });
+
+    const walletLockStateListener = (
+      chrome.runtime.onMessage.addListener as jest.Mock
+    ).mock.calls[0][0];
+    await act(async () => {
+      walletLockStateListener({
+        command: BackgroundCommand.EVM_WALLET_LOCK_STATE_CHANGED,
+      });
+      await Promise.resolve();
+    });
+
+    expect(store.getState().mk).toBe('');
+    expect(queryByTestId('sign-in-page')).not.toBeNull();
+  });
+
+  it('ignores unrelated messages and removes the listener on unmount', async () => {
+    const getMkSpy = jest.spyOn(VaultUtils, 'getValueFromVault');
+    const { unmount } = customRender(
+      <ChainRouterComponent screen={undefined as any} />,
+      {
+        initialState: {
+          ...initialEmptyStateStore,
+          mk: '',
+          hasFinishedSignup: true,
+        },
+      },
+    );
+
+    await waitFor(() => {
+      expect(getMkSpy).toHaveBeenCalledTimes(1);
+    });
+
+    const walletLockStateListener = (
+      chrome.runtime.onMessage.addListener as jest.Mock
+    ).mock.calls[0][0];
+    walletLockStateListener({ command: BackgroundCommand.PING });
+    expect(getMkSpy).toHaveBeenCalledTimes(1);
+
+    unmount();
+    expect(chrome.runtime.onMessage.removeListener).toHaveBeenCalledWith(
+      walletLockStateListener,
+    );
   });
 });

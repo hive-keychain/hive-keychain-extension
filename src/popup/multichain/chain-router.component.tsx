@@ -19,7 +19,7 @@ import { UnlockedAppComponent } from '@popup/multichain/unlocked-app.component';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { MessageContainerComponent } from 'src/common-ui/message-container/message-container.component';
 import { ModalComponent } from 'src/common-ui/modal/modal.component';
@@ -58,6 +58,9 @@ const ChainRouter = ({
   const [keylessKeychainEnabled, setKeylessKeychainEnabled] = useState<
     boolean | null
   >(null);
+  const mkRef = useRef(mk);
+  const isUnlockSyncPendingRef = useRef(false);
+  mkRef.current = mk;
   const isRouterReady =
     hasHydratedMk &&
     hasFinishedSignup !== null &&
@@ -85,6 +88,41 @@ const ChainRouter = ({
       setKeylessKeychainEnabled(!!enabled);
     });
   }, []);
+
+  useEffect(() => {
+    const syncUnlockedMkFromVault = async () => {
+      isUnlockSyncPendingRef.current = true;
+      try {
+        const mkFromStorage = await VaultUtils.getValueFromVault(VaultKey.__MK);
+        if (!mkFromStorage || mkRef.current) {
+          return;
+        }
+
+        mkRef.current = mkFromStorage;
+        setMk(mkFromStorage, false);
+      } finally {
+        isUnlockSyncPendingRef.current = false;
+      }
+    };
+
+    const onWalletLockStateChanged = (message: BackgroundMessage) => {
+      if (
+        message.command !==
+          BackgroundCommand.EVM_WALLET_LOCK_STATE_CHANGED ||
+        mkRef.current ||
+        isUnlockSyncPendingRef.current
+      ) {
+        return;
+      }
+
+      void syncUnlockedMkFromVault();
+    };
+
+    chrome.runtime.onMessage.addListener(onWalletLockStateChanged);
+    return () => {
+      chrome.runtime.onMessage.removeListener(onWalletLockStateChanged);
+    };
+  }, [setMk]);
 
   useEffect(() => {
     if (
