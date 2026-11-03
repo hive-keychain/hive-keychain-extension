@@ -50,6 +50,31 @@ import {
 import Logger from 'src/utils/logger.utils';
 
 let pendingRequestRehydration: Promise<void> = Promise.resolve();
+const ENS_HOSTNAME_PATTERN = /^(?:[a-z0-9-]+\.)+eth$/i;
+
+const handleEnsNavigationError = (
+  details: chrome.webNavigation.WebNavigationFramedErrorCallbackDetails,
+): void => {
+  if (details.frameId !== 0 || details.tabId < 0) {
+    return;
+  }
+
+  try {
+    const { hostname, protocol } = new URL(details.url);
+    if (
+      (protocol !== 'http:' && protocol !== 'https:') ||
+      !ENS_HOSTNAME_PATTERN.test(hostname)
+    ) {
+      return;
+    }
+
+    void chrome.tabs.update(details.tabId, {
+      url: `https://app.ens.domains/${hostname}`,
+    });
+  } catch {
+    return;
+  }
+};
 
 const initializeServiceWorker = async () => {
   Object.assign(global, { contextType: 'service_worker' });
@@ -67,16 +92,8 @@ const initializeServiceWorker = async () => {
   EvmPendingTransactionsNotifications.registerClickListener();
   void EvmTransactionsUtils.rehydratePendingTransactions();
 
-  chrome.webNavigation.onBeforeNavigate.addListener((details: any) => {
-    if (details.url?.endsWith('.eth/')) {
-      const regex = /(?:https?:\/\/)?([a-z0-9-]+\.eth)\b/i;
-      const match = details.url.match(regex);
-      if (match) {
-        chrome.tabs.update(details.tabId, {
-          url: `https://app.ens.domains/${match[1]}`,
-        });
-      }
-    }
+  chrome.webNavigation.onErrorOccurred.addListener(handleEnsNavigationError, {
+    url: [{ schemes: ['http', 'https'], hostSuffix: '.eth' }],
   });
 };
 
@@ -515,3 +532,4 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 export const EvmServiceWorker = { initializeServiceWorker };
+export { handleEnsNavigationError };

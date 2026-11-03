@@ -98,6 +98,40 @@ describe('evm service worker', () => {
     return addListenerSpy.mock.calls[addListenerSpy.mock.calls.length - 1][0];
   };
 
+  it('redirects failed top-frame ENS navigation to the ENS manager', async () => {
+    const { handleEnsNavigationError } = await import(
+      'src/background/evm/evm-service-worker'
+    );
+
+    handleEnsNavigationError({
+      frameId: 0,
+      tabId: 12,
+      url: 'https://alice.eth/',
+    } as chrome.webNavigation.WebNavigationFramedErrorCallbackDetails);
+
+    expect(chrome.tabs.update).toHaveBeenCalledWith(12, {
+      url: 'https://app.ens.domains/alice.eth',
+    });
+  });
+
+  it.each([
+    ['iframe navigation', 3, 'https://alice.eth/'],
+    ['ENS-looking path', 0, 'https://example.com/alice.eth/'],
+    ['unrelated hostname', 0, 'https://example.com/'],
+  ])('ignores failed %s', async (_case, frameId, url) => {
+    const { handleEnsNavigationError } = await import(
+      'src/background/evm/evm-service-worker'
+    );
+
+    handleEnsNavigationError({
+      frameId,
+      tabId: 12,
+      url,
+    } as chrome.webNavigation.WebNavigationFramedErrorCallbackDetails);
+
+    expect(chrome.tabs.update).not.toHaveBeenCalled();
+  });
+
   it('persists a custom chain and retries the original switch request', async () => {
     const requestHandler = {
       setRequestDialogByLocator: jest.fn(),
@@ -352,13 +386,17 @@ describe('evm service worker', () => {
       expect.objectContaining({ domain: 'example.app' }),
       1,
     );
-    expect(tabsSendMessageMock).toHaveBeenCalledWith(12, {
-      command: BackgroundCommand.SEND_EVM_RESPONSE,
-      value: {
-        requestId: 101,
-        result: ['0xabc123'],
+    expect(tabsSendMessageMock).toHaveBeenCalledWith(
+      12,
+      {
+        command: BackgroundCommand.SEND_EVM_RESPONSE,
+        value: {
+          requestId: 101,
+          result: ['0xabc123'],
+        },
       },
-    });
+      undefined,
+    );
   });
 
   it('ignores EVM responses without a complete request locator', async () => {
@@ -454,13 +492,17 @@ describe('evm service worker', () => {
     await result;
 
     expect(settled).toBe(true);
-    expect(tabsSendMessageMock).toHaveBeenCalledWith(12, {
-      command: BackgroundCommand.SEND_EVM_ERROR,
-      value: {
-        requestId: 102,
-        error: expect.objectContaining({ code: 4001 }),
+    expect(tabsSendMessageMock).toHaveBeenCalledWith(
+      12,
+      {
+        command: BackgroundCommand.SEND_EVM_ERROR,
+        value: {
+          requestId: 102,
+          error: expect.objectContaining({ code: 4001 }),
+        },
       },
-    });
+      undefined,
+    );
   });
 
   it('awaits the EVM operation after confirming a transaction request', async () => {
@@ -515,6 +557,7 @@ describe('evm service worker', () => {
       'stored.example.app',
       'https://example.app',
       { gasLimit: '0x5208' },
+      undefined,
     );
     expect(settled).toBe(false);
 
@@ -569,6 +612,7 @@ describe('evm service worker', () => {
       'example.app',
       'https://example.app',
       { gasLimit: '0x5208' },
+      undefined,
     );
     expect(performEvmOperationMock).not.toHaveBeenCalledWith(
       expect.anything(),
