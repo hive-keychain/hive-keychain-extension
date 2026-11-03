@@ -18,6 +18,7 @@ import { handleNonSupportedChain } from '@background/evm/requests/logic/handle-n
 import { requestAddEvmChain } from '@background/evm/requests/logic/request-add-evm-chain.logic';
 import { resolveRequestChainId } from '@background/evm/requests/logic/resolve-request-chain-id.logic';
 import { EvmWatchAssetUtils } from '@background/evm/utils/watch-asset.utils';
+import { EvmTransactionSubmissionModule } from '@background/evm/evm-transaction-submission.module';
 import MkModule from '@background/hive/modules/mk.module';
 import {
   initializeWallet,
@@ -66,6 +67,45 @@ export const initEvmRequestHandler = async (
 ) => {
   Logger.info('Initializing EVM request logic');
 
+  // Capability discovery and batch IDs are independent of the currently selected chain.
+  if (
+    request.method === EvmRequestMethod.WALLET_GET_CAPABILITIES ||
+    request.method === EvmRequestMethod.WALLET_GET_CALLS_STATUS
+  ) {
+    await evmRequestWithoutConfirmation(
+      requestHandler,
+      tab!,
+      request,
+      dappInfo,
+    );
+    return;
+  }
+  if (request.method === EvmRequestMethod.WALLET_SHOW_CALLS_STATUS) {
+    try {
+      await EvmTransactionSubmissionModule.getBatch(
+        request.params[0],
+        dappInfo.origin,
+      );
+      await evmRequestWithConfirmation(requestHandler, tab!, request, dappInfo);
+    } catch {
+      const error = { code: 5730, message: 'Unknown batch identifier' };
+      await handleEvmError(
+        requestHandler,
+        tab!,
+        request,
+        error,
+        error.message,
+        [],
+        dappInfo.origin,
+        true,
+        dappInfo.requestSource,
+      );
+    }
+    return;
+  }
+
+  const isCallBatch = request.method === EvmRequestMethod.WALLET_SEND_CALLS;
+
   const resolvedRequestChainId = resolveRequestChainId(request);
   const currentProviderChainId = await EvmChainUtils.getLastEvmChainIdForOrigin(
     dappInfo.origin,
@@ -74,6 +114,7 @@ export const initEvmRequestHandler = async (
   const providerChainId = request.chainId ?? currentProviderChainId;
 
   if (
+    !isCallBatch &&
     request.chainId &&
     currentProviderChainId &&
     !areEvmChainIdsEqual(request.chainId, currentProviderChainId)
@@ -94,6 +135,7 @@ export const initEvmRequestHandler = async (
   }
 
   if (
+    !isCallBatch &&
     requestArgumentChainId &&
     providerChainId &&
     !areEvmChainIdsEqual(requestArgumentChainId, providerChainId)
@@ -129,6 +171,25 @@ export const initEvmRequestHandler = async (
       (setupChains.find(
         (c) => c.chainId.toLowerCase() === normalizedChainId,
       ) as EvmChain);
+  }
+
+  if (
+    isCallBatch &&
+    !setupChains.some((entry) => areEvmChainIdsEqual(entry.chainId, chainId!))
+  ) {
+    const error = { code: 5710, message: 'Unsupported batch chain' };
+    await handleEvmError(
+      requestHandler,
+      tab!,
+      request,
+      error,
+      error.message,
+      [],
+      dappInfo.origin,
+      true,
+      dappInfo.requestSource,
+    );
+    return;
   }
 
   if (EvmWatchAssetUtils.isWatchAssetRequest(request)) {

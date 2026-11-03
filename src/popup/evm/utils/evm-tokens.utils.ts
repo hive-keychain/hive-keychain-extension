@@ -1725,6 +1725,7 @@ const buildBalanceDetails = (
   return {
     symbol: tokenInfo.symbol,
     before: `${balance.formattedBalance} ${tokenInfo.symbol}`,
+    rawBefore: balance.balanceInteger.toString(),
     estimatedAfter: `${EvmFormatUtils.formatTokenBalance(
       estimatedAfterBalance.toString(),
       getBalanceDecimals(tokenInfo),

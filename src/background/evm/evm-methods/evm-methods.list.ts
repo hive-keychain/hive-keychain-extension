@@ -73,6 +73,9 @@ export enum EvmRequestMethod {
   WEB3_CLIENT_VERSION = 'web3_clientVersion',
   WEB3_SHA3 = 'web3_sha3',
   WALLET_GET_CAPABILITIES = 'wallet_getCapabilities',
+  WALLET_SEND_CALLS = 'wallet_sendCalls',
+  WALLET_GET_CALLS_STATUS = 'wallet_getCallsStatus',
+  WALLET_SHOW_CALLS_STATUS = 'wallet_showCallsStatus',
 
   ETH_SIGN_DATA = 'eth_signTypedData',
   ETH_SIGN_DATA_1 = 'eth_signTypedData_v1',
@@ -95,6 +98,8 @@ export const doesMethodExist = (method: string) => {
 };
 
 export const EvmRestrictedMethods = [
+  EvmRequestMethod.WALLET_SEND_CALLS,
+  EvmRequestMethod.WALLET_SHOW_CALLS_STATUS,
   EvmRequestMethod.WALLET_ADD_ETH_CHAIN,
   EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN,
   EvmRequestMethod.WALLET_REQUEST_PERMISSIONS,
@@ -130,6 +135,7 @@ export const EvmMethodPermissionMap: {
 };
 
 export const EvmUnrestrictedMethods = [
+  EvmRequestMethod.WALLET_GET_CALLS_STATUS,
   EvmRequestMethod.WALLET_REVOKE_PERMISSION,
   EvmRequestMethod.GET_ACCOUNTS,
   EvmRequestMethod.GET_BLOCK_NUMBER,

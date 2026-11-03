@@ -10,9 +10,9 @@ interface Props {
 }
 
 export const BalanceChangeCard = ({ balanceInfo }: Props) => {
-  const balanceRows = [balanceInfo.mainBalance, balanceInfo.feeBalance].filter(
-    (balance): balance is BalanceDetails => !!balance,
-  );
+  const balanceRows = (
+    balanceInfo.balances ?? [balanceInfo.mainBalance, balanceInfo.feeBalance]
+  ).filter((balance): balance is BalanceDetails => !!balance);
   const insufficientBalance = balanceRows.find(
     (balance) => balance.insufficientBalance,
   );

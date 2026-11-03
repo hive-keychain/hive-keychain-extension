@@ -9,6 +9,7 @@ const accountAuthorizationMethods = new Set<EvmRequestMethod>([
   EvmRequestMethod.GET_ENCRYPTION_KEY,
   EvmRequestMethod.ETH_DECRYPT,
   EvmRequestMethod.SEND_TRANSACTION,
+  EvmRequestMethod.WALLET_SEND_CALLS,
 ]);
 
 const requiresAccountAuthorization = (request: EvmRequest): boolean =>
@@ -21,6 +22,7 @@ const getRequestedAccountAddress = (
 
   switch (request.method) {
     case EvmRequestMethod.SEND_TRANSACTION:
+    case EvmRequestMethod.WALLET_SEND_CALLS:
       requestedAccount = (request.params?.[0] as { from?: unknown } | undefined)
         ?.from;
       break;
@@ -45,11 +47,14 @@ const isRequestedAccountAuthorizedForOrigin = async (
   origin: string,
 ): Promise<boolean> => {
   const requestedAccount = getRequestedAccountAddress(request);
+  const connectedWallets = await EvmWalletUtils.getConnectedWallets(origin);
   if (!requestedAccount) {
-    return false;
+    return (
+      request.method === EvmRequestMethod.WALLET_SEND_CALLS &&
+      connectedWallets.length > 0
+    );
   }
 
-  const connectedWallets = await EvmWalletUtils.getConnectedWallets(origin);
   const normalizedRequestedAccount = requestedAccount.toLowerCase();
   return connectedWallets.some(
     (connectedWallet) =>

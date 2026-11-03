@@ -1,4 +1,6 @@
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
+import { EvmCallBatchModule } from '@background/evm/evm-call-batch.module';
+import { EvmTransactionSubmissionModule } from '@background/evm/evm-transaction-submission.module';
 import {
   EvmRequestHandler,
   EvmRequestLocator,
@@ -149,6 +151,17 @@ export const performEvmOperation = async (
 
   try {
     switch (request.method) {
+      case EvmRequestMethod.WALLET_SEND_CALLS:
+        result = await EvmCallBatchModule.submit(
+          request,
+          locator,
+          extraData?.from,
+          extraData?.fees,
+        );
+        break;
+      case EvmRequestMethod.WALLET_SHOW_CALLS_STATUS:
+        result = null;
+        break;
       case EvmRequestMethod.ETH_SIGN_DATA_4: {
         message = await signData(
           requestHandler,
@@ -240,6 +253,11 @@ export const performEvmOperation = async (
       }
     }
     await requestHandler.removeRequestByLocator(locator);
+    if (request.method === EvmRequestMethod.WALLET_SEND_CALLS) {
+      void EvmTransactionSubmissionModule.reconcile().catch(() =>
+        Logger.warn('EVM batch submission recovery failed'),
+      );
+    }
   } catch (err) {
     const error = err as any;
     if (
@@ -253,7 +271,11 @@ export const performEvmOperation = async (
       return;
     }
 
-    const etherJSError = getErrorFromEtherJS(error.code);
+    const etherJSError =
+      request.method === EvmRequestMethod.WALLET_SEND_CALLS &&
+      typeof error.code === 'number'
+        ? { code: error.code, message: error.message }
+        : getErrorFromEtherJS(error.code);
     const errorMessage =
       error instanceof KeychainError ? error.message : etherJSError.message;
     const errorMessageParams =

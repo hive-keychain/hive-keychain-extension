@@ -81,6 +81,9 @@ describe('evm service worker', () => {
   beforeEach(() => {
     jest.resetModules();
     jest.clearAllMocks();
+    (chrome.runtime.getURL as jest.Mock).mockImplementation(
+      (path: string) => `chrome-extension://keychain/${path}`,
+    );
     initEvmRequestHandlerMock.mockResolvedValue(undefined);
     performEvmOperationMock.mockResolvedValue(undefined);
     setAccountsForOriginMock.mockResolvedValue([]);
@@ -352,13 +355,17 @@ describe('evm service worker', () => {
       expect.objectContaining({ domain: 'example.app' }),
       1,
     );
-    expect(tabsSendMessageMock).toHaveBeenCalledWith(12, {
-      command: BackgroundCommand.SEND_EVM_RESPONSE,
-      value: {
-        requestId: 101,
-        result: ['0xabc123'],
+    expect(tabsSendMessageMock).toHaveBeenCalledWith(
+      12,
+      {
+        command: BackgroundCommand.SEND_EVM_RESPONSE,
+        value: {
+          requestId: 101,
+          result: ['0xabc123'],
+        },
       },
-    });
+      undefined,
+    );
   });
 
   it('ignores EVM responses without a complete request locator', async () => {
@@ -454,13 +461,17 @@ describe('evm service worker', () => {
     await result;
 
     expect(settled).toBe(true);
-    expect(tabsSendMessageMock).toHaveBeenCalledWith(12, {
-      command: BackgroundCommand.SEND_EVM_ERROR,
-      value: {
-        requestId: 102,
-        error: expect.objectContaining({ code: 4001 }),
+    expect(tabsSendMessageMock).toHaveBeenCalledWith(
+      12,
+      {
+        command: BackgroundCommand.SEND_EVM_ERROR,
+        value: {
+          requestId: 102,
+          error: expect.objectContaining({ code: 4001 }),
+        },
       },
-    });
+      undefined,
+    );
   });
 
   it('awaits the EVM operation after confirming a transaction request', async () => {
@@ -495,7 +506,10 @@ describe('evm service worker', () => {
           extraData: { gasLimit: '0x5208' },
         },
       } as any,
-      {} as any,
+      {
+        id: chrome.runtime.id,
+        url: chrome.runtime.getURL('dialog.html'),
+      } as any,
       jest.fn(),
     ).then(() => {
       settled = true;
@@ -515,6 +529,7 @@ describe('evm service worker', () => {
       'stored.example.app',
       'https://example.app',
       { gasLimit: '0x5208' },
+      undefined,
     );
     expect(settled).toBe(false);
 
@@ -558,7 +573,10 @@ describe('evm service worker', () => {
           extraData: { gasLimit: '0x5208' },
         },
       } as any,
-      {} as any,
+      {
+        id: chrome.runtime.id,
+        url: chrome.runtime.getURL('dialog.html'),
+      } as any,
       jest.fn(),
     );
 
@@ -569,6 +587,7 @@ describe('evm service worker', () => {
       'example.app',
       'https://example.app',
       { gasLimit: '0x5208' },
+      undefined,
     );
     expect(performEvmOperationMock).not.toHaveBeenCalledWith(
       expect.anything(),
@@ -578,6 +597,71 @@ describe('evm service worker', () => {
       expect.anything(),
       expect.anything(),
     );
+  });
+
+  it.each([
+    BackgroundCommand.PREVIEW_EVM_CALLS,
+    BackgroundCommand.GET_EVM_CALLS_STATUS,
+    BackgroundCommand.EVM_TRANSACTION_SUBMISSION,
+  ])(
+    'rejects batch internal command %s from a content script',
+    async (command) => {
+      const listener = await importListener();
+      const response = jest.fn();
+      expect(
+        listener(
+          { command, value: {} },
+          {
+            id: chrome.runtime.id,
+            url: 'https://example.app',
+            tab: { id: 1 },
+          } as any,
+          response,
+        ),
+      ).toBe(false);
+      expect(response).toHaveBeenCalledWith({
+        success: false,
+        error: { code: 4100, message: 'Extension page required' },
+      });
+      expect(getFromLocalStorageMock).not.toHaveBeenCalled();
+    },
+  );
+
+  it('does not execute duplicate batch confirmations while the first is running', async () => {
+    const request = {
+      request_id: 999,
+      method: EvmRequestMethod.WALLET_SEND_CALLS,
+      params: [],
+    };
+    const requestData = {
+      request,
+      dappInfo: { origin: 'https://example.app', domain: 'example.app' },
+    };
+    getFromLocalStorageMock.mockResolvedValue({
+      getRequestDataByLocator: jest.fn(() => requestData),
+    });
+    const operation = createDeferred();
+    performEvmOperationMock.mockReturnValue(operation.promise);
+    const listener = await importListener();
+    const message = {
+      command: BackgroundCommand.ACCEPT_EVM_TRANSACTION,
+      value: {
+        request,
+        origin: 'https://example.app',
+        domain: 'example.app',
+        tab: 1,
+      },
+    };
+    const sender = {
+      id: chrome.runtime.id,
+      url: chrome.runtime.getURL('dialog.html'),
+    };
+    const first = listener(message, sender, jest.fn());
+    const second = listener(message, sender, jest.fn());
+    await flushAsync();
+    expect(performEvmOperationMock).toHaveBeenCalledTimes(1);
+    operation.resolve();
+    await Promise.all([first, second]);
   });
 
   it('does not perform an EVM operation when the accepted request locator does not match', async () => {
@@ -602,7 +686,10 @@ describe('evm service worker', () => {
           extraData: { gasLimit: '0x5208' },
         },
       } as any,
-      {} as any,
+      {
+        id: chrome.runtime.id,
+        url: chrome.runtime.getURL('dialog.html'),
+      } as any,
       jest.fn(),
     );
 

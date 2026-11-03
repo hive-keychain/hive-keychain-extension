@@ -177,6 +177,8 @@ export function useSendTransaction(
     transactionData,
     shouldDisplayBalanceChange,
     balanceInfo,
+    tokenInfo,
+    transferAmount,
     balanceInfoRefreshing,
     forceOpenGasFeePanelEvent,
     prefetchedMainTokenFromInit,

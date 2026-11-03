@@ -2,9 +2,13 @@ import { BalanceChangeCard } from '@dialog/components/balance-change-card/balanc
 import { BalanceChangeCardUtils } from '@dialog/components/balance-change-card/balance-change-card.utils';
 import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
+import { MessageContainerComponent } from '@common-ui/message-container/message-container.component';
+import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmTransactionWarning } from '@popup/evm/interfaces/evm-transactions.interface';
 import { PendingRequestSource } from '@interfaces/pending-request.interface';
 import { isPendingRequestSourceMatch } from '@background/multichain/pending-request.interface';
 import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
+import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EvmAccountPublic } from '@popup/evm/interfaces/wallet.interface';
 import { GasFeePanel } from '@popup/evm/pages/home/gas-fee-panel/gas-fee-panel.component';
 import { GasFeeUtils } from '@popup/evm/utils/gas-fee.utils';
@@ -14,7 +18,28 @@ import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { EvmLedgerDialogUtils } from 'src/dialog/evm/evm-ledger-dialog.utils';
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
+import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 import { useSendTransaction } from 'src/dialog/evm/requests/send-transaction/use-send-transaction';
+import { I18nUtils } from 'src/utils/i18n.utils';
+
+export interface TransactionReview {
+  ready: boolean;
+  fee?: GasFeeEstimationBase;
+  warningHook: useTransactionHook;
+  warnings: EvmTransactionWarning[];
+  warningKey: string;
+  nativeBalance?: string;
+  unableToReachBackend: boolean;
+  hasBlockingError: boolean;
+  shouldDisplayBlockButton: boolean;
+  tokenBalance?: {
+    contractAddress: string;
+    symbol: string;
+    decimals: number;
+    before: string;
+    amount: string;
+  };
+}
 
 interface Props {
   request: EvmRequest;
@@ -23,6 +48,9 @@ interface Props {
   afterCancel: (requestId: number, tab: number) => void;
   isActive?: boolean;
   activationKey?: string;
+  /** Embed the review in a batch with one shared approval and balance summary. */
+  onReviewChange?: (review: TransactionReview) => void;
+  onBatchWarningClick?: () => void;
 }
 
 export const SendTransaction = (props: Props) => {
@@ -33,6 +61,8 @@ export const SendTransaction = (props: Props) => {
     afterCancel,
     isActive = true,
     activationKey,
+    onReviewChange,
+    onBatchWarningClick,
   } = props;
 
   const {
@@ -43,6 +73,8 @@ export const SendTransaction = (props: Props) => {
     transactionData,
     shouldDisplayBalanceChange,
     balanceInfo,
+    tokenInfo,
+    transferAmount,
     balanceInfoRefreshing,
     forceOpenGasFeePanelEvent,
     prefetchedMainTokenFromInit,
@@ -183,6 +215,72 @@ export const SendTransaction = (props: Props) => {
     ? EvmLedgerDialogUtils.getLedgerConfirmationCaption(selectedAccount)
     : undefined;
 
+  const reviewReady = Boolean(
+    transactionHook.fields &&
+      transactionHook.ready &&
+      !transactionHook.loading &&
+      !transactionHook.hasBlockingError &&
+      !securityCheckPending &&
+      !feeSelectionPending &&
+      !quietRefreshPending &&
+      !insufficientBalancePending &&
+      !GasFeeUtils.isGasFeeEstimateInvalid(transactionHook.selectedFee),
+  );
+  const warnings = onReviewChange
+    ? transactionHook.getAllNotIgnoredWarnings()
+    : [];
+  const warningKey = JSON.stringify(
+    warnings.map(({ level, message, messageParams, warningKey }) => ({
+      level,
+      message,
+      messageParams,
+      warningKey,
+    })),
+  );
+  const tokenBalance =
+    tokenInfo?.type === EVMSmartContractType.ERC20 &&
+    'decimals' in tokenInfo &&
+    balanceInfo?.mainBalance.rawBefore !== undefined &&
+    transferAmount !== undefined &&
+    transferAmount > 0
+      ? {
+          contractAddress: tokenInfo.contractAddress,
+          symbol: tokenInfo.symbol,
+          decimals: tokenInfo.decimals,
+          before: balanceInfo.mainBalance.rawBefore,
+          amount: transferAmount.toString(),
+        }
+      : undefined;
+  const nativeBalance =
+    tokenInfo?.type === EVMSmartContractType.NATIVE
+      ? balanceInfo?.mainBalance.rawBefore
+      : balanceInfo?.feeBalance?.rawBefore;
+  useEffect(() => {
+    onReviewChange?.({
+      ready: reviewReady,
+      fee: transactionHook.selectedFee,
+      warningHook: transactionHook,
+      warnings,
+      warningKey,
+      tokenBalance,
+      nativeBalance,
+      unableToReachBackend: transactionHook.unableToReachBackend,
+      hasBlockingError: transactionHook.hasBlockingError,
+      shouldDisplayBlockButton: !!transactionHook.shouldDisplayBlockButton,
+    });
+  }, [
+    onReviewChange,
+    reviewReady,
+    transactionHook.selectedFee,
+    warningKey,
+    tokenBalance?.before,
+    tokenBalance?.amount,
+    nativeBalance,
+    transactionHook.unableToReachBackend,
+    transactionHook.hasBlockingError,
+    transactionHook.shouldDisplayBlockButton,
+  ]);
+
   const handleClickOnConfirm = () => {
     if (securityCheckPending || feeSelectionPending || quietRefreshPending) {
       return;
@@ -206,6 +304,60 @@ export const SendTransaction = (props: Props) => {
     afterCancel(request.request_id, data.tab);
   };
 
+  const transactionFields = (
+    <EvmTransactionWarningsComponent
+      warningHook={transactionHook}
+      onWarningClick={onBatchWarningClick}
+    />
+  );
+  const gasFeePanel = needsGasFeePanel ? (
+    <GasFeePanel
+      chain={chain!}
+      fromAddress={selectedAccount!.address}
+      prefetchedMainTokenInfo={prefetchedMainTokenFromInit}
+      selectedFee={transactionHook.selectedFee}
+      onSelectFee={transactionHook.setSelectedFee}
+      transactionType={transactionData!.type}
+      transactionData={transactionData}
+      refreshKey={gasRefreshKey}
+      resetCustomFeeSelectionKey={gasFeeSelectionResetKey}
+      isActive={isActive}
+      setErrorMessage={transactionHook.setErrorMessage}
+      onInitialEstimationComplete={onGasFeePanelInitialEstimationComplete}
+      onRefreshStateChange={setGasFeeRefreshing}
+      forceOpenGasFeePanelEvent={forceOpenGasFeePanelEvent}
+    />
+  ) : null;
+
+  if (onReviewChange) {
+    return (
+      <>
+        {transactionHook.fields && (
+          <>
+            <div className="operation-body">
+              <div className="fields">{transactionFields}</div>
+            </div>
+            {gasFeePanel}
+          </>
+        )}
+        {transactionHook.ready &&
+          (!transactionHook.fields || transactionHook.hasBlockingError) && (
+            <p role="alert">
+              {I18nUtils.getMessage('evm_batch_review_failed')}
+            </p>
+          )}
+        <LoadingComponent hide={!showLoading} caption={loadingCaption} />
+        {transactionHook.message && (
+          <MessageContainerComponent
+            message={transactionHook.message}
+            useBodyPortal
+            onResetMessage={() => transactionHook.setErrorMessage(undefined)}
+          />
+        )}
+      </>
+    );
+  }
+
   return (
     <>
       {transactionHook.fields && (
@@ -218,31 +370,10 @@ export const SendTransaction = (props: Props) => {
           tab={data.tab}
           title={transactionHook.fields.operationName!}
           caption={caption}
-          fields={
-            <EvmTransactionWarningsComponent warningHook={transactionHook} />
-          }
+          fields={transactionFields}
           bottomPanel={
             <>
-              {needsGasFeePanel && (
-                <GasFeePanel
-                  chain={chain!}
-                  fromAddress={selectedAccount!.address}
-                  prefetchedMainTokenInfo={prefetchedMainTokenFromInit}
-                  selectedFee={transactionHook.selectedFee}
-                  onSelectFee={transactionHook.setSelectedFee}
-                  transactionType={transactionData!.type}
-                  transactionData={transactionData}
-                  refreshKey={gasRefreshKey}
-                  resetCustomFeeSelectionKey={gasFeeSelectionResetKey}
-                  isActive={isActive}
-                  setErrorMessage={transactionHook.setErrorMessage}
-                  onInitialEstimationComplete={
-                    onGasFeePanelInitialEstimationComplete
-                  }
-                  onRefreshStateChange={setGasFeeRefreshing}
-                  forceOpenGasFeePanelEvent={forceOpenGasFeePanelEvent}
-                />
-              )}
+              {gasFeePanel}
               {shouldDisplayBalanceChange &&
                 balanceInfo &&
                 balanceInfo.mainBalance.before &&

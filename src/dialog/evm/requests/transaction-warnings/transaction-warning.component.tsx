@@ -13,6 +13,7 @@ interface Props {
   selectedAccount?: EvmAccountOrPublic;
   chain?: EvmChain;
   tokenInfo?: EvmSmartContractInfo;
+  onWarningClick?: () => void;
 }
 
 export const EvmTransactionWarningsComponent = ({
@@ -20,6 +21,7 @@ export const EvmTransactionWarningsComponent = ({
   selectedAccount,
   chain,
   tokenInfo,
+  onWarningClick,
 }: Props) => {
   return (
     <Fragment key={warningHook.fields?.operationName}>
@@ -58,11 +60,13 @@ export const EvmTransactionWarningsComponent = ({
             <Fragment key={`${f.name}-${index}`}>
               <EvmRequestItem
                 field={f}
-                onWarningClicked={() =>
-                  warningHook.openWarningsPopup({
-                    type: 'dialog-other',
-                    index,
-                  })
+                onWarningClicked={
+                  onWarningClick ??
+                  (() =>
+                    warningHook.openWarningsPopup({
+                      type: 'dialog-other',
+                      index,
+                    }))
                 }
               />
               {index !== warningHook.fields!.otherFields.length - 1 && (

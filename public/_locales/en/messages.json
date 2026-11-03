@@ -8183,5 +8183,71 @@
   "evm_error_gas_estimate": {
     "message": "Gas estimation failed. You will need to enter a custom network fee.",
     "description": "Gas estimation failed. You will need to enter a custom gas fee."
+  },
+  "evm_batch_title": {
+    "message": "Review transaction batch"
+  },
+  "evm_batch_non_atomic": {
+    "message": "These are separate transactions submitted in order. Each pays gas and can fail independently. Successful transactions cannot be rolled back. Later transactions may still execute if an earlier transaction reverts."
+  },
+  "evm_batch_call": {
+    "message": "Call $1"
+  },
+  "evm_batch_from": {
+    "message": "From"
+  },
+  "evm_batch_total_value": {
+    "message": "Total native value"
+  },
+  "evm_batch_total_fee": {
+    "message": "Total maximum network fees"
+  },
+  "evm_batch_max_cost": {
+    "message": "Maximum native balance required"
+  },
+  "evm_batch_preparing": {
+    "message": "Estimating fees for every call…"
+  },
+  "evm_batch_prepare_failed": {
+    "message": "Unable to prepare this batch. Use a connected software account on an added network. Every call must pass gas estimation independently; calls that need earlier state changes may be unsupported. Cancel and retry the request."
+  },
+  "evm_batch_review_failed": {
+    "message": "This call could not be reviewed safely. Cancel and retry the batch."
+  },
+  "evm_batch_status_title": {
+    "message": "Transaction batch status"
+  },
+  "evm_batch_status_failed": {
+    "message": "Unable to retrieve this batch. Its status is available only to the app that submitted it."
+  },
+  "evm_batch_status_100": {
+    "message": "Pending — submission or confirmation is still in progress."
+  },
+  "evm_batch_status_200": {
+    "message": "All calls succeeded."
+  },
+  "evm_batch_status_400": {
+    "message": "The batch failed without an included transaction."
+  },
+  "evm_batch_status_500": {
+    "message": "The batch failed; included transactions reverted."
+  },
+  "evm_batch_status_600": {
+    "message": "Some calls succeeded and others failed."
+  },
+  "evm_batch_call_succeeded": {
+    "message": "Succeeded"
+  },
+  "evm_batch_call_reverted": {
+    "message": "Reverted"
+  },
+  "evm_batch_chain": {
+    "message": "Chain"
+  },
+  "evm_batch_block": {
+    "message": "Block"
+  },
+  "evm_batch_close": {
+    "message": "Close"
   }
 }

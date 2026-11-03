@@ -589,12 +589,17 @@ const buildEvmConfirmationMessage = async (
 
   if (
     !evmRequestHandler.accounts.length &&
+    request.method !== EvmRequestMethod.WALLET_SHOW_CALLS_STATUS &&
     request.method !== EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN
   ) {
     return null;
   }
 
-  if (request.chainId) {
+  if (
+    request.chainId &&
+    request.method !== EvmRequestMethod.WALLET_SHOW_CALLS_STATUS &&
+    request.method !== EvmRequestMethod.WALLET_SEND_CALLS
+  ) {
     const setupChains = await ChainUtils.getAllSetupChainsForType<EvmChain>(
       ChainType.EVM,
     );
@@ -711,6 +716,7 @@ export const getCurrentDialogItem = async (
     ) ?? currentMessage) as any,
     height:
       request?.method === EvmRequestMethod.SEND_TRANSACTION ||
+      request?.method === EvmRequestMethod.WALLET_SEND_CALLS ||
       request?.method === EvmRequestMethod.SEND_RAW_TRANSACTION
         ? EVM_TRANSACTION_DIALOG_HEIGHT
         : DEFAULT_DIALOG_HEIGHT,
