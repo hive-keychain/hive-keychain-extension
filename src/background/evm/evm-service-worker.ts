@@ -1,5 +1,6 @@
-import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
+import { EvmCallBatchModule } from '@background/evm/evm-call-batch.module';
 import { EvmIncomingTransactionsModule } from '@background/evm/evm-incoming-transactions.module';
+import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { initializeEvmProviderRegistration } from '@background/evm/evm-provider-registration';
 import {
   addWhitelistedChainForOrigin,
@@ -9,6 +10,7 @@ import {
   setAccountsForOrigin,
   setChainIdForOrigin,
 } from '@background/evm/evm-provider-state.utils';
+import { EvmTransactionSubmissionModule } from '@background/evm/evm-transaction-submission.module';
 import {
   EvmRequestHandler,
   EvmRequestLocator,
@@ -18,6 +20,10 @@ import { performEvmOperation } from '@background/evm/requests/operations/perform
 import MkModule from '@background/hive/modules/mk.module';
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import {
+  getPendingRequestMessageOptions,
+  getPendingRequestSource,
+} from '@background/multichain/pending-request.interface';
+import {
   EvmEventName,
   KeychainEvmRequestWrapper,
   ProviderRpcError,
@@ -25,9 +31,9 @@ import {
   RoutedEvmEvent,
 } from '@interfaces/evm-provider.interface';
 import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
-import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
@@ -43,16 +49,35 @@ import {
   getOriginFromUrl,
 } from 'src/utils/browser-origin.utils';
 import { CommunicationUtils } from 'src/utils/communication.utils';
-import {
-  getPendingRequestMessageOptions,
-  getPendingRequestSource,
-} from '@background/multichain/pending-request.interface';
-import Logger from 'src/utils/logger.utils';
-import { EvmCallBatchModule } from '@background/evm/evm-call-batch.module';
-import { EvmTransactionSubmissionModule } from '@background/evm/evm-transaction-submission.module';
 import { EvmSubmissionClientUtils } from 'src/utils/evm/evm-submission-client.utils';
+import Logger from 'src/utils/logger.utils';
 
 let pendingRequestRehydration: Promise<void> = Promise.resolve();
+const ENS_HOSTNAME_PATTERN = /^(?:[a-z0-9-]+\.)+eth$/i;
+
+const handleEnsNavigationError = (
+  details: chrome.webNavigation.WebNavigationFramedErrorCallbackDetails,
+): void => {
+  if (details.frameId !== 0 || details.tabId < 0) {
+    return;
+  }
+
+  try {
+    const { hostname, protocol } = new URL(details.url);
+    if (
+      (protocol !== 'http:' && protocol !== 'https:') ||
+      !ENS_HOSTNAME_PATTERN.test(hostname)
+    ) {
+      return;
+    }
+
+    void chrome.tabs.update(details.tabId, {
+      url: `https://app.ens.domains/${hostname}`,
+    });
+  } catch {
+    return;
+  }
+};
 const executingBatches = new Set<string>();
 
 const initializeServiceWorker = async () => {
@@ -60,9 +85,7 @@ const initializeServiceWorker = async () => {
 
   Logger.info('Starting EVM service worker');
   pendingRequestRehydration = EvmRequestHandler.getFromLocalStorage()
-    .then((requestHandler) =>
-      requestHandler.rehydrateNonInteractiveRequests(),
-    )
+    .then((requestHandler) => requestHandler.rehydrateNonInteractiveRequests())
     .catch((error) => {
       Logger.error('Unable to rehydrate pending EVM requests', error);
     });
@@ -79,16 +102,8 @@ const initializeServiceWorker = async () => {
     );
   });
 
-  chrome.webNavigation.onBeforeNavigate.addListener((details: any) => {
-    if (details.url?.endsWith('.eth/')) {
-      const regex = /(?:https?:\/\/)?([a-z0-9-]+\.eth)\b/i;
-      const match = details.url.match(regex);
-      if (match) {
-        chrome.tabs.update(details.tabId, {
-          url: `https://app.ens.domains/${match[1]}`,
-        });
-      }
-    }
+  chrome.webNavigation.onErrorOccurred.addListener(handleEnsNavigationError, {
+    url: [{ schemes: ['http', 'https'], hostSuffix: '.eth' }],
   });
 };
 
@@ -144,10 +159,7 @@ const registerApprovedEvmChain = async (requestedChain: EvmChain) => {
   try {
     await EvmLightNodeUtils.registerLocalAddresses(requestedChain.chainId);
   } catch (error) {
-    Logger.error(
-      'Error while registering EVM address with light node',
-      error,
-    );
+    Logger.error('Error while registering EVM address with light node', error);
   }
 };
 
@@ -487,8 +499,7 @@ const previewEvmDecryptMessage = async (
   }
   const account = requestHandler.accounts.find((account: EvmAccount) => {
     return (
-      account.wallet.address.toLowerCase() ===
-      accountAddress.toLowerCase()
+      account.wallet.address.toLowerCase() === accountAddress.toLowerCase()
     );
   });
   if (!account) {
@@ -614,3 +625,4 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 export const EvmServiceWorker = { initializeServiceWorker };
+export { handleEnsNavigationError };

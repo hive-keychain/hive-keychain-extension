@@ -101,6 +101,40 @@ describe('evm service worker', () => {
     return addListenerSpy.mock.calls[addListenerSpy.mock.calls.length - 1][0];
   };
 
+  it('redirects failed top-frame ENS navigation to the ENS manager', async () => {
+    const { handleEnsNavigationError } = await import(
+      'src/background/evm/evm-service-worker'
+    );
+
+    handleEnsNavigationError({
+      frameId: 0,
+      tabId: 12,
+      url: 'https://alice.eth/',
+    } as chrome.webNavigation.WebNavigationFramedErrorCallbackDetails);
+
+    expect(chrome.tabs.update).toHaveBeenCalledWith(12, {
+      url: 'https://app.ens.domains/alice.eth',
+    });
+  });
+
+  it.each([
+    ['iframe navigation', 3, 'https://alice.eth/'],
+    ['ENS-looking path', 0, 'https://example.com/alice.eth/'],
+    ['unrelated hostname', 0, 'https://example.com/'],
+  ])('ignores failed %s', async (_case, frameId, url) => {
+    const { handleEnsNavigationError } = await import(
+      'src/background/evm/evm-service-worker'
+    );
+
+    handleEnsNavigationError({
+      frameId,
+      tabId: 12,
+      url,
+    } as chrome.webNavigation.WebNavigationFramedErrorCallbackDetails);
+
+    expect(chrome.tabs.update).not.toHaveBeenCalled();
+  });
+
   it('persists a custom chain and retries the original switch request', async () => {
     const requestHandler = {
       setRequestDialogByLocator: jest.fn(),

@@ -9,7 +9,7 @@ const { toDefinePluginEnv } = require('../env');
 
 module.exports = merge(common, {
   mode: 'production',
-  devtool: 'source-map',
+  devtool: false,
   output: {
     path: path.join(__dirname, '../../dist-prod'),
     filename: '[name]Bundle.js',

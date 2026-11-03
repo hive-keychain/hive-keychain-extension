@@ -426,6 +426,18 @@ describe('PortfolioHistoryDisplayUtils', () => {
       });
       expect(window.open).not.toHaveBeenCalled();
     });
+
+    it.each([
+      'http://support.example',
+      'javascript:alert(1)',
+      'data:text/html,unsafe',
+      'wallet-app://support',
+    ])('does not open unsafe support URL %s', (url) => {
+      PortfolioHistoryDisplayUtils.openPortfolioHistorySupportUrl(url);
+
+      expect(chrome.tabs.create).not.toHaveBeenCalled();
+      expect(window.open).not.toHaveBeenCalled();
+    });
   });
 
   describe('isCreatedOrExpiredHistoryStatus', () => {
@@ -676,6 +688,23 @@ describe('PortfolioHistoryDisplayUtils', () => {
       ).toEqual({
         url: 'https://scan.li.fi/tx/0xabc',
         kind: 'provider',
+      });
+    });
+
+    it('ignores an unsafe provider status URL and uses the explorer', () => {
+      expect(
+        PortfolioHistoryDisplayUtils.resolvePortfolioHistoryStatusLink(
+          {
+            providerStatusUrl: 'javascript:alert(1)',
+            txHash: evmTxHash,
+          },
+          createAsset(),
+          undefined,
+          [ethereumChain as any],
+        ),
+      ).toEqual({
+        url: `https://etherscan.io/tx/${evmTxHash}`,
+        kind: 'explorer',
       });
     });
 

@@ -120,13 +120,17 @@ describe('evm request without confirmation', () => {
       [],
       ['0xabc123'],
     );
-    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(5, {
-      command: BackgroundCommand.SEND_EVM_RESPONSE,
-      value: {
-        requestId: 1,
-        result: ['0xabc123'],
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(
+      5,
+      {
+        command: BackgroundCommand.SEND_EVM_RESPONSE,
+        value: {
+          requestId: 1,
+          result: ['0xabc123'],
+        },
       },
-    });
+      undefined,
+    );
     expect(requestHandler.removeRequestByLocator).toHaveBeenCalledWith({
       requestId: 1,
       tab: 5,
@@ -140,7 +144,27 @@ describe('evm request without confirmation', () => {
     EvmWalletUtils.revokeAllPermissions.mockResolvedValue(undefined);
     providerStateUtils.getAccountsForOrigin.mockResolvedValue(['0xabc123']);
     providerStateUtils.emitAccountsChangedIfNeeded.mockResolvedValue([]);
+    const requestSource = {
+      tab: 8,
+      frameId: 2,
+      documentId: 'document-a',
+      origin: 'http://localhost:3000',
+    };
     const requestHandler = {
+      removePendingAccountRequestsForOrigin: jest.fn().mockResolvedValue([
+        {
+          tab: requestSource.tab,
+          request: {
+            request_id: 10,
+            method: EvmRequestMethod.PERSONAL_SIGN,
+            params: ['message', '0xabc123'],
+          },
+          dappInfo: {
+            origin: requestSource.origin,
+            requestSource,
+          },
+        },
+      ]),
       removeRequestByLocator: jest.fn().mockResolvedValue(undefined),
     } as any;
 
@@ -172,13 +196,38 @@ describe('evm request without confirmation', () => {
       ['0xabc123'],
       [],
     );
-    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(6, {
-      command: BackgroundCommand.SEND_EVM_RESPONSE,
-      value: {
-        requestId: 2,
-        result: null,
+    expect(
+      requestHandler.removePendingAccountRequestsForOrigin,
+    ).toHaveBeenCalledWith('http://localhost:3000');
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(
+      requestSource.tab,
+      {
+        command: BackgroundCommand.SEND_EVM_ERROR,
+        value: {
+          requestId: 10,
+          error: {
+            code: 4100,
+            message:
+              'The requested method and/or account has not been authorized by the user',
+          },
+        },
       },
-    });
+      {
+        frameId: requestSource.frameId,
+        documentId: requestSource.documentId,
+      },
+    );
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(
+      6,
+      {
+        command: BackgroundCommand.SEND_EVM_RESPONSE,
+        value: {
+          requestId: 2,
+          result: null,
+        },
+      },
+      undefined,
+    );
     expect(requestHandler.removeRequestByLocator).toHaveBeenCalledWith({
       requestId: 2,
       tab: 6,
@@ -214,13 +263,17 @@ describe('evm request without confirmation', () => {
       '0x539',
       { tabId: 7 },
     );
-    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(7, {
-      command: BackgroundCommand.SEND_EVM_RESPONSE,
-      value: {
-        requestId: 3,
-        result: null,
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(
+      7,
+      {
+        command: BackgroundCommand.SEND_EVM_RESPONSE,
+        value: {
+          requestId: 3,
+          result: null,
+        },
       },
-    });
+      undefined,
+    );
     expect(requestHandler.removeRequestByLocator).toHaveBeenCalledWith({
       requestId: 3,
       tab: 7,
@@ -274,12 +327,16 @@ describe('evm request without confirmation', () => {
     await result;
 
     expect(settled).toBe(true);
-    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(5, {
-      command: BackgroundCommand.SEND_EVM_RESPONSE,
-      value: {
-        requestId: 3,
-        result: ['0xabc123'],
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(
+      5,
+      {
+        command: BackgroundCommand.SEND_EVM_RESPONSE,
+        value: {
+          requestId: 3,
+          result: ['0xabc123'],
+        },
       },
-    });
+      undefined,
+    );
   });
 });
