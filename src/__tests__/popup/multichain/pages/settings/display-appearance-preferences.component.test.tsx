@@ -12,12 +12,22 @@ import { I18nUtils } from 'src/utils/i18n.utils';
 
 describe('DisplayAppearancePreferencesComponent', () => {
   const setTheme = jest.fn();
+  const originalIsFirefox = process.env.IS_FIREFOX;
 
   beforeEach(() => {
     jest.clearAllMocks();
     I18nUtils.resetForTesting();
     chrome.i18n.getUILanguage = jest.fn().mockReturnValue('en-US');
     jest.spyOn(LocalStorageUtils, 'saveValueInLocalStorage').mockResolvedValue();
+  });
+
+  afterEach(() => {
+    if (originalIsFirefox === undefined) {
+      delete process.env.IS_FIREFOX;
+      return;
+    }
+
+    process.env.IS_FIREFOX = originalIsFirefox;
   });
 
   const renderPreferences = (
@@ -81,5 +91,15 @@ describe('DisplayAppearancePreferencesComponent', () => {
         'fr',
       );
     });
+  });
+
+  it('omits display mode preferences on Firefox', () => {
+    process.env.IS_FIREFOX = 'true';
+
+    renderPreferences();
+
+    expect(screen.getByTestId('theme-toggle')).toBeInTheDocument();
+    expect(screen.getByTestId('language-select-handle')).toBeInTheDocument();
+    expect(screen.queryByTestId('display-mode-toggle')).not.toBeInTheDocument();
   });
 });

@@ -90,14 +90,17 @@ export const DisplayAppearancePreferencesComponent = ({
     () => getInitialLanguage(useSetupDraft),
   );
   const languageOptions = I18nUtils.getLanguageOptions();
-  const currentDisplayMode = getCurrentDisplayMode();
+  const isDisplayModeSupported = !process.env.IS_FIREFOX;
+  const currentDisplayMode = isDisplayModeSupported
+    ? getCurrentDisplayMode()
+    : undefined;
   const shouldShowReopenNotice =
     showReopenNotice &&
     currentDisplayMode !== undefined &&
     selectedDisplayMode !== currentDisplayMode;
 
   useEffect(() => {
-    if (!loadStoredDisplayMode) {
+    if (!isDisplayModeSupported || !loadStoredDisplayMode) {
       return;
     }
 
@@ -115,7 +118,7 @@ export const DisplayAppearancePreferencesComponent = ({
     return () => {
       isMounted = false;
     };
-  }, [loadStoredDisplayMode]);
+  }, [isDisplayModeSupported, loadStoredDisplayMode]);
 
   useEffect(() => {
     if (!loadStoredLanguage) {
@@ -205,26 +208,28 @@ export const DisplayAppearancePreferencesComponent = ({
         </div>
       </div>
 
-      <div className="settings-section">
-        <div className="section-title">
-          {I18nUtils.getMessage('popup_html_preferences_display_section')}
+      {isDisplayModeSupported && (
+        <div className="settings-section">
+          <div className="section-title">
+            {I18nUtils.getMessage('popup_html_preferences_display_section')}
+          </div>
+          <div className="section-fields">
+            <DisplayModeToggleComponent
+              selectedDisplayMode={selectedDisplayMode}
+              onChange={handleDisplayModeChange}
+            />
+            {shouldShowReopenNotice && (
+              <div
+                className="display-mode-reopen-notice"
+                data-testid="display-mode-reopen-notice">
+                {I18nUtils.getMessage(
+                  'popup_html_display_mode_reopen_wallet_notice',
+                )}
+              </div>
+            )}
+          </div>
         </div>
-        <div className="section-fields">
-          <DisplayModeToggleComponent
-            selectedDisplayMode={selectedDisplayMode}
-            onChange={handleDisplayModeChange}
-          />
-          {shouldShowReopenNotice && (
-            <div
-              className="display-mode-reopen-notice"
-              data-testid="display-mode-reopen-notice">
-              {I18nUtils.getMessage(
-                'popup_html_display_mode_reopen_wallet_notice',
-              )}
-            </div>
-          )}
-        </div>
-      </div>
+      )}
     </div>
   );
 };
