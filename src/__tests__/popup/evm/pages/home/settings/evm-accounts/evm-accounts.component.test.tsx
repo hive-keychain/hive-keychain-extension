@@ -114,26 +114,25 @@ describe('EvmAccountsComponent', () => {
     ) as HTMLElement;
 
     await user.click(menuButton);
-    await user.click(screen.getByText('evm_copy_seed'));
+    await user.click(screen.getByText('Copy seed'));
 
     expect(
-      screen.getByText('evm_copy_seed_phrase_password_caption'),
+      screen.getByText(
+        'You are about to copy your seed phrase. For security reasons, please enter your password to continue.',
+      ),
     ).toBeInTheDocument();
 
     await user.type(
-      screen.getByPlaceholderText('popup_html_master_password'),
+      screen.getByPlaceholderText('Master password'),
       'wrong-password',
     );
-    await user.click(screen.getByText('popup_html_submit'));
+    await user.click(screen.getByText('Submit'));
 
-    expect(await screen.findByText('wrong_password')).toBeInTheDocument();
+    expect(await screen.findByText('Wrong password!')).toBeInTheDocument();
 
-    await user.clear(screen.getByPlaceholderText('popup_html_master_password'));
-    await user.type(
-      screen.getByPlaceholderText('popup_html_master_password'),
-      mk,
-    );
-    await user.click(screen.getByText('popup_html_submit'));
+    await user.clear(screen.getByPlaceholderText('Master password'));
+    await user.type(screen.getByPlaceholderText('Master password'), mk);
+    await user.click(screen.getByText('Submit'));
 
     await waitFor(() => {
       expect(copyTextWithToast).toHaveBeenCalledWith(
@@ -220,7 +219,7 @@ describe('EvmAccountsComponent', () => {
     expect(
       screen.queryByText('evm_add_wallet_address_button'),
     ).not.toBeInTheDocument();
-    expect(screen.getAllByText('evm_imported_seed').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Imported').length).toBeGreaterThan(0);
     expect(screen.getByTestId('evm-account-display-0')).toHaveAttribute(
       'data-hideable',
       'false',

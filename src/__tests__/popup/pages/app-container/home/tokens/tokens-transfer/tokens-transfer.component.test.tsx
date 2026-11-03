@@ -169,7 +169,7 @@ describe('tokens-transfer.component tests:\n', () => {
         screen.queryByTestId(`${Screen.CONFIRMATION_PAGE}-page`),
       ).not.toBeInTheDocument();
       expect(
-        screen.getByTestId(`${Screen.HOME_PAGE}-page`),
+        await screen.findByTestId(`${Screen.HOME_PAGE}-page`),
       ).toBeInTheDocument();
     });
 

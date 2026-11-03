@@ -6,8 +6,8 @@ import React from 'react';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
 import dataTestIdCheckbox from 'src/__tests__/utils-for-testing/data-testid/data-testid-checkbox';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import { openAutomatedTasks } from 'src/__tests__/utils-for-testing/helpers/settings-navigation';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { Icons } from 'src/common-ui/icons.enum';
 import Config from 'src/config';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -61,15 +61,7 @@ describe('automated-tasks.component tests:\n', () => {
           },
         );
         await act(async () => {
-          await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
-          await userEvent.click(
-            screen.getByTestId(dataTestIdButton.menuPreFix + Icons.PREFERENCES),
-          );
-          await userEvent.click(
-            screen.getByTestId(
-              dataTestIdButton.menuPreFix + Icons.AUTOMATED_TASKS,
-            ),
-          );
+          await openAutomatedTasks();
         });
       });
       it('Must load component and show messages', () => {
@@ -134,6 +126,15 @@ describe('automated-tasks.component tests:\n', () => {
             accountsRelated: {
               TokensUtils: {
                 getUserBalance: [],
+              },
+            },
+            localStorageRelated: {
+              LocalStorageUtils: {
+                getMultipleValueFromLocalStorage: {
+                  claimAccounts: {},
+                  claimRewards: {},
+                  claimSavings: {},
+                },
               },
             },
           },

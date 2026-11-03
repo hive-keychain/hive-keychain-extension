@@ -5,7 +5,6 @@ import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import dataTestIdDropdown from 'src/__tests__/utils-for-testing/data-testid/data-testid-dropdown';
-import dataTestIdSelect from 'src/__tests__/utils-for-testing/data-testid/data-testid-select';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { Icons } from 'src/common-ui/icons.enum';
@@ -48,8 +47,7 @@ describe('transfer-fund.component tests:\n', () => {
           await screen.findByTestId(`${Screen.TRANSFER_FUND_PAGE}-page`),
         ).toBeInTheDocument();
         expect(
-          //bellow the only element using an actual aria-label.
-          await screen.findByLabelText(dataTestIdSelect.accountSelector),
+          await screen.findByRole('combobox', { name: 'Currency' }),
         ).toHaveTextContent(CurrencyUtils.getCurrencyLabels(false).hbd);
       });
     });

@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 import moment from 'moment';
 import React from 'react';
 import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
-import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import { openGovernancePage } from 'src/__tests__/utils-for-testing/helpers/settings-navigation';
 import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
 import dataTestIdTab from 'src/__tests__/utils-for-testing/data-testid/data-testid-tab';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
@@ -13,7 +13,6 @@ import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import witness from 'src/__tests__/utils-for-testing/data/witness';
 import { LoadingValuesConfiguration } from 'src/__tests__/utils-for-testing/loading-values-configuration/loading-values-configuration';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { SVGIcons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import { GovernanceComponent } from 'src/popup/hive/pages/app-container/home/governance/governance.component';
 import { WitnessGlobalInformationComponent } from 'src/popup/hive/pages/app-container/home/governance/my-witness-tab/witness-information/witness-global-information/witness-global-information.component';
@@ -41,12 +40,7 @@ describe('governance.component tests:\n', () => {
       },
     );
     await act(async () => {
-      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
-      await userEvent.click(
-        screen.getByTestId(
-          dataTestIdButton.menuPreFix + SVGIcons.MENU_GOVERNANCE,
-        ),
-      );
+      await openGovernancePage();
     });
     await screen.findByTestId('witness-tab');
   });

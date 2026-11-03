@@ -150,15 +150,21 @@ describe('performEvmOperation', () => {
     );
 
     expect(callOrder).toEqual(['tabs', 'runtime', 'remove']);
-    expect(tabsSendMessageMock).toHaveBeenCalledWith(7, {
-      command: BackgroundCommand.SEND_EVM_RESPONSE,
-      value: { requestId: 42, result: '0xabc' },
-    });
+    expect(tabsSendMessageMock).toHaveBeenCalledWith(
+      7,
+      {
+        command: BackgroundCommand.SEND_EVM_RESPONSE,
+        value: { requestId: 42, result: '0xabc' },
+      },
+      undefined,
+    );
     expect(runtimeSendMessageMock).toHaveBeenCalledWith(answerMessage);
     expect(removeRequestByLocator).toHaveBeenCalledWith({
       requestId: 42,
       tab: 7,
       origin: 'https://example.com',
+      frameId: undefined,
+      documentId: undefined,
     });
     expect(delayMsMock).not.toHaveBeenCalled();
   });
@@ -282,6 +288,8 @@ describe('performEvmOperation', () => {
       'The requested method and/or account has not been authorized by the user',
       [],
       'https://example.com',
+      false,
+      undefined,
     );
     expect(sendEvmTransactionMock).not.toHaveBeenCalled();
     expect(tabsSendMessageMock).not.toHaveBeenCalled();
@@ -314,14 +322,20 @@ describe('performEvmOperation', () => {
       '0x539',
       { tabId: 4 },
     );
-    expect(tabsSendMessageMock).toHaveBeenCalledWith(4, {
-      command: BackgroundCommand.SEND_EVM_RESPONSE,
-      value: { requestId: 10, result: null },
-    });
+    expect(tabsSendMessageMock).toHaveBeenCalledWith(
+      4,
+      {
+        command: BackgroundCommand.SEND_EVM_RESPONSE,
+        value: { requestId: 10, result: null },
+      },
+      undefined,
+    );
     expect(removeRequestByLocator).toHaveBeenCalledWith({
       requestId: 10,
       tab: 4,
       origin: 'https://example.com',
+      frameId: undefined,
+      documentId: undefined,
     });
   });
 
@@ -359,6 +373,8 @@ describe('performEvmOperation', () => {
       'evm_ledger_unlock_device',
       [],
       'https://example.com',
+      false,
+      undefined,
     );
   });
 

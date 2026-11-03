@@ -5,6 +5,7 @@ import React from 'react';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import manipulateStrings from 'src/__tests__/utils-for-testing/helpers/manipulate-strings';
+import { openHelpMenu } from 'src/__tests__/utils-for-testing/helpers/settings-navigation';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
@@ -21,7 +22,7 @@ describe('about.component tests:\n', () => {
       initialStates.iniStateAs.defaultExistent,
     );
     await act(async () => {
-      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
+      await openHelpMenu();
     });
   });
   it('Must show about message', async () => {

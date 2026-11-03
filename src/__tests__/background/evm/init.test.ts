@@ -165,6 +165,7 @@ describe('initEvmRequestHandler', () => {
       [],
       'https://example.app',
       true,
+      undefined,
     );
     expect(ChainUtils.getDefaultChains).not.toHaveBeenCalled();
     expect(evmRequestWithConfirmationMock).not.toHaveBeenCalled();
@@ -213,6 +214,7 @@ describe('initEvmRequestHandler', () => {
       [],
       'https://example.app',
       true,
+      undefined,
     );
     expect(ChainUtils.getDefaultChains).not.toHaveBeenCalled();
     expect(evmRequestWithConfirmationMock).not.toHaveBeenCalled();
@@ -254,6 +256,7 @@ describe('initEvmRequestHandler', () => {
       [],
       'https://example.app',
       true,
+      undefined,
     );
   });
 
@@ -301,6 +304,7 @@ describe('initEvmRequestHandler', () => {
       [],
       'https://example.app',
       true,
+      undefined,
     );
   });
 
@@ -351,6 +355,7 @@ describe('initEvmRequestHandler', () => {
       [],
       'https://example.app',
       true,
+      undefined,
     );
   });
 
@@ -625,6 +630,7 @@ describe('initEvmRequestHandler', () => {
       [],
       'https://example.app',
       true,
+      undefined,
     );
     expect(evmRequestWithConfirmationMock).not.toHaveBeenCalled();
   });
@@ -665,6 +671,7 @@ describe('initEvmRequestHandler', () => {
       [],
       'https://example.app',
       true,
+      undefined,
     );
     expect(evmRequestWithConfirmationMock).not.toHaveBeenCalled();
   });
@@ -774,6 +781,7 @@ describe('initEvmRequestHandler', () => {
       [],
       'https://example.app',
       true,
+      undefined,
     );
     expect(evmRequestWithConfirmationMock).not.toHaveBeenCalled();
   });
@@ -890,6 +898,7 @@ describe('initEvmRequestHandler', () => {
       [],
       'https://example.app',
       true,
+      undefined,
     );
     expect(evmRequestWithConfirmationMock).not.toHaveBeenCalled();
   });

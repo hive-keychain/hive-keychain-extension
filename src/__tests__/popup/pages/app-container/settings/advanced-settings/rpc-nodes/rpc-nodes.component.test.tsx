@@ -158,7 +158,7 @@ describe('rpc-nodes.component tests:\n', () => {
         fireEvent.click(
           screen
             .getByTestId(dataTestIdSelect.rpcNode.selected)
-            .closest('[aria-label="Dropdown select"]') as HTMLElement,
+            .closest('[role="combobox"]') as HTMLElement,
         );
       });
       expect(

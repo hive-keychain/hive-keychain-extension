@@ -7,8 +7,8 @@ import React from 'react';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
 import dataTestIdCheckbox from 'src/__tests__/utils-for-testing/data-testid/data-testid-checkbox';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import { openKeychainifySettings } from 'src/__tests__/utils-for-testing/helpers/settings-navigation';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
@@ -33,13 +33,7 @@ describe('keychainify.component tests:\n', () => {
       },
     );
     await act(async () => {
-      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
-      await userEvent.click(
-        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.SETTINGS),
-      );
-      await userEvent.click(
-        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.LINK),
-      );
+      await openKeychainifySettings();
     });
   });
   it('Must load component and match show intro message', () => {

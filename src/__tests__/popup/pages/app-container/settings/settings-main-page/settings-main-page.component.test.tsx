@@ -7,6 +7,7 @@ import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-tes
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import { Screen } from '@interfaces/screen.interface';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import { getSettingsMainPageMenuItems } from 'src/popup/multichain/pages/settings/settings-main-page-menu-items';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -67,9 +68,11 @@ describe('settings-main-page.component tests:\n', () => {
           ),
         );
       });
-      expect(
-        screen.getByTestId(pageItems[i].nextScreen + '-page'),
-      ).toBeInTheDocument();
+      const pageTestId =
+        pageItems[i].nextScreen === Screen.SETTINGS_PREFERENCES_AND_DISPLAY
+          ? 'settings-preferences-display-content-page'
+          : `${pageItems[i].nextScreen}-page`;
+      expect(screen.getByTestId(pageTestId)).toBeInTheDocument();
       await act(async () => {
         await userEvent.click(screen.getByTestId(dataTestIdIcon.arrowBack));
       });

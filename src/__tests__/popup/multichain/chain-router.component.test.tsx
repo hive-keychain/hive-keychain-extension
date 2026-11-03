@@ -52,13 +52,13 @@ describe('ChainRouter startup', () => {
       },
     );
 
-    await act(async () => {
-      await Promise.resolve();
-    });
-
     expect(container.querySelector('.splashscreen')).not.toBeNull();
     expect(queryByTestId('signup-page')).toBeNull();
     expect(queryByTestId('sign-in-page')).toBeNull();
+
+    await act(async () => {
+      await Promise.resolve();
+    });
 
     await act(async () => {
       jest.advanceTimersByTime(500);

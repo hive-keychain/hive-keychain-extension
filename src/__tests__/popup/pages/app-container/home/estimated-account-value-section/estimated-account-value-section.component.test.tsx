@@ -49,7 +49,10 @@ describe('estimated-account-value-section.component tests:\n', () => {
       expect(
         (await screen.findByTestId(dataTestIdToolTip.content)).innerHTML,
       ).toEqual(
-        I18nUtils.getMessage('popup_html_estimation_info_text', ['HIVE']),
+        `<div class="tooltip-inner">${I18nUtils.getMessage(
+          'popup_html_estimation_info_text',
+          ['HIVE'],
+        )}</div>`,
       );
     });
   });

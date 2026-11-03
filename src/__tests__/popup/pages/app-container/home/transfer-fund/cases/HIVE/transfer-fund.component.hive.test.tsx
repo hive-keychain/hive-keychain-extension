@@ -13,7 +13,6 @@ import dataTestIdCheckbox from 'src/__tests__/utils-for-testing/data-testid/data
 import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
 import dataTestIdDropdown from 'src/__tests__/utils-for-testing/data-testid/data-testid-dropdown';
 import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
-import dataTestIdSelect from 'src/__tests__/utils-for-testing/data-testid/data-testid-select';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
@@ -64,7 +63,9 @@ describe('transfer-fund.component tests:\n', () => {
         ).toBeInTheDocument();
         //bellow the only element using an actual aria-label.
         expect(
-          await screen.findByLabelText(dataTestIdSelect.accountSelector),
+          await screen.findByRole('combobox', {
+            name: I18nUtils.getMessage('popup_html_currency'),
+          }),
         ).toHaveTextContent(CurrencyUtils.getCurrencyLabels(false).hive);
       });
 

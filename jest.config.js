@@ -103,5 +103,9 @@ module.exports = {
 
   //added new config for background section
   setupFilesAfterEnv: ['./jest.setup.js'], //only for jest-chrome
+  // Recycle a worker before the next file starts. The check runs only while
+  // idle, and the default heap is about 4GB, so the limit has to leave room
+  // for a heavy popup render such as wallet history.
+  workerIdleMemoryLimit: '512MB',
   //end added
 };

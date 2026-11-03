@@ -7,13 +7,12 @@ import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import moment from 'moment';
 import React from 'react';
-import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import { openGovernancePage } from 'src/__tests__/utils-for-testing/helpers/settings-navigation';
 import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
 import dataTestIdTab from 'src/__tests__/utils-for-testing/data-testid/data-testid-tab';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import proposal from 'src/__tests__/utils-for-testing/data/proposal';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
@@ -56,10 +55,7 @@ describe('Proposal tab:\n', () => {
       },
     );
     await act(async () => {
-      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
-      await userEvent.click(
-        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.GOVERNANCE),
-      );
+      await openGovernancePage();
     });
     await screen.findByText(I18nUtils.getMessage('popup_html_witness'));
     await act(async () => {

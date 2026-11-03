@@ -91,6 +91,12 @@ const renderWithConfiguration = async (
     },
     { timeout: 15000 },
   );
+  await waitFor(
+    () => {
+      expect(document.querySelector('.splashscreen')).toBeNull();
+    },
+    { timeout: 15000 },
+  );
   if (params?.navigateToAfterMount) {
     store.dispatch(navigateTo(params.navigateToAfterMount));
     await waitFor(() => {

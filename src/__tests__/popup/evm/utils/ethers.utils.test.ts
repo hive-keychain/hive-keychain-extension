@@ -73,7 +73,9 @@ describe('ethers utils error mapper', () => {
     expect(
       EthersUtils.getErrorMessage('CALL_EXCEPTION', 'raw custom error'),
     ).toEqual({
-      message: 'evm_transaction_result_error_message_call_exception',
+      message:
+        'evm_transaction_result_error_message_execution_reverted_with_reason',
+      params: ['raw custom error'],
       isBlocking: true,
     });
   });

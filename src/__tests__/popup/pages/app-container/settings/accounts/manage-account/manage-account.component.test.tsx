@@ -15,8 +15,8 @@ import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
+import { openManageAccountsPage } from 'src/__tests__/utils-for-testing/helpers/settings-navigation';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import { I18nUtils } from 'src/utils/i18n.utils';
 describe('manage-account.component tests:\n', () => {
@@ -31,18 +31,7 @@ describe('manage-account.component tests:\n', () => {
         initialStates.iniStateAs.defaultExistent,
       );
       await act(async () => {
-        const menu = await waitFor(() =>
-          screen.getByTestId(dataTestIdButton.menu),
-        );
-        await userEvent.click(menu);
-        await userEvent.click(
-          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
-        );
-        await userEvent.click(
-          screen.getByTestId(
-            dataTestIdButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
-          ),
-        );
+        await openManageAccountsPage();
       });
     });
     it('Must display manage-account page', () => {
@@ -199,30 +188,14 @@ describe('manage-account.component tests:\n', () => {
         },
       );
       await act(async () => {
-        const menu = await waitFor(() =>
-          screen.getByTestId(dataTestIdButton.menu),
-        );
-        await userEvent.click(menu);
+        await userEvent.click(screen.getByTestId('account-selector-trigger'));
         await userEvent.click(
-          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
-        );
-        await userEvent.click(
-          screen.getByTestId(
-            dataTestIdButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
-          ),
+          screen.getByTestId(`account-selector-manage-hive-${mk.user.two}`),
         );
       });
     });
 
     it('Must keep locally selected account after removing a key', async () => {
-      await act(async () => {
-        await userEvent.click(
-          screen.getByLabelText(dataTestIdSelect.accountSelector),
-        );
-        await userEvent.click(
-          screen.getByTestId(dataTestIdSelect.itemSelectorPreFix + mk.user.two),
-        );
-      });
       expect(
         await screen.findByTestId(dataTestIdDiv.selectedAccount),
       ).toHaveTextContent(mk.user.two);
@@ -268,15 +241,7 @@ describe('manage-account.component tests:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
-        await userEvent.click(
-          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
-        );
-        await userEvent.click(
-          screen.getByTestId(
-            dataTestIdButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
-          ),
-        );
+        await openManageAccountsPage();
       });
     });
     it('Must not show remove posting key', () => {

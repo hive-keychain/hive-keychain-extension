@@ -14,7 +14,6 @@ import { I18nUtils } from 'src/utils/i18n.utils';
 describe('wallet-history.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
-    jest.resetModules();
     cleanup();
   });
   describe('No transactions to show', () => {
