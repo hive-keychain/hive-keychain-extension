@@ -6150,6 +6150,34 @@
     "message": "Action",
     "description": "Evm smart contract action"
   },
+  "evm_operation_swap": {
+    "message": "Swap",
+    "description": "Evm confirmation title for a decoded swap"
+  },
+  "evm_operation_bundled_call": {
+    "message": "Bundled call",
+    "description": "Evm confirmation title for a multicall whose inner calls are not decoded"
+  },
+  "evm_swap_you_pay": {
+    "message": "You pay",
+    "description": "Decoded swap amount the account sends"
+  },
+  "evm_swap_minimum_received": {
+    "message": "Minimum received",
+    "description": "Decoded swap minimum amount out"
+  },
+  "evm_swap_maximum_spent": {
+    "message": "Maximum spent",
+    "description": "Decoded exact-output swap maximum amount in"
+  },
+  "evm_swap_you_receive": {
+    "message": "You receive",
+    "description": "Decoded exact-output swap amount out"
+  },
+  "evm_swap_recipient": {
+    "message": "Recipient",
+    "description": "Decoded swap recipient"
+  },
   "evm_balance_change_title": {
     "message": "Balance",
     "description": "Confirmation page balance change panel"
@@ -7485,6 +7513,10 @@
   "evm_gas_fee_warning_transaction_will_revert": {
     "message": "This transaction will revert",
     "description": "Gas fee warning shown when transaction simulation reverts"
+  },
+  "evm_gas_fee_warning_transaction_will_revert_with_reason": {
+    "message": "This transaction will revert: $1",
+    "description": "Gas fee warning shown when transaction simulation reverts with a contract reason"
   },
   "evm_transaction_broadcasted": {
     "message": "Transaction was broadcasted. Please wait for it to be confirmed.",

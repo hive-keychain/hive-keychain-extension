@@ -54,6 +54,60 @@ interface GasFeePanelProps {
 
 // Reverting calls cannot produce a real gas limit; keep fee tiers visible with a conservative display fallback.
 const REVERTING_CONTRACT_CALL_GAS_LIMIT = 100_000;
+const REVERT_REASON_MAX_LENGTH = 180;
+const GENERIC_REVERT_MESSAGE_KEYS = new Set([
+  'evm_transaction_result_error_message_execution_reverted',
+  'evm_transaction_result_error_message_call_exception',
+]);
+
+type GasFeeWarning = {
+  message: string;
+  params?: string[];
+};
+
+const stripRevertReason = (value?: string): string | undefined => {
+  if (!value?.trim()) {
+    return undefined;
+  }
+
+  const withoutPrefix = value
+    .trim()
+    .replace(/^execution reverted:?\s*/i, '')
+    .trim();
+  const unwrapped = withoutPrefix.replace(/^\((.*)\)$/, '$1').trim();
+  if (
+    !unwrapped ||
+    /^execution reverted$/i.test(unwrapped) ||
+    /unknown custom error/i.test(unwrapped)
+  ) {
+    return undefined;
+  }
+
+  return unwrapped.slice(0, REVERT_REASON_MAX_LENGTH);
+};
+
+const getRevertGasFeeWarning = (
+  error: EtherRPCCustomError,
+  reason?: string,
+  shortMessage?: string,
+): GasFeeWarning => {
+  if (!GENERIC_REVERT_MESSAGE_KEYS.has(error.message)) {
+    return {
+      message: error.message,
+      params: error.params,
+    };
+  }
+
+  const stripped = stripRevertReason(reason) ?? stripRevertReason(shortMessage);
+  if (stripped) {
+    return {
+      message: 'evm_gas_fee_warning_transaction_will_revert_with_reason',
+      params: [stripped],
+    };
+  }
+
+  return { message: 'evm_gas_fee_warning_transaction_will_revert' };
+};
 
 export const GasFeePanel = ({
   chain,
@@ -81,7 +135,7 @@ export const GasFeePanel = ({
   const [feeEstimation, setFeeEstimation] = useState<FullGasFeeEstimation>();
   const [isRefreshing, setRefreshing] = useState(false);
 
-  const [gasFeeWarning, setgasFeeWarning] = useState<string>();
+  const [gasFeeWarning, setgasFeeWarning] = useState<GasFeeWarning>();
   const [customFeeFormWarning, setCustomFeeFormWarning] = useState<string>();
 
   const [isCustomFeePanelOpened, setCustomFeePanelOpened] =
@@ -310,11 +364,11 @@ export const GasFeePanel = ({
         !estimate.suggested &&
         GasFeeUtils.isGasFeeEstimateInvalid(estimate.custom)
       ) {
-        setgasFeeWarning(
-          chain.onlyCustomFee
+        setgasFeeWarning({
+          message: chain.onlyCustomFee
             ? 'evm_gas_fee_warning_not_available_for_chain'
             : 'evm_gas_fee_warning_not_available',
-        );
+        });
       } else {
         setgasFeeWarning(undefined);
       }
@@ -337,7 +391,9 @@ export const GasFeePanel = ({
             getFallbackGasLimit(),
             transactionData,
           );
-          setgasFeeWarning('evm_gas_fee_warning_transaction_will_revert');
+          setgasFeeWarning(
+            getRevertGasFeeWarning(error, err.reason, err.shortMessage),
+          );
           setFeeEstimation(revertEstimate);
           if (!customFeeWasSavedRef.current) {
             onSelectFee(getInitialFeeSelection(revertEstimate)!);
@@ -352,7 +408,9 @@ export const GasFeePanel = ({
       const fallbackCustomFee = buildFallbackCustomFee();
       setFeeEstimation({ custom: fallbackCustomFee });
       onSelectFee(fallbackCustomFee);
-      setgasFeeWarning('evm_gas_fee_warning_not_available_for_chain');
+      setgasFeeWarning({
+        message: 'evm_gas_fee_warning_not_available_for_chain',
+      });
       setErrorMessage(error);
     } finally {
       if (generation === initGenerationRef.current) {
@@ -683,7 +741,7 @@ export const GasFeePanel = ({
           </div>
           {gasFeeWarning && (
             <div className="gas-fee-warning">
-              {I18nUtils.getMessage(gasFeeWarning)}
+              {I18nUtils.getMessage(gasFeeWarning.message, gasFeeWarning.params)}
             </div>
           )}
           {isExpandablePanelOpened && (

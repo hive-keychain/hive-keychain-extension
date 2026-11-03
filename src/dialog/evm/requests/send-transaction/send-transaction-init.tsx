@@ -24,6 +24,11 @@ import {
   EvmTransactionParserUtils,
 } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmSpendingPermissionUtils } from '@popup/evm/utils/evm-spending-permission.utils';
+import {
+  EvmSwapAmountLeg,
+  EvmSwapPreviewInput,
+  EvmSwapPreviewUtils,
+} from '@popup/evm/utils/evm-swap-preview.utils';
 import { EvmNFTUtils } from '@popup/evm/utils/nft.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
@@ -100,6 +105,86 @@ export const formatMainTokenWeiAmount = (
     18,
     true,
   )} ${symbol ?? ''}`.trim();
+
+const ERC20_METADATA_ABI = [
+  'function symbol() view returns (string)',
+  'function decimals() view returns (uint8)',
+];
+
+const readErc20Metadata = async (
+  provider: ethers.Provider,
+  address: string,
+): Promise<{ symbol?: string; decimals?: number }> => {
+  try {
+    const contract = new ethers.Contract(address, ERC20_METADATA_ABI, provider);
+    const [symbol, decimals] = await Promise.all([
+      contract.symbol(),
+      contract.decimals(),
+    ]);
+    const parsedDecimals = Number(decimals);
+    return {
+      symbol:
+        typeof symbol === 'string' && symbol.trim() ? symbol.trim() : undefined,
+      decimals:
+        Number.isInteger(parsedDecimals) &&
+        parsedDecimals >= 0 &&
+        parsedDecimals <= 255
+          ? parsedDecimals
+          : undefined,
+    };
+  } catch {
+    return {};
+  }
+};
+
+const formatSwapAmountLeg = async (
+  leg: EvmSwapAmountLeg,
+  provider: ethers.Provider,
+  nativeSymbol: string | undefined,
+  metadataCache: Map<string, Promise<{ symbol?: string; decimals?: number }>>,
+): Promise<string> => {
+  if (leg.native) {
+    return formatMainTokenWeiAmount(leg.raw, nativeSymbol);
+  }
+  if (!leg.tokenAddress) {
+    return leg.raw.toString();
+  }
+
+  const cacheKey = leg.tokenAddress.toLowerCase();
+  let pending = metadataCache.get(cacheKey);
+  if (!pending) {
+    pending = readErc20Metadata(provider, leg.tokenAddress);
+    metadataCache.set(cacheKey, pending);
+  }
+  const metadata = await pending;
+  if (metadata.decimals == null) {
+    return `${leg.raw.toString()} ${metadata.symbol ?? leg.tokenAddress}`;
+  }
+
+  const human = new Decimal(leg.raw.toString()).div(
+    new Decimal(10).pow(metadata.decimals),
+  );
+  return `${EvmFormatUtils.formatTokenBalance(human, metadata.decimals)} ${
+    metadata.symbol ?? leg.tokenAddress
+  }`;
+};
+
+type SwapPreviewFragment = {
+  name: string;
+  type: string;
+  components?: ReadonlyArray<SwapPreviewFragment> | null;
+};
+
+const toSwapPreviewInputs = (
+  inputs: ReadonlyArray<SwapPreviewFragment>,
+): EvmSwapPreviewInput[] =>
+  inputs.map((input) => ({
+    name: input.name,
+    type: input.type,
+    components: input.components
+      ? toSwapPreviewInputs(input.components)
+      : undefined,
+  }));
 
 const getNativePaymentValue = (
   decodedValue: ethers.BigNumberish | null | undefined,
@@ -873,6 +958,82 @@ export async function runSendTransactionInit(
                       [symbol],
                     ),
                 );
+            }
+
+            const swapPreview = EvmSwapPreviewUtils.classifyDecodedSwap({
+              method: decodedTransactionData.name,
+              inputs: toSwapPreviewInputs(
+                decodedTransactionData.fragment.inputs ?? [],
+              ),
+              args: decodedTransactionData.fragment.inputs?.map(
+                (_input, index) => decodedTransactionData.args[index],
+              ),
+              nativeValue: nativePaymentValue,
+            });
+            if (swapPreview?.kind === 'bundled') {
+              transactionConfirmationFields.operationName = I18nUtils.getMessage(
+                'evm_operation_bundled_call',
+              );
+            } else if (swapPreview) {
+              transactionConfirmationFields.operationName =
+                I18nUtils.getMessage('evm_operation_swap');
+              const metadataCache = new Map<
+                string,
+                Promise<{ symbol?: string; decimals?: number }>
+              >();
+              const summaryFields: TransactionConfirmationField[] = [
+                {
+                  name:
+                    swapPreview.kind === 'exact-out'
+                      ? 'evm_swap_maximum_spent'
+                      : 'evm_swap_you_pay',
+                  type: EvmInputDisplayType.STRING,
+                  value: await formatSwapAmountLeg(
+                    swapPreview.pay,
+                    provider,
+                    (chainTmp as EvmChain).mainToken,
+                    metadataCache,
+                  ),
+                },
+                {
+                  name:
+                    swapPreview.kind === 'exact-in'
+                      ? 'evm_swap_minimum_received'
+                      : 'evm_swap_you_receive',
+                  type: EvmInputDisplayType.STRING,
+                  value: await formatSwapAmountLeg(
+                    swapPreview.receive,
+                    provider,
+                    (chainTmp as EvmChain).mainToken,
+                    metadataCache,
+                  ),
+                },
+              ];
+              if (swapPreview.recipient) {
+                summaryFields.push({
+                  name: 'evm_swap_recipient',
+                  type: EvmInputDisplayType.WALLET_ADDRESS,
+                  address: swapPreview.recipient,
+                  value: renderCopyableFormattedAddress(
+                    swapPreview.recipient,
+                    chainTmp.chainId,
+                    accounts,
+                  ),
+                });
+              }
+              const actionIndex =
+                transactionConfirmationFields.otherFields.findIndex(
+                  (field) => field.name === 'evm_operation_action',
+                );
+              const insertAt =
+                actionIndex >= 0
+                  ? actionIndex + 1
+                  : transactionConfirmationFields.otherFields.length;
+              transactionConfirmationFields.otherFields.splice(
+                insertAt,
+                0,
+                ...summaryFields,
+              );
             }
 
             if (
