@@ -8,9 +8,6 @@ import {
 import { PendingRequestSource } from '@interfaces/pending-request.interface';
 import { ethers } from 'ethers';
 
-const WATCH_ASSET_CUSTOM_CHAIN_ERROR =
-  'wallet_watchAsset is only supported on custom chains in Keychain';
-
 const WATCH_ASSET_INVALID_PARAMS_ERROR =
   'Invalid wallet_watchAsset parameters. Keychain only supports ERC20 assets';
 
@@ -95,6 +92,5 @@ export const EvmWatchAssetUtils = {
   rejectWatchAssetRequest,
   isValidWatchAssetRequest,
   isWatchAssetRequest,
-  WATCH_ASSET_CUSTOM_CHAIN_ERROR,
   WATCH_ASSET_INVALID_PARAMS_ERROR,
 };

@@ -204,18 +204,6 @@ export const initEvmRequestHandler = async (
       );
       return;
     }
-
-    if (!chain || chain.isCustom !== true) {
-      await EvmWatchAssetUtils.rejectWatchAssetRequest(
-        requestHandler,
-        tab!,
-        request,
-        dappInfo.origin,
-        EvmWatchAssetUtils.WATCH_ASSET_CUSTOM_CHAIN_ERROR,
-        dappInfo.requestSource,
-      );
-      return;
-    }
   }
 
   if (
