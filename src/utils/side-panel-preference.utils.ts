@@ -34,7 +34,7 @@ const getOpenSidePanelByDefault = async (): Promise<boolean> => {
 };
 
 const isSidePanelSessionActive = async (): Promise<boolean> => {
-  if (!chrome.storage?.session) {
+  if (process.env.IS_FIREFOX || !chrome.storage?.session) {
     return false;
   }
 

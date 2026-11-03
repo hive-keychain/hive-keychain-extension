@@ -285,4 +285,9 @@ export const performKeylessOperation = async (
   );
 };
 
-chrome.runtime.onMessage.addListener(chromeMessageHandler);
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (RuntimeMessageSenderUtils.isVaultRuntimeMessage(message)) {
+    return false;
+  }
+  return chromeMessageHandler(message, sender, sendResponse);
+});

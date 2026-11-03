@@ -1,3 +1,4 @@
+import { VaultCommand } from '@reference-data/vault-message-key.enum';
 import { RuntimeMessageSenderUtils } from 'src/utils/runtime-message-sender.utils';
 
 describe('RuntimeMessageSenderUtils', () => {
@@ -18,6 +19,29 @@ describe('RuntimeMessageSenderUtils', () => {
         url: chrome.runtime.getURL('dialog.html'),
       }),
     ).toBe(true);
+  });
+
+  it.each(Object.values(VaultCommand))(
+    'recognizes the %s vault command',
+    (command) => {
+      expect(
+        RuntimeMessageSenderUtils.isVaultRuntimeMessage({
+          command,
+          key: '__MK',
+        }),
+      ).toBe(true);
+    },
+  );
+
+  it('ignores messages that are not vault commands', () => {
+    expect(RuntimeMessageSenderUtils.isVaultRuntimeMessage(undefined)).toBe(
+      false,
+    );
+    expect(
+      RuntimeMessageSenderUtils.isVaultRuntimeMessage({
+        command: 'sendRequest',
+      }),
+    ).toBe(false);
   });
 
   it.each([

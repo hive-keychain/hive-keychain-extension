@@ -1,5 +1,6 @@
 import { beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { VaultCommand } from '@reference-data/vault-message-key.enum';
 
 jest.mock('@background/hive/requests/operations/perform-operation', () => ({
   performHiveOperation: jest.fn(),
@@ -12,7 +13,7 @@ describe('ACCEPT_TRANSACTION stored request', () => {
     message: any,
     sender: chrome.runtime.MessageSender,
     sendResponse: (response?: any) => void,
-  ) => Promise<unknown>;
+  ) => unknown;
 
   const storedRequest = {
     request_id: 4,
@@ -47,7 +48,7 @@ describe('ACCEPT_TRANSACTION stored request', () => {
     HiveRequestsHandler = handlerModule.HiveRequestsHandler;
     performHiveOperationMock = performModule.performHiveOperation as jest.Mock;
     const hiveListener = listeners.find((addedListener) =>
-      addedListener.toString().includes('ACCEPT_TRANSACTION'),
+      addedListener.toString().includes('isVaultRuntimeMessage'),
     );
     if (!hiveListener) {
       throw new Error('Hive message listener was not registered');
@@ -168,4 +169,22 @@ describe('ACCEPT_TRANSACTION stored request', () => {
 
     expect(performHiveOperationMock).not.toHaveBeenCalled();
   });
+
+  it.each(Object.values(VaultCommand))(
+    'does not answer Firefox vault %s messages',
+    (command) => {
+      const sendResponse = jest.fn();
+      expect(
+        listener(
+          { command, key: '__MK' },
+          {
+            id: chrome.runtime.id,
+            url: chrome.runtime.getURL('popup.html'),
+          } as chrome.runtime.MessageSender,
+          sendResponse,
+        ),
+      ).toBe(false);
+      expect(sendResponse).not.toHaveBeenCalled();
+    },
+  );
 });

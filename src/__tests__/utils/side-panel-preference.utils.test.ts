@@ -11,6 +11,7 @@ jest.mock('src/utils/localStorage.utils', () => ({
 }));
 
 describe('SidePanelPreferenceUtils', () => {
+  const originalFirefox = process.env.IS_FIREFOX;
   const getValueFromLocalStorageMock = LocalStorageUtils.getValueFromLocalStorage as jest.MockedFunction<
     typeof LocalStorageUtils.getValueFromLocalStorage
   >;
@@ -25,6 +26,7 @@ describe('SidePanelPreferenceUtils', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    delete process.env.IS_FIREFOX;
     isSessionActive = false;
     delete (chrome as any).sidePanel;
     getValueFromLocalStorageMock.mockResolvedValue(undefined);
@@ -49,6 +51,25 @@ describe('SidePanelPreferenceUtils', () => {
     (chrome as any).action = {
       setPopup: setPopupMock,
     };
+  });
+
+  afterEach(() => {
+    if (originalFirefox === undefined) {
+      delete process.env.IS_FIREFOX;
+      return;
+    }
+    process.env.IS_FIREFOX = originalFirefox;
+  });
+
+  it('does not read side panel session storage on Firefox', async () => {
+    process.env.IS_FIREFOX = 'true';
+    sessionGetMock.mockReturnValue(undefined);
+
+    await expect(
+      SidePanelPreferenceUtils.isSidePanelSessionActive(),
+    ).resolves.toBe(false);
+
+    expect(sessionGetMock).not.toHaveBeenCalled();
   });
 
   it('returns true when open side panel preference is unset before signup is finished', async () => {

@@ -523,6 +523,10 @@ const previewEvmDecryptMessage = async (
 };
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (RuntimeMessageSenderUtils.isVaultRuntimeMessage(message)) {
+    return false;
+  }
+
   const isExtensionPage =
     sender.id === chrome.runtime.id &&
     !!sender.url &&

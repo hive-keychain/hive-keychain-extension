@@ -9,7 +9,9 @@
     "idle",
     "alarms",
     "notifications",
-    "webNavigation"
+    "webNavigation",
+    "https://*/*",
+    "http://*/*"
   ],
   "content_security_policy": "script-src 'self'; object-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self';",
   "browser_action": {

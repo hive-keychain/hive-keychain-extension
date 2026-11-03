@@ -1,6 +1,7 @@
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { VaultCommand } from '@reference-data/vault-message-key.enum';
 
 const addCustomChainMock = jest.fn();
 const addChainToSetupChainsMock = jest.fn();
@@ -109,6 +110,20 @@ describe('evm service worker', () => {
     expect(addListenerSpy).toHaveBeenCalled();
     return addListenerSpy.mock.calls[addListenerSpy.mock.calls.length - 1][0];
   };
+
+  it.each(Object.values(VaultCommand))(
+    'does not answer Firefox vault %s messages',
+    async (command) => {
+      const listener = await importListener();
+      const sendResponse = jest.fn();
+
+      expect(
+        listener({ command, key: '__MK' }, getInternalSender(), sendResponse),
+      ).toBe(false);
+      await flushAsync();
+      expect(sendResponse).not.toHaveBeenCalled();
+    },
+  );
 
   it('redirects failed top-frame ENS navigation to the ENS manager', async () => {
     const { handleEnsNavigationError } =
