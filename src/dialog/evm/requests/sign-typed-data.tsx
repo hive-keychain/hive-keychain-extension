@@ -2,6 +2,8 @@ import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import {
+  EvmTransactionWarningLevel,
+  EvmTransactionWarningType,
   TransactionConfirmationField,
   TransactionConfirmationFields,
 } from '@popup/evm/interfaces/evm-transactions.interface';
@@ -26,6 +28,7 @@ import { reorderEvmConfirmationFields } from 'src/dialog/evm/requests/transactio
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 import FormatUtils from 'src/utils/format.utils';
+import { EvmSignatureBindingUtils } from 'src/utils/evm/evm-signature-binding.utils';
 import Logger from 'src/utils/logger.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
@@ -38,7 +41,7 @@ interface Props {
 
 interface SignTypedDataMessage {
   domain: {
-    chainId?: string;
+    chainId?: string | number;
     name?: string;
     verifyingContract?: string;
     version?: string;
@@ -104,12 +107,57 @@ export const SignTypedData = (props: Props) => {
       !!(transactionInfo && transactionInfo.unableToReach),
     );
 
-    if (message.domain?.chainId)
-      transactionConfirmationFields.otherFields.push({
+    const connectedChainId = await EvmChainUtils.getLastEvmChainIdForOrigin(
+      data.dappInfo.origin,
+    );
+    const requestedChainId = message.domain?.chainId;
+    const hasRequestedChainId =
+      requestedChainId !== undefined &&
+      requestedChainId !== null &&
+      `${requestedChainId}`.trim() !== '';
+    const chainBinding = EvmSignatureBindingUtils.compareChainIds(
+      requestedChainId,
+      connectedChainId,
+    );
+
+    if (hasRequestedChainId) {
+      const chainField: TransactionConfirmationField = {
         type: EvmInputDisplayType.STRING,
         name: 'evm_chain_id',
-        value: formatValue(message.domain.chainId, EvmInputDisplayType.STRING),
+        value: formatValue(requestedChainId, EvmInputDisplayType.STRING),
+      };
+      if (chainBinding === 'mismatch') {
+        chainField.warnings = [
+          {
+            ignored: false,
+            level: EvmTransactionWarningLevel.HIGH,
+            type: EvmTransactionWarningType.BASE,
+            message: 'evm_warning_typed_data_chain_mismatch',
+            messageParams: [
+              await EvmChainUtils.formatSignatureChainLabel(requestedChainId),
+              await EvmChainUtils.formatSignatureChainLabel(connectedChainId),
+            ],
+          },
+        ];
+      }
+      transactionConfirmationFields.otherFields.push(chainField);
+    } else if (
+      EvmSignatureBindingUtils.isSpendingPermitPrimaryType(message.primaryType)
+    ) {
+      transactionConfirmationFields.otherFields.push({
+        name: '',
+        type: EvmInputDisplayType.WARNING_ONLY,
+        value: null,
+        warnings: [
+          {
+            ignored: false,
+            level: EvmTransactionWarningLevel.HIGH,
+            type: EvmTransactionWarningType.BASE,
+            message: 'evm_warning_permit_missing_chain',
+          },
+        ],
       });
+    }
 
     if (message.domain?.verifyingContract)
       transactionConfirmationFields.otherFields.push({
@@ -307,7 +355,10 @@ export const SignTypedData = (props: Props) => {
         warnings: warning ? [warning] : undefined,
       });
     }
-    if (entry.kind === 'operator-approval' || entry.kind === 'operator-revoke') {
+    if (
+      entry.kind === 'operator-approval' ||
+      entry.kind === 'operator-revoke'
+    ) {
       const warning = EvmSpendingPermissionUtils.buildWarning(entry);
       fields.push({
         type: EvmInputDisplayType.STRING,
@@ -341,7 +392,8 @@ export const SignTypedData = (props: Props) => {
             <CustomTooltip
               message={value}
               skipTranslation
-              additionalClassName="evm-address-tooltip">
+              additionalClassName="evm-address-tooltip"
+            >
               <span>{formattedAddress}</span>
             </CustomTooltip>
           </div>
@@ -398,6 +450,7 @@ export const SignTypedData = (props: Props) => {
       fields={<EvmTransactionWarningsComponent warningHook={transactionHook} />}
       transactionHook={transactionHook}
       loadingCaption={loadingCaption}
-      afterCancel={handleCancel}></EvmOperation>
+      afterCancel={handleCancel}
+    ></EvmOperation>
   );
 };

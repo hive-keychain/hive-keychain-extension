@@ -1,6 +1,8 @@
 import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import {
+  EvmTransactionWarningLevel,
+  EvmTransactionWarningType,
   TransactionConfirmationField,
   TransactionConfirmationFields,
 } from '@popup/evm/interfaces/evm-transactions.interface';
@@ -19,6 +21,7 @@ import { reorderEvmConfirmationFields } from 'src/dialog/evm/requests/transactio
 import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
 import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
 
+import { EvmSignatureBindingUtils } from 'src/utils/evm/evm-signature-binding.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   request: EvmRequest;
@@ -76,6 +79,48 @@ export const PersonalSign = (props: Props) => {
       name: 'dialog_account',
       value: accountDisplay.value,
     } as TransactionConfirmationField);
+
+    const connectedChainId = await EvmChainUtils.getLastEvmChainIdForOrigin(
+      data.dappInfo.origin,
+    );
+    const parsedSiwe = EvmSignatureBindingUtils.parseSiweMessage(msg);
+    if (parsedSiwe) {
+      const issues = EvmSignatureBindingUtils.getSiweBindingIssues(parsedSiwe, {
+        domain: data.dappInfo.domain,
+        origin: data.dappInfo.origin,
+        chainId: connectedChainId ?? '',
+      });
+      for (const issue of issues) {
+        const messageKey =
+          issue.kind === 'domain'
+            ? 'evm_warning_siwe_domain_mismatch'
+            : issue.kind === 'uri'
+              ? 'evm_warning_siwe_uri_mismatch'
+              : 'evm_warning_siwe_chain_mismatch';
+        const messageParams =
+          issue.kind === 'chain'
+            ? [
+                await EvmChainUtils.formatSignatureChainLabel(issue.stated),
+                await EvmChainUtils.formatSignatureChainLabel(issue.actual),
+              ]
+            : [issue.stated, issue.actual];
+        transactionConfirmationFields.otherFields.push({
+          name: 'evm_sign_in_with_ethereum',
+          type: EvmInputDisplayType.WARNING_ONLY,
+          value: null,
+          warnings: [
+            {
+              ignored: false,
+              level: EvmTransactionWarningLevel.HIGH,
+              type: EvmTransactionWarningType.BASE,
+              message: messageKey,
+              messageParams,
+            },
+          ],
+        });
+      }
+    }
+
     transactionConfirmationFields.otherFields = reorderEvmConfirmationFields(
       transactionConfirmationFields.otherFields,
     );
@@ -115,6 +160,7 @@ export const PersonalSign = (props: Props) => {
         </Card>
       }
       loadingCaption={loadingCaption}
-      transactionHook={transactionHook}></EvmOperation>
+      transactionHook={transactionHook}
+    ></EvmOperation>
   );
 };

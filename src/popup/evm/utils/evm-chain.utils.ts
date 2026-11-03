@@ -2,6 +2,7 @@ import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { normalizeEvmChainId } from 'src/utils/evm-provider-value.utils';
+import { EvmSignatureBindingUtils } from 'src/utils/evm/evm-signature-binding.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 interface EvmOriginChainState {
@@ -88,6 +89,19 @@ const setChainIdForOrigin = async (origin: string, chainId: string) => {
   );
 };
 
+const formatSignatureChainLabel = async (chainId: unknown): Promise<string> => {
+  const hexChainId = EvmSignatureBindingUtils.toHexChainId(chainId);
+  const decimalChainId = EvmSignatureBindingUtils.toDecimalChainId(chainId);
+  if (hexChainId) {
+    const chain = await ChainUtils.getChain<EvmChain>(hexChainId);
+    if (chain?.name && decimalChainId) {
+      return `${chain.name} (${decimalChainId})`;
+    }
+    return hexChainId;
+  }
+  return decimalChainId ?? `${chainId ?? ''}`;
+};
+
 export const EvmChainUtils = {
   getLastEvmChainId,
   getLastEvmChainIdForOrigin,
@@ -97,4 +111,5 @@ export const EvmChainUtils = {
   getLastEvmChain,
   saveLastUsedChain,
   setChainIdForOrigin,
+  formatSignatureChainLabel,
 };
