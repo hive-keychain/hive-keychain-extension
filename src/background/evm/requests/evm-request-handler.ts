@@ -317,6 +317,27 @@ export class EvmRequestHandler {
     }
   }
 
+  async removePendingAccountRequestsForOrigin(
+    origin: string,
+  ): Promise<EvmRequestData[]> {
+    const removedRequests: EvmRequestData[] = [];
+
+    await this.removeRequests((requestData) => {
+      const shouldRemove =
+        requestData.dappInfo?.origin === origin &&
+        !!requestData.request &&
+        EvmRequestAccountUtils.requiresAccountAuthorization(
+          requestData.request,
+        );
+      if (shouldRemove) {
+        removedRequests.push(requestData);
+      }
+      return shouldRemove;
+    });
+
+    return removedRequests;
+  }
+
   async removeRequestsForTab(tab: number) {
     return this.removeRequests((requestData) => requestData.tab === tab);
   }

@@ -320,6 +320,61 @@ describe('evm-request-handler tests:\n', () => {
     });
   });
 
+  it('removes pending account requests only for the revoked origin', async () => {
+    requiresAccountAuthorizationMock.mockImplementation(
+      (request) => request.method === EvmRequestMethod.PERSONAL_SIGN,
+    );
+    storage[LocalStorageKeyEnum.__EVM_REQUEST_HANDLER] = {
+      requestsData: [
+        {
+          request_id: 21,
+          tab: 7,
+          request: {
+            request_id: 21,
+            method: EvmRequestMethod.PERSONAL_SIGN,
+            params: [],
+          },
+          dappInfo: { origin: 'https://revoked.example' },
+        },
+        {
+          request_id: 22,
+          tab: 8,
+          request: {
+            request_id: 22,
+            method: EvmRequestMethod.PERSONAL_SIGN,
+            params: [],
+          },
+          dappInfo: { origin: 'https://other.example' },
+        },
+        {
+          request_id: 23,
+          tab: 7,
+          request: {
+            request_id: 23,
+            method: EvmRequestMethod.GET_CHAIN,
+            params: [],
+          },
+          dappInfo: { origin: 'https://revoked.example' },
+        },
+      ],
+    };
+    const handler = new EvmRequestHandler();
+
+    const removedRequests =
+      await handler.removePendingAccountRequestsForOrigin(
+        'https://revoked.example',
+      );
+
+    expect(removedRequests.map((requestData) => requestData.request_id)).toEqual([
+      21,
+    ]);
+    expect(
+      storage[LocalStorageKeyEnum.__EVM_REQUEST_HANDLER].requestsData.map(
+        (requestData: any) => requestData.request_id,
+      ),
+    ).toEqual([22, 23]);
+  });
+
   it('serializes request updates against the latest persisted queue', async () => {
     storage[LocalStorageKeyEnum.__EVM_REQUEST_HANDLER] = {
       requestsData: [

@@ -9,6 +9,7 @@ import {
   EvmDappInfo,
   EvmRequest,
   getErrorFromEtherJS,
+  ProviderRpcErrorList,
 } from '@interfaces/evm-provider.interface';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
@@ -111,6 +112,28 @@ export const evmRequestWithoutConfirmation = async (
       const prevAccounts = await getAccountsForOrigin(dappInfo.origin);
       await EvmWalletUtils.revokeAllPermissions(dappInfo.origin);
       await removeWhitelistedChainsForOrigin(dappInfo.origin);
+      const revokedRequests =
+        await requestHandler.removePendingAccountRequestsForOrigin(
+          dappInfo.origin,
+        );
+      await Promise.all(
+        revokedRequests.map(async (requestData) => {
+          if (!requestData.request || requestData.tab == null) return;
+          await CommunicationUtils.tabsSendMessage(
+            requestData.tab,
+            {
+              command: BackgroundCommand.SEND_EVM_ERROR,
+              value: {
+                requestId: requestData.request.request_id,
+                error: ProviderRpcErrorList.unauthorized,
+              },
+            },
+            getPendingRequestMessageOptions(
+              requestData.dappInfo?.requestSource,
+            ),
+          );
+        }),
+      );
       message.value.result = null;
       await emitAccountsChangedIfNeeded(dappInfo.origin, prevAccounts, []);
       break;
