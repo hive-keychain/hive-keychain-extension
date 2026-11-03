@@ -8410,5 +8410,71 @@
   "evm_nft_collection": {
     "message": "Collection",
     "description": "NFT collection label when it matches the token name"
+  },
+  "evm_batch_title": {
+    "message": "Vérifier le lot de transactions"
+  },
+  "evm_batch_non_atomic": {
+    "message": "Ce sont des transactions séparées, envoyées dans l’ordre. Chacune paie le gaz et peut échouer seule. Celles qui réussissent ne peuvent pas être annulées. Les suivantes peuvent encore s’exécuter si une précédente est annulée."
+  },
+  "evm_batch_call": {
+    "message": "Appel $1"
+  },
+  "evm_batch_from": {
+    "message": "De"
+  },
+  "evm_batch_total_value": {
+    "message": "Valeur native totale"
+  },
+  "evm_batch_total_fee": {
+    "message": "Frais de réseau maximum"
+  },
+  "evm_batch_max_cost": {
+    "message": "Solde natif maximum requis"
+  },
+  "evm_batch_preparing": {
+    "message": "Estimation des frais de chaque appel…"
+  },
+  "evm_batch_prepare_failed": {
+    "message": "Impossible de préparer ce lot. Utilisez un compte logiciel connecté sur un réseau ajouté. Chaque appel doit passer l’estimation de gaz seul. Ceux qui dépendent d’un état antérieur peuvent être incompatibles. Annulez et réessayez."
+  },
+  "evm_batch_review_failed": {
+    "message": "Cet appel n’a pas pu être vérifié en toute sécurité. Annulez et réessayez le lot."
+  },
+  "evm_batch_status_title": {
+    "message": "Statut du lot"
+  },
+  "evm_batch_status_failed": {
+    "message": "Impossible de récupérer ce lot. Son statut n’est visible que par l’app qui l’a envoyé."
+  },
+  "evm_batch_status_100": {
+    "message": "En attente — l’envoi ou la confirmation est en cours."
+  },
+  "evm_batch_status_200": {
+    "message": "Tous les appels ont réussi."
+  },
+  "evm_batch_status_400": {
+    "message": "Le lot a échoué sans transaction incluse."
+  },
+  "evm_batch_status_500": {
+    "message": "Le lot a échoué ; les transactions incluses ont été annulées."
+  },
+  "evm_batch_status_600": {
+    "message": "Certains appels ont réussi, d’autres ont échoué."
+  },
+  "evm_batch_call_succeeded": {
+    "message": "Réussi"
+  },
+  "evm_batch_call_reverted": {
+    "message": "Annulé"
+  },
+  "evm_batch_chain": {
+    "message": "Chaîne"
+  },
+  "evm_batch_block": {
+    "message": "Bloc"
+  },
+  "evm_batch_close": {
+    "message": "Fermer"
   }
 }

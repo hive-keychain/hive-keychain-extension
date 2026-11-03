@@ -8410,5 +8410,71 @@
   "evm_nft_recipient_placeholder": {
     "message": "Address or ENS name",
     "description": "NFT send recipient placeholder"
+  },
+  "evm_batch_title": {
+    "message": "Revisar lote de transações"
+  },
+  "evm_batch_non_atomic": {
+    "message": "São transações separadas, enviadas em ordem. Cada uma paga gás e pode falhar sozinha. As bem-sucedidas não podem ser revertidas. As seguintes ainda podem executar se uma anterior falhar."
+  },
+  "evm_batch_call": {
+    "message": "Chamada $1"
+  },
+  "evm_batch_from": {
+    "message": "De"
+  },
+  "evm_batch_total_value": {
+    "message": "Valor nativo total"
+  },
+  "evm_batch_total_fee": {
+    "message": "Taxas máximas de rede"
+  },
+  "evm_batch_max_cost": {
+    "message": "Saldo nativo máximo exigido"
+  },
+  "evm_batch_preparing": {
+    "message": "Estimando taxas de cada chamada…"
+  },
+  "evm_batch_prepare_failed": {
+    "message": "Não foi possível preparar este lote. Use uma conta de software conectada numa rede adicionada. Cada chamada deve passar na estimativa de gás sozinha. Chamadas que dependem de mudanças anteriores podem não ser suportadas. Cancele e tente de novo."
+  },
+  "evm_batch_review_failed": {
+    "message": "Esta chamada não pôde ser revisada com segurança. Cancele e tente o lote de novo."
+  },
+  "evm_batch_status_title": {
+    "message": "Estado do lote"
+  },
+  "evm_batch_status_failed": {
+    "message": "Não foi possível obter este lote. O estado só está disponível para a app que o enviou."
+  },
+  "evm_batch_status_100": {
+    "message": "Pendente — o envio ou a confirmação ainda está em curso."
+  },
+  "evm_batch_status_200": {
+    "message": "Todas as chamadas foram concluídas."
+  },
+  "evm_batch_status_400": {
+    "message": "O lote falhou sem uma transação incluída."
+  },
+  "evm_batch_status_500": {
+    "message": "O lote falhou; as transações incluídas foram revertidas."
+  },
+  "evm_batch_status_600": {
+    "message": "Algumas chamadas foram concluídas e outras falharam."
+  },
+  "evm_batch_call_succeeded": {
+    "message": "Concluída"
+  },
+  "evm_batch_call_reverted": {
+    "message": "Revertida"
+  },
+  "evm_batch_chain": {
+    "message": "Rede"
+  },
+  "evm_batch_block": {
+    "message": "Bloco"
+  },
+  "evm_batch_close": {
+    "message": "Fechar"
   }
 }

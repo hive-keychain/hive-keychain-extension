@@ -1022,6 +1022,7 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
       mainBalance: {
         symbol: 'ETH',
         before: '5 ETH',
+        rawBefore: '5',
         estimatedAfter: '3.9  ETH',
         insufficientBalance: false,
       },
@@ -1093,12 +1094,14 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
       mainBalance: {
         symbol: 'USDC',
         before: '100 USDC',
+        rawBefore: '100',
         estimatedAfter: '75  USDC',
         insufficientBalance: false,
       },
       feeBalance: {
         symbol: 'ETH',
         before: '1 ETH',
+        rawBefore: '1',
         estimatedAfter: '0.9  ETH',
         insufficientBalance: false,
       },

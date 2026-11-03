@@ -8410,5 +8410,71 @@
   "evm_nft_recipient_placeholder": {
     "message": "Address or ENS name",
     "description": "NFT send recipient placeholder"
+  },
+  "evm_batch_title": {
+    "message": "Revisar lote de transacciones"
+  },
+  "evm_batch_non_atomic": {
+    "message": "Son transacciones separadas, enviadas en orden. Cada una paga gas y puede fallar por sí sola. Las correctas no se pueden revertir. Las siguientes pueden ejecutarse aunque una anterior falle."
+  },
+  "evm_batch_call": {
+    "message": "Llamada $1"
+  },
+  "evm_batch_from": {
+    "message": "De"
+  },
+  "evm_batch_total_value": {
+    "message": "Valor nativo total"
+  },
+  "evm_batch_total_fee": {
+    "message": "Comisiones de red máximas"
+  },
+  "evm_batch_max_cost": {
+    "message": "Saldo nativo máximo requerido"
+  },
+  "evm_batch_preparing": {
+    "message": "Estimando comisiones de cada llamada…"
+  },
+  "evm_batch_prepare_failed": {
+    "message": "No se pudo preparar este lote. Usa una cuenta de software conectada en una red añadida. Cada llamada debe superar la estimación de gas por sí sola. Las que dependen de cambios de estado previos pueden no ser compatibles. Cancela y reintenta."
+  },
+  "evm_batch_review_failed": {
+    "message": "No se pudo revisar esta llamada de forma segura. Cancela y reintenta el lote."
+  },
+  "evm_batch_status_title": {
+    "message": "Estado del lote"
+  },
+  "evm_batch_status_failed": {
+    "message": "No se pudo obtener este lote. Su estado solo está disponible para la app que lo envió."
+  },
+  "evm_batch_status_100": {
+    "message": "Pendiente: el envío o la confirmación sigue en curso."
+  },
+  "evm_batch_status_200": {
+    "message": "Todas las llamadas se completaron."
+  },
+  "evm_batch_status_400": {
+    "message": "El lote falló sin una transacción incluida."
+  },
+  "evm_batch_status_500": {
+    "message": "El lote falló; las transacciones incluidas se revirtieron."
+  },
+  "evm_batch_status_600": {
+    "message": "Algunas llamadas se completaron y otras fallaron."
+  },
+  "evm_batch_call_succeeded": {
+    "message": "Correcta"
+  },
+  "evm_batch_call_reverted": {
+    "message": "Revertida"
+  },
+  "evm_batch_chain": {
+    "message": "Cadena"
+  },
+  "evm_batch_block": {
+    "message": "Bloque"
+  },
+  "evm_batch_close": {
+    "message": "Cerrar"
   }
 }

@@ -8410,5 +8410,71 @@
   "evm_nft_recipient_placeholder": {
     "message": "Address or ENS name",
     "description": "NFT send recipient placeholder"
+  },
+  "evm_batch_title": {
+    "message": "Transaktionsstapel prüfen"
+  },
+  "evm_batch_non_atomic": {
+    "message": "Das sind getrennte Transaktionen in Reihenfolge. Jede zahlt Gas und kann einzeln scheitern. Erfolgreiche lassen sich nicht zurücknehmen. Spätere können noch laufen, wenn eine frühere zurückgesetzt wird."
+  },
+  "evm_batch_call": {
+    "message": "Aufruf $1"
+  },
+  "evm_batch_from": {
+    "message": "Von"
+  },
+  "evm_batch_total_value": {
+    "message": "Nativer Gesamtwert"
+  },
+  "evm_batch_total_fee": {
+    "message": "Maximale Netzwerkgebühren"
+  },
+  "evm_batch_max_cost": {
+    "message": "Benötigtes natives Guthaben"
+  },
+  "evm_batch_preparing": {
+    "message": "Gebühren für jeden Aufruf werden geschätzt…"
+  },
+  "evm_batch_prepare_failed": {
+    "message": "Stapel konnte nicht vorbereitet werden. Nutze ein verbundenes Softwarekonto in einem hinzugefügten Netzwerk. Jeder Aufruf muss die Gasschätzung einzeln bestehen. Aufrufe mit früheren Zustandsänderungen werden eventuell nicht unterstützt. Abbrechen und erneut versuchen."
+  },
+  "evm_batch_review_failed": {
+    "message": "Dieser Aufruf konnte nicht sicher geprüft werden. Abbrechen und den Stapel erneut versuchen."
+  },
+  "evm_batch_status_title": {
+    "message": "Status des Transaktionsstapels"
+  },
+  "evm_batch_status_failed": {
+    "message": "Dieser Stapel konnte nicht abgerufen werden. Den Status sieht nur die App, die ihn gesendet hat."
+  },
+  "evm_batch_status_100": {
+    "message": "Ausstehend — Senden oder Bestätigung läuft noch."
+  },
+  "evm_batch_status_200": {
+    "message": "Alle Aufrufe erfolgreich."
+  },
+  "evm_batch_status_400": {
+    "message": "Der Stapel ist ohne aufgenommene Transaktion fehlgeschlagen."
+  },
+  "evm_batch_status_500": {
+    "message": "Der Stapel ist fehlgeschlagen; aufgenommene Transaktionen wurden zurückgesetzt."
+  },
+  "evm_batch_status_600": {
+    "message": "Einige Aufrufe erfolgreich, andere fehlgeschlagen."
+  },
+  "evm_batch_call_succeeded": {
+    "message": "Erfolgreich"
+  },
+  "evm_batch_call_reverted": {
+    "message": "Zurückgesetzt"
+  },
+  "evm_batch_chain": {
+    "message": "Chain"
+  },
+  "evm_batch_block": {
+    "message": "Block"
+  },
+  "evm_batch_close": {
+    "message": "Schließen"
   }
 }

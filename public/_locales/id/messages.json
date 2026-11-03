@@ -8410,5 +8410,71 @@
   "evm_nft_recipient_placeholder": {
     "message": "Address or ENS name",
     "description": "NFT send recipient placeholder"
+  },
+  "evm_batch_title": {
+    "message": "Tinjau kumpulan transaksi"
+  },
+  "evm_batch_non_atomic": {
+    "message": "Ini transaksi terpisah yang dikirim berurutan. Masing-masing membayar gas dan bisa gagal sendiri. Transaksi yang berhasil tidak bisa dibatalkan. Transaksi berikutnya tetap bisa berjalan jika yang sebelumnya gagal."
+  },
+  "evm_batch_call": {
+    "message": "Panggilan $1"
+  },
+  "evm_batch_from": {
+    "message": "Dari"
+  },
+  "evm_batch_total_value": {
+    "message": "Total nilai native"
+  },
+  "evm_batch_total_fee": {
+    "message": "Total biaya jaringan maksimum"
+  },
+  "evm_batch_max_cost": {
+    "message": "Saldo native maksimum yang diperlukan"
+  },
+  "evm_batch_preparing": {
+    "message": "Memperkirakan biaya setiap panggilan…"
+  },
+  "evm_batch_prepare_failed": {
+    "message": "Kumpulan ini tidak bisa disiapkan. Gunakan akun perangkat lunak yang terhubung di jaringan yang sudah ditambahkan. Setiap panggilan harus lolos estimasi gas sendiri. Panggilan yang bergantung pada status sebelumnya mungkin tidak didukung. Batalkan dan coba lagi."
+  },
+  "evm_batch_review_failed": {
+    "message": "Panggilan ini tidak bisa ditinjau dengan aman. Batalkan dan coba lagi kumpulannya."
+  },
+  "evm_batch_status_title": {
+    "message": "Status kumpulan transaksi"
+  },
+  "evm_batch_status_failed": {
+    "message": "Kumpulan ini tidak bisa diambil. Statusnya hanya tersedia untuk aplikasi yang mengirimnya."
+  },
+  "evm_batch_status_100": {
+    "message": "Tertunda — pengiriman atau konfirmasi masih berlangsung."
+  },
+  "evm_batch_status_200": {
+    "message": "Semua panggilan berhasil."
+  },
+  "evm_batch_status_400": {
+    "message": "Kumpulan gagal tanpa transaksi yang disertakan."
+  },
+  "evm_batch_status_500": {
+    "message": "Kumpulan gagal; transaksi yang disertakan dibatalkan."
+  },
+  "evm_batch_status_600": {
+    "message": "Sebagian panggilan berhasil, sebagian gagal."
+  },
+  "evm_batch_call_succeeded": {
+    "message": "Berhasil"
+  },
+  "evm_batch_call_reverted": {
+    "message": "Dibatalkan"
+  },
+  "evm_batch_chain": {
+    "message": "Chain"
+  },
+  "evm_batch_block": {
+    "message": "Blok"
+  },
+  "evm_batch_close": {
+    "message": "Tutup"
   }
 }

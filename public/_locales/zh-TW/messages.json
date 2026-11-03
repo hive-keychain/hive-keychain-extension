@@ -8410,5 +8410,71 @@
   "evm_nft_recipient_placeholder": {
     "message": "Address or ENS name",
     "description": "NFT send recipient placeholder"
+  },
+  "evm_batch_title": {
+    "message": "查看交易批次"
+  },
+  "evm_batch_non_atomic": {
+    "message": "這些是依序提交的獨立交易。每筆都要支付 gas，也可能單獨失敗。已成功的交易無法回滾。若較早的交易回滾，後續交易仍可能執行。"
+  },
+  "evm_batch_call": {
+    "message": "呼叫 $1"
+  },
+  "evm_batch_from": {
+    "message": "來自"
+  },
+  "evm_batch_total_value": {
+    "message": "原生代幣總值"
+  },
+  "evm_batch_total_fee": {
+    "message": "最高網路費用合計"
+  },
+  "evm_batch_max_cost": {
+    "message": "所需最高原生餘額"
+  },
+  "evm_batch_preparing": {
+    "message": "正在估算每次呼叫的費用…"
+  },
+  "evm_batch_prepare_failed": {
+    "message": "無法準備此批次。請使用已新增網路上已連線的軟體帳戶。每次呼叫都必須單獨通過 gas 估算。依賴先前狀態變更的呼叫可能不受支援。請取消並重試。"
+  },
+  "evm_batch_review_failed": {
+    "message": "無法安全審查此呼叫。請取消並重試該批次。"
+  },
+  "evm_batch_status_title": {
+    "message": "交易批次狀態"
+  },
+  "evm_batch_status_failed": {
+    "message": "無法取得此批次。其狀態僅對提交它的應用程式可用。"
+  },
+  "evm_batch_status_100": {
+    "message": "待處理 — 提交或確認仍在進行。"
+  },
+  "evm_batch_status_200": {
+    "message": "全部呼叫已成功。"
+  },
+  "evm_batch_status_400": {
+    "message": "批次失敗，且沒有已包含的交易。"
+  },
+  "evm_batch_status_500": {
+    "message": "批次失敗；已包含的交易已回滾。"
+  },
+  "evm_batch_status_600": {
+    "message": "部分呼叫成功，部分失敗。"
+  },
+  "evm_batch_call_succeeded": {
+    "message": "已成功"
+  },
+  "evm_batch_call_reverted": {
+    "message": "已回滾"
+  },
+  "evm_batch_chain": {
+    "message": "鏈"
+  },
+  "evm_batch_block": {
+    "message": "區塊"
+  },
+  "evm_batch_close": {
+    "message": "關閉"
   }
 }

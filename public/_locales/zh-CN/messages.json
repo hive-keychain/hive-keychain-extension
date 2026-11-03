@@ -8410,5 +8410,71 @@
   "evm_nft_recipient_placeholder": {
     "message": "Address or ENS name",
     "description": "NFT send recipient placeholder"
+  },
+  "evm_batch_title": {
+    "message": "查看交易批次"
+  },
+  "evm_batch_non_atomic": {
+    "message": "这些是按顺序提交的独立交易。每笔都要支付 gas，也可能单独失败。已成功的交易无法回滚。若较早的交易回滚，后续交易仍可能执行。"
+  },
+  "evm_batch_call": {
+    "message": "调用 $1"
+  },
+  "evm_batch_from": {
+    "message": "来自"
+  },
+  "evm_batch_total_value": {
+    "message": "原生代币总值"
+  },
+  "evm_batch_total_fee": {
+    "message": "最高网络费用合计"
+  },
+  "evm_batch_max_cost": {
+    "message": "所需最高原生余额"
+  },
+  "evm_batch_preparing": {
+    "message": "正在估算每次调用的费用…"
+  },
+  "evm_batch_prepare_failed": {
+    "message": "无法准备此批次。请使用已添加网络上已连接的软件账户。每次调用都必须单独通过 gas 估算。依赖先前状态变更的调用可能不受支持。请取消并重试。"
+  },
+  "evm_batch_review_failed": {
+    "message": "无法安全审查此调用。请取消并重试该批次。"
+  },
+  "evm_batch_status_title": {
+    "message": "交易批次状态"
+  },
+  "evm_batch_status_failed": {
+    "message": "无法获取此批次。其状态仅对提交它的应用可用。"
+  },
+  "evm_batch_status_100": {
+    "message": "待处理 — 提交或确认仍在进行。"
+  },
+  "evm_batch_status_200": {
+    "message": "全部调用已成功。"
+  },
+  "evm_batch_status_400": {
+    "message": "批次失败，且没有已包含的交易。"
+  },
+  "evm_batch_status_500": {
+    "message": "批次失败；已包含的交易已回滚。"
+  },
+  "evm_batch_status_600": {
+    "message": "部分调用成功，部分失败。"
+  },
+  "evm_batch_call_succeeded": {
+    "message": "已成功"
+  },
+  "evm_batch_call_reverted": {
+    "message": "已回滚"
+  },
+  "evm_batch_chain": {
+    "message": "链"
+  },
+  "evm_batch_block": {
+    "message": "区块"
+  },
+  "evm_batch_close": {
+    "message": "关闭"
   }
 }
