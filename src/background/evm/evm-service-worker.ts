@@ -1,5 +1,6 @@
 import { EvmCallBatchModule } from '@background/evm/evm-call-batch.module';
 import { EvmIncomingTransactionsModule } from '@background/evm/evm-incoming-transactions.module';
+import { EvmSubscriptionModule } from '@background/evm/evm-subscription.module';
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { initializeEvmProviderRegistration } from '@background/evm/evm-provider-registration';
 import {
@@ -98,6 +99,7 @@ const initializeServiceWorker = async () => {
     });
   initializeEvmProviderRegistration();
   EvmIncomingTransactionsModule.start();
+  EvmSubscriptionModule.initialize();
   EvmPendingTransactionsNotifications.registerClickListener();
   void EvmTransactionsUtils.rehydratePendingTransactions();
   EvmTransactionSubmissionModule.initialize(async (transaction, chainId) => {

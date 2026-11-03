@@ -1,5 +1,9 @@
 import { BackgroundMessage } from '@background/multichain/background-message.interface';
-import { EvmEventName } from '@interfaces/evm-provider.interface';
+import {
+  EVM_SUBSCRIPTION_PORT_NAME,
+  EvmEventName,
+  RoutedEvmEvent,
+} from '@interfaces/evm-provider.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { validateEvmRequest } from 'src/content-scripts/evm/evm-request-validation';
 import {
@@ -10,6 +14,56 @@ import {
   sendEvmRequestToBackground,
   sendResponseToEvm,
 } from 'src/content-scripts/hive/web-interface/response.logic';
+
+let subscriptionPort: chrome.runtime.Port | undefined;
+let subscriptionHeld = false;
+
+const isTopFrame = () => {
+  try {
+    return window.top === window;
+  } catch {
+    return false;
+  }
+};
+
+const connectSubscriptionPort = () => {
+  if (!isTopFrame() || subscriptionPort) return;
+  try {
+    const port = chrome.runtime.connect({ name: EVM_SUBSCRIPTION_PORT_NAME });
+    subscriptionPort = port;
+    port.onDisconnect.addListener(() => {
+      if (subscriptionPort !== port) return;
+      subscriptionPort = undefined;
+      if (subscriptionHeld) connectSubscriptionPort();
+    });
+  } catch {
+    subscriptionPort = undefined;
+  }
+};
+
+const holdSubscriptionPort = () => {
+  subscriptionHeld = true;
+  connectSubscriptionPort();
+};
+
+const releaseSubscriptionPort = () => {
+  subscriptionHeld = false;
+  const port = subscriptionPort;
+  subscriptionPort = undefined;
+  port?.disconnect();
+};
+
+const forwardEvmEvent = (event: RoutedEvmEvent) => {
+  if (event.eventType === EvmEventName.ETH_SUBSCRIPTION_HOLD) {
+    holdSubscriptionPort();
+    return;
+  }
+  if (event.eventType === EvmEventName.ETH_SUBSCRIPTION_RELEASE) {
+    releaseSubscriptionPort();
+    return;
+  }
+  sendEventToEvm(event);
+};
 
 document.addEventListener(EvmEventName.REQUEST, async (request: any) => {
   try {
@@ -53,7 +107,7 @@ chrome.runtime.onMessage.addListener(
       backgroundMessage.command ===
       BackgroundCommand.SEND_EVM_EVENT_TO_CONTENT_SCRIPT
     ) {
-      sendEventToEvm(backgroundMessage.value!);
+      forwardEvmEvent(backgroundMessage.value as RoutedEvmEvent);
     }
   },
 );

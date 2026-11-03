@@ -211,6 +211,12 @@ export class EvmProvider extends EventEmitter {
               this.applyAccounts(eventData.event.args.accounts, { emit: true });
               return;
             }
+            case EvmEventName.ETH_SUBSCRIPTION: {
+              const payload = eventData.event.args;
+              this.emit('message', payload);
+              this.emit('data', payload?.data?.result);
+              return;
+            }
           }
         }
       },

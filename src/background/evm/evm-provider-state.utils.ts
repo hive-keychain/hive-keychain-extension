@@ -1,3 +1,4 @@
+import { EvmSubscriptionModule } from '@background/evm/evm-subscription.module';
 import {
   EvmDappInfo,
   EvmEventName,
@@ -138,6 +139,8 @@ export const emitChainChangedIfNeeded = async (
   if (areEvmChainIdsEqual(normalizedPrev, normalizedNext)) {
     return normalizedNext;
   }
+
+  await EvmSubscriptionModule.dropOrigin(origin);
 
   const scope: OriginScopedRoutedEvmEvent['scope'] =
     options.tabId === undefined

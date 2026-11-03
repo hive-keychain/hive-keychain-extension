@@ -43,3 +43,20 @@ await provider.request({ method: 'wallet_showCallsStatus', params: [id] });
 Check two separate receipts and consecutive nonces. Repeat with rejection (no transaction), `atomicRequired: true` (`5760`), an unknown ID (`5730`), and the same ID from another origin (`5730`). Switch the selected chain after submission: status must still refer to the original chain. Interrupt the worker after a signed batch is persisted and verify recovery keeps the original transaction hashes. Test a pending batch alongside a normal transfer and a fee replacement.
 
 Automated tests cover request validation, account/chain capabilities, approval binding, fee checks, signing failure, nonce coordination, ordered recovery, receipt aggregation, origin isolation, replacement tracking, internal-message authorization, repeated confirmation, and dialog warning/expiry gating. Browser and testnet execution still require the manual checks above.
+
+## Block and log subscriptions
+
+Keychain polls the active HTTP RPC and delivers `newHeads` and `logs` to the page. `eth_subscribe` of `newPendingTransactions` or `syncing`, and `eth_newPendingTransactionFilter`, return `4200` with no dialog. A log `fromBlock`/`toBlock` span wider than 2,000 blocks returns `-32005`.
+
+Use an EIP-1193 Keychain provider on a testnet. These calls do not spend the account's funds, except where a contract transaction is needed to emit a log.
+
+- `eth_subscribe` `newHeads`: `provider.on('message')` fires with a block header within about a block, and `provider.on('data')` fires with the same header.
+- `eth_unsubscribe` that id, then wait two blocks: no further events arrive for it.
+- `eth_subscribe` `logs` for a known contract and topic: a new matching log arrives. A log from another contract does not.
+- `eth_newFilter` with `fromBlock` a few blocks behind a known log: the first `eth_getFilterChanges` includes it, the second is empty until a new log, and `eth_getFilterLogs` still contains the earlier log.
+- `eth_newBlockFilter`: `eth_getFilterChanges` returns block hashes.
+- `eth_subscribe` `newPendingTransactions` and `eth_newPendingTransactionFilter` reject with `4200` and no dialog.
+- Switch chain from the dapp: events for the old subscription stop.
+- Close the tab: polls for that tab stop.
+- Reload the extension service worker with the tab still open: events resume for the same subscription id.
+- A `fromBlock` more than 2,000 blocks behind `toBlock` is rejected with `-32005`.

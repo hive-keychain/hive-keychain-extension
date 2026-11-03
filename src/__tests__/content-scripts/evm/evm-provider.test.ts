@@ -511,4 +511,38 @@ describe('evm-provider tests:\n', () => {
     expect(provider.selectedAddress).toBe('0xabc123');
     cleanup();
   });
+
+  it('emits eth_subscription results as message and data events', async () => {
+    const cleanup = installRequestResponder({});
+    const provider = new EvmProvider();
+    const messageListener = jest.fn();
+    const dataListener = jest.fn();
+    const header = { number: '0x3', hash: '0xaaa3', parentHash: '0xaaa2' };
+    provider.on('message', messageListener);
+    provider.on('data', dataListener);
+
+    await waitForInit();
+    const event = new MessageEvent('message', {
+      data: {
+        type: 'evm_keychain_event',
+        event: {
+          eventType: EvmEventName.ETH_SUBSCRIPTION,
+          args: {
+            type: 'eth_subscription',
+            data: { subscription: '0xsub', result: header },
+          },
+          scope: { kind: 'tab', tabId: 1 },
+        },
+      },
+    });
+    Object.defineProperty(event, 'source', { value: window });
+    window.dispatchEvent(event);
+
+    expect(messageListener).toHaveBeenCalledWith({
+      type: 'eth_subscription',
+      data: { subscription: '0xsub', result: header },
+    });
+    expect(dataListener).toHaveBeenCalledWith(header);
+    cleanup();
+  });
 });

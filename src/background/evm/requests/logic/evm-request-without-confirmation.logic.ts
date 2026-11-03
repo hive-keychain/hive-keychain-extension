@@ -25,6 +25,7 @@ import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
 import { getPendingRequestMessageOptions } from '@background/multichain/pending-request.interface';
 import { EvmCallBatchModule } from '@background/evm/evm-call-batch.module';
+import { EvmSubscriptionModule } from '@background/evm/evm-subscription.module';
 import { EvmTransactionSubmissionModule } from '@background/evm/evm-transaction-submission.module';
 
 export const evmRequestWithoutConfirmation = async (
@@ -178,6 +179,42 @@ export const evmRequestWithoutConfirmation = async (
       break;
     }
 
+    case EvmRequestMethod.SUBSCRIBE:
+    case EvmRequestMethod.UNSUBSCRIBE:
+    case EvmRequestMethod.NEW_FILTER:
+    case EvmRequestMethod.NEW_BLOCK_FILTER:
+    case EvmRequestMethod.NEW_PENDING_TRANSACTION_FILTER:
+    case EvmRequestMethod.GET_FILTER_CHANGES:
+    case EvmRequestMethod.GET_FILTER_LOGS:
+    case EvmRequestMethod.UNINSTALL_FILTER: {
+      try {
+        const chainId =
+          request.chainId ??
+          (await EvmChainUtils.getLastEvmChainIdForOrigin(dappInfo.origin));
+        message.value.result = await EvmSubscriptionModule.handle({
+          method: request.method,
+          params: request.params,
+          tabId: tab,
+          frameId: dappInfo.requestSource?.frameId,
+          origin: dappInfo.origin,
+          chainId,
+        });
+      } catch (error) {
+        const rpcError = error as { code?: number; message?: string };
+        message = {
+          command: BackgroundCommand.SEND_EVM_ERROR,
+          value: {
+            requestId: request.request_id,
+            error: {
+              code: typeof rpcError.code === 'number' ? rpcError.code : -32000,
+              message: rpcError.message ?? 'Subscription request failed',
+            },
+          },
+        };
+      }
+      break;
+    }
+
     case EvmRequestMethod.WEB3_CLIENT_VERSION: {
       message.value.result =
         chrome.runtime.getManifest().name +
@@ -278,4 +315,5 @@ export const evmRequestWithoutConfirmation = async (
     message,
     getPendingRequestMessageOptions(dappInfo.requestSource),
   );
+  await EvmSubscriptionModule.flushNotifications();
 };

@@ -23,6 +23,8 @@ export interface EvmRequest<T = any> {
   chainId?: string;
 }
 
+export const EVM_SUBSCRIPTION_PORT_NAME = 'evm-subscription';
+
 export enum EvmEventName {
   REQUEST = 'evmRequest',
   INITIALIZED = '_initialized',
@@ -32,6 +34,9 @@ export enum EvmEventName {
   SEND_BACK_CHAIN_TO_BACKGROUND = 'sendBackChainToBackground',
   INITIALIZE_PROVIDER_REQUEST = 'initializeProviderRequest',
   INITIALIZE_PROVIDER_RESPONSE = 'initializeProviderResponse',
+  ETH_SUBSCRIPTION = 'ethSubscription',
+  ETH_SUBSCRIPTION_HOLD = 'ethSubscriptionHold',
+  ETH_SUBSCRIPTION_RELEASE = 'ethSubscriptionRelease',
 }
 
 export type EvmEventScope =
