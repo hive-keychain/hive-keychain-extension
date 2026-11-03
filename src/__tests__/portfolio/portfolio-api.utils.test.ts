@@ -1140,6 +1140,37 @@ describe('PortfolioApiUtils', () => {
         ),
       ).toBe('https://app.rampnetwork.com/preview');
     });
+
+    it.each([
+      'http://provider.example/checkout',
+      'javascript:alert(1)',
+      'data:text/html,unsafe',
+      'wallet-app://checkout',
+      'not a url',
+    ])('rejects unsafe redirect URL %s', (redirectUrl) => {
+      expect(
+        PortfolioApiUtils.resolvePortfolioExecutionRedirectUrl({
+          id: 'exec-1',
+          status: 'created',
+          mode: 'buy',
+          provider: 'provider',
+          providerReferenceId: null,
+          fromAssetId: null,
+          toAssetId: null,
+          fromAmount: null,
+          toAmount: null,
+          receivedAmount: null,
+          fromAddress: null,
+          toAddress: null,
+          redirectUrl,
+          transaction: null,
+          fiatCurrency: null,
+          paymentMethod: null,
+          submittedAt: null,
+          updatedAt: null,
+        }),
+      ).toBeNull();
+    });
   });
 
   describe('canExecutePortfolioQuote', () => {

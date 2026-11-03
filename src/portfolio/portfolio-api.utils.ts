@@ -90,10 +90,35 @@ export const canExecutePortfolioQuote = (quote: PortfolioQuote): boolean => {
   return quote.executionType === 'redirect' || Boolean(quote.redirectUrl);
 };
 
+const resolveSafePortfolioExternalUrl = (
+  url: string | null | undefined,
+  allowMailto = false,
+): string | null => {
+  const trimmedUrl = url?.trim();
+  if (!trimmedUrl) {
+    return null;
+  }
+
+  try {
+    const parsedUrl = new URL(trimmedUrl);
+    const isAllowed =
+      parsedUrl.protocol === 'https:' ||
+      (allowMailto &&
+        parsedUrl.protocol === 'mailto:' &&
+        Boolean(parsedUrl.pathname.trim()));
+    return isAllowed ? trimmedUrl : null;
+  } catch {
+    return null;
+  }
+};
+
 export const resolvePortfolioExecutionRedirectUrl = (
   execution: PortfolioExecution,
   quote?: PortfolioQuote,
-): string | null => execution.redirectUrl ?? quote?.redirectUrl ?? null;
+): string | null =>
+  resolveSafePortfolioExternalUrl(
+    execution.redirectUrl ?? quote?.redirectUrl ?? null,
+  );
 
 export const resolveExecutablePortfolioQuoteId = (
   quotes: PortfolioQuote[],
@@ -657,6 +682,7 @@ export const PortfolioApiUtils = {
   resolveExecutablePortfolioQuoteId,
   resolvePortfolioAmountQuoteError,
   resolvePortfolioExecutionRedirectUrl,
+  resolveSafePortfolioExternalUrl,
   resolvePortfolioQuoteAmountHint,
   resolvePortfolioQuoteStatusMessage,
   resolvePortfolioSwapQuoteFetchErrorResult,

@@ -6,6 +6,7 @@ import {
   PortfolioFailureCode,
   PortfolioHistoryItem,
 } from 'src/portfolio/portfolio-api.interface';
+import { PortfolioApiUtils } from 'src/portfolio/portfolio-api.utils';
 import { resolveEvmChainForChainReference } from 'src/portfolio/portfolio-flow.utils';
 import FormatUtils from 'src/utils/format.utils';
 
@@ -147,7 +148,8 @@ const resolvePortfolioHistoryStatusLink = (
   toAsset: PortfolioCanonicalAsset | undefined,
   chains: EvmChain[],
 ): PortfolioHistoryStatusLink | null => {
-  const providerStatusUrl = item.providerStatusUrl?.trim();
+  const providerStatusUrl =
+    PortfolioApiUtils.resolveSafePortfolioExternalUrl(item.providerStatusUrl);
   if (providerStatusUrl) {
     return { url: providerStatusUrl, kind: 'provider' };
   }
@@ -225,7 +227,7 @@ const resolvePortfolioHistorySupportActionUrl = (
     return null;
   }
 
-  return item.supportUrl?.trim() || null;
+  return PortfolioApiUtils.resolveSafePortfolioExternalUrl(item.supportUrl, true);
 };
 
 const MAILTO_SCHEME = 'mailto:';
@@ -378,15 +380,15 @@ const openPortfolioHistorySupportUrl = (
   url: string,
   context?: PortfolioHistorySupportMailtoContext,
 ): void => {
-  const trimmedUrl = url.trim();
-  if (!trimmedUrl) {
+  const safeUrl = PortfolioApiUtils.resolveSafePortfolioExternalUrl(url, true);
+  if (!safeUrl) {
     return;
   }
 
   const resolvedUrl =
-    trimmedUrl.toLowerCase().startsWith(MAILTO_SCHEME) && context
-      ? buildPortfolioHistorySupportMailtoUrl(trimmedUrl, context)
-      : trimmedUrl;
+    safeUrl.toLowerCase().startsWith(MAILTO_SCHEME) && context
+      ? buildPortfolioHistorySupportMailtoUrl(safeUrl, context)
+      : safeUrl;
 
   if (resolvedUrl.toLowerCase().startsWith(MAILTO_SCHEME)) {
     window.open(resolvedUrl);
