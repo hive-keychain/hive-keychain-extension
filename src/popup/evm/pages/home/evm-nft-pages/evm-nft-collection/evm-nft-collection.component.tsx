@@ -236,8 +236,10 @@ export const EvmNftCollectionComponent = ({
                       <span className="nft-balance">{`×${quantity}`}</span>
                     )}
                   </div>
-                  <div className="nft-gallery-tile-name">{displayName}</div>
-                  <div className="nft-gallery-tile-meta">{`#${listItem.item.id}`}</div>
+                  <div className="nft-gallery-tile-footer">
+                    <div className="nft-gallery-tile-name">{displayName}</div>
+                    <div className="nft-gallery-tile-meta">{`#${listItem.item.id}`}</div>
+                  </div>
                 </button>
                 <EvmNftOptionsMenu
                   additionalClass="nft-gallery-tile-menu"

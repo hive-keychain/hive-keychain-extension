@@ -13,9 +13,14 @@
   padding-bottom: 10px;
   border-bottom: 1px solid var(--card-border);
 
+  &.is-last {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
   .nft-collection-header {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     column-gap: 12px;
     width: 100%;
@@ -43,17 +48,26 @@
   }
 
   .nft-collection-count {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    column-gap: 2px;
+    column-gap: 4px;
     flex-shrink: 0;
-    @include poppins400(13px);
+    height: 26px;
+    padding: 0 8px 0 10px;
+    border-radius: 66px;
+    border: 1px solid var(--card-border);
+    background: var(--form-panel-background);
     color: var(--main-font-color);
-    opacity: 0.7;
+    @include poppins500(12px);
+    line-height: 1;
+    white-space: nowrap;
   }
 
-  .go-to-icon {
-    transform: rotate(-90deg);
+  .nft-collection-count-icon {
+    display: flex;
+    align-items: center;
+    opacity: 0.72;
+    @include icon-size(14px);
   }
 
   .nft-preview-container {

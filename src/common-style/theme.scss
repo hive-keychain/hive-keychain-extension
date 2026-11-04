@@ -5,6 +5,7 @@ $dark: (
   --background-color: $dark-background,
   --splashscreen-text-color: white,
   --separator-color: $blue-border,
+  --nft-footer-color: #{$blue-border}55,
 
   //Menu
   --menu-button-icon-color: $dark-blue,
@@ -121,6 +122,7 @@ $light: (
   --background-color: $light-background,
   --splashscreen-text-color: $dark-blue,
   --separator-color: $extra-light-grey,
+  --nft-footer-color: #{$extra-light-grey}55,
 
   //Menu
   --menu-button-icon-color: $dark-blue,

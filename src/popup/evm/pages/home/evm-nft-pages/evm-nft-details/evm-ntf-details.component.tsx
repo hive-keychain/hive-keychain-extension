@@ -76,12 +76,6 @@ export const EvmNftDetailsView = ({
           <div className="nft-details-collection">{collectionName}</div>
         )}
         <div className="nft-details-token-id">{`#${nft.id}`}</div>
-        {isErc1155 && (
-          <div className="nft-details-owned" data-testid="nft-owned-quantity">
-            <span className="nft-owned-mark" aria-hidden="true" />
-            {I18nUtils.getMessage('evm_nft_you_own', [String(ownedQuantity)])}
-          </div>
-        )}
         <div className="nft-details-meta">
             <div className="label-value smart-contract-address">
               <div className="label">
@@ -131,6 +125,16 @@ export const EvmNftDetailsView = ({
               </div>
               <div className="value">{nft.id}</div>
             </div>
+            {isErc1155 && (
+              <div className="label-value" data-testid="nft-owned-quantity">
+                <div className="label">
+                  {I18nUtils.getMessage('evm_nft_quantity')}
+                </div>
+                <div className="value">
+                  {EvmFormatUtils.formatTokenBalance(ownedQuantity, 0)}
+                </div>
+              </div>
+            )}
             <div className="label-value">
               <div className="label">
                 {I18nUtils.getMessage('evm_nft_token_standard')}

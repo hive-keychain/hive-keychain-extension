@@ -182,9 +182,15 @@ const EvmWalletNftGallery = ({
           )}
           <FlatList
             list={displayedCollections ?? []}
-            renderItem={(token: EvmErc721Token | EvmErc1155Token) => (
+            renderItem={(
+              token: EvmErc721Token | EvmErc1155Token,
+              index: number,
+            ) => (
               <EvmWalletNftPreviewComponent
                 token={token}
+                isLast={
+                  index === (displayedCollections?.length ?? 0) - 1
+                }
                 onClick={() =>
                   onClickOnNftPreview(token, EvmScreen.EVM_NFT_COLLECTION_PAGE)
                 }

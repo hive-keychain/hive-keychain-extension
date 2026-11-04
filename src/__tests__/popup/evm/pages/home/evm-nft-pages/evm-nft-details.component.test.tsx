@@ -159,8 +159,9 @@ describe('EvmNftDetails', () => {
     );
 
     expect(screen.getByTestId('nft-owned-quantity')).toHaveTextContent(
-      'evm_nft_you_own',
+      'evm_nft_quantity',
     );
+    expect(screen.getByTestId('nft-owned-quantity')).toHaveTextContent('2');
     expect(screen.queryByText('evm_nft_your_balance')).not.toBeInTheDocument();
   });
 });

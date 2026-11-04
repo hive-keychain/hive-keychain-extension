@@ -12,10 +12,15 @@ import { I18nUtils } from 'src/utils/i18n.utils';
 
 interface Props {
   token: EvmErc721Token;
+  isLast?: boolean;
   onClick: () => void;
 }
 
-export const EvmWalletNftPreviewComponent = ({ token, onClick }: Props) => {
+export const EvmWalletNftPreviewComponent = ({
+  token,
+  isLast = false,
+  onClick,
+}: Props) => {
   const formattedAddress = EvmFormatUtils.formatAddress(
     token.tokenInfo.contractAddress,
   );
@@ -30,7 +35,7 @@ export const EvmWalletNftPreviewComponent = ({ token, onClick }: Props) => {
 
   return (
     <div
-      className="nft-collection-preview-card"
+      className={`nft-collection-preview-card${isLast ? ' is-last' : ''}`}
       onClick={() => onClick()}
       key={`collection-${token.tokenInfo.contractAddress}`}>
       <div className="nft-collection-header">
@@ -41,8 +46,11 @@ export const EvmWalletNftPreviewComponent = ({ token, onClick }: Props) => {
           )}
         </div>
         <span className="nft-collection-count">
-          {ownedLabel}
-          <SVGIcon className="go-to-icon" icon={SVGIcons.GLOBAL_ARROW} />
+          <span className="nft-collection-count-label">{ownedLabel}</span>
+          <SVGIcon
+            className="nft-collection-count-icon"
+            icon={SVGIcons.GLOBAL_ARROW_RIGHT}
+          />
         </span>
       </div>
       <div className="nft-preview-container">
