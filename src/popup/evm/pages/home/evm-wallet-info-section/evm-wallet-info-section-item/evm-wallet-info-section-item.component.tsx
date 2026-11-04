@@ -83,7 +83,10 @@ export const WalletInfoSectionItem = ({
   const tokenExplorerUrl = contractAddress
     ? getTokenExplorerUrl(chain?.blockExplorer?.url, contractAddress)
     : undefined;
-  const tokenDisplayName = token.tokenInfo.name?.trim() || mainValueLabel;
+  const tokenDisplayName =
+    token.tokenInfo.type === EVMSmartContractType.NATIVE
+      ? token.tokenInfo.symbol
+      : token.tokenInfo.name?.trim() || mainValueLabel;
   const hasTokenPrice = WalletTokenPriceChartUtils.hasKnownTokenPrice(
     token.tokenInfo.priceUsd,
   );

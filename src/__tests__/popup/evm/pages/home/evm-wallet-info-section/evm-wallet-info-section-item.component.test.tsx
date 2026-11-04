@@ -97,7 +97,7 @@ describe('EVM WalletInfoSectionItem', () => {
       screen
         .getByTestId('wallet-token-detail-panel-ETH')
         .querySelector('.wallet-token-detail-panel-title'),
-    ).toHaveTextContent('Ether');
+    ).toHaveTextContent('ETH');
     expect(
       screen.getByTestId('wallet-token-price-chart-ETH'),
     ).toBeInTheDocument();
