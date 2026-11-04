@@ -1,6 +1,7 @@
 import { SignTypedData } from '@dialog/evm/requests/sign-typed-data';
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { render, waitFor } from '@testing-library/react';
 import React from 'react';
@@ -8,9 +9,12 @@ import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings
 
 import { I18nUtils } from 'src/utils/i18n.utils';
 
-jest.mock('src/dialog/evm/requests/transaction-warnings/transaction.hook', () => ({
-  useTransactionHook: jest.fn(),
-}));
+jest.mock(
+  'src/dialog/evm/requests/transaction-warnings/transaction.hook',
+  () => ({
+    useTransactionHook: jest.fn(),
+  }),
+);
 
 jest.mock('src/dialog/evm/evm-operation/evm-operation', () => ({
   EvmOperation: () => <div data-testid="evm-operation" />,
@@ -56,6 +60,9 @@ describe('SignTypedData spending permissions', () => {
       chainId: '0x1',
     } as any);
     jest
+      .spyOn(EvmChainUtils, 'getLastEvmChainIdForOrigin')
+      .mockResolvedValue('0x1');
+    jest
       .spyOn(EvmTransactionParserUtils, 'verifyTransactionInformation')
       .mockResolvedValue({} as any);
   });
@@ -97,7 +104,12 @@ describe('SignTypedData spending permissions', () => {
       <SignTypedData
         accounts={[{ address: OWNER } as any]}
         afterCancel={jest.fn()}
-        data={{ dappInfo: { domain: 'app.example', origin: 'https://app.example' }, tab: 1 } as any}
+        data={
+          {
+            dappInfo: { domain: 'app.example', origin: 'https://app.example' },
+            tab: 1,
+          } as any
+        }
         request={
           {
             method: EvmRequestMethod.ETH_SIGN_DATA_4,
@@ -108,7 +120,10 @@ describe('SignTypedData spending permissions', () => {
       />,
     );
 
-    await waitFor(() => expect(transactionHook.setFields).toHaveBeenCalled());
+    await waitFor(() => {
+      const latest = transactionHook.setFields.mock.calls.at(-1)?.[0];
+      expect(latest?.operationName).toBe('evm_operation_unlimited_approval');
+    });
 
     const fields = transactionHook.setFields.mock.calls.at(-1)[0];
     expect(fields.operationName).toBe('evm_operation_unlimited_approval');
@@ -130,7 +145,10 @@ describe('SignTypedData spending permissions', () => {
               ignored: false,
               level: 'high',
               message: 'evm_warning_unlimited_approval',
-              messageParams: [SPENDER, TOKEN],
+              messageParams: [
+                EvmFormatUtils.formatAddress(SPENDER),
+                EvmFormatUtils.formatAddress(TOKEN),
+              ],
             }),
           ],
         }),

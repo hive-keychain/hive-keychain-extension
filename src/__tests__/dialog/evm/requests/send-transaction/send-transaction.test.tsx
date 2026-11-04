@@ -6,6 +6,7 @@ import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
 import { EvmAccountSource } from '@popup/evm/interfaces/wallet.interface';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
 import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
@@ -1421,7 +1422,10 @@ describe('send-transaction proxy tests:\n', () => {
           ignored: false,
           level: 'high',
           message: 'evm_warning_unlimited_approval',
-          messageParams: [spenderAddress, 'USDC'],
+          messageParams: [
+            EvmFormatUtils.formatAddress(spenderAddress),
+            'USDC',
+          ],
         }),
       ]);
     });
@@ -1789,7 +1793,10 @@ describe('send-transaction proxy tests:\n', () => {
         ignored: false,
         level: 'high',
         message: 'evm_warning_approve_operator',
-        messageParams: [operatorAddress, 'TNFT'],
+        messageParams: [
+          EvmFormatUtils.formatAddress(operatorAddress),
+          'TNFT',
+        ],
       }),
     ]);
   });
