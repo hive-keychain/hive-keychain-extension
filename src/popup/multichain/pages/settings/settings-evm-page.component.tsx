@@ -61,7 +61,10 @@ const SettingsEvmPage = ({ setTitleContainerProperties }: PropsFromRedux) => {
               <CheckboxPanelComponent
                 title="evm_provider_compatibility_prefer_title"
                 hint="evm_provider_compatibility_prefer_hint"
-                checked={evmSettings.providerCompatibility.preferOnLegacyDapps}
+                checked={
+                  evmSettings.providerCompatibility.preferOnLegacyDapps ===
+                  true
+                }
                 onChange={(value) =>
                   updateField(
                     'providerCompatibility.preferOnLegacyDapps',

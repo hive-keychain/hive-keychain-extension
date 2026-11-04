@@ -62,6 +62,27 @@ describe('evm-provider-registration tests:\n', () => {
     ]);
   });
 
+  it('registers the yielding legacy bundle when the preference is missing or cleared', async () => {
+    getSettingsMock.mockResolvedValue({
+      smartContracts: {
+        displayPossibleSpam: false,
+        displayNonVerifiedContracts: false,
+      },
+      providerCompatibility: {
+        preferOnLegacyDapps: null,
+      },
+    });
+
+    await syncEvmProviderContentScriptRegistration();
+
+    expect(chrome.scripting.registerContentScripts).toHaveBeenCalledWith([
+      expect.objectContaining({
+        id: 'evm-main-provider',
+        js: ['evmKeychainLegacyYieldingBundle.js'],
+      }),
+    ]);
+  });
+
   it('registers the yielding legacy bundle when preference is disabled', async () => {
     getSettingsMock.mockResolvedValue({
       smartContracts: {

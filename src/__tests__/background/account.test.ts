@@ -222,6 +222,114 @@ describe('account tests:\n', () => {
     });
   });
 
+  const importedEvmAccount = {
+    type: EvmAccountSource.IMPORTED,
+    nickname: 'Imported',
+    id: 1,
+    accounts: [
+      {
+        id: 0,
+        address: '0x1234567890123456789012345678901234567890',
+        privateKey:
+          '0x1234567890123456789012345678901234567890123456789012345678901234',
+        path: '',
+        order: 0,
+        nickname: 'Main',
+      },
+    ],
+  };
+
+  const importV2Accounts = async (
+    storage: Record<string, unknown>,
+    evmAccounts: unknown[],
+    settings?: Record<string, unknown>,
+  ) => {
+    jest.spyOn(MkModule, 'getMk').mockResolvedValue(mk.user.one);
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockImplementation(async (key: LocalStorageKeyEnum) => storage[key]);
+    jest
+      .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+      .mockImplementation(async (key: LocalStorageKeyEnum, value: unknown) => {
+        storage[key] = value;
+      });
+    jest.spyOn(chrome.runtime, 'sendMessage').mockResolvedValue(undefined);
+    const payload = await EncryptUtils.encryptJson(
+      {
+        v: 2,
+        hiveAccounts: [accounts.local.one],
+        evmAccounts,
+        ...(settings ? { settings } : {}),
+      },
+      mk.user.one,
+    );
+
+    await AccountModule.sendBackImportedAccounts(payload);
+  };
+
+  it('enables legacy preference when a full account restore has accounts and no stored value', async () => {
+    const storage: Record<string, unknown> = {};
+
+    await importV2Accounts(storage, [importedEvmAccount], {
+      [LocalStorageKeyEnum.EVM_SETTINGS]: {
+        smartContracts: {
+          displayPossibleSpam: true,
+          displayNonVerifiedContracts: false,
+        },
+      },
+    });
+
+    expect(storage[LocalStorageKeyEnum.EVM_SETTINGS]).toEqual({
+      smartContracts: {
+        displayPossibleSpam: true,
+        displayNonVerifiedContracts: false,
+      },
+      providerCompatibility: {
+        preferOnLegacyDapps: true,
+      },
+    });
+  });
+
+  it('keeps an explicit legacy preference during a full account restore', async () => {
+    const storage: Record<string, unknown> = {};
+
+    await importV2Accounts(storage, [importedEvmAccount], {
+      [LocalStorageKeyEnum.EVM_SETTINGS]: {
+        providerCompatibility: {
+          preferOnLegacyDapps: false,
+        },
+      },
+    });
+
+    expect(storage[LocalStorageKeyEnum.EVM_SETTINGS]).toEqual({
+      providerCompatibility: {
+        preferOnLegacyDapps: false,
+      },
+    });
+
+    await importV2Accounts(storage, [importedEvmAccount], {
+      [LocalStorageKeyEnum.EVM_SETTINGS]: {
+        providerCompatibility: {
+          preferOnLegacyDapps: null,
+        },
+      },
+    });
+
+    expect(storage[LocalStorageKeyEnum.EVM_SETTINGS]).toEqual({
+      providerCompatibility: {
+        preferOnLegacyDapps: null,
+      },
+    });
+  });
+
+  it('does not enable legacy preference when a full account restore has no EVM accounts', async () => {
+    const storage: Record<string, unknown> = {};
+
+    await importV2Accounts(storage, []);
+
+    expect(storage[LocalStorageKeyEnum.EVM_SETTINGS]).toBeUndefined();
+  });
+
   it('Must reject malformed v2 payloads', async () => {
     jest.spyOn(MkModule, 'getMk').mockResolvedValue(mk.user.one);
     const malformedV2 = await EncryptUtils.encryptJson(

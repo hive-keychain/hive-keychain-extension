@@ -10,6 +10,7 @@ import {
   EvmAccountSource,
   StoredEvmAccountSource,
 } from 'src/popup/evm/interfaces/wallet.interface';
+import { EvmSettingsUtils } from 'src/popup/evm/utils/evm-settings.utils';
 import { EvmWalletUtils } from 'src/popup/evm/utils/wallet.utils';
 import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import { CommunicationUtils } from 'src/utils/communication.utils';
@@ -95,6 +96,9 @@ const importExportedAccountsV2 = async (
 
   if (exportedAccounts.settings) {
     await SettingsModule.importSettings(exportedAccounts.settings);
+  }
+  if (mergedEvmAccounts.some((source) => source.accounts.length > 0)) {
+    await EvmSettingsUtils.enablePreferOnLegacyDappsWhenMissing();
   }
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.HAS_FINISHED_SIGNUP,
