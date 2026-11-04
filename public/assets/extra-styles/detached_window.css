@@ -186,6 +186,14 @@ html.detached-window-page
 html.detached-window-page
   #root
   .theme
+  .wallet-token-detail-panel-overlay
+  .wallet-token-detail-panel-card.is-compact {
+  height: auto;
+  max-height: none;
+}
+html.detached-window-page
+  #root
+  .theme
   .hive-select-account-section.main-page
   .react-dropdown-select-dropdown {
   max-width: 100%;

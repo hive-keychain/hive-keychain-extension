@@ -1,12 +1,16 @@
 import { OptionItem } from '@common-ui/custom-select/custom-select.component';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { PortfolioMode } from 'src/portfolio/portfolio-api.interface';
+import { PortfolioAllocationUtils } from 'src/portfolio/portfolio-allocation.utils';
 import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
 import { PortfolioHiveEngineBalanceBreakdown } from 'src/portfolio/portfolio.interface';
+import { PortfolioAllocationDonut } from 'src/portfolio/ui/portfolio-allocation-donut.component';
 import { PortfolioOverlayListSelect } from 'src/portfolio/ui/portfolio-overlay-list-select.component';
+import { WalletTokenPriceChartUtils } from 'src/common-ui/wallet-token-price-chart/wallet-token-price-chart.utils';
+import { PortfolioTokenPriceChart } from 'src/portfolio/ui/portfolio-token-price-chart.component';
 import {
   portfolioRowToTokenIdentityProps,
   PortfolioTokenIdentity,
@@ -25,6 +29,9 @@ export type PortfolioBalancesRow = {
   decimals?: number;
   logoUrl?: string | null;
   networkLogoUrl?: string | null;
+  chainId?: string | null;
+  contractAddress?: string | null;
+  isHive?: boolean;
   isTestnet?: boolean;
   breakdown?: PortfolioHiveEngineBalanceBreakdown;
 };
@@ -42,6 +49,7 @@ export type PortfolioBalancesSectionProps = {
   expandedRowKeys: string[];
   rowActions: Array<Exclude<PortfolioMode, 'bridge'>>;
   isLoadingMoreChains: boolean;
+  hiveUsd?: number;
   onSelectedAccountChange: (accountKey: string) => void;
   onSelectedNetworkChange: (network: string) => void;
   onTokenFilterChange: (value: string) => void;
@@ -129,6 +137,7 @@ const PortfolioBalancesSectionComponent = ({
   expandedRowKeys,
   rowActions,
   isLoadingMoreChains,
+  hiveUsd,
   onSelectedAccountChange,
   onSelectedNetworkChange,
   onTokenFilterChange,
@@ -151,18 +160,54 @@ const PortfolioBalancesSectionComponent = ({
     return PortfolioUtils.sortPortfolioDisplayItems(filteredRows, isHiveAccount);
   }, [isHiveAccount, rows, selectedNetwork, tokenFilter]);
 
-  const totalUsd = useMemo(
-    () =>
-      visibleRows.reduce((total, row) => total + (row.usdValue ?? 0), 0),
+  const allocation = useMemo(
+    () => PortfolioAllocationUtils.buildPortfolioAllocation(visibleRows),
     [visibleRows],
   );
-  const hasKnownValue = useMemo(
-    () => visibleRows.some((row) => row.usdValue !== null),
-    [visibleRows],
+  const [priceChartRowKey, setPriceChartRowKey] = useState<string | null>(
+    null,
   );
+
+  const togglePriceChart = (rowKey: string) => {
+    setPriceChartRowKey((currentKey) =>
+      currentKey === rowKey ? null : rowKey,
+    );
+  };
+
+  const handleRowClick = (
+    event: React.MouseEvent<HTMLDivElement>,
+    row: PortfolioBalancesRow,
+  ) => {
+    if (!WalletTokenPriceChartUtils.hasKnownTokenPrice(row.priceUsd)) {
+      return;
+    }
+
+    const target = event.target;
+    if (target instanceof Element && target.closest('button')) {
+      return;
+    }
+
+    togglePriceChart(row.key);
+  };
 
   return (
     <div className="portfolio-card-body">
+      {hasAccounts && visibleRows.length > 0 ? (
+        <div className="portfolio-summary" data-testid="portfolio-summary">
+          <div className="portfolio-summary__value">
+            <span>{I18nUtils.getMessage('portfolio_total_value_usd')}</span>
+            <strong data-testid="portfolio-total-value">
+              {allocation.hasKnownValue ? formatUsd(allocation.totalUsd) : '—'}
+            </strong>
+          </div>
+          {allocation.slices.length > 0 ? (
+            <PortfolioAllocationDonut
+              showNetworkInTooltip={!selectedNetwork}
+              slices={allocation.slices}
+            />
+          ) : null}
+        </div>
+      ) : null}
       {hasAccounts ? (
         <div className="portfolio-sticky-menu-bar">
           <div className="portfolio-controls">
@@ -228,17 +273,24 @@ const PortfolioBalancesSectionComponent = ({
             const canExpandBreakdown = breakdownItems.length > 0;
             const isExpanded =
               canExpandBreakdown && expandedRowKeys.includes(row.key);
+            const canShowPriceChart =
+              WalletTokenPriceChartUtils.hasKnownTokenPrice(row.priceUsd);
+            const isPriceChartOpen =
+              canShowPriceChart && priceChartRowKey === row.key;
 
             return (
               <div
                 className={`portfolio-table-row-group${
                   isExpanded ? ' is-expanded' : ''
-                }`}
+                }${isPriceChartOpen ? ' is-price-chart-open' : ''}`}
                 key={row.key}>
                 <div
+                  aria-expanded={isPriceChartOpen}
                   className={`portfolio-table-row${
                     isExpanded ? ' is-expanded' : ''
-                  }`}>
+                  }${isPriceChartOpen ? ' is-price-chart-open' : ''}`}
+                  data-testid={`portfolio-balance-row-${row.key}`}
+                  onClick={(event) => handleRowClick(event, row)}>
                   <PortfolioTokenIdentity
                     {...portfolioRowToTokenIdentityProps({
                       ...row,
@@ -318,16 +370,26 @@ const PortfolioBalancesSectionComponent = ({
                     ))}
                   </div>
                 ) : null}
+                {isPriceChartOpen ? (
+                  <div
+                    className="portfolio-row-price-chart"
+                    data-testid={`portfolio-row-price-chart-${row.key}`}>
+                    <PortfolioTokenPriceChart
+                      chainId={row.chainId}
+                      contractAddress={row.contractAddress}
+                      hiveUsd={hiveUsd}
+                      isHive={row.isHive}
+                      priceUsd={row.priceUsd}
+                      symbol={row.symbol}
+                    />
+                  </div>
+                ) : null}
               </div>
             );
           })
         )}
       </div>
 
-      <div className="portfolio-total">
-        <span>{I18nUtils.getMessage('portfolio_total_value_usd')}</span>
-        <strong>{hasKnownValue ? formatUsd(totalUsd) : '—'}</strong>
-      </div>
       {isLoadingMoreChains ? (
         <div className="portfolio-loading-more">
           <RotatingLogoComponent />

@@ -186,6 +186,8 @@ type PortfolioRow = {
   networkLogoUrl?: string | null;
   hiveAccountName?: string;
   chainId?: string | null;
+  contractAddress?: string | null;
+  isHive?: boolean;
   isTestnet?: boolean;
   breakdown?: PortfolioHiveEngineBalanceBreakdown;
 };
@@ -384,6 +386,11 @@ const mapEvmTokenToPortfolioRow = (
     logoUrl: token.tokenInfo.logo ?? null,
     networkLogoUrl: resolvedChain?.logo ?? null,
     chainId: rowChainId || null,
+    contractAddress:
+      token.tokenInfo.type === EVMSmartContractType.ERC20
+        ? (token.tokenInfo as EvmSmartContractInfoErc20).contractAddress
+        : null,
+    isHive: false,
     isTestnet: resolvedChain?.testnet ?? false,
   };
 };
@@ -518,6 +525,7 @@ export const Portfolio = ({
   activeEvmAccountAddress,
   activeAccountType,
   chain,
+  hiveUsd,
   mk,
   setErrorMessage,
   setTitleContainerProperties,
@@ -2634,6 +2642,7 @@ export const Portfolio = ({
               : null,
             hiveAccountName: account.account.name,
             chainId: null,
+            contractAddress: null,
             isTestnet: false,
             isHive: true,
             breakdown: balance.breakdown,
@@ -3862,6 +3871,7 @@ export const Portfolio = ({
       expandedRowKeys={expandedPortfolioRowKeys}
       rowActions={portfolioRowActions}
       isLoadingMoreChains={isLoadingMoreChains}
+      hiveUsd={hiveUsd}
       onSelectedAccountChange={handleSelectedAccountChange}
       onSelectedNetworkChange={setSelectedNetwork}
       onTokenFilterChange={handleTokenFilterChange}
@@ -4919,6 +4929,7 @@ const mapStateToProps = (state: RootState) => ({
   activeEvmAccountAddress: state.evm.activeAccount?.wallet?.address,
   activeAccountType: state.activeAccountType,
   chain: state.chain as Chain,
+  hiveUsd: state.hive.currencyPrices.hive?.usd,
   mk: state.mk,
 });
 

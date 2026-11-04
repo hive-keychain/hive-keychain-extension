@@ -23,6 +23,7 @@ import {
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmLedgerUtils } from '@popup/evm/utils/evm-ledger.utils';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
+import { EvmSettingsUtils } from '@popup/evm/utils/evm-settings.utils';
 import EncryptUtils from '@popup/hive/utils/encrypt.utils';
 import { EvmChain, MultichainRpc } from '@popup/multichain/interfaces/chains.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -1035,10 +1036,32 @@ const invalidateRebuildAccountsCache = () => {
   rebuildAccountsCache = undefined;
 };
 
+const countStoredEvmAccounts = (sources: StoredEvmAccountSource[]) =>
+  sources.reduce((total, source) => total + source.accounts.length, 0);
+
+const syncPreferOnLegacyDappsWithAccountCount = async (
+  previousCount: number,
+  nextCount: number,
+) => {
+  if (previousCount === 0 && nextCount > 0) {
+    await EvmSettingsUtils.setPreferOnLegacyDapps(true);
+    return;
+  }
+
+  if (previousCount > 0 && nextCount === 0) {
+    await EvmSettingsUtils.setPreferOnLegacyDapps(null);
+  }
+};
+
 const encryptAccountsInLocalStorage = async (
   mk: string,
   evmAccountObject: StoredEvmAccountSource[],
 ) => {
+  const previousCount = countStoredEvmAccounts(
+    await getAccountsFromLocalStorage(mk),
+  );
+  const nextCount = countStoredEvmAccounts(evmAccountObject);
+
   invalidateRebuildAccountsCache();
 
   const encryptedAccounts = await EncryptUtils.encryptJson(
@@ -1050,6 +1073,8 @@ const encryptAccountsInLocalStorage = async (
     LocalStorageKeyEnum.EVM_ACCOUNTS,
     encryptedAccounts,
   );
+
+  await syncPreferOnLegacyDappsWithAccountCount(previousCount, nextCount);
 
   const { default: AccountSelectorOrderUtils } = await import(
     '@popup/multichain/utils/account-selector-order.utils'

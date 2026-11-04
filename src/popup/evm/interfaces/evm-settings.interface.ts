@@ -9,5 +9,10 @@ export interface EvmSmartContractsSettings {
 }
 
 export interface EvmProviderCompatibilitySettings {
-  preferOnLegacyDapps: boolean;
+  /**
+   * `true` and `false` are explicit choices.
+   * `null` means the last EVM account was removed.
+   * A missing value means this field has never been stored.
+   */
+  preferOnLegacyDapps: boolean | null;
 }

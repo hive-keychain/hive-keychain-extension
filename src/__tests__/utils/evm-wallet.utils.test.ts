@@ -23,6 +23,7 @@ describe('evm wallet utils', () => {
     'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
 
   let storedAccounts: { list: any[] };
+  let evmSettingsStorage: any;
   let pendingTransactionsStorage: any[];
   let canceledTransactionsStorage: Record<string, any>;
   let walletPermissionsStorage: Record<string, any>;
@@ -70,13 +71,14 @@ describe('evm wallet utils', () => {
         },
       ],
     };
+    evmSettingsStorage = undefined;
     pendingTransactionsStorage = [];
     canceledTransactionsStorage = {};
     walletPermissionsStorage = {};
 
     jest
       .spyOn(EncryptUtils, 'decryptToJsonWithLegacySupport')
-      .mockImplementation(async () => storedAccounts);
+      .mockImplementation(async () => JSON.parse(JSON.stringify(storedAccounts)));
 
     jest
       .spyOn(EncryptUtils, 'encryptJson')
@@ -87,6 +89,9 @@ describe('evm wallet utils', () => {
       .mockImplementation(async (key) => {
         if (key === LocalStorageKeyEnum.EVM_ACCOUNTS) {
           return storedAccounts;
+        }
+        if (key === LocalStorageKeyEnum.EVM_SETTINGS) {
+          return evmSettingsStorage;
         }
 
         return undefined;
@@ -121,6 +126,8 @@ describe('evm wallet utils', () => {
       .mockImplementation(async (key, value) => {
         if (key === LocalStorageKeyEnum.EVM_ACCOUNTS) {
           storedAccounts = value;
+        } else if (key === LocalStorageKeyEnum.EVM_SETTINGS) {
+          evmSettingsStorage = value;
         } else if (key === LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS) {
           pendingTransactionsStorage = value;
         } else if (key === LocalStorageKeyEnum.EVM_CANCELED_TRANSACTIONS) {
@@ -269,6 +276,73 @@ describe('evm wallet utils', () => {
       '',
       '',
     ]);
+  });
+
+  it('enables legacy preference for the first account and clears it when the last account is removed', async () => {
+    storedAccounts = { list: [] };
+    const wallet = {
+      mnemonic: { phrase: seedOne },
+    } as HDNodeWallet;
+    const account = {
+      id: 0,
+      path: "m/44'/60'/0'/0/0",
+      seedId: 0,
+      wallet: {} as HDNodeWallet,
+    } as EvmAccount;
+
+    await EvmWalletUtils.addSeedAndAccounts(wallet, [account], mk, 'Seed');
+
+    expect(evmSettingsStorage.providerCompatibility.preferOnLegacyDapps).toBe(
+      true,
+    );
+
+    const sources = await EvmWalletUtils.getAccountsFromLocalStorage(mk);
+    await EvmWalletUtils.deleteAddress(
+      sources[0].id,
+      sources[0].accounts[0].id,
+      await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk),
+      mk,
+    );
+
+    expect(evmSettingsStorage.providerCompatibility.preferOnLegacyDapps).toBe(
+      null,
+    );
+
+    await EvmWalletUtils.addSeedAndAccounts(wallet, [account], mk, 'Seed Again');
+
+    expect(evmSettingsStorage.providerCompatibility.preferOnLegacyDapps).toBe(
+      true,
+    );
+  });
+
+  it('leaves an explicit legacy preference unchanged while another account remains', async () => {
+    storedAccounts = {
+      list: [
+        {
+          seed: seedOne,
+          id: 1,
+          nickname: 'Seed One',
+          accounts: [
+            {
+              id: 0,
+              path: "m/44'/60'/0'/0/0",
+              nickname: 'Seed One Account 1',
+            },
+          ],
+        },
+      ],
+    };
+    evmSettingsStorage = {
+      providerCompatibility: {
+        preferOnLegacyDapps: false,
+      },
+    };
+
+    await EvmWalletUtils.addAddressToSeed(1, mk, 'Second');
+
+    expect(evmSettingsStorage.providerCompatibility.preferOnLegacyDapps).toBe(
+      false,
+    );
   });
 
   it('rebuilds mixed legacy seed and ledger accounts in stored order', async () => {

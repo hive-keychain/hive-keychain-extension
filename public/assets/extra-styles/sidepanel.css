@@ -129,6 +129,11 @@ html.sidepanel-page #root .theme .wallet-token-detail-panel-overlay .wallet-toke
   max-height: 540px;
 }
 
+html.sidepanel-page #root .theme .wallet-token-detail-panel-overlay .wallet-token-detail-panel-card.is-compact {
+  height: auto;
+  max-height: none;
+}
+
 html.sidepanel-page #root .theme .hive-select-account-section.main-page .react-dropdown-select-dropdown {
   max-width: 100%;
   width: 100% !important;

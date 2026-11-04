@@ -82,7 +82,7 @@ export const syncEvmProviderContentScriptRegistration = async () => {
 
     const settings = await EvmSettingsUtils.getSettings();
     const desiredScript = getDesiredContentScript(
-      settings.providerCompatibility.preferOnLegacyDapps,
+      settings.providerCompatibility.preferOnLegacyDapps === true,
     );
     const existingScripts = await scripting.getRegisteredContentScripts({
       ids: [EVM_MAIN_PROVIDER_CONTENT_SCRIPT_ID],

@@ -703,6 +703,8 @@
 }
 
 .portfolio-table-wrap {
+  container-name: portfolio-table;
+  container-type: inline-size;
   min-width: 0;
   max-width: 100%;
   overflow-x: auto;
@@ -748,6 +750,12 @@
 
 .portfolio-table-row {
   min-height: 3.25rem;
+  cursor: pointer;
+
+  &:hover,
+  &.is-price-chart-open {
+    background: var(--kc-color-surface-hover);
+  }
 
   &.is-expanded {
     background: var(--kc-color-bg-elevated);
@@ -889,18 +897,52 @@
   white-space: nowrap;
 }
 
-.portfolio-total {
+.portfolio-row-price-chart {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  box-sizing: border-box;
+  width: 100cqi;
+  max-width: 100cqi;
+  min-width: 0;
+  padding: var(--kc-space-3) var(--kc-space-4) var(--kc-space-4);
+  border-top: 1px solid var(--kc-color-border-subtle);
+  background: var(--kc-color-bg-elevated);
+
+  .wallet-token-price-chart {
+    width: 100%;
+  }
+}
+
+.portfolio-summary {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: var(--kc-space-4);
-  padding-top: var(--kc-space-3);
-  border-top: 1px solid var(--kc-color-border-subtle);
-  font-size: var(--kc-font-size-sm);
-  color: var(--kc-color-text-secondary);
+  padding: var(--kc-space-3) var(--kc-space-4);
+  border: 1px solid var(--kc-color-border-subtle);
+  border-radius: var(--kc-radius-lg);
+  background: var(--kc-color-bg-elevated);
+}
+
+.portfolio-summary__value {
+  display: flex;
+  flex: 1 1 10rem;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+
+  span {
+    font-size: var(--kc-font-size-sm);
+    color: var(--kc-color-text-secondary);
+  }
 
   strong {
-    font-size: var(--kc-font-size-lg);
+    font-size: var(--kc-font-size-2xl);
+    font-weight: var(--kc-font-weight-semibold);
+    letter-spacing: -0.03em;
+    line-height: 1.15;
     color: var(--kc-color-text-primary);
   }
 }

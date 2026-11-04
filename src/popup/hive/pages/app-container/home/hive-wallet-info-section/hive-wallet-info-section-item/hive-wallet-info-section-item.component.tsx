@@ -10,9 +10,7 @@ import {
   HiveWalletInfoSectionActions,
 } from '@popup/hive/pages/app-container/home/hive-wallet-info-section/hive-wallet-info-section-actions';
 import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
-import TokensUtils, {
-  isAcceptableSpread,
-} from '@popup/hive/utils/tokens.utils';
+import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
 import { Asset } from 'hive-keychain-commons';
@@ -126,6 +124,15 @@ export const WalletInfoSectionItem = ({
   const hivePriceHistoryPath =
     WalletTokenPriceChartUtils.buildHivePriceHistoryPath(tokenSymbol);
   const usesHiveEngineChart = Boolean(tokenInfo) && !hivePriceHistoryPath;
+  const hasEngineTokenPrice =
+    usesHiveEngineChart &&
+    WalletTokenPriceChartUtils.hasKnownTokenPrice(
+      TokensUtils.getHiveEngineTokenPrice(
+        { symbol: tokenSymbol },
+        tokenMarket ?? [],
+      ),
+    );
+  const showsPriceChart = Boolean(hivePriceHistoryPath) || hasEngineTokenPrice;
   const tokenDisplayName = tokenInfo?.name?.trim() || mainValueLabel;
 
   const [hasButtonsInList, setHasButtonInList] = useState(false);
@@ -173,16 +180,7 @@ export const WalletInfoSectionItem = ({
   }, [isPanelOpen, hivePriceHistoryPath]);
 
   useEffect(() => {
-    if (!isPanelOpen || !usesHiveEngineChart) {
-      return;
-    }
-
-    const engineMarket = tokenMarket?.find(
-      (market) => market.symbol === tokenSymbol,
-    );
-    if (engineMarket && !isAcceptableSpread(tokenSymbol, engineMarket)) {
-      setPriceHistory({ categories: [], seriesByCategory: {} });
-      setPriceHistoryLoading(false);
+    if (!isPanelOpen || !hasEngineTokenPrice) {
       return;
     }
 
@@ -231,7 +229,7 @@ export const WalletInfoSectionItem = ({
     return () => {
       cancelled = true;
     };
-  }, [isPanelOpen, usesHiveEngineChart, tokenSymbol, tokenMarket, hive?.usd]);
+  }, [isPanelOpen, hasEngineTokenPrice, tokenSymbol, hive?.usd]);
 
   const init = async () => {
     setActionButtons(
@@ -261,7 +259,7 @@ export const WalletInfoSectionItem = ({
   };
 
   const openPanel = () => {
-    if (hivePriceHistoryPath || usesHiveEngineChart) {
+    if (showsPriceChart) {
       setPriceHistoryLoading(true);
     }
     setIsPanelOpen(true);
@@ -395,6 +393,7 @@ export const WalletInfoSectionItem = ({
         onClose={closePanel}
         title={tokenDisplayName}
         titleId={detailsId}
+        compact={!showsPriceChart}
         dataTestId={`wallet-token-detail-panel-${tokenSymbol}`}
         logo={
           tokenInfo ? (
@@ -444,19 +443,13 @@ export const WalletInfoSectionItem = ({
           </div>
         }>
         <div className="wallet-info-details">
-          <WalletTokenPriceChart
-            symbol={tokenSymbol}
-            priceHistory={
-              hivePriceHistoryPath || usesHiveEngineChart
-                ? priceHistory
-                : undefined
-            }
-            priceHistoryLoading={
-              hivePriceHistoryPath || usesHiveEngineChart
-                ? priceHistoryLoading
-                : undefined
-            }
-          />
+          {showsPriceChart && (
+            <WalletTokenPriceChart
+              symbol={tokenSymbol}
+              priceHistory={priceHistory}
+              priceHistoryLoading={priceHistoryLoading}
+            />
+          )}
           {tokenInfo && tokenBalance && tokenMarket && (
             <div
               className={`token-info-panel ${
