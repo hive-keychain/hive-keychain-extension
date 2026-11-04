@@ -11,6 +11,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
+import { ImageUrlUtils } from 'src/utils/image-url.utils';
 
 interface Props {
   chain: EvmChain;
@@ -215,7 +216,7 @@ export const EvmKnownTokenList = ({
         name: token.name?.trim() ?? '',
         symbol: token.symbol?.trim() ?? '',
         decimals: token.decimals,
-        logo: token.logoURI?.trim() ?? '',
+        logo: ImageUrlUtils.getSafeImageUrl(token.logoURI) ?? '',
       });
     } catch {
       if (isMountedRef.current) {

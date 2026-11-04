@@ -13,6 +13,7 @@ import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { ethers } from 'ethers';
 import { CommunicationUtils } from 'src/utils/communication.utils';
+import { ImageUrlUtils } from 'src/utils/image-url.utils';
 
 const WATCH_ASSET_INVALID_PARAMS_ERROR =
   'Invalid wallet_watchAsset parameters. Keychain only supports ERC20 assets';
@@ -53,7 +54,8 @@ const isValidWatchAssetRequest = (request: EvmRequest) => {
 
   if (
     params.options.image !== undefined &&
-    typeof params.options.image !== 'string'
+    (typeof params.options.image !== 'string' ||
+      !ImageUrlUtils.getSafeImageUrl(params.options.image))
   ) {
     return false;
   }

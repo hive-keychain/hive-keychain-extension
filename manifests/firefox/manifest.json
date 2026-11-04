@@ -13,7 +13,7 @@
     "https://*/*",
     "http://*/*"
   ],
-  "content_security_policy": "script-src 'self'; object-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self';",
+  "content_security_policy": "script-src 'self'; object-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' https: data: blob:; media-src 'self' https: blob:;",
   "browser_action": {
     "default_popup": "popup.html",
     "default_icon": "/assets/images/iconhive.png"

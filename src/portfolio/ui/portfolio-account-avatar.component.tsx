@@ -1,4 +1,5 @@
 import React from 'react';
+import { SafeImage } from 'src/common-ui/safe-image/safe-image.component';
 import { PortfolioAccountDisplayUtils } from 'src/portfolio/ui/portfolio-account-display.utils';
 
 import './portfolio-account-avatar.component.scss';
@@ -23,7 +24,7 @@ export const PortfolioAccountAvatar = (props: PortfolioAccountAvatarProps) => {
         PortfolioAccountDisplayUtils.evmGravatarAvatarUrl(props.address);
 
   return (
-    <img
+    <SafeImage
       className={className}
       src={src}
       alt=""

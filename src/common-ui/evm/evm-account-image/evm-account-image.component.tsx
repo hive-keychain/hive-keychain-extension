@@ -1,5 +1,6 @@
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
 import React from 'react';
+import { SafeImage } from 'src/common-ui/safe-image/safe-image.component';
 
 interface Props {
   address?: string;
@@ -15,13 +16,13 @@ export const EvmAccountImage = ({ address, avatar, small }: Props) => {
   return (
     <>
       {avatar && (
-        <img
+        <SafeImage
           className={`user-picture no-padding ${small ? 'small' : 'normal'}`}
           src={avatar}
         />
       )}
       {!avatar && address && (
-        <img
+        <SafeImage
           className={`user-picture no-padding ${small ? 'small' : 'normal'}`}
           src={identiconSrc}
           style={{ backgroundColor: 'white' }}

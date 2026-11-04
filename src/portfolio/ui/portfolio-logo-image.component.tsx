@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { SafeImage } from 'src/common-ui/safe-image/safe-image.component';
 import { ColorsUtils } from 'src/utils/colors.utils';
+import { ImageUrlUtils } from 'src/utils/image-url.utils';
 
 type Props = {
   src?: string | null;
@@ -26,11 +28,11 @@ export const PortfolioLogoImage = ({
     setFailed(false);
   }, [src]);
 
-  const trimmedSrc = src?.trim() ?? '';
+  const safeSrc = ImageUrlUtils.getSafeImageUrl(src) ?? '';
   const trimmedFallbackText = fallbackText?.trim() ?? '';
   const letter = trimmedFallbackText || fallbackLetter.slice(0, 1);
 
-  if (!trimmedSrc || failed) {
+  if (!safeSrc || failed) {
     if (!letter) {
       return null;
     }
@@ -49,9 +51,9 @@ export const PortfolioLogoImage = ({
   }
 
   return (
-    <img
+    <SafeImage
       className={className}
-      src={trimmedSrc}
+      src={safeSrc}
       alt=""
       onError={() => setFailed(true)}
     />

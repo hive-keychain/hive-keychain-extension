@@ -6,6 +6,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import type { SortableDragHandleRef } from 'src/common-ui/sortable-list/sortable-list.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { SafeImage } from 'src/common-ui/safe-image/safe-image.component';
 import { ColorsUtils } from 'src/utils/colors.utils';
 import { EnumUtils } from 'src/utils/enum.utils';
 
@@ -126,7 +127,7 @@ export function CustomSelectItemComponent<T extends OptionItem>({
             {item.img &&
               !item.imgChainName &&
               !EnumUtils.isValueOf(item.img, SVGIcons) && (
-                <img className="left-image" src={item.img} />
+                <SafeImage className="left-image" src={item.img} />
               )}
             {!item.img && generateImageIfNull && item.label && (
               <div

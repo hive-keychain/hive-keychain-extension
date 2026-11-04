@@ -11,6 +11,7 @@ import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/ch
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import { SafeImage } from 'src/common-ui/safe-image/safe-image.component';
 import { loadTokens } from 'src/popup/hive/actions/token.actions';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -116,7 +117,7 @@ const TokensFilter = ({
                     <div className="extra-info">
                       <div className="details">
                         <div className="logo-container">
-                          <img
+                          <SafeImage
                             className="logo"
                             src={
                               token.metadata.icon ??

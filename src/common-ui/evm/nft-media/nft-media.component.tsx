@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { SafeImage } from 'src/common-ui/safe-image/safe-image.component';
+import { ImageUrlUtils } from 'src/utils/image-url.utils';
 import { IpfsUtils } from 'src/utils/ipfs.utils';
 
 const NFT_VIDEO_EXTENSION_REGEX = /\.(mp4|webm|ogg|ogv|mov|m4v)(?:[?#]|$)/i;
@@ -14,15 +16,20 @@ interface Props {
 }
 
 export const EvmNftMedia = ({ src, className }: Props) => {
+  const directSafeSrc = ImageUrlUtils.getSafeImageUrl(src);
   const [hasError, setHasError] = useState(false);
   const [isResolvingIpfs, setIsResolvingIpfs] = useState(false);
-  const [resolvedSrc, setResolvedSrc] = useState(src);
+  const [resolvedSrc, setResolvedSrc] = useState(directSafeSrc);
   const [resolvedGateway, setResolvedGateway] = useState('');
   const excludedGatewaysRef = useRef<string[]>([]);
   const resolutionIdRef = useRef(0);
   const isIpfsMedia = !!IpfsUtils.getIpfsPath(src);
   const isPlaceholder =
-    hasError || !src || src === NFT_PLACEHOLDER || isResolvingIpfs;
+    hasError ||
+    !src ||
+    (!isIpfsMedia && !directSafeSrc) ||
+    src === NFT_PLACEHOLDER ||
+    isResolvingIpfs;
   const mediaSrc = isPlaceholder ? NFT_PLACEHOLDER : resolvedSrc;
   const mediaClassName = `nft-media ${className ?? ''} ${
     isPlaceholder ? 'placeholder' : ''
@@ -39,7 +46,11 @@ export const EvmNftMedia = ({ src, className }: Props) => {
       });
       if (resolutionId !== resolutionIdRef.current) return;
 
-      setResolvedSrc(resolution.url);
+      const safeResolutionUrl = ImageUrlUtils.getSafeImageUrl(resolution.url);
+      if (!safeResolutionUrl) {
+        throw new Error('Unsafe IPFS gateway URL');
+      }
+      setResolvedSrc(safeResolutionUrl);
       setResolvedGateway(resolution.gateway);
       setIsResolvingIpfs(false);
     } catch {
@@ -70,7 +81,7 @@ export const EvmNftMedia = ({ src, className }: Props) => {
     excludedGatewaysRef.current = [];
     setHasError(false);
     setResolvedGateway('');
-    setResolvedSrc(src);
+    setResolvedSrc(directSafeSrc);
     setIsResolvingIpfs(isIpfsMedia);
     if (isIpfsMedia) void resolveMediaGateway();
 
@@ -79,11 +90,12 @@ export const EvmNftMedia = ({ src, className }: Props) => {
     };
   }, [src]);
 
-  if (!hasError && isNftVideoMedia(src)) {
+  if (!hasError && isNftVideoMedia(resolvedSrc)) {
     return (
       <video
         className={mediaClassName}
         src={mediaSrc}
+        referrerPolicy="no-referrer"
         autoPlay
         loop
         ref={(element) => {
@@ -96,7 +108,7 @@ export const EvmNftMedia = ({ src, className }: Props) => {
   }
 
   return (
-    <img
+    <SafeImage
       className={mediaClassName}
       src={mediaSrc}
       alt=""

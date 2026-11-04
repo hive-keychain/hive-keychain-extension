@@ -19,6 +19,7 @@ import React, {
 } from 'react';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
+import { ImageUrlUtils } from 'src/utils/image-url.utils';
 export interface EvmCustomErc20FormData {
   contractAddress: string;
   name: string;
@@ -69,6 +70,7 @@ interface Erc20FormErrors {
   name?: string;
   symbol?: string;
   decimals?: string;
+  logo?: string;
   save?: string;
 }
 
@@ -428,6 +430,13 @@ export const EvmCustomErc20Form = forwardRef<
         );
       }
 
+      if (
+        erc20Form.logo.trim() &&
+        !ImageUrlUtils.getSafeImageUrl(erc20Form.logo)
+      ) {
+        errors.logo = I18nUtils.getMessage('evm_image_url_error_invalid');
+      }
+
       return {
         errors,
         isValid: Object.keys(errors).length === 0,
@@ -455,7 +464,7 @@ export const EvmCustomErc20Form = forwardRef<
           name: erc20Form.name.trim(),
           symbol: erc20Form.symbol.trim(),
           decimals: decimalsParsed,
-          logo: erc20Form.logo.trim(),
+          logo: ImageUrlUtils.getSafeImageUrl(erc20Form.logo) ?? '',
         } as EvmCustomErc20FormData);
         return true;
       } catch {
@@ -574,6 +583,9 @@ export const EvmCustomErc20Form = forwardRef<
                 }}
               />
             </div>
+            {erc20Errors.logo && (
+              <div className="error-message">{erc20Errors.logo}</div>
+            )}
           </div>
         </div>
 

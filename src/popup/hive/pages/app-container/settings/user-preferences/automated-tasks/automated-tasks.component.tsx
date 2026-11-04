@@ -19,6 +19,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
+import { SafeImage } from 'src/common-ui/safe-image/safe-image.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
 import AutomatedTasksUtils from 'src/utils/automatedTasks.utils';
@@ -442,7 +443,7 @@ const AutomatedTasks = ({
                     className="auto-stake-token-tag"
                     onClick={() => handleRemoveItem(o)}>
                     {o.img && (
-                      <img
+                      <SafeImage
                         className="token-img"
                         src={o.img}
                         onError={(e: any) => {

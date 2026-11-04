@@ -12,6 +12,7 @@ import {
 import { WhatsNewUtils } from 'src/utils/whats-new.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
+import { ImageUrlUtils } from 'src/utils/image-url.utils';
 interface Props {
   onOverlayClick: () => void;
   content: WhatsNewContent;
@@ -27,8 +28,13 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
     const imgs: HTMLImageElement[] = [];
     setReady(false);
     for (const feature of content.features[locale]) {
+      const safeImage = ImageUrlUtils.getSafeImageUrl(feature.image);
+      if (!safeImage) {
+        continue;
+      }
       const imageElement = new Image();
-      imageElement.src = feature.image;
+      imageElement.referrerPolicy = 'no-referrer';
+      imageElement.src = safeImage;
       imgs.push(imageElement);
     }
     const firstImage = imgs[0];
@@ -106,25 +112,30 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
           showThumbs={false}
           showStatus={false}
           renderIndicator={renderCustomIndicator}>
-          {content.features[locale].map((feature, index) => (
-            <div className="carousel-item" key={`feature-${index}`}>
-              <div className="image">
-                <img src={feature.image} />
+          {content.features[locale].map((feature, index) => {
+            const safeImage = ImageUrlUtils.getSafeImageUrl(feature.image);
+            return (
+              <div className="carousel-item" key={`feature-${index}`}>
+                <div className="image">
+                  {safeImage && (
+                    <img src={safeImage} referrerPolicy="no-referrer" />
+                  )}
+                </div>
+                <div className="title">{feature.title}</div>
+                <div className="description">{feature.description}</div>
+                <div className="extra-information">
+                  {feature.extraInformation}
+                </div>
+                <a
+                  data-testid="link-whats-new-read-more"
+                  className="read-more-link"
+                  onClick={() => handleOnClick(content, feature)}>
+                  {feature.overrideReadMoreLabel ??
+                    I18nUtils.getMessage('html_popup_read_more')}
+                </a>
               </div>
-              <div className="title">{feature.title}</div>
-              <div className="description">{feature.description}</div>
-              <div className="extra-information">
-                {feature.extraInformation}
-              </div>
-              <a
-                data-testid="link-whats-new-read-more"
-                className="read-more-link"
-                onClick={() => handleOnClick(content, feature)}>
-                {feature.overrideReadMoreLabel ??
-                  I18nUtils.getMessage('html_popup_read_more')}
-              </a>
-            </div>
-          ))}
+            );
+          })}
         </Carousel>
         <div className="popup-footer">
           {pageIndex > 0 && (

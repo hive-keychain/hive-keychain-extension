@@ -18,6 +18,7 @@ import { EvmAddressUtils } from 'src/utils/evm/evm-address.utils';
 import { EvmCallBatchValidationUtils } from 'src/utils/evm/evm-call-batch-validation.utils';
 import { EvmEncryptedMessageUtils } from 'src/utils/evm/evm-encrypted-message.utils';
 import { RequestPayloadUtils } from 'src/utils/request-payload.utils';
+import { ImageUrlUtils } from 'src/utils/image-url.utils';
 
 const EVM_CHAIN_ID_REGEX = /^0x[1-9a-fA-F][0-9a-fA-F]*$/;
 
@@ -302,6 +303,21 @@ export const validateRequest = (
         throw getProviderRpcError(
           'invalidMethodParams',
           'Invalid parameter. Block explorer URLs must use HTTPS.',
+        );
+      }
+
+      if (
+        addChainParams.iconUrls !== undefined &&
+        (!Array.isArray(addChainParams.iconUrls) ||
+          addChainParams.iconUrls.some(
+            (iconUrl) =>
+              typeof iconUrl !== 'string' ||
+              !ImageUrlUtils.getSafeImageUrl(iconUrl),
+          ))
+      ) {
+        throw getProviderRpcError(
+          'invalidMethodParams',
+          'Invalid parameter. Icon URLs must use public HTTPS URLs.',
         );
       }
       break;

@@ -4,6 +4,7 @@ import { Shimmer, Image as ShimmerImage } from 'react-shimmer';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { ColorsUtils } from 'src/utils/colors.utils';
+import { ImageUrlUtils } from 'src/utils/image-url.utils';
 
 interface PreloadedImageProps {
   className?: string;
@@ -35,22 +36,29 @@ export const PreloadedImage = ({
   backgroundColor,
   useDefaultSVG,
 }: PreloadedImageProps) => {
+  const safeSrc = ImageUrlUtils.getSafeImageUrl(src) ?? '';
+  const safeAlt = ImageUrlUtils.getSafeImageUrl(alt);
+  const safePlaceholder = ImageUrlUtils.getSafeImageUrl(placeholder);
   const [background, setBackground] = useState<string>('transparent');
   const [cachedPathError, setCachedPathError] = useState(false);
   const { theme } = useThemeContext();
 
-  const skipShimmer = useMemo(() => isImageSrcLoadedSync(src), [src]);
+  const skipShimmer = useMemo(
+    () => isImageSrcLoadedSync(safeSrc),
+    [safeSrc],
+  );
 
   useEffect(() => {
     setCachedPathError(false);
-  }, [src]);
+  }, [safeSrc]);
 
   useEffect(() => {
-    if (!src) {
+    if (!safeSrc) {
       return;
     }
     let isCancelled = false;
     const existingImg = new Image();
+    existingImg.referrerPolicy = 'no-referrer';
 
     const setBackgroundColor = (img: HTMLImageElement) => {
       if (!addBackground || isCancelled) {
@@ -70,7 +78,7 @@ export const PreloadedImage = ({
     existingImg.onerror = () => {
       // Dont display errors
     };
-    existingImg.src = src;
+    existingImg.src = safeSrc;
 
     if (existingImg.complete) {
       if (existingImg.naturalWidth > 0) {
@@ -84,6 +92,7 @@ export const PreloadedImage = ({
 
     // Image not cached, proceed with normal preloading
     const img = new Image();
+    img.referrerPolicy = 'no-referrer';
 
     img.onload = () => {
       setBackgroundColor(img);
@@ -96,11 +105,11 @@ export const PreloadedImage = ({
         setBackground('#e31337');
         return;
       }
-      if (alt) {
-        img.src = alt;
+      if (safeAlt) {
+        img.src = safeAlt;
       }
     };
-    img.src = src;
+    img.src = safeSrc;
 
     return () => {
       isCancelled = true;
@@ -110,9 +119,9 @@ export const PreloadedImage = ({
     };
   }, [
     addBackground,
-    alt,
     backgroundColor,
-    src,
+    safeAlt,
+    safeSrc,
     symbol,
     theme,
     useDefaultSVG,
@@ -129,17 +138,19 @@ export const PreloadedImage = ({
           background={background}
         />
       )}
-      {!useDefaultSVG && placeholder && (
+      {!useDefaultSVG && safePlaceholder && (
         <img
-          src={placeholder}
+          src={safePlaceholder}
           className={`${className} ${addBackground ? 'add-background' : ''}`}
           style={{ background: background }}
+          referrerPolicy="no-referrer"
+          decoding="async"
         />
       )}
     </>
   );
 
-  if (!src) {
+  if (!safeSrc) {
     return <>{errorFallback}</>;
   }
 
@@ -149,10 +160,12 @@ export const PreloadedImage = ({
     }
     return (
       <img
-        src={src}
+        src={safeSrc}
         className={`${className} ${addBackground ? 'add-background' : ''}`}
         style={{ background: background }}
         onError={() => setCachedPathError(true)}
+        referrerPolicy="no-referrer"
+        decoding="async"
       />
     );
   }
@@ -160,7 +173,7 @@ export const PreloadedImage = ({
   return (
     <>
       <ShimmerImage
-        src={src}
+        src={safeSrc}
         fallback={
           <Shimmer
             width={300}
@@ -172,6 +185,8 @@ export const PreloadedImage = ({
         NativeImgProps={{
           className: `${className} ${addBackground ? 'add-background' : ''}`,
           style: { background: background },
+          referrerPolicy: 'no-referrer',
+          decoding: 'async',
         }}
         errorFallback={() => errorFallback}
       />

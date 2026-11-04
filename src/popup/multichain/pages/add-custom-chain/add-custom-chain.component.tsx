@@ -25,6 +25,8 @@ import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { FormUtils } from 'src/utils/form.utils';
+import { SafeImage } from 'src/common-ui/safe-image/safe-image.component';
+import { ImageUrlUtils } from 'src/utils/image-url.utils';
 
 interface NewChainForm {
   name: string;
@@ -43,7 +45,13 @@ const formRules = FormUtils.createRules<NewChainForm>({
   name: Joi.string().required(),
   symbol: Joi.string().required(),
   type: Joi.string().required(),
-  logo: Joi.string().required(),
+  logo: Joi.string()
+    .custom((value, helpers) =>
+      ImageUrlUtils.getSafeImageUrl(value)
+        ? value
+        : helpers.error('string.uri'),
+    )
+    .required(),
   chainId: Joi.string().required(),
   blockExplorer: Joi.object().required(),
   rpcs: Joi.array().required(),
@@ -131,7 +139,7 @@ const AddCustomChain = ({ resetNav }: PropsFromRedux) => {
               placeholder="popup_html_create_blockchain_logo"
               label="popup_html_create_blockchain_logo"
             />
-            {watch('logo').length > 0 && <img src={watch('logo')} />}
+            {watch('logo').length > 0 && <SafeImage src={watch('logo')} />}
           </div>
           <FormInputComponent
             name="chainId"

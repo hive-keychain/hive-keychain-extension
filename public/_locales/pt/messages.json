@@ -7475,6 +7475,10 @@
     "message": "$1 IDs de token salvos",
     "description": "Custom NFT token count label; $1 is the number of saved token IDs"
   },
+  "evm_image_url_error_invalid": {
+    "message": "Use a public HTTPS image URL or a supported image data URL.",
+    "description": "Validation error for unsafe token or chain image URLs"
+  },
   "evm_add_custom_asset_error_contract_address_invalid": {
     "message": "Insira um endereço de contrato válido.",
     "description": "Validation error when adding a custom EVM token or NFT with an invalid contract address"

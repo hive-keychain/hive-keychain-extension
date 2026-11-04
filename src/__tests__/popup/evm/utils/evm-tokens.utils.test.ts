@@ -1258,6 +1258,62 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
     ]);
   });
 
+  it('drops custom token logos that are not public HTTPS URLs', async () => {
+    let storageValue: any;
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockImplementation(async () => storageValue);
+    jest
+      .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+      .mockImplementation(async (_key, value) => {
+        storageValue = value;
+      });
+    jest.spyOn(EvmLightNodeUtils, 'getCoingeckoTokenId').mockResolvedValue(undefined);
+
+    const chain = {
+      type: ChainType.EVM,
+      chainId: '0x1',
+    } as any;
+
+    await EvmTokensUtils.addCustomToken(
+      chain,
+      '0x1111111111111111111111111111111111111111',
+      {
+        address: '0x00000000000000000000000000000000000000aa',
+        type: EVMSmartContractType.ERC20,
+        metadata: {
+          type: EVMSmartContractType.ERC20,
+          name: 'Unsafe',
+          symbol: 'UNS',
+          decimals: 18,
+          logo: 'https://localhost./logo.png',
+        },
+      },
+    );
+
+    expect(storageValue['0x1'][0].metadata.logo).toBe('');
+
+    storageValue = {
+      '0x1': [
+        {
+          address: '0x00000000000000000000000000000000000000BB',
+          type: EVMSmartContractType.ERC20,
+          metadata: {
+            type: EVMSmartContractType.ERC20,
+            name: 'Stored',
+            symbol: 'STO',
+            decimals: 18,
+            logo: 'http://127.0.0.1/logo.png',
+          },
+        },
+      ],
+    };
+
+    const savedTokens = await EvmTokensUtils.getCustomTokens(chain, '');
+    expect(savedTokens[0].metadata?.logo).toBe('');
+    expect(storageValue['0x1'][0].metadata.logo).toBe('');
+  });
+
   it('updates custom ERC20 metadata with a resolved Coingecko id and preserves the stored id on failure', async () => {
     let storageValue: any = {
       '0x1': [
