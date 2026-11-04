@@ -2,20 +2,28 @@ import { Card } from '@common-ui/card/card.component';
 import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
 import { EvmRequest } from '@interfaces/evm-provider.interface';
 import { EvmCustomToken } from '@popup/evm/interfaces/evm-custom-tokens.interface';
-import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
+import {
+  EVMSmartContractType,
+  EvmSmartContractInfoErc20,
+} from '@popup/evm/interfaces/evm-tokens.interface';
 import {
   EvmCustomErc20Form,
   EvmCustomErc20FormData,
   EvmCustomErc20FormRef,
 } from '@popup/evm/pages/home/evm-add-custom-asset-popup/evm-custom-erc20-form.component';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import { Erc20Abi } from '@popup/evm/reference-data/abi.data';
+import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { ethers } from 'ethers';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
 import { CommunicationUtils } from 'src/utils/communication.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
 interface WatchAssetOptions {
@@ -53,8 +61,42 @@ const getWatchAssetRequest = (
   return watchAssetRequest;
 };
 
+const isSameTokenAddress = (left: string, right: string) =>
+  left.trim().toLowerCase() === right.trim().toLowerCase();
+
+const isZeroBalance = (balance: bigint | undefined) =>
+  balance !== undefined && balance === 0n;
+
+const readRawErc20Balance = async (
+  walletAddress: string,
+  chain: EvmChain,
+  tokenAddress: string,
+) => {
+  const provider = await EthersUtils.getProvider(chain);
+  const contract = new ethers.Contract(tokenAddress, Erc20Abi, provider);
+  const balance = await contract.balanceOf(walletAddress);
+  return BigInt(balance.toString());
+};
+
+const getActiveWalletAddress = async (fallbackAddress: string) => {
+  try {
+    const savedActiveAccount =
+      await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.EVM_ACTIVE_ACCOUNT_WALLET,
+      );
+    return typeof savedActiveAccount === 'string' && savedActiveAccount
+      ? savedActiveAccount
+      : fallbackAddress;
+  } catch {
+    return fallbackAddress;
+  }
+};
+
 export const WatchAsset = ({ request, data, afterCancel }: Props) => {
   const [chain, setChain] = useState<EvmChain | null>(null);
+  const [alreadyAdded, setAlreadyAdded] = useState(false);
+  const [zeroBalance, setZeroBalance] = useState(false);
+  const [statusReady, setStatusReady] = useState(false);
   const formRef = useRef<EvmCustomErc20FormRef>(null);
   const watchAssetRequest = getWatchAssetRequest(request);
   const activeWalletAddress = data.accounts?.[0]?.address ?? '';
@@ -72,8 +114,59 @@ export const WatchAsset = ({ request, data, afterCancel }: Props) => {
       }
 
       const activeChain = await ChainUtils.getChain<EvmChain>(chainId);
+      if (!mounted || !activeChain) {
+        return;
+      }
+
+      setChain(activeChain);
+
+      const tokenAddress = watchAssetRequest?.options.address;
+      if (!tokenAddress) {
+        setStatusReady(true);
+        return;
+      }
+
+      const customTokens = await EvmTokensUtils.getCustomTokens(
+        activeChain,
+        activeWalletAddress,
+      );
+      if (!mounted) {
+        return;
+      }
+
+      setAlreadyAdded(
+        customTokens.some(
+          (token) =>
+            token.type === EVMSmartContractType.ERC20 &&
+            isSameTokenAddress(token.address, tokenAddress),
+        ),
+      );
+
+      const walletAddress = await getActiveWalletAddress(activeWalletAddress);
+      if (walletAddress) {
+        const balance = await EvmTokensUtils.getTokenBalance(
+          walletAddress,
+          activeChain,
+          {
+            type: EVMSmartContractType.ERC20,
+            contractAddress: tokenAddress,
+            decimals: watchAssetRequest?.options.decimals ?? 18,
+          } as EvmSmartContractInfoErc20,
+        );
+        const rawBalance =
+          balance?.balance ??
+          (await readRawErc20Balance(
+            walletAddress,
+            activeChain,
+            tokenAddress,
+          ).catch(() => undefined));
+        if (mounted) {
+          setZeroBalance(isZeroBalance(rawBalance));
+        }
+      }
+
       if (mounted) {
-        setChain(activeChain);
+        setStatusReady(true);
       }
     };
 
@@ -82,7 +175,7 @@ export const WatchAsset = ({ request, data, afterCancel }: Props) => {
     return () => {
       mounted = false;
     };
-  }, [data.dappInfo.origin, request]);
+  }, [activeWalletAddress, data.dappInfo.origin, request, watchAssetRequest]);
 
   const initialForm = useMemo(
     () => ({
@@ -118,12 +211,7 @@ export const WatchAsset = ({ request, data, afterCancel }: Props) => {
     await EvmTokensUtils.addCustomToken(chain, activeWalletAddress, token);
   };
 
-  const handleConfirm = async () => {
-    const saved = await formRef.current?.submit();
-    if (!saved) {
-      return;
-    }
-
+  const acceptRequest = () => {
     CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.SEND_EVM_RESPONSE_TO_SW,
       value: {
@@ -136,6 +224,20 @@ export const WatchAsset = ({ request, data, afterCancel }: Props) => {
     });
   };
 
+  const handleConfirm = async () => {
+    if (alreadyAdded) {
+      acceptRequest();
+      return;
+    }
+
+    const saved = await formRef.current?.submit();
+    if (!saved) {
+      return;
+    }
+
+    acceptRequest();
+  };
+
   return (
     <EvmOperation
       afterCancel={handleCancel}
@@ -144,25 +246,39 @@ export const WatchAsset = ({ request, data, afterCancel }: Props) => {
       origin={data.dappInfo.origin}
       requestSource={data.dappInfo.requestSource}
       tab={data.tab}
-      title={I18nUtils.getMessage('evm_watch_asset_title')}
-      caption={I18nUtils.getMessage('evm_watch_asset_caption', [
-        data.dappInfo.domain,
-      ])}
+      title={I18nUtils.getMessage(
+        alreadyAdded
+          ? 'evm_watch_asset_already_added_title'
+          : 'evm_watch_asset_title',
+      )}
+      caption={I18nUtils.getMessage(
+        alreadyAdded
+          ? 'evm_watch_asset_already_added_caption'
+          : 'evm_watch_asset_caption',
+        [data.dappInfo.domain],
+      )}
       onConfirm={handleConfirm}
-      confirmDisabled={!chain || !watchAssetRequest}
+      confirmDisabled={!chain || !watchAssetRequest || !statusReady}
       bottomPanel={
         chain &&
         watchAssetRequest && (
           <Card className="watch-asset-card evm-add-custom-asset-popup">
-            <EvmCustomErc20Form
-              ref={formRef}
-              chain={chain}
-              walletAddress={activeWalletAddress}
-              initialForm={initialForm}
-              autoResolveContract
-              renderFooter={false}
-              onSave={handleSave}
-            />
+            {alreadyAdded ? null : (
+              <EvmCustomErc20Form
+                ref={formRef}
+                chain={chain}
+                walletAddress={activeWalletAddress}
+                initialForm={initialForm}
+                autoResolveContract
+                renderFooter={false}
+                notice={
+                  zeroBalance
+                    ? I18nUtils.getMessage('evm_watch_asset_zero_balance')
+                    : undefined
+                }
+                onSave={handleSave}
+              />
+            )}
           </Card>
         )
       }

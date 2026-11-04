@@ -15,6 +15,7 @@ import {
 import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-display/evm-account-display.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
+import { SafeImage } from 'src/common-ui/safe-image/safe-image.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { EvmAccountUtils } from 'src/popup/evm/utils/evm-account.utils';
 import { EvmDappUtils } from 'src/popup/evm/utils/evm-dapp.utils';
@@ -139,7 +140,7 @@ const EvmDappStatus = ({
           <div className="dapp-status-details-wrapper">
             <div className="popup-title">
               {(dapp?.favIconUrl || fallbackDappIconUrl) && (
-                <img
+                <SafeImage
                   src={dapp?.favIconUrl || fallbackDappIconUrl}
                   onError={handleDappIconError}
                 />

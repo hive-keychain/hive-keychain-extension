@@ -89,16 +89,18 @@ const start = async () => {
 
 const setupRefreshConnections = () => {
   chrome.runtime.onMessage.addListener(
-    async (
+    (
       backgroundMessage: BackgroundMessage,
       sender: chrome.runtime.MessageSender,
-      sendResp: (response?: any) => void,
     ) => {
       if (
-        backgroundMessage.command ===
-          BackgroundCommand.MULTISIG_REFRESH_CONNECTIONS &&
-        RuntimeMessageSenderUtils.isInternalExtensionSender(sender)
-      ) {
+        backgroundMessage.command !==
+          BackgroundCommand.MULTISIG_REFRESH_CONNECTIONS ||
+        !RuntimeMessageSenderUtils.isInternalExtensionSender(sender)
+      )
+        return false;
+
+      void (async () => {
         const value = backgroundMessage.value as ConnectDisconnectMessage;
         const multisigConfig: MultisigConfig =
           await LocalStorageUtils.getValueFromLocalStorage(
@@ -125,27 +127,31 @@ const setupRefreshConnections = () => {
             );
           }
         }
-      }
+      })();
+      return false;
     },
   );
 };
 
 const setupPopupListener = () => {
   chrome.runtime.onMessage.addListener(
-    async (
+    (
       backgroundMessage: BackgroundMessage,
       sender: chrome.runtime.MessageSender,
-      sendResp: (response?: any) => void,
     ) => {
       if (
-        backgroundMessage.command ===
-          BackgroundCommand.MULTISIG_REQUEST_SIGNATURES &&
-        RuntimeMessageSenderUtils.isInternalExtensionSender(sender)
-      ) {
-        const data = backgroundMessage.value as MultisigRequestSignatures;
+        backgroundMessage.command !==
+          BackgroundCommand.MULTISIG_REQUEST_SIGNATURES ||
+        !RuntimeMessageSenderUtils.isInternalExtensionSender(sender)
+      )
+        return false;
+
+      const data = backgroundMessage.value as MultisigRequestSignatures;
+      void (async () => {
         await createConnectionIfNeeded(data);
         requestSignatures(data, true);
-      }
+      })();
+      return false;
     },
   );
 };

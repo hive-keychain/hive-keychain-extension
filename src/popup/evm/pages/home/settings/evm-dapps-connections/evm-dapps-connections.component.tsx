@@ -18,6 +18,7 @@ import { DappStatusComponent } from 'src/common-ui/evm/dapp-status/dapp-status.c
 import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-display/evm-account-display.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
+import { SafeImage } from 'src/common-ui/safe-image/safe-image.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import {
   getHostnameFromUrl,
@@ -427,7 +428,7 @@ const EvmDappsConnections = ({
                   );
                 }}>
                 <div className="evm-dapps-connections-item-main">
-                  <img
+                  <SafeImage
                     className="evm-dapps-connections-favicon"
                     data-testid="evm-dapps-connection-favicon"
                     src={EvmDappUtils.getEvmDappConnectionIconUrl(
@@ -484,7 +485,7 @@ const EvmDappsConnections = ({
           onClickOutside={closePopup}>
           <div className="dapp-status-details-wrapper">
             <div className="popup-title">
-              <img
+              <SafeImage
                 className="evm-dapps-connections-favicon"
                 alt=""
                 src={EvmDappUtils.getEvmDappConnectionIconUrl(

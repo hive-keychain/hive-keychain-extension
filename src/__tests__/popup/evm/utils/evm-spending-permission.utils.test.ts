@@ -1,4 +1,5 @@
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 import { EvmSpendingPermissionUtils } from '@popup/evm/utils/evm-spending-permission.utils';
 
 const SPENDER = '0x00000000000000000000000000000000000000ab';
@@ -71,7 +72,7 @@ describe('EvmSpendingPermissionUtils', () => {
     ).toEqual(
       expect.objectContaining({
         message: 'evm_warning_unlimited_approval',
-        messageParams: [SPENDER, 'DAI'],
+        messageParams: [EvmFormatUtils.formatAddress(SPENDER), 'DAI'],
         level: 'high',
         ignored: false,
       }),

@@ -31,6 +31,66 @@ export enum EvmTransactionType {
   EIP_7702 = '0x4',
 }
 
+export const UNSUPPORTED_BLOB_OR_DELEGATION_TRANSACTION_MESSAGE =
+  'Keychain does not support EIP-4844 or EIP-7702 transactions';
+
+const BLOB_OR_DELEGATION_FIELDS = [
+  'authorizationList',
+  'blobs',
+  'blobVersionedHashes',
+  'maxFeePerBlobGas',
+] as const;
+
+const normalizeTransactionType = (type: unknown): bigint | undefined => {
+  if (typeof type === 'number' && Number.isFinite(type)) {
+    return BigInt(type);
+  }
+  if (typeof type === 'bigint') {
+    return type;
+  }
+  if (typeof type !== 'string') {
+    return undefined;
+  }
+  const trimmed = type.trim();
+  if (!/^0x[0-9a-fA-F]+$/.test(trimmed) && !/^\d+$/.test(trimmed)) {
+    return undefined;
+  }
+  try {
+    return BigInt(trimmed);
+  } catch {
+    return undefined;
+  }
+};
+
+export const isBlobOrDelegationTransactionType = (type: unknown): boolean => {
+  const normalized = normalizeTransactionType(type);
+  return normalized === BigInt(3) || normalized === BigInt(4);
+};
+
+export const hasBlobOrDelegationFields = (transaction: unknown): boolean => {
+  if (!transaction || typeof transaction !== 'object') {
+    return false;
+  }
+  const record = transaction as Record<string, unknown>;
+  return BLOB_OR_DELEGATION_FIELDS.some((field) => record[field] != null);
+};
+
+export const hasUnsupportedTransactionPayload = (
+  transaction: unknown,
+): boolean =>
+  hasBlobOrDelegationFields(transaction) ||
+  isBlobOrDelegationTransactionType(
+    transaction && typeof transaction === 'object'
+      ? (transaction as { type?: unknown }).type
+      : undefined,
+  );
+
+/** Wallet sends keep working when a saved chain default is still type 0x3 or 0x4. */
+export const coerceWalletTransactionType = (
+  type: EvmTransactionType,
+): EvmTransactionType =>
+  isBlobOrDelegationTransactionType(type) ? EvmTransactionType.EIP_1559 : type;
+
 export const getAllTransactionTypes = () => {
   return Object.values(EvmTransactionType);
 };

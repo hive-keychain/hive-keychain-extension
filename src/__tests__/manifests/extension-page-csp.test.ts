@@ -8,6 +8,8 @@ const extensionPagePolicy = [
   "object-src 'self'",
   "style-src 'self' 'unsafe-inline'",
   "font-src 'self'",
+  "img-src 'self' https: data: blob:",
+  "media-src 'self' https: blob:",
 ];
 
 const manifestPaths = [

@@ -1,4 +1,5 @@
 import React from 'react';
+import { SafeImage } from 'src/common-ui/safe-image/safe-image.component';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
 interface AutocompleteProps {
@@ -27,7 +28,7 @@ export const AutocompleteItemComponent = ({
       className="autocomplete-item"
       key={value}
       onMouseDown={() => onItemClick(value)}>
-      {img && <img src={img} className="user-avatar" />}
+      {img && <SafeImage src={img} className="user-avatar" />}
       <span>
         {prefix ?? ''}
         {translateLabel ? I18nUtils.getMessage(label) : label}{' '}

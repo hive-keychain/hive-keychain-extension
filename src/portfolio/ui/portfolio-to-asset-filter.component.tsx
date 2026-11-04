@@ -6,6 +6,7 @@ import { SVGIcons } from '@common-ui/icons.enum';
 import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { SafeImage } from 'src/common-ui/safe-image/safe-image.component';
 import {
   PortfolioAssetChainFilterOption,
   PortfolioFlowUtils,
@@ -132,7 +133,7 @@ export const PortfolioToAssetFilter = ({
                 .join(' ')}
               onClick={() => handleChainFilterChange(option.value)}>
               {option.img ? (
-                <img
+                <SafeImage
                   src={option.img}
                   alt=""
                   className="portfolio-to-asset-filter__chip-logo"
@@ -152,7 +153,7 @@ export const PortfolioToAssetFilter = ({
               className="portfolio-to-asset-filter__chip is-active"
               onClick={() => handleChainFilterChange(selectedQuickNetwork.value)}>
               {selectedQuickNetwork.img ? (
-                <img
+                <SafeImage
                   src={selectedQuickNetwork.img}
                   alt=""
                   className="portfolio-to-asset-filter__chip-logo"

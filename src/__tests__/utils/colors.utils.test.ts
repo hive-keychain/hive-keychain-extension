@@ -87,5 +87,26 @@ describe('colors.utils', () => {
       const img = { width: 1, height: 1 } as HTMLImageElement;
       expect(ColorsUtils.getBackgroundColorFromImage(img)).toBe('#64503c2b');
     });
+
+    it('does not draw an image whose dimensions exceed the sample cap', () => {
+      const drawImage = jest.fn();
+      jest.spyOn(document, 'createElement').mockImplementation((tagName) => {
+        if (tagName === 'canvas') {
+          return {
+            width: 0,
+            height: 0,
+            getContext: () => ({
+              drawImage,
+              getImageData: jest.fn(),
+            }),
+          } as unknown as HTMLCanvasElement;
+        }
+        return originalCreateElement(tagName);
+      });
+
+      const img = { naturalWidth: 100000, naturalHeight: 100000 } as HTMLImageElement;
+      expect(ColorsUtils.getBackgroundColorFromImage(img)).toBe('#0000002b');
+      expect(drawImage).not.toHaveBeenCalled();
+    });
   });
 });

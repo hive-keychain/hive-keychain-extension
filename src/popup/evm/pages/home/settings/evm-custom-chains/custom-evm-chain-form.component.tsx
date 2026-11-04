@@ -8,7 +8,10 @@ import {
 } from '@common-ui/custom-select/custom-select.component';
 import { InputType } from '@common-ui/input/input-type.enum';
 import InputComponent from '@common-ui/input/input.component';
-import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
+import {
+  EvmTransactionType,
+  isBlobOrDelegationTransactionType,
+} from '@popup/evm/interfaces/evm-transactions.interface';
 import { ChainListOrgUtils } from '@popup/evm/utils/chain-list-org.utils';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import {
@@ -18,9 +21,11 @@ import {
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import React, { useEffect, useRef, useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
+import { SafeImage } from 'src/common-ui/safe-image/safe-image.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
+import { ImageUrlUtils } from 'src/utils/image-url.utils';
 export const normalizeEvmChainIdInput = (input: string): string => {
   const trimmed = input.trim();
   if (/^0x[0-9a-fA-F]+$/.test(trimmed)) {
@@ -47,8 +52,6 @@ const TX_TYPE_ORDER: EvmTransactionType[] = [
   EvmTransactionType.LEGACY,
   EvmTransactionType.EIP_155,
   EvmTransactionType.EIP_1559,
-  EvmTransactionType.EIP_4844,
-  EvmTransactionType.EIP_7702,
 ];
 
 const TX_TYPE_LABEL_KEY: Record<EvmTransactionType, string> = {
@@ -67,6 +70,9 @@ const getTxTypeOptionLabel = (t: EvmTransactionType): string => {
 };
 
 const parseTxType = (raw: string): EvmTransactionType => {
+  if (isBlobOrDelegationTransactionType(raw)) {
+    return EvmTransactionType.EIP_1559;
+  }
   const v = raw as EvmTransactionType;
   return TX_TYPE_ORDER.includes(v) ? v : EvmTransactionType.LEGACY;
 };
@@ -178,9 +184,7 @@ export const CustomEvmChainForm = ({
   chainIdInputRef.current = chainIdInput;
   const lastPrefilledChainIdRef = useRef<string | null>(null);
 
-  const logoTrimmed = logo.trim();
-  const logoPreviewSrc =
-    logoTrimmed && isValidRpcUrl(logoTrimmed) ? logoTrimmed : undefined;
+  const logoPreviewSrc = ImageUrlUtils.getSafeImageUrl(logo);
 
   useEffect(() => {
     setLogoPreviewErrored(false);
@@ -348,6 +352,10 @@ export const CustomEvmChainForm = ({
         reportError('evm_custom_chains_error_symbol');
         return;
       }
+      if (logo.trim() && !ImageUrlUtils.getSafeImageUrl(logo)) {
+        reportError('evm_image_url_error_invalid');
+        return;
+      }
     }
 
     const cleanedRpcs = isEdit
@@ -429,7 +437,7 @@ export const CustomEvmChainForm = ({
         logo:
           isDefaultChain && chainToEdit
             ? (chainToEdit.logo ?? '')
-            : logo.trim(),
+            : (ImageUrlUtils.getSafeImageUrl(logo) ?? ''),
         testnet: isDefaultChain && chainToEdit ? !!chainToEdit.testnet : testnet,
         rpcs:
           isEdit && chainToEdit
@@ -559,7 +567,7 @@ export const CustomEvmChainForm = ({
           />
         </div>
         {logoPreviewSrc && !logoPreviewErrored && (
-          <img
+          <SafeImage
             className="add-custom-evm-chain-form__logo-preview"
             src={logoPreviewSrc}
             alt=""

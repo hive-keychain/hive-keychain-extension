@@ -1,4 +1,5 @@
 import {
+  coerceWalletTransactionType,
   EvmTransactionType,
   ProviderTransactionData,
 } from '@popup/evm/interfaces/evm-transactions.interface';
@@ -608,6 +609,7 @@ const estimate = async (
   gasLimit?: number,
   transactionData?: ProviderTransactionData,
 ): Promise<FullGasFeeEstimation> => {
+  type = coerceWalletTransactionType(type);
   let estimates;
   try {
     estimates = await getGasFeeEstimations(chain);
@@ -679,11 +681,12 @@ const createDAppSuggestionFromTransactionData = async (
     transactionData.gasLimit = gasLimit;
   }
   const gasLimitToUse = Number(transactionData.gasLimit);
+  const transactionType = coerceWalletTransactionType(transactionData.type);
 
   let maxFee: Decimal;
   let estimatedFee: Decimal = new Decimal(0);
 
-  switch (transactionData.type) {
+  switch (transactionType) {
     case EvmTransactionType.EIP_1559: {
       maxFee = new Decimal(Number(transactionData.maxFeePerGas!)).div(
         EvmFormatUtils.GWEI,
@@ -714,10 +717,6 @@ const createDAppSuggestionFromTransactionData = async (
       estimatedFee = maxFee;
       break;
     }
-    case EvmTransactionType.EIP_4844: {
-      maxFee = new Decimal(1); // TODO fix
-      break;
-    }
   }
 
   maxFee = maxFee!.mul(Decimal.div(gasLimitToUse, 1000000)).div(1000);
@@ -744,7 +743,7 @@ const createDAppSuggestionFromTransactionData = async (
   }
 
   return {
-    type: transactionData.type,
+    type: transactionType,
     gasLimit: new Decimal(gasLimitToUse),
     gasPriceInGwei: new Decimal(Number(transactionData.gasPrice)).div(
       EvmFormatUtils.GWEI,

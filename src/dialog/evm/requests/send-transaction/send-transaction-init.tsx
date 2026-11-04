@@ -12,6 +12,7 @@ import {
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmAccountOrPublic } from '@popup/evm/interfaces/wallet.interface';
 import { EvmTokenLogo } from '@popup/evm/pages/home/evm-token-logo/evm-token-logo.component';
+import { SafeImage } from 'src/common-ui/safe-image/safe-image.component';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
 import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
@@ -924,7 +925,7 @@ export async function runSendTransactionInit(
                 transactionConfirmationFields.otherFields.push({
                   name: '',
                   type: EvmInputDisplayType.IMAGE,
-                  value: <img src={src} />,
+                  value: <SafeImage src={src} />,
                 });
               }
             }

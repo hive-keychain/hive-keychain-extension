@@ -49,6 +49,7 @@ import Decimal from 'decimal.js';
 import { ethers } from 'ethers';
 import { KeychainApi } from 'src/api/keychain';
 import FormatUtils from 'src/utils/format.utils';
+import { ImageUrlUtils } from 'src/utils/image-url.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -101,6 +102,14 @@ const normalizeOptionalCoingeckoId = (value: string | undefined) => {
   return normalizedValue?.length ? normalizedValue : undefined;
 };
 
+const getPersistedImageUrl = (logo?: string) => {
+  if (!logo?.trim()) {
+    return logo ?? '';
+  }
+
+  return ImageUrlUtils.getSafeImageUrl(logo) ?? '';
+};
+
 const isNativeTokenPlaceholderAddress = (address?: string) =>
   address?.trim().toLowerCase() === NATIVE_TOKEN_PLACEHOLDER_ADDRESS;
 
@@ -127,7 +136,7 @@ const buildFallbackNativeTokenInfo = (
   type: EVMSmartContractType.NATIVE,
   name: chain.name,
   symbol: chain.mainToken,
-  logo: chain.logo ?? '',
+  logo: getPersistedImageUrl(chain.logo),
   chainId: chain.chainId,
   backgroundColor: '',
   coingeckoId: chain.nativeCoinId ?? '',
@@ -153,7 +162,11 @@ const normalizeCustomTokenMetadata = (
     (metadata as EvmCustomTokenMetadataErc20).type ===
       EVMSmartContractType.ERC20
   ) {
-    return metadata as EvmCustomTokenMetadataErc20;
+    const erc20Metadata = metadata as EvmCustomTokenMetadataErc20;
+    return {
+      ...erc20Metadata,
+      logo: getPersistedImageUrl(erc20Metadata.logo),
+    };
   }
   const legacy = metadata as LegacyEvmCustomTokenMetadata;
   if (legacy.erc20) {
@@ -162,7 +175,7 @@ const normalizeCustomTokenMetadata = (
       name: legacy.erc20.name,
       symbol: legacy.erc20.symbol,
       decimals: legacy.erc20.decimals,
-      logo: legacy.erc20.logo,
+      logo: getPersistedImageUrl(legacy.erc20.logo),
       coingeckoId: normalizeOptionalCoingeckoId(legacy.erc20.coingeckoId),
     };
   }
@@ -195,7 +208,7 @@ const buildCustomErc20TokenInfo = (
   name: metadata.name.trim(),
   symbol: metadata.symbol.trim(),
   decimals: metadata.decimals,
-  logo: metadata.logo?.trim() ?? '',
+  logo: getPersistedImageUrl(metadata.logo),
   chainId: chain.chainId,
   contractAddress: normalizeCustomTokenAddress(address),
   backgroundColor: '',
@@ -965,7 +978,7 @@ const getMainTokenInfo = async (
           type: EVMSmartContractType.NATIVE,
           name: response.metadata.name,
           symbol: response.metadata.symbol,
-          logo: typeof logoUrl === 'string' ? logoUrl : '',
+          logo: typeof logoUrl === 'string' ? getPersistedImageUrl(logoUrl) : '',
           chainId: chain.chainId,
           backgroundColor: '',
           coingeckoId: '',
@@ -1353,6 +1366,7 @@ const getCustomTokens = async (chain: EvmChain, walletAddress: string) => {
 
   const dedupedTokens: EvmCustomToken[] = [];
   const seen = new Set<string>();
+  let droppedUnsafeLogo = false;
 
   for (const token of tokens) {
     const normalizedAddress = normalizeCustomTokenAddress(token.address);
@@ -1361,13 +1375,30 @@ const getCustomTokens = async (chain: EvmChain, walletAddress: string) => {
       continue;
     }
 
-    dedupedTokens.push(
-      normalizeCustomToken({
-        ...token,
-        address: normalizedAddress,
-      }),
-    );
+    const normalizedToken = normalizeCustomToken({
+      ...token,
+      address: normalizedAddress,
+    });
+    const storedLogo =
+      token.metadata && 'logo' in token.metadata ? token.metadata.logo : '';
+    const safeLogo =
+      normalizedToken.metadata && 'logo' in normalizedToken.metadata
+        ? normalizedToken.metadata.logo
+        : '';
+    if ((storedLogo ?? '') !== (safeLogo ?? '')) {
+      droppedUnsafeLogo = true;
+    }
+
+    dedupedTokens.push(normalizedToken);
     seen.add(key);
+  }
+
+  if (droppedUnsafeLogo) {
+    savedCustomTokens[chain.chainId] = dedupedTokens;
+    await LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.EVM_CUSTOM_TOKENS,
+      savedCustomTokens,
+    );
   }
 
   return dedupedTokens;

@@ -5,6 +5,7 @@ import {
   TransactionConfirmationField,
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { EVMSmartContractType } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
 
 const MAX_UINT256 = (BigInt(1) << BigInt(256)) - BigInt(1);
 const MAX_UINT160 = (BigInt(1) << BigInt(160)) - BigInt(1);
@@ -478,14 +479,20 @@ const classifyTypedData = (
   return null;
 };
 
+const formatWarningLabel = (value: string) => {
+  return toAddress(value) ? EvmFormatUtils.formatAddress(value) : value;
+};
+
 const buildWarning = (
   entry: SpendingPermissionEntry,
 ): EvmTransactionWarning | undefined => {
   if (!entry.requiresWarning) {
     return undefined;
   }
-  const spender = entry.spender ?? '';
-  const asset = entry.tokenSymbol || entry.tokenAddress || '';
+  const spender = formatWarningLabel(entry.spender ?? '');
+  const asset = formatWarningLabel(
+    entry.tokenSymbol || entry.tokenAddress || '',
+  );
   if (entry.kind === 'operator-approval') {
     return {
       ignored: false,

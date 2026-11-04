@@ -639,4 +639,65 @@ describe('GasFeeUtils', () => {
 
     expect(result.suggested?.gasLimit.toNumber()).toBe(650_000);
   });
+
+  it('estimates a type 0x3 request on the EIP-1559 path', async () => {
+    jest.spyOn(EthersUtils, 'getGasLimit').mockResolvedValue(21000);
+    (EvmLightNodeApi.get as jest.Mock).mockResolvedValue({
+      low: {
+        suggestedMaxPriorityFeePerGas: '1',
+        suggestedMaxFeePerGas: '20',
+        maxWaitTimeEstimate: 30000,
+      },
+      medium: {
+        suggestedMaxPriorityFeePerGas: '1.5',
+        suggestedMaxFeePerGas: '25',
+        maxWaitTimeEstimate: 15000,
+      },
+      high: {
+        suggestedMaxPriorityFeePerGas: '2',
+        suggestedMaxFeePerGas: '30',
+        maxWaitTimeEstimate: 5000,
+      },
+      estimatedBaseFee: '10',
+      latestPriorityFeeRange: ['1', '2'],
+      historicalPriorityFeeRange: ['1', '3'],
+      historicalBaseFeeRange: ['8', '12'],
+      baseFeeTrend: 'up',
+      priorityFeeTrend: 'down',
+    });
+
+    const chain = {
+      chainId: '0x1',
+      defaultTransactionType: EvmTransactionType.EIP_4844,
+      logo: '',
+      mainToken: 'ETH',
+      name: 'Ethereum',
+      rpcs: [],
+      type: ChainType.EVM,
+    } as EvmChain;
+    const transactionData: ProviderTransactionData = {
+      data: '0x',
+      from: '0x0000000000000000000000000000000000000001',
+      gasLimit: 21000,
+      maxFeePerGas: '20000000000',
+      maxPriorityFeePerGas: '1000000000',
+      to: '0x0000000000000000000000000000000000000002',
+      type: EvmTransactionType.EIP_4844,
+      value: '0',
+    };
+
+    const result = await GasFeeUtils.estimate(
+      chain,
+      transactionData.from,
+      EvmTransactionType.EIP_4844,
+      2500,
+      21000,
+      transactionData,
+    );
+
+    expect(result.low?.type).toBe(EvmTransactionType.EIP_1559);
+    expect(result.low?.maxFeePerGasInGwei.toString()).toBe('20');
+    expect(result.suggestedByDApp?.type).toBe(EvmTransactionType.EIP_1559);
+    expect(transactionData.type).toBe(EvmTransactionType.EIP_4844);
+  });
 });

@@ -31,6 +31,7 @@ import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { RequestPayloadUtils } from 'src/utils/request-payload.utils';
+import { ImageUrlUtils } from 'src/utils/image-url.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
 if (!process.env.IS_FIREFOX) {
@@ -110,6 +111,11 @@ export class EvmRequestHandler {
       origin: canonicalOrigin,
       domain: canonicalDomain,
       protocol: new URL(canonicalOrigin).protocol,
+      logo:
+        ImageUrlUtils.getSafeImageUrlForOrigin(
+          msg.dappInfo.logo,
+          canonicalOrigin,
+        ) ?? '',
       requestSource: source,
     };
     const payloadSize = RequestPayloadUtils.getRequestPayloadSize({

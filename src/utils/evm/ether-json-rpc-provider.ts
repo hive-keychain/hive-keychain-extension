@@ -18,9 +18,12 @@ export type EtherJsonRpcProviderFailoverOptions = {
   failover: EtherJsonRpcFailoverContext;
 };
 
+const RPC_REQUEST_TIMEOUT_MS = 15_000;
+
 /** Single HTTP attempt per RPC call; avoids ethers' default 429 backoff on the same URL. */
 export const createRpcFetchRequest = (url: string): FetchRequest => {
   const connection = new FetchRequest(url);
+  connection.timeout = RPC_REQUEST_TIMEOUT_MS;
   connection.setThrottleParams({ maxAttempts: 1 });
   return connection;
 };

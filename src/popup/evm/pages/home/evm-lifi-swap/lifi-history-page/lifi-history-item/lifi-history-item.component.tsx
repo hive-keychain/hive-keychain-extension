@@ -7,6 +7,7 @@ import {
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
+import { SafeImage } from 'src/common-ui/safe-image/safe-image.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import FormatUtils from 'src/utils/format.utils';
 
@@ -140,7 +141,7 @@ const LiFiHistoryItemComponent = ({
           <div className="swap-details-content">
             <div className="token token-from">
               <div className="logos">
-                <img
+                <SafeImage
                   src={historyItem.sending?.token?.logoURI}
                   className="token-logo"
                 />
@@ -160,7 +161,7 @@ const LiFiHistoryItemComponent = ({
                 <span className="approximate">~</span>
               )}
               <div className="logos">
-                <img
+                <SafeImage
                   src={historyItem.receiving?.token?.logoURI}
                   className="token-logo"
                 />

@@ -325,3 +325,17 @@ it('tracks a speed-up receipt under the original batch ID', async () => {
     receipts: [{ transactionHash: hash }],
   });
 });
+
+it('unblocks the next nonce after a committed speed-up nonce was already consumed', async () => {
+  const original = await commitBatch('batch', 1);
+  await Submissions.markBroadcast(original.token);
+  const replacement = await Submissions.reserve(wallet.address, '0x1', 1, 0);
+  await Submissions.commit(replacement.token, [await sign(0, 2)]);
+  provider.getTransactionCount.mockResolvedValue(1);
+
+  await Submissions.reconcile();
+
+  await expect(
+    Submissions.reserve(wallet.address, '0x1', 1),
+  ).resolves.toMatchObject({ nonce: 1 });
+});

@@ -1,4 +1,5 @@
 import React from 'react';
+import { SafeImage } from 'src/common-ui/safe-image/safe-image.component';
 import {
   DApp,
   DAppCategory,
@@ -24,13 +25,13 @@ export const EcosystemCategory = ({ category }: EcosystemCategoryProps) => {
             onClick={() => navigateToDapp(dapp)}
             key={`${dapp.name}-${index}`}>
             {!!dapp.chainLogo && (
-              <img
+              <SafeImage
                 className="corner-logo"
                 src={dapp.chainLogo}
                 alt={`${dapp.name} chain logo`}
               />
             )}
-            <img className="logo" src={dapp.icon} alt={dapp.name} />
+            <SafeImage className="logo" src={dapp.icon} alt={dapp.name} />
             <div className="label">{dapp.name}</div>
             <div className="description">{dapp.description}</div>
           </div>

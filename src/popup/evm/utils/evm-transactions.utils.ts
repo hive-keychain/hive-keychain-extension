@@ -8,7 +8,10 @@ import {
   EvmPendingTransactionDetails,
   EvmTransactionDisplayContext,
   EvmTransactionType,
+  hasBlobOrDelegationFields,
+  isBlobOrDelegationTransactionType,
   ProviderTransactionData,
+  UNSUPPORTED_BLOB_OR_DELEGATION_TRANSACTION_MESSAGE,
   UserCanceledTransactions,
 } from '@popup/evm/interfaces/evm-transactions.interface';
 import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
@@ -156,16 +159,23 @@ const persistPendingTransactions = async (
   );
 };
 
+const coerceSignedTransactionType = (type: number | undefined) => {
+  if (isBlobOrDelegationTransactionType(type)) {
+    return Number(EvmTransactionType.EIP_1559);
+  }
+  return type;
+};
+
 const getTransactionType = (
   requestType: TransactionRequest['type'],
   gasFee?: GasFeeEstimationBase,
 ) => {
   if (gasFee?.type !== undefined) {
-    return Number(gasFee.type);
+    return coerceSignedTransactionType(Number(gasFee.type));
   }
 
   if (requestType != null) {
-    return Number(requestType);
+    return coerceSignedTransactionType(Number(requestType));
   }
 
   return undefined;
@@ -235,13 +245,13 @@ const providerTransactionDataFromResponse = (
   return out;
 };
 
-const trackPendingTransactionConfirmation = async (
+const trackPendingTransactionConfirmation = (
   transactionResponse: TransactionResponse,
   chain: EvmChain,
-) => {
+): void => {
   switch ((global as any).contextType) {
     case ContextType.POPUP: {
-      await CommunicationUtils.runtimeSendMessage({
+      void CommunicationUtils.runtimeSendMessage({
         command: BackgroundCommand.WAIT_FOR_EVM_TRANSACTION_CONFIRMATION,
         value: { transactionResponse, chain },
       });
@@ -264,12 +274,22 @@ const send = async (
   forceNounce?: number,
   displayContext?: EvmTransactionDisplayContext,
 ) => {
+  if (hasBlobOrDelegationFields(request)) {
+    throw new Error(UNSUPPORTED_BLOB_OR_DELEGATION_TRANSACTION_MESSAGE);
+  }
+  const transactionType = getTransactionType(request.type, gasFee);
+  if (isBlobOrDelegationTransactionType(transactionType)) {
+    throw new Error(UNSUPPORTED_BLOB_OR_DELEGATION_TRANSACTION_MESSAGE);
+  }
   const chain = await ChainUtils.getChain<EvmChain>(chainId);
   const walletAddress = EvmSignerUtils.getWalletAddress(wallet);
-  const transactionType = getTransactionType(request.type, gasFee);
   let feeData = {};
   if (gasFee)
-    switch (gasFee.type) {
+    switch (
+      isBlobOrDelegationTransactionType(gasFee.type)
+        ? EvmTransactionType.EIP_1559
+        : gasFee.type
+    ) {
       case EvmTransactionType.EIP_1559: {
         feeData = {
           maxPriorityFeePerGas: getWeiFromGwei(gasFee.priorityFeeInGwei!),
@@ -330,7 +350,17 @@ const send = async (
     throw error;
   }
   // Keep committed bytes on ambiguous RPC failure; recovery rebroadcasts this exact hash.
-  const transactionResponse = await provider.broadcastTransaction(raw);
+  let transactionResponse: TransactionResponse;
+  try {
+    transactionResponse = await provider.broadcastTransaction(raw);
+  } catch (error) {
+    await EvmSubmissionClientUtils.send({ action: 'reconcile' });
+    throw error;
+  }
+  await EvmSubmissionClientUtils.send({
+    action: 'broadcast',
+    token: reservation.token,
+  });
   if (transactionResponse) {
     const displayItem =
       await EvmTransactionDisplayUtils.buildDisplayItemFromBroadcast(
@@ -346,10 +376,6 @@ const send = async (
       displayItem,
     );
   }
-  await EvmSubmissionClientUtils.send({
-    action: 'broadcast',
-    token: reservation.token,
-  });
   return transactionResponse;
 };
 
@@ -404,7 +430,7 @@ const addPendingTransaction = async (
   });
 
   await persistPendingTransactions(transactions);
-  await trackPendingTransactionConfirmation(transactionResponse, chain);
+  trackPendingTransactionConfirmation(transactionResponse, chain);
 };
 
 const deleteFromPendingTransactions = async (txHash: string) => {

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { SafeImage } from 'src/common-ui/safe-image/safe-image.component';
 import { ColorsUtils } from 'src/utils/colors.utils';
+import { ImageUrlUtils } from 'src/utils/image-url.utils';
 
 import { getChainInitials } from './chain-logo.utils';
 
@@ -11,21 +13,21 @@ export interface ChainLogoProps {
 
 export const ChainLogo = ({ chainName, logoUri, className }: ChainLogoProps) => {
   const [imgFailed, setImgFailed] = useState(false);
-  const trimmedUri = logoUri?.trim() ?? '';
-  const showImage = trimmedUri.length > 0 && !imgFailed;
+  const safeLogoUri = ImageUrlUtils.getSafeImageUrl(logoUri) ?? '';
+  const showImage = safeLogoUri.length > 0 && !imgFailed;
 
   useEffect(() => {
     setImgFailed(false);
-  }, [trimmedUri]);
+  }, [safeLogoUri]);
 
   const initials = getChainInitials(chainName);
   const color = ColorsUtils.stringToColor(chainName || initials);
 
   if (showImage) {
     return (
-      <img
+      <SafeImage
         className={className}
-        src={trimmedUri}
+        src={safeLogoUri}
         alt=""
         onError={() => setImgFailed(true)}
       />

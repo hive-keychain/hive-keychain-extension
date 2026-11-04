@@ -11,6 +11,7 @@ import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { getOriginFromUrl } from 'src/utils/browser-origin.utils';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import { ImageUrlUtils } from 'src/utils/image-url.utils';
 import {
   areEvmAccountsEqual,
   areEvmChainIdsEqual,
@@ -23,6 +24,7 @@ type OriginScopedRoutedEvmEvent = RoutedEvmEvent & {
 };
 
 type OriginChainWhitelist = Record<string, string[]>;
+const MAX_PERSISTED_DAPP_LOGOS = 100;
 
 export const getAccountsForOrigin = async (origin: string): Promise<string[]> => {
   return EvmWalletUtils.getConnectedWallets(origin);
@@ -91,11 +93,14 @@ export const setAccountsForOrigin = async (
 
 /** Merges `{ [domain]: logoUrl }` when at least one account is connected. */
 export const persistEvmDappLogoForDomain = async (
-  dappInfo: Pick<EvmDappInfo, 'domain' | 'logo'>,
+  dappInfo: Pick<EvmDappInfo, 'domain' | 'logo' | 'origin'>,
   connectedAccountCount: number,
 ): Promise<void> => {
   const domain = dappInfo.domain?.trim();
-  const logo = dappInfo.logo?.trim();
+  const logo = ImageUrlUtils.getSafeImageUrlForOrigin(
+    dappInfo.logo,
+    dappInfo.origin,
+  );
   if (!domain || !logo || connectedAccountCount < 1) {
     return;
   }
@@ -109,7 +114,10 @@ export const persistEvmDappLogoForDomain = async (
     !Array.isArray(stored)
       ? (stored as Record<string, string>)
       : {};
-  const next: Record<string, string> = { ...base, [domain]: logo };
+  const nextEntries = Object.entries({ ...base, [domain]: logo }).slice(
+    -MAX_PERSISTED_DAPP_LOGOS,
+  );
+  const next: Record<string, string> = Object.fromEntries(nextEntries);
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.EVM_DAPPS_LOGO,
     next,

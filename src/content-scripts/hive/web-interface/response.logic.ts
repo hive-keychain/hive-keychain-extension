@@ -20,6 +20,7 @@ import { CommunicationUtils } from 'src/utils/communication.utils';
 import KeychainifyUtils from 'src/utils/keychainify.utils';
 import Logger from 'src/utils/logger.utils';
 import { RequestPayloadUtils } from 'src/utils/request-payload.utils';
+import { ImageUrlUtils } from 'src/utils/image-url.utils';
 
 export const cancelPreviousRequest = (prevReq: KeychainRequest) => {
   const response = {
@@ -68,15 +69,20 @@ export const sendEvmRequestToBackground = async (
   chrome: typeof globalThis.chrome,
 ) => {
   const link = document.querySelector("link[rel='icon']");
+  const origin = getWindowOrigin();
 
   const message = {
     command: BackgroundCommand.SEND_EVM_REQUEST,
     request: req,
     dappInfo: {
-      origin: getWindowOrigin(),
+      origin,
       domain: getWindowHostname(),
       protocol: window.location.protocol,
-      logo: (link as any)?.href,
+      logo:
+        ImageUrlUtils.getSafeImageUrlForOrigin(
+          (link as HTMLLinkElement | null)?.href,
+          origin,
+        ) ?? '',
     },
     request_id: req.request_id,
   } as KeychainEvmRequestWrapper;
