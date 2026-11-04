@@ -969,4 +969,124 @@ describe('initEvmRequestHandler', () => {
     );
     expect(evmRequestWithConfirmationMock).not.toHaveBeenCalled();
   });
+
+  it.each([
+    ['type 0x3', { type: '0x3' }],
+    ['type 0x4', { type: '0x4', authorizationList: [] }],
+    [
+      'an authorization list on a type 0x2 transaction',
+      { type: '0x2', authorizationList: [{ address: '0x1' }] },
+    ],
+  ])(
+    'rejects a blob or delegation send (%s) before opening the dialog',
+    async (_label, transaction) => {
+      const request = {
+        request_id: 48,
+        method: EvmRequestMethod.SEND_TRANSACTION,
+        params: [
+          {
+            from: '0x0000000000000000000000000000000000000001',
+            to: '0x0000000000000000000000000000000000000001',
+            value: '0x0',
+            ...transaction,
+          },
+        ],
+        chainId: '0x1',
+      } as any;
+      const dappInfo = {
+        origin: 'https://example.app',
+        domain: 'example.app',
+        protocol: 'https:',
+        logo: '',
+      };
+      const requestHandler = {
+        accounts: [],
+        saveInLocalStorage: jest.fn(),
+      } as any;
+
+      await initEvmRequestHandler(request, 7, dappInfo, requestHandler);
+
+      expect(handleEvmErrorMock).toHaveBeenCalledWith(
+        requestHandler,
+        7,
+        request,
+        {
+          code: 4200,
+          message:
+            'Keychain does not support EIP-4844 or EIP-7702 transactions',
+        },
+        'Keychain does not support EIP-4844 or EIP-7702 transactions',
+        [],
+        'https://example.app',
+        true,
+        undefined,
+      );
+      expect(evmRequestWithConfirmationMock).not.toHaveBeenCalled();
+      expect(evmRequestWithoutConfirmationMock).not.toHaveBeenCalled();
+    },
+  );
+
+  it('opens confirmation for a normal EIP-1559 send', async () => {
+    const { ChainUtils } = await import('@popup/multichain/utils/chain.utils');
+    const { EvmChainUtils } = await import('@popup/evm/utils/evm-chain.utils');
+    const MkModule = (await import('@background/hive/modules/mk.module'))
+      .default;
+    const LocalStorageUtils = (await import('src/utils/localStorage.utils'))
+      .default;
+    const { EvmWalletUtils } = await import('@popup/evm/utils/wallet.utils');
+    const { DappRequestUtils } = await import('src/utils/dapp-request.utils');
+    const from = '0x0000000000000000000000000000000000000001';
+    (ChainUtils.getDefaultChains as jest.Mock).mockResolvedValue([
+      { chainId: '0x1', type: 'EVM', name: 'Ethereum' },
+    ]);
+    (ChainUtils.getAllSetupChainsForType as jest.Mock).mockResolvedValue([
+      { chainId: '0x1', type: 'EVM', name: 'Ethereum' },
+    ]);
+    (EvmChainUtils.getLastEvmChainIdForOrigin as jest.Mock).mockResolvedValue(
+      '0x1',
+    );
+    (MkModule.getMk as jest.Mock).mockResolvedValue('mk');
+    (LocalStorageUtils.getValueFromLocalStorage as jest.Mock).mockResolvedValue([
+      { address: from },
+    ]);
+    (EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
+      [],
+    );
+    (EvmWalletUtils.getConnectedWallets as jest.Mock).mockResolvedValue([from]);
+    (DappRequestUtils.isDappLocked as jest.Mock).mockResolvedValue(false);
+
+    const request = {
+      request_id: 49,
+      method: EvmRequestMethod.SEND_TRANSACTION,
+      params: [
+        {
+          from,
+          to: from,
+          value: '0x1',
+          type: '0x2',
+        },
+      ],
+      chainId: '0x1',
+    } as any;
+    const dappInfo = {
+      origin: 'https://example.app',
+      domain: 'example.app',
+      protocol: 'https:',
+      logo: '',
+    };
+    const requestHandler = {
+      accounts: [],
+      saveInLocalStorage: jest.fn(),
+    } as any;
+
+    await initEvmRequestHandler(request, 7, dappInfo, requestHandler);
+
+    expect(handleEvmErrorMock).not.toHaveBeenCalled();
+    expect(evmRequestWithConfirmationMock).toHaveBeenCalledWith(
+      requestHandler,
+      7,
+      request,
+      dappInfo,
+    );
+  });
 });

@@ -504,4 +504,47 @@ describe('CustomEvmChainForm', () => {
 
     expect(ChainUtils.getChainFromDefaultChains).not.toHaveBeenCalled();
   });
+
+  it('offers legacy, EIP-155, and EIP-1559 when editing and rewrites a saved blob or delegation default', async () => {
+    const onSubmit = jest.fn().mockResolvedValue(undefined);
+
+    render(
+      <CustomEvmChainForm
+        onCancel={jest.fn()}
+        onSubmit={onSubmit}
+        chainToEdit={{
+          type: ChainType.EVM,
+          chainId: '0x539',
+          name: 'Local Chain',
+          mainToken: 'ETH',
+          defaultTransactionType: EvmTransactionType.EIP_7702,
+          rpcs: [{ url: 'https://rpc.local', isDefault: true }],
+          testnet: false,
+          isCustom: true,
+        }}
+      />,
+    );
+
+    fireEvent.click(
+      screen.getByRole('combobox', {
+        name: 'evm_custom_chains_field_default_tx_type',
+      }),
+    );
+
+    expect(screen.getByTestId('custom-select-item-0x0')).toBeTruthy();
+    expect(screen.getByTestId('custom-select-item-0x1')).toBeTruthy();
+    expect(screen.getByTestId('custom-select-item-0x2')).toBeTruthy();
+    expect(screen.queryByTestId('custom-select-item-0x3')).toBeNull();
+    expect(screen.queryByTestId('custom-select-item-0x4')).toBeNull();
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('custom-evm-chain-submit'));
+    });
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        defaultTransactionType: EvmTransactionType.EIP_1559,
+      }),
+    );
+  });
 });

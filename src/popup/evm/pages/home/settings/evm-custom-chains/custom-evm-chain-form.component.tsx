@@ -8,7 +8,10 @@ import {
 } from '@common-ui/custom-select/custom-select.component';
 import { InputType } from '@common-ui/input/input-type.enum';
 import InputComponent from '@common-ui/input/input.component';
-import { EvmTransactionType } from '@popup/evm/interfaces/evm-transactions.interface';
+import {
+  EvmTransactionType,
+  isBlobOrDelegationTransactionType,
+} from '@popup/evm/interfaces/evm-transactions.interface';
 import { ChainListOrgUtils } from '@popup/evm/utils/chain-list-org.utils';
 import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
 import {
@@ -47,8 +50,6 @@ const TX_TYPE_ORDER: EvmTransactionType[] = [
   EvmTransactionType.LEGACY,
   EvmTransactionType.EIP_155,
   EvmTransactionType.EIP_1559,
-  EvmTransactionType.EIP_4844,
-  EvmTransactionType.EIP_7702,
 ];
 
 const TX_TYPE_LABEL_KEY: Record<EvmTransactionType, string> = {
@@ -67,6 +68,9 @@ const getTxTypeOptionLabel = (t: EvmTransactionType): string => {
 };
 
 const parseTxType = (raw: string): EvmTransactionType => {
+  if (isBlobOrDelegationTransactionType(raw)) {
+    return EvmTransactionType.EIP_1559;
+  }
   const v = raw as EvmTransactionType;
   return TX_TYPE_ORDER.includes(v) ? v : EvmTransactionType.LEGACY;
 };

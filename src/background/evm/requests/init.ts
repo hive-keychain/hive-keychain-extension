@@ -30,6 +30,10 @@ import {
   getEvmProviderRpcFullError,
   getUnrecognizedChainIdError,
 } from '@interfaces/evm-provider.interface';
+import {
+  hasUnsupportedTransactionPayload,
+  UNSUPPORTED_BLOB_OR_DELEGATION_TRANSACTION_MESSAGE,
+} from '@popup/evm/interfaces/evm-transactions.interface';
 import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import {
@@ -101,6 +105,28 @@ export const initEvmRequestHandler = async (
         dappInfo.requestSource,
       );
     }
+    return;
+  }
+
+  if (
+    request.method === EvmRequestMethod.SEND_TRANSACTION &&
+    hasUnsupportedTransactionPayload(request.params?.[0])
+  ) {
+    const providerError = {
+      code: 4200,
+      message: UNSUPPORTED_BLOB_OR_DELEGATION_TRANSACTION_MESSAGE,
+    };
+    await handleEvmError(
+      requestHandler,
+      tab!,
+      request,
+      providerError,
+      providerError.message,
+      [],
+      dappInfo.origin,
+      true,
+      dappInfo.requestSource,
+    );
     return;
   }
 

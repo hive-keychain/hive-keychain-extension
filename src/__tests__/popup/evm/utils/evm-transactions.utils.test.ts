@@ -673,4 +673,57 @@ describe('evm transactions utils', () => {
     expect(transactionRequest.maxFeePerGas).toBe(BigInt('30000000000'));
     expect(transactionRequest.gasPrice).toBeUndefined();
   });
+
+  it('rejects an authorization list before reserving a nonce', async () => {
+    await expect(
+      EvmTransactionsUtils.send(
+        { address: walletAddress } as any,
+        {
+          to: '0x0000000000000000000000000000000000000001',
+          value: '0x0',
+          data: '0x',
+          type: EvmTransactionType.EIP_1559,
+          authorizationList: [],
+        } as any,
+        buildGasFee(EvmTransactionType.EIP_1559),
+        chain.chainId,
+      ),
+    ).rejects.toThrow(
+      'Keychain does not support EIP-4844 or EIP-7702 transactions',
+    );
+
+    expect(EvmSubmissionClientUtils.reserve).not.toHaveBeenCalled();
+    expect(EvmSignerUtils.signTransaction).not.toHaveBeenCalled();
+  });
+
+  it('signs a type 0x4 request with a selected EIP-1559 fee as EIP-1559', async () => {
+    provider.getTransactionCount.mockResolvedValue(0);
+    const sendTransactionSpy = jest.mocked(EvmSignerUtils.signTransaction);
+    provider.broadcastTransaction.mockResolvedValue({
+      hash: '0xcoerced',
+      nonce: 0,
+      chainId: chain.chainId,
+      toJSON: () => ({
+        hash: '0xcoerced',
+        nonce: 0,
+        chainId: chain.chainId,
+      }),
+    } as any);
+
+    await EvmTransactionsUtils.send(
+      { address: walletAddress } as any,
+      {
+        to: '0x0000000000000000000000000000000000000001',
+        value: '0x0',
+        data: '0x',
+        type: EvmTransactionType.EIP_7702,
+      },
+      buildGasFee(EvmTransactionType.EIP_1559),
+      chain.chainId,
+    );
+
+    const transactionRequest = sendTransactionSpy.mock.calls[0][1];
+    expect(transactionRequest.type).toBe(Number(EvmTransactionType.EIP_1559));
+    expect(transactionRequest).not.toHaveProperty('authorizationList');
+  });
 });
