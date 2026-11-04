@@ -67,7 +67,7 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
   void ensureEcosystemDappsCached();
 })();
 
-const chromeMessageHandler = async (
+const chromeMessageHandler = (
   backgroundMessage: BackgroundMessage,
   sender: chrome.runtime.MessageSender,
 ) => {
@@ -82,7 +82,7 @@ const chromeMessageHandler = async (
       vaultMessage.key !== VaultKey.__MK ||
       !RuntimeMessageSenderUtils.isInternalExtensionSender(sender)
     )
-      return;
+      return false;
   }
 
   switch (backgroundMessage.command) {
@@ -93,18 +93,18 @@ const chromeMessageHandler = async (
       return true;
     // Replace vault by persistent data storage for Firefox
     case VaultCommand.GET_VALUE:
-      if (!process.env.IS_FIREFOX) return;
+      if (!process.env.IS_FIREFOX) return false;
       return MkModule.getMk();
     case VaultCommand.SET_VALUE:
-      if (!process.env.IS_FIREFOX) return;
+      if (!process.env.IS_FIREFOX) return false;
       MkModule.saveMk(backgroundMessage.value);
       return true;
     case VaultCommand.REMOVE_VALUE:
-      if (!process.env.IS_FIREFOX) return;
+      if (!process.env.IS_FIREFOX) return false;
       MkModule.lock();
       return true;
   }
-  return true;
+  return false;
 };
 
 chrome.runtime.onMessage.addListener(chromeMessageHandler);

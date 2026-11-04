@@ -31,6 +31,22 @@ import { resolveAcceptedHiveRequest } from './requests/hive-request-dialog-edits
 import { HiveRequestsHandler } from './requests/hive-request-handler';
 import { performHiveOperation } from './requests/operations/perform-operation';
 
+const HIVE_RUNTIME_COMMANDS: ReadonlySet<BackgroundMessage['command']> =
+  new Set([
+    BackgroundCommand.IMPORT_ACCOUNTS,
+    BackgroundCommand.SAVE_RPC,
+    BackgroundCommand.SEND_REQUEST,
+    BackgroundCommand.UNLOCK_FROM_DIALOG,
+    BackgroundCommand.REGISTER_FROM_DIALOG,
+    BackgroundCommand.ACCEPT_TRANSACTION,
+    BackgroundCommand.REJECT_TRANSACTION,
+    BackgroundCommand.UPDATE_AUTOLOCK,
+    BackgroundCommand.SEND_BACK_SETTINGS,
+    BackgroundCommand.KEYLESS_KEYCHAIN,
+    BackgroundCommand.KEYLESS_KEYCHAIN_REGISTER,
+    BackgroundCommand.PING,
+  ]);
+
 /* istanbul ignore next */
 const initializeServiceWorker = async () => {
   Logger.info('Starting Hive service worker');
@@ -286,7 +302,10 @@ export const performKeylessOperation = async (
 };
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (RuntimeMessageSenderUtils.isVaultRuntimeMessage(message)) {
+  if (
+    RuntimeMessageSenderUtils.isVaultRuntimeMessage(message) ||
+    !HIVE_RUNTIME_COMMANDS.has(message?.command)
+  ) {
     return false;
   }
   return chromeMessageHandler(message, sender, sendResponse);

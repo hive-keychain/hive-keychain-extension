@@ -187,4 +187,17 @@ describe('ACCEPT_TRANSACTION stored request', () => {
       expect(sendResponse).not.toHaveBeenCalled();
     },
   );
+
+  it('does not answer EVM transaction submission messages', () => {
+    expect(
+      listener(
+        { command: BackgroundCommand.EVM_TRANSACTION_SUBMISSION },
+        {
+          id: chrome.runtime.id,
+          url: chrome.runtime.getURL('popup.html'),
+        } as chrome.runtime.MessageSender,
+        jest.fn(),
+      ),
+    ).toBe(false);
+  });
 });
