@@ -245,13 +245,13 @@ const providerTransactionDataFromResponse = (
   return out;
 };
 
-const trackPendingTransactionConfirmation = async (
+const trackPendingTransactionConfirmation = (
   transactionResponse: TransactionResponse,
   chain: EvmChain,
-) => {
+): void => {
   switch ((global as any).contextType) {
     case ContextType.POPUP: {
-      await CommunicationUtils.runtimeSendMessage({
+      void CommunicationUtils.runtimeSendMessage({
         command: BackgroundCommand.WAIT_FOR_EVM_TRANSACTION_CONFIRMATION,
         value: { transactionResponse, chain },
       });
@@ -350,7 +350,17 @@ const send = async (
     throw error;
   }
   // Keep committed bytes on ambiguous RPC failure; recovery rebroadcasts this exact hash.
-  const transactionResponse = await provider.broadcastTransaction(raw);
+  let transactionResponse: TransactionResponse;
+  try {
+    transactionResponse = await provider.broadcastTransaction(raw);
+  } catch (error) {
+    await EvmSubmissionClientUtils.send({ action: 'reconcile' });
+    throw error;
+  }
+  await EvmSubmissionClientUtils.send({
+    action: 'broadcast',
+    token: reservation.token,
+  });
   if (transactionResponse) {
     const displayItem =
       await EvmTransactionDisplayUtils.buildDisplayItemFromBroadcast(
@@ -366,10 +376,6 @@ const send = async (
       displayItem,
     );
   }
-  await EvmSubmissionClientUtils.send({
-    action: 'broadcast',
-    token: reservation.token,
-  });
   return transactionResponse;
 };
 
@@ -424,7 +430,7 @@ const addPendingTransaction = async (
   });
 
   await persistPendingTransactions(transactions);
-  await trackPendingTransactionConfirmation(transactionResponse, chain);
+  trackPendingTransactionConfirmation(transactionResponse, chain);
 };
 
 const deleteFromPendingTransactions = async (txHash: string) => {

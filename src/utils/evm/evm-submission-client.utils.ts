@@ -6,7 +6,8 @@ export type EvmSubmissionCommand =
   | { action: 'reserve'; from: string; chainId: string; forcedNonce?: number }
   | { action: 'commit'; token: string; raw: string[] }
   | { action: 'release'; token: string }
-  | { action: 'broadcast'; token: string };
+  | { action: 'broadcast'; token: string }
+  | { action: 'reconcile' };
 
 const execute = async (command: EvmSubmissionCommand) => {
   switch (command.action) {
@@ -23,6 +24,8 @@ const execute = async (command: EvmSubmissionCommand) => {
       return EvmTransactionSubmissionModule.release(command.token);
     case 'broadcast':
       return EvmTransactionSubmissionModule.markBroadcast(command.token);
+    case 'reconcile':
+      return EvmTransactionSubmissionModule.reconcile();
   }
 };
 

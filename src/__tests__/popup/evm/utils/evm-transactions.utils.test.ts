@@ -4,10 +4,14 @@ import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
 import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
 import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
+import { EvmTransactionDisplayUtils } from '@popup/evm/utils/evm-transaction-display.utils';
 import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { ContextType } from '@reference-data/context-type.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Decimal from 'decimal.js';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 import { EvmSubmissionClientUtils } from 'src/utils/evm/evm-submission-client.utils';
@@ -603,6 +607,111 @@ describe('evm transactions utils', () => {
         type: EvmUserHistoryItemType.TRANSFER_OUT,
       },
     });
+  });
+
+  it('reconciles a committed transaction when broadcast reports an expired nonce', async () => {
+    const nonceError = { code: 'NONCE_EXPIRED' };
+    provider.broadcastTransaction.mockRejectedValue(nonceError);
+
+    await expect(
+      EvmTransactionsUtils.send(
+        { address: walletAddress } as any,
+        {
+          to: '0x0000000000000000000000000000000000000001',
+          value: '0x1',
+          data: '0x',
+          type: Number(EvmTransactionType.EIP_1559),
+        },
+        buildGasFee(EvmTransactionType.EIP_1559),
+        chain.chainId,
+        0,
+      ),
+    ).rejects.toBe(nonceError);
+
+    expect(EvmSubmissionClientUtils.send).toHaveBeenLastCalledWith({
+      action: 'reconcile',
+    });
+  });
+
+  it('marks a successful broadcast before pending display tracking', async () => {
+    const displayError = new Error('display failed');
+    provider.broadcastTransaction.mockResolvedValue({
+      hash: '0xbroadcast',
+      nonce: 0,
+      chainId: chain.chainId,
+    } as any);
+    jest
+      .spyOn(EvmTransactionDisplayUtils, 'buildDisplayItemFromBroadcast')
+      .mockRejectedValue(displayError);
+
+    await expect(
+      EvmTransactionsUtils.send(
+        { address: walletAddress } as any,
+        {
+          to: '0x0000000000000000000000000000000000000001',
+          value: '0x1',
+          data: '0x',
+          type: Number(EvmTransactionType.EIP_1559),
+        },
+        buildGasFee(EvmTransactionType.EIP_1559),
+        chain.chainId,
+      ),
+    ).rejects.toThrow(displayError);
+
+    expect(EvmSubmissionClientUtils.send).toHaveBeenCalledWith({
+      action: 'broadcast',
+      token: 'reservation',
+    });
+  });
+
+  it('does not wait for background confirmation tracking after broadcast', async () => {
+    const previousContextType = (global as { contextType?: ContextType })
+      .contextType;
+    (global as { contextType?: ContextType }).contextType = ContextType.POPUP;
+    const runtimeSendMessageSpy = jest
+      .spyOn(CommunicationUtils, 'runtimeSendMessage')
+      .mockReturnValue(new Promise(() => undefined));
+    provider.broadcastTransaction.mockResolvedValue({
+      hash: '0xtracked',
+      nonce: 0,
+      chainId: chain.chainId,
+      to: '0x0000000000000000000000000000000000000001',
+      from: walletAddress,
+      data: '0x',
+      value: BigInt(1),
+      toJSON: () => ({
+        hash: '0xtracked',
+        nonce: 0,
+        chainId: chain.chainId,
+      }),
+    } as any);
+
+    try {
+      await expect(
+        EvmTransactionsUtils.send(
+          { address: walletAddress } as any,
+          {
+            to: '0x0000000000000000000000000000000000000001',
+            value: '0x1',
+            data: '0x',
+            type: Number(EvmTransactionType.EIP_1559),
+          },
+          buildGasFee(EvmTransactionType.EIP_1559),
+          chain.chainId,
+        ),
+      ).resolves.toMatchObject({ hash: '0xtracked' });
+      expect(runtimeSendMessageSpy).toHaveBeenCalledWith({
+        command: BackgroundCommand.WAIT_FOR_EVM_TRANSACTION_CONFIRMATION,
+        value: expect.objectContaining({ chain }),
+      });
+    } finally {
+      if (previousContextType === undefined) {
+        delete (global as { contextType?: ContextType }).contextType;
+      } else {
+        (global as { contextType?: ContextType }).contextType =
+          previousContextType;
+      }
+    }
   });
 
   it('broadcasts legacy selected gas fees as legacy transaction requests', async () => {
