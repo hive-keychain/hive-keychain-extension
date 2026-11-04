@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 import { PortfolioBalancesSection } from 'src/portfolio/ui/portfolio-balances-section.component';
 
@@ -89,7 +89,20 @@ describe('PortfolioBalancesSection', () => {
 
     expect(container.textContent).toContain('ETH');
     expect(container.textContent).toContain('MATIC');
-    expect(container.textContent).toContain('$110.00');
+    expect(
+      container.querySelector('[data-testid="portfolio-total-value"]')
+        ?.textContent,
+    ).toBe('$110.00');
+    expect(
+      [
+        ...container.querySelectorAll(
+          '[data-testid="portfolio-allocation-item"]',
+        ),
+      ].map((item) => item.textContent),
+    ).toEqual(['ETHEthereum90.9%', 'MATICPolygon9.1%']);
+    expect(
+      container.querySelectorAll('[data-testid="portfolio-allocation-slice"]'),
+    ).toHaveLength(2);
 
     rerender(
       <PortfolioBalancesSection
@@ -118,7 +131,186 @@ describe('PortfolioBalancesSection', () => {
 
     expect(container.textContent).toContain('MATIC');
     expect(container.textContent).not.toContain('Ethereum');
-    expect(container.textContent).toContain('$10.00');
+    expect(
+      container.querySelector('[data-testid="portfolio-total-value"]')
+        ?.textContent,
+    ).toBe('$10.00');
+    expect(
+      [
+        ...container.querySelectorAll(
+          '[data-testid="portfolio-allocation-item"]',
+        ),
+      ].map((item) => item.textContent),
+    ).toEqual(['MATICPolygon100%']);
+  });
+
+  it('recalculates the total and donut when the network filter changes', () => {
+    const rows = [
+      {
+        key: 'eth',
+        symbol: 'ETH',
+        network: 'Ethereum',
+        balance: '1',
+        usdValue: 75,
+        priceUsd: 75,
+      },
+      {
+        key: 'matic',
+        symbol: 'MATIC',
+        network: 'Polygon',
+        balance: '10',
+        usdValue: 25,
+        priceUsd: 2.5,
+      },
+    ];
+    const { container, rerender } = render(
+      <PortfolioBalancesSection
+        {...baseProps}
+        showNetworkFilter
+        selectedNetwork=""
+        rows={rows}
+      />,
+    );
+
+    expect(
+      container.querySelector('[data-testid="portfolio-total-value"]')
+        ?.textContent,
+    ).toBe('$100.00');
+    expect(
+      container.querySelectorAll('[data-testid="portfolio-allocation-slice"]'),
+    ).toHaveLength(2);
+
+    rerender(
+      <PortfolioBalancesSection
+        {...baseProps}
+        showNetworkFilter
+        selectedNetwork="Ethereum"
+        rows={rows}
+      />,
+    );
+
+    expect(container.textContent).toContain('ETH');
+    expect(container.textContent).not.toContain('MATIC');
+    expect(
+      container.querySelector('[data-testid="portfolio-total-value"]')
+        ?.textContent,
+    ).toBe('$75.00');
+    expect(
+      [
+        ...container.querySelectorAll(
+          '[data-testid="portfolio-allocation-item"]',
+        ),
+      ].map((item) => item.textContent),
+    ).toEqual(['ETHEthereum100%']);
+  });
+
+  it('uses the custom tooltip and includes the chain only for all networks', () => {
+    jest.useFakeTimers();
+    const rows = [
+      {
+        key: 'eth',
+        symbol: 'ETH',
+        network: 'Ethereum',
+        balance: '1',
+        usdValue: 75,
+        priceUsd: 75,
+      },
+      {
+        key: 'matic',
+        symbol: 'MATIC',
+        network: 'Polygon',
+        balance: '10',
+        usdValue: 25,
+        priceUsd: 2.5,
+      },
+    ];
+
+    try {
+      const { container, rerender } = render(
+        <PortfolioBalancesSection
+          {...baseProps}
+          showNetworkFilter
+          selectedNetwork=""
+          rows={rows}
+        />,
+      );
+
+      expect(container.querySelector('.portfolio-allocation title')).toBeNull();
+      expect(container.querySelector('.portfolio-allocation [title]')).toBeNull();
+
+      fireEvent.mouseEnter(screen.getAllByTestId('portfolio-allocation-tooltip')[0]);
+      act(() => {
+        jest.advanceTimersByTime(250);
+      });
+
+      expect(screen.getByTestId('tooltip-content').textContent).toBe(
+        'ETH · Ethereum · $75.00 · 75%',
+      );
+
+      fireEvent.mouseLeave(screen.getAllByTestId('portfolio-allocation-tooltip')[0]);
+      act(() => {
+        jest.advanceTimersByTime(250);
+      });
+
+      rerender(
+        <PortfolioBalancesSection
+          {...baseProps}
+          showNetworkFilter
+          selectedNetwork="Ethereum"
+          rows={rows}
+        />,
+      );
+
+      fireEvent.mouseEnter(screen.getByTestId('portfolio-allocation-tooltip'));
+      act(() => {
+        jest.advanceTimersByTime(250);
+      });
+
+      expect(screen.getByTestId('tooltip-content').textContent).toBe(
+        'ETH · $75.00 · 100%',
+      );
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  it('leaves unpriced tokens out of the donut and out of the total', () => {
+    const { container } = render(
+      <PortfolioBalancesSection
+        {...baseProps}
+        rows={[
+          {
+            key: 'eth',
+            symbol: 'ETH',
+            network: 'Ethereum',
+            balance: '1',
+            usdValue: 40,
+            priceUsd: 40,
+          },
+          {
+            key: 'unknown',
+            symbol: 'UNKNOWN',
+            network: 'Base',
+            balance: '5',
+            usdValue: null,
+            priceUsd: null,
+          },
+        ]}
+      />,
+    );
+
+    expect(container.textContent).toContain('UNKNOWN');
+    expect(
+      container.querySelector('[data-testid="portfolio-total-value"]')
+        ?.textContent,
+    ).toBe('$40.00');
+    expect(
+      [
+        ...container.querySelectorAll(
+          '[data-testid="portfolio-allocation-item"]',
+        ),
+      ].map((item) => item.textContent),
+    ).toEqual(['ETHEthereum100%']);
   });
 
   it('invokes onOpenFlowForRow from row actions', () => {

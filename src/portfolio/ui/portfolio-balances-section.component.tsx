@@ -4,8 +4,10 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { PortfolioMode } from 'src/portfolio/portfolio-api.interface';
+import { PortfolioAllocationUtils } from 'src/portfolio/portfolio-allocation.utils';
 import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
 import { PortfolioHiveEngineBalanceBreakdown } from 'src/portfolio/portfolio.interface';
+import { PortfolioAllocationDonut } from 'src/portfolio/ui/portfolio-allocation-donut.component';
 import { PortfolioOverlayListSelect } from 'src/portfolio/ui/portfolio-overlay-list-select.component';
 import {
   portfolioRowToTokenIdentityProps,
@@ -151,18 +153,29 @@ const PortfolioBalancesSectionComponent = ({
     return PortfolioUtils.sortPortfolioDisplayItems(filteredRows, isHiveAccount);
   }, [isHiveAccount, rows, selectedNetwork, tokenFilter]);
 
-  const totalUsd = useMemo(
-    () =>
-      visibleRows.reduce((total, row) => total + (row.usdValue ?? 0), 0),
-    [visibleRows],
-  );
-  const hasKnownValue = useMemo(
-    () => visibleRows.some((row) => row.usdValue !== null),
+  const allocation = useMemo(
+    () => PortfolioAllocationUtils.buildPortfolioAllocation(visibleRows),
     [visibleRows],
   );
 
   return (
     <div className="portfolio-card-body">
+      {hasAccounts && visibleRows.length > 0 ? (
+        <div className="portfolio-summary" data-testid="portfolio-summary">
+          <div className="portfolio-summary__value">
+            <span>{I18nUtils.getMessage('portfolio_total_value_usd')}</span>
+            <strong data-testid="portfolio-total-value">
+              {allocation.hasKnownValue ? formatUsd(allocation.totalUsd) : '—'}
+            </strong>
+          </div>
+          {allocation.slices.length > 0 ? (
+            <PortfolioAllocationDonut
+              showNetworkInTooltip={!selectedNetwork}
+              slices={allocation.slices}
+            />
+          ) : null}
+        </div>
+      ) : null}
       {hasAccounts ? (
         <div className="portfolio-sticky-menu-bar">
           <div className="portfolio-controls">
@@ -324,10 +337,6 @@ const PortfolioBalancesSectionComponent = ({
         )}
       </div>
 
-      <div className="portfolio-total">
-        <span>{I18nUtils.getMessage('portfolio_total_value_usd')}</span>
-        <strong>{hasKnownValue ? formatUsd(totalUsd) : '—'}</strong>
-      </div>
       {isLoadingMoreChains ? (
         <div className="portfolio-loading-more">
           <RotatingLogoComponent />
