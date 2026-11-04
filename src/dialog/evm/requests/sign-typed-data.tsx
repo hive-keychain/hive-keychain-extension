@@ -145,9 +145,9 @@ export const SignTypedData = (props: Props) => {
       EvmSignatureBindingUtils.isSpendingPermitPrimaryType(message.primaryType)
     ) {
       transactionConfirmationFields.otherFields.push({
-        name: '',
-        type: EvmInputDisplayType.WARNING_ONLY,
-        value: null,
+        name: 'evm_chain_id',
+        type: EvmInputDisplayType.STRING,
+        value: I18nUtils.getMessage('evm_chain_not_specified'),
         warnings: [
           {
             ignored: false,

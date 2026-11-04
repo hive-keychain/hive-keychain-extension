@@ -6482,6 +6482,10 @@
     "message": "Chain Id",
     "description": "evm chain id"
   },
+  "evm_chain_not_specified": {
+    "message": "Not specified",
+    "description": "Typed data permit is missing a chain id"
+  },
   "evm_chain": {
     "message": "Chain",
     "description": "evm chain"
