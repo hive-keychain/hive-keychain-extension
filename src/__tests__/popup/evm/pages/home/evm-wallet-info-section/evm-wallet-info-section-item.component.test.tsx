@@ -68,6 +68,7 @@ describe('EVM WalletInfoSectionItem', () => {
               name: 'Ether',
               symbol: 'ETH',
               type: EVMSmartContractType.NATIVE,
+              priceUsd: 1,
             },
           } as unknown as NativeAndErc20Token
         }
@@ -126,6 +127,7 @@ describe('EVM WalletInfoSectionItem', () => {
             tokenInfo: {
               symbol: 'ETH',
               type: EVMSmartContractType.NATIVE,
+              priceUsd: 1,
             },
           } as unknown as NativeAndErc20Token
         }
@@ -162,6 +164,7 @@ describe('EVM WalletInfoSectionItem', () => {
             tokenInfo: {
               symbol: 'USDC',
               type: EVMSmartContractType.ERC20,
+              priceUsd: 1,
               contractAddress,
             },
           } as unknown as NativeAndErc20Token
@@ -213,6 +216,7 @@ describe('EVM WalletInfoSectionItem', () => {
             tokenInfo: {
               symbol: 'USDC',
               type: EVMSmartContractType.ERC20,
+              priceUsd: 1,
               contractAddress,
             },
           } as unknown as NativeAndErc20Token
@@ -246,6 +250,7 @@ describe('EVM WalletInfoSectionItem', () => {
             tokenInfo: {
               symbol: 'USDC',
               type: EVMSmartContractType.ERC20,
+              priceUsd: 1,
               contractAddress: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
             },
           } as unknown as NativeAndErc20Token
@@ -276,6 +281,7 @@ describe('EVM WalletInfoSectionItem', () => {
             tokenInfo: {
               symbol: 'ETH',
               type: EVMSmartContractType.NATIVE,
+              priceUsd: 1,
             },
           } as unknown as NativeAndErc20Token
         }
@@ -323,6 +329,7 @@ describe('EVM WalletInfoSectionItem', () => {
             tokenInfo: {
               symbol: 'USDC',
               type: EVMSmartContractType.ERC20,
+              priceUsd: 1,
               contractAddress,
             },
           } as unknown as NativeAndErc20Token
@@ -349,5 +356,40 @@ describe('EVM WalletInfoSectionItem', () => {
     expect(
       screen.getByTestId('wallet-token-price-chart-category-USDC-7d'),
     ).toBeInTheDocument();
+  });
+
+  it('skips price history when the token has no price', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <WalletInfoSectionItem
+        token={
+          {
+            tokenInfo: {
+              symbol: 'DUST',
+              type: EVMSmartContractType.ERC20,
+              contractAddress: '0xabc',
+              priceUsd: null,
+            },
+          } as unknown as NativeAndErc20Token
+        }
+        icon={SVGIcons.BLOCKCHAIN_ETHEREUM}
+        mainValue="1.0"
+        mainValueLabel="DUST"
+        mainValueSubLabel="Dust"
+        chain={ethereumChain}
+        navigateToWithParams={jest.fn()}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: /DUST/ }));
+
+    expect(screen.getByTestId('wallet-token-detail-panel-DUST')).toHaveClass(
+      'is-compact',
+    );
+    expect(
+      screen.queryByTestId('wallet-token-price-chart-DUST'),
+    ).not.toBeInTheDocument();
+    expect(EvmLightNodeApi.get).not.toHaveBeenCalled();
   });
 });

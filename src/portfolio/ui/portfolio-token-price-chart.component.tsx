@@ -15,6 +15,7 @@ type PortfolioTokenPriceChartProps = {
   contractAddress?: string | null;
   isHive?: boolean;
   hiveUsd?: number;
+  priceUsd?: number | null;
 };
 
 const emptyPriceHistory = (): TokenPriceHistory => ({
@@ -28,13 +29,21 @@ export const PortfolioTokenPriceChart = ({
   contractAddress,
   isHive = false,
   hiveUsd,
+  priceUsd,
 }: PortfolioTokenPriceChartProps) => {
+  const hasPrice = WalletTokenPriceChartUtils.hasKnownTokenPrice(priceUsd);
   const [priceHistory, setPriceHistory] = useState<TokenPriceHistory | null>(
     null,
   );
-  const [priceHistoryLoading, setPriceHistoryLoading] = useState(true);
+  const [priceHistoryLoading, setPriceHistoryLoading] = useState(hasPrice);
 
   useEffect(() => {
+    if (!hasPrice) {
+      setPriceHistory(null);
+      setPriceHistoryLoading(false);
+      return;
+    }
+
     let cancelled = false;
     setPriceHistory(null);
     setPriceHistoryLoading(true);
@@ -118,7 +127,11 @@ export const PortfolioTokenPriceChart = ({
     return () => {
       cancelled = true;
     };
-  }, [chainId, contractAddress, hiveUsd, isHive, symbol]);
+  }, [chainId, contractAddress, hasPrice, hiveUsd, isHive, symbol]);
+
+  if (!hasPrice) {
+    return null;
+  }
 
   return (
     <WalletTokenPriceChart

@@ -84,13 +84,16 @@ export const WalletInfoSectionItem = ({
     ? getTokenExplorerUrl(chain?.blockExplorer?.url, contractAddress)
     : undefined;
   const tokenDisplayName = token.tokenInfo.name?.trim() || mainValueLabel;
+  const hasTokenPrice = WalletTokenPriceChartUtils.hasKnownTokenPrice(
+    token.tokenInfo.priceUsd,
+  );
 
   useEffect(() => {
     init();
   }, []);
 
   useEffect(() => {
-    if (!isPanelOpen) {
+    if (!isPanelOpen || !hasTokenPrice) {
       return;
     }
 
@@ -137,14 +140,16 @@ export const WalletInfoSectionItem = ({
     return () => {
       cancelled = true;
     };
-  }, [isPanelOpen, chain?.chainId, contractAddress]);
+  }, [isPanelOpen, hasTokenPrice, chain?.chainId, contractAddress]);
 
   const init = async () => {
     setActionButtons(EVMWalletInfoSectionActions(token));
   };
 
   const openPanel = () => {
-    setPriceHistoryLoading(true);
+    if (hasTokenPrice) {
+      setPriceHistoryLoading(true);
+    }
     setIsPanelOpen(true);
   };
 
@@ -276,6 +281,7 @@ export const WalletInfoSectionItem = ({
         title={tokenDisplayName}
         titleId={detailsId}
         logo={tokenLogo}
+        compact={!hasTokenPrice}
         dataTestId={`wallet-token-detail-panel-${token.tokenInfo.symbol}`}
         footer={
           <div className="actions-panel">
@@ -289,11 +295,13 @@ export const WalletInfoSectionItem = ({
           </div>
         }>
         <div className="wallet-info-details">
-          <WalletTokenPriceChart
-            symbol={token.tokenInfo.symbol}
-            priceHistory={priceHistory}
-            priceHistoryLoading={priceHistoryLoading}
-          />
+          {hasTokenPrice && (
+            <WalletTokenPriceChart
+              symbol={token.tokenInfo.symbol}
+              priceHistory={priceHistory}
+              priceHistoryLoading={priceHistoryLoading}
+            />
+          )}
           {contractAddress && (
             <div className="wallet-token-detail-panel-contract">
               <div className="wallet-token-detail-panel-contract-label">

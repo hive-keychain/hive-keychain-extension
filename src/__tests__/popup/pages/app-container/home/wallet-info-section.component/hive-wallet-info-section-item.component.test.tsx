@@ -1,4 +1,4 @@
-import { Token, TokenBalance } from '@interfaces/tokens.interface';
+import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -293,6 +293,14 @@ describe('Hive WalletInfoSectionItem', () => {
         {...connectedProps}
         tokenSymbol="BEE"
         tokenInfo={tokenInfo}
+        tokenMarket={[
+          {
+            symbol: 'BEE',
+            highestBid: '1',
+            lowestAsk: '1.1',
+            lastPrice: '4',
+          } as TokenMarket,
+        ]}
         defaultIcon={SVGIcons.HIVE_ENGINE}
         mainValue="1.000"
         mainValueLabel="BEE"
@@ -374,5 +382,36 @@ describe('Hive WalletInfoSectionItem', () => {
     expect(
       await screen.findByTestId('wallet-token-price-chart-status-HIVE'),
     ).toHaveTextContent('wallet_token_price_unavailable');
+  });
+
+  it('skips the Hive Engine chart when the token has no price', async () => {
+    const user = userEvent.setup();
+    const tokenInfo = {
+      name: 'Dust',
+      symbol: 'DUST',
+      metadata: { url: '', icon: '', desc: 'DUST' },
+    } as Token;
+
+    render(
+      <WalletInfoSectionItem
+        {...connectedProps}
+        tokenSymbol="DUST"
+        tokenInfo={tokenInfo}
+        defaultIcon={SVGIcons.HIVE_ENGINE}
+        mainValue="1.000"
+        mainValueLabel="DUST"
+      />,
+    );
+
+    await user.click(screen.getByTestId('token-user-item'));
+
+    expect(screen.getByTestId('wallet-token-detail-panel-DUST')).toHaveClass(
+      'is-compact',
+    );
+    expect(
+      screen.queryByTestId('wallet-token-price-chart-DUST'),
+    ).not.toBeInTheDocument();
+    expect(BaseApi.get).not.toHaveBeenCalled();
+    expect(KeychainApi.get).not.toHaveBeenCalled();
   });
 });

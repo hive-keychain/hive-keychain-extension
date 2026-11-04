@@ -11,6 +11,8 @@ interface Props {
   logo?: React.ReactNode;
   headerAction?: React.ReactNode;
   dataTestId?: string;
+  /** No price chart, so the side panel can size this sheet to its content. */
+  compact?: boolean;
 }
 
 const getFocusableElements = (container: HTMLElement) =>
@@ -47,6 +49,7 @@ export const WalletTokenDetailPanel = ({
   logo,
   headerAction,
   dataTestId = 'wallet-token-detail-panel',
+  compact = false,
 }: Props) => {
   const cardRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
@@ -177,7 +180,9 @@ export const WalletTokenDetailPanel = ({
       <div
         id={titleId}
         ref={cardRef}
-        className="wallet-token-detail-panel-card"
+        className={`wallet-token-detail-panel-card${
+          compact ? ' is-compact' : ''
+        }`}
         role="dialog"
         aria-modal="true"
         aria-labelledby={`${titleId}-title`}

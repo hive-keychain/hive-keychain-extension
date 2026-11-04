@@ -288,6 +288,9 @@ const shouldPlaceTooltipBelow = (
   gap = 10,
 ): boolean => pointY < tooltipHeight + gap;
 
+const hasKnownTokenPrice = (price: number | null | undefined): boolean =>
+  typeof price === 'number' && Number.isFinite(price) && price > 0;
+
 export const WalletTokenPriceChartUtils = {
   buildFakeTokenPriceSeries,
   parsePriceHistoryPayload,
@@ -299,4 +302,5 @@ export const WalletTokenPriceChartUtils = {
   getSeriesFromPoints,
   getClampedTooltipCenter,
   shouldPlaceTooltipBelow,
+  hasKnownTokenPrice,
 };

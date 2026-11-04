@@ -9,6 +9,7 @@ import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
 import { PortfolioHiveEngineBalanceBreakdown } from 'src/portfolio/portfolio.interface';
 import { PortfolioAllocationDonut } from 'src/portfolio/ui/portfolio-allocation-donut.component';
 import { PortfolioOverlayListSelect } from 'src/portfolio/ui/portfolio-overlay-list-select.component';
+import { WalletTokenPriceChartUtils } from 'src/common-ui/wallet-token-price-chart/wallet-token-price-chart.utils';
 import { PortfolioTokenPriceChart } from 'src/portfolio/ui/portfolio-token-price-chart.component';
 import {
   portfolioRowToTokenIdentityProps,
@@ -175,14 +176,18 @@ const PortfolioBalancesSectionComponent = ({
 
   const handleRowClick = (
     event: React.MouseEvent<HTMLDivElement>,
-    rowKey: string,
+    row: PortfolioBalancesRow,
   ) => {
+    if (!WalletTokenPriceChartUtils.hasKnownTokenPrice(row.priceUsd)) {
+      return;
+    }
+
     const target = event.target;
     if (target instanceof Element && target.closest('button')) {
       return;
     }
 
-    togglePriceChart(rowKey);
+    togglePriceChart(row.key);
   };
 
   return (
@@ -268,7 +273,10 @@ const PortfolioBalancesSectionComponent = ({
             const canExpandBreakdown = breakdownItems.length > 0;
             const isExpanded =
               canExpandBreakdown && expandedRowKeys.includes(row.key);
-            const isPriceChartOpen = priceChartRowKey === row.key;
+            const canShowPriceChart =
+              WalletTokenPriceChartUtils.hasKnownTokenPrice(row.priceUsd);
+            const isPriceChartOpen =
+              canShowPriceChart && priceChartRowKey === row.key;
 
             return (
               <div
@@ -282,7 +290,7 @@ const PortfolioBalancesSectionComponent = ({
                     isExpanded ? ' is-expanded' : ''
                   }${isPriceChartOpen ? ' is-price-chart-open' : ''}`}
                   data-testid={`portfolio-balance-row-${row.key}`}
-                  onClick={(event) => handleRowClick(event, row.key)}>
+                  onClick={(event) => handleRowClick(event, row)}>
                   <PortfolioTokenIdentity
                     {...portfolioRowToTokenIdentityProps({
                       ...row,
@@ -371,6 +379,7 @@ const PortfolioBalancesSectionComponent = ({
                       contractAddress={row.contractAddress}
                       hiveUsd={hiveUsd}
                       isHive={row.isHive}
+                      priceUsd={row.priceUsd}
                       symbol={row.symbol}
                     />
                   </div>

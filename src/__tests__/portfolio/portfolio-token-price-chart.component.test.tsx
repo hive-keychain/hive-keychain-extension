@@ -42,7 +42,7 @@ describe('PortfolioTokenPriceChart', () => {
 
   it('loads the same EVM history path as the home chart', async () => {
     const { rerender } = render(
-      <PortfolioTokenPriceChart chainId="0x1" symbol="ETH" />,
+      <PortfolioTokenPriceChart chainId="0x1" priceUsd={1} symbol="ETH" />,
     );
 
     await waitFor(() => {
@@ -54,6 +54,7 @@ describe('PortfolioTokenPriceChart', () => {
       <PortfolioTokenPriceChart
         chainId="0x1"
         contractAddress="0xAbC"
+        priceUsd={1}
         symbol="USDC"
       />,
     );
@@ -68,7 +69,7 @@ describe('PortfolioTokenPriceChart', () => {
 
   it('loads Hive and Hive Engine history the same way as the home chart', async () => {
     const { rerender } = render(
-      <PortfolioTokenPriceChart isHive symbol="HIVE" />,
+      <PortfolioTokenPriceChart isHive priceUsd={1} symbol="HIVE" />,
     );
 
     await waitFor(() => {
@@ -79,7 +80,12 @@ describe('PortfolioTokenPriceChart', () => {
     expect(BaseApi.get).not.toHaveBeenCalled();
 
     rerender(
-      <PortfolioTokenPriceChart hiveUsd={0.25} isHive symbol="BEE" />,
+      <PortfolioTokenPriceChart
+        hiveUsd={0.25}
+        isHive
+        priceUsd={1}
+        symbol="BEE"
+      />,
     );
 
     await waitFor(() => {
@@ -89,5 +95,16 @@ describe('PortfolioTokenPriceChart', () => {
     });
     expect(KeychainApi.get).toHaveBeenCalledWith('hive/v2/price/hive/history');
     expect(screen.getByTestId('wallet-token-price-chart-BEE')).toBeTruthy();
+  });
+
+  it('does not request history when the token has no price', () => {
+    render(
+      <PortfolioTokenPriceChart chainId="0x1" priceUsd={null} symbol="DUST" />,
+    );
+
+    expect(screen.queryByTestId('wallet-token-price-chart-DUST')).toBeNull();
+    expect(EvmLightNodeApi.get).not.toHaveBeenCalled();
+    expect(KeychainApi.get).not.toHaveBeenCalled();
+    expect(BaseApi.get).not.toHaveBeenCalled();
   });
 });

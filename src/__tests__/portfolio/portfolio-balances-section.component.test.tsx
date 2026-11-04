@@ -394,6 +394,29 @@ describe('PortfolioBalancesSection', () => {
     expect(screen.queryByTestId('portfolio-token-price-chart-MATIC')).toBeNull();
   });
 
+  it('does not open a price chart when the token has no price', () => {
+    render(
+      <PortfolioBalancesSection
+        {...baseProps}
+        rows={[
+          {
+            key: 'dust',
+            symbol: 'DUST',
+            network: 'Ethereum',
+            balance: '1',
+            usdValue: null,
+            priceUsd: null,
+            chainId: '0x1',
+          },
+        ]}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId('portfolio-balance-row-dust'));
+
+    expect(screen.queryByTestId('portfolio-row-price-chart-dust')).toBeNull();
+  });
+
   it('formats Hive balances with token decimals and leaves other chains unchanged', () => {
     const { container } = render(
       <PortfolioBalancesSection
