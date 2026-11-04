@@ -1,5 +1,5 @@
 import { OptionItem } from '@common-ui/custom-select/custom-select.component';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
@@ -9,6 +9,7 @@ import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
 import { PortfolioHiveEngineBalanceBreakdown } from 'src/portfolio/portfolio.interface';
 import { PortfolioAllocationDonut } from 'src/portfolio/ui/portfolio-allocation-donut.component';
 import { PortfolioOverlayListSelect } from 'src/portfolio/ui/portfolio-overlay-list-select.component';
+import { PortfolioTokenPriceChart } from 'src/portfolio/ui/portfolio-token-price-chart.component';
 import {
   portfolioRowToTokenIdentityProps,
   PortfolioTokenIdentity,
@@ -27,6 +28,9 @@ export type PortfolioBalancesRow = {
   decimals?: number;
   logoUrl?: string | null;
   networkLogoUrl?: string | null;
+  chainId?: string | null;
+  contractAddress?: string | null;
+  isHive?: boolean;
   isTestnet?: boolean;
   breakdown?: PortfolioHiveEngineBalanceBreakdown;
 };
@@ -44,6 +48,7 @@ export type PortfolioBalancesSectionProps = {
   expandedRowKeys: string[];
   rowActions: Array<Exclude<PortfolioMode, 'bridge'>>;
   isLoadingMoreChains: boolean;
+  hiveUsd?: number;
   onSelectedAccountChange: (accountKey: string) => void;
   onSelectedNetworkChange: (network: string) => void;
   onTokenFilterChange: (value: string) => void;
@@ -131,6 +136,7 @@ const PortfolioBalancesSectionComponent = ({
   expandedRowKeys,
   rowActions,
   isLoadingMoreChains,
+  hiveUsd,
   onSelectedAccountChange,
   onSelectedNetworkChange,
   onTokenFilterChange,
@@ -157,6 +163,27 @@ const PortfolioBalancesSectionComponent = ({
     () => PortfolioAllocationUtils.buildPortfolioAllocation(visibleRows),
     [visibleRows],
   );
+  const [priceChartRowKey, setPriceChartRowKey] = useState<string | null>(
+    null,
+  );
+
+  const togglePriceChart = (rowKey: string) => {
+    setPriceChartRowKey((currentKey) =>
+      currentKey === rowKey ? null : rowKey,
+    );
+  };
+
+  const handleRowClick = (
+    event: React.MouseEvent<HTMLDivElement>,
+    rowKey: string,
+  ) => {
+    const target = event.target;
+    if (target instanceof Element && target.closest('button')) {
+      return;
+    }
+
+    togglePriceChart(rowKey);
+  };
 
   return (
     <div className="portfolio-card-body">
@@ -241,17 +268,21 @@ const PortfolioBalancesSectionComponent = ({
             const canExpandBreakdown = breakdownItems.length > 0;
             const isExpanded =
               canExpandBreakdown && expandedRowKeys.includes(row.key);
+            const isPriceChartOpen = priceChartRowKey === row.key;
 
             return (
               <div
                 className={`portfolio-table-row-group${
                   isExpanded ? ' is-expanded' : ''
-                }`}
+                }${isPriceChartOpen ? ' is-price-chart-open' : ''}`}
                 key={row.key}>
                 <div
+                  aria-expanded={isPriceChartOpen}
                   className={`portfolio-table-row${
                     isExpanded ? ' is-expanded' : ''
-                  }`}>
+                  }${isPriceChartOpen ? ' is-price-chart-open' : ''}`}
+                  data-testid={`portfolio-balance-row-${row.key}`}
+                  onClick={(event) => handleRowClick(event, row.key)}>
                   <PortfolioTokenIdentity
                     {...portfolioRowToTokenIdentityProps({
                       ...row,
@@ -329,6 +360,19 @@ const PortfolioBalancesSectionComponent = ({
                         </span>
                       </div>
                     ))}
+                  </div>
+                ) : null}
+                {isPriceChartOpen ? (
+                  <div
+                    className="portfolio-row-price-chart"
+                    data-testid={`portfolio-row-price-chart-${row.key}`}>
+                    <PortfolioTokenPriceChart
+                      chainId={row.chainId}
+                      contractAddress={row.contractAddress}
+                      hiveUsd={hiveUsd}
+                      isHive={row.isHive}
+                      symbol={row.symbol}
+                    />
                   </div>
                 ) : null}
               </div>

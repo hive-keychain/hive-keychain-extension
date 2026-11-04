@@ -703,6 +703,8 @@
 }
 
 .portfolio-table-wrap {
+  container-name: portfolio-table;
+  container-type: inline-size;
   min-width: 0;
   max-width: 100%;
   overflow-x: auto;
@@ -748,6 +750,12 @@
 
 .portfolio-table-row {
   min-height: 3.25rem;
+  cursor: pointer;
+
+  &:hover,
+  &.is-price-chart-open {
+    background: var(--kc-color-surface-hover);
+  }
 
   &.is-expanded {
     background: var(--kc-color-bg-elevated);
@@ -887,6 +895,23 @@
   text-align: right;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.portfolio-row-price-chart {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  box-sizing: border-box;
+  width: 100cqi;
+  max-width: 100cqi;
+  min-width: 0;
+  padding: var(--kc-space-3) var(--kc-space-4) var(--kc-space-4);
+  border-top: 1px solid var(--kc-color-border-subtle);
+  background: var(--kc-color-bg-elevated);
+
+  .wallet-token-price-chart {
+    width: 100%;
+  }
 }
 
 .portfolio-summary {

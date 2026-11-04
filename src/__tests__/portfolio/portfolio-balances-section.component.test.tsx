@@ -2,6 +2,12 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 import { PortfolioBalancesSection } from 'src/portfolio/ui/portfolio-balances-section.component';
 
+jest.mock('src/portfolio/ui/portfolio-token-price-chart.component', () => ({
+  PortfolioTokenPriceChart: ({ symbol }: { symbol: string }) => (
+    <div data-testid={`portfolio-token-price-chart-${symbol}`} />
+  ),
+}));
+
 describe('PortfolioBalancesSection', () => {
   const baseProps = {
     hasAccounts: true,
@@ -339,6 +345,53 @@ describe('PortfolioBalancesSection', () => {
     );
 
     expect(onOpenFlowForRow).toHaveBeenCalledWith(row, 'swap');
+    expect(
+      container.querySelector('[data-testid="portfolio-row-price-chart-eth"]'),
+    ).toBeNull();
+  });
+
+  it('expands the home price chart when a row is clicked and ignores action clicks', () => {
+    const { container } = render(
+      <PortfolioBalancesSection
+        {...baseProps}
+        rows={[
+          {
+            key: 'eth',
+            symbol: 'ETH',
+            network: 'Ethereum',
+            balance: '1',
+            usdValue: 100,
+            priceUsd: 100,
+            chainId: '0x1',
+          },
+          {
+            key: 'matic',
+            symbol: 'MATIC',
+            network: 'Polygon',
+            balance: '10',
+            usdValue: 10,
+            priceUsd: 1,
+            chainId: '0x89',
+          },
+        ]}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId('portfolio-balance-row-eth'));
+
+    expect(screen.getByTestId('portfolio-token-price-chart-ETH')).toBeTruthy();
+    expect(
+      container.querySelector('[data-testid="portfolio-row-price-chart-matic"]'),
+    ).toBeNull();
+
+    fireEvent.click(screen.getByTestId('portfolio-balance-row-matic'));
+
+    expect(screen.queryByTestId('portfolio-token-price-chart-ETH')).toBeNull();
+    expect(screen.getByTestId('portfolio-token-price-chart-MATIC')).toBeTruthy();
+
+    fireEvent.click(screen.getByTestId('portfolio-balance-row-matic'));
+
+    expect(screen.queryByTestId('portfolio-token-price-chart-MATIC')).toBeNull();
   });
 
   it('formats Hive balances with token decimals and leaves other chains unchanged', () => {
