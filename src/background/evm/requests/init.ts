@@ -418,6 +418,18 @@ export const initEvmRequestHandler = async (
             dappInfo,
           );
         }
+      } else if (
+        chain &&
+        EvmWatchAssetUtils.isWatchAssetRequest(request) &&
+        (await EvmWatchAssetUtils.isTokenAlreadyWatched(chain, request))
+      ) {
+        await EvmWatchAssetUtils.acceptWatchAssetRequest(
+          requestHandler,
+          tab!,
+          request,
+          dappInfo.origin,
+          dappInfo.requestSource,
+        );
       } else {
         await evmRequestWithConfirmation(
           requestHandler,

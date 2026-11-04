@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { initEvmRequestHandler } from '@background/evm/requests/init';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 
 const requestAddCustomEvmChainMock = jest.fn();
 const handleNonSupportedChainMock = jest.fn();
@@ -100,6 +102,13 @@ jest.mock('@popup/multichain/utils/chain.utils', () => ({
 jest.mock('src/utils/dapp-request.utils', () => ({
   DappRequestUtils: {
     isDappLocked: jest.fn(),
+  },
+}));
+
+jest.mock('src/utils/communication.utils', () => ({
+  CommunicationUtils: {
+    tabsSendMessage: jest.fn(),
+    runtimeSendMessage: jest.fn(),
   },
 }));
 
@@ -786,6 +795,98 @@ describe('initEvmRequestHandler', () => {
       7,
       request,
       dappInfo,
+    );
+  });
+
+  it('returns true without a dialog when the ERC20 is already saved', async () => {
+    const { ChainUtils } = await import('@popup/multichain/utils/chain.utils');
+    const MkModule = (await import('@background/hive/modules/mk.module'))
+      .default;
+    const LocalStorageUtils = (await import('src/utils/localStorage.utils'))
+      .default;
+    const { EvmWalletUtils } = await import('@popup/evm/utils/wallet.utils');
+    const { CommunicationUtils } = await import('src/utils/communication.utils');
+    (ChainUtils.getDefaultChains as jest.Mock).mockResolvedValue([
+      {
+        chainId: '0x1',
+        type: 'EVM',
+        name: 'Ethereum',
+      },
+    ]);
+    (ChainUtils.getAllSetupChainsForType as jest.Mock).mockResolvedValue([
+      {
+        chainId: '0x1',
+        type: 'EVM',
+        name: 'Ethereum',
+      },
+    ]);
+    (MkModule.getMk as jest.Mock).mockResolvedValue('mk');
+    (EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
+      [],
+    );
+    (LocalStorageUtils.getValueFromLocalStorage as jest.Mock).mockImplementation(
+      async (key: string) => {
+        if (key === LocalStorageKeyEnum.EVM_CUSTOM_TOKENS) {
+          return {
+            '0x1': [
+              {
+                address: '0x00000000000000000000000000000000000000AA',
+                type: 'ERC20',
+              },
+            ],
+          };
+        }
+        return [{ address: '0xabc123' }];
+      },
+    );
+
+    const request = {
+      request_id: 49,
+      method: EvmRequestMethod.WALLET_WATCH_ASSETS,
+      params: [
+        {
+          type: 'ERC20',
+          options: {
+            address: '0x00000000000000000000000000000000000000aa',
+            symbol: 'TKN',
+            decimals: 18,
+          },
+        },
+      ],
+      chainId: '0x1',
+    } as any;
+    const dappInfo = {
+      origin: 'https://example.app',
+      domain: 'example.app',
+      protocol: 'https:',
+      logo: '',
+    };
+    const requestHandler = {
+      accounts: [],
+      saveInLocalStorage: jest.fn(),
+      removeRequestByLocator: jest.fn().mockResolvedValue(undefined),
+    } as any;
+
+    await initEvmRequestHandler(request, 7, dappInfo, requestHandler);
+
+    expect(evmRequestWithConfirmationMock).not.toHaveBeenCalled();
+    expect(requestHandler.removeRequestByLocator).toHaveBeenCalledWith({
+      requestId: 49,
+      tab: 7,
+      origin: 'https://example.app',
+      frameId: undefined,
+      documentId: undefined,
+    });
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(
+      7,
+      {
+        command: BackgroundCommand.SEND_EVM_RESPONSE,
+        value: {
+          requestId: 49,
+          result: true,
+        },
+      },
+      undefined,
     );
   });
 

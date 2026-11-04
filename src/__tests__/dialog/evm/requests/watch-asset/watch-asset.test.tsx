@@ -14,11 +14,20 @@ import {
 } from '@testing-library/react';
 import React from 'react';
 import { CommunicationUtils } from 'src/utils/communication.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
 jest.mock('src/dialog/evm/evm-operation/evm-operation', () => ({
-  EvmOperation: ({ bottomPanel, onConfirm, confirmDisabled }: any) => (
+  EvmOperation: ({
+    bottomPanel,
+    onConfirm,
+    confirmDisabled,
+    title,
+    caption,
+  }: any) => (
     <div data-testid="evm-operation">
+      <div>{title}</div>
+      <div>{caption}</div>
       {bottomPanel}
       <button
         data-testid="dialog-confirm"
@@ -88,7 +97,19 @@ describe('WatchAsset', () => {
       .spyOn(EvmTokensUtils, 'fetchErc20NameAndDecimalsFromChain')
       .mockResolvedValue({ name: 'Fetched Token', decimals: 6 });
     jest.spyOn(EvmTokensUtils, 'addCustomToken').mockResolvedValue(undefined);
+    jest.spyOn(EvmTokensUtils, 'getTokenBalance').mockResolvedValue({
+      balance: 1n,
+    } as any);
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockResolvedValue(undefined);
   });
+
+  const waitUntilConfirmEnabled = async () => {
+    await waitFor(() => {
+      expect(screen.getByTestId('dialog-confirm')).toBeEnabled();
+    });
+  };
 
   it('prefills the editable ERC20 form from wallet_watchAsset params', async () => {
     render(
@@ -127,6 +148,7 @@ describe('WatchAsset', () => {
     fireEvent.change(screen.getByTestId('custom-asset-logo'), {
       target: { value: 'https://example.com/new.png' },
     });
+    await waitUntilConfirmEnabled();
     fireEvent.click(screen.getByTestId('dialog-confirm'));
 
     await waitFor(() => {
@@ -153,12 +175,13 @@ describe('WatchAsset', () => {
         requestId: 99,
         tab: 7,
         origin: 'https://example.app',
+        requestSource: undefined,
         result: true,
       },
     });
   });
 
-  it('blocks duplicate token addresses', async () => {
+  it('confirms a token that is already saved without writing it again', async () => {
     jest.spyOn(EvmTokensUtils, 'getCustomTokens').mockResolvedValue([
       {
         address: '0x00000000000000000000000000000000000000AA',
@@ -170,15 +193,52 @@ describe('WatchAsset', () => {
       <WatchAsset request={request} data={data} afterCancel={jest.fn()} />,
     );
 
-    await screen.findByTestId('custom-asset-symbol');
+    expect(
+      await screen.findByText('evm_watch_asset_already_added_title'),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('custom-asset-symbol'),
+    ).not.toBeInTheDocument();
+    await waitUntilConfirmEnabled();
     fireEvent.click(screen.getByTestId('dialog-confirm'));
 
-    expect(
-      await screen.findByText(
-        'evm_add_custom_asset_error_contract_address_duplicate',
-      ),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(CommunicationUtils.runtimeSendMessage).toHaveBeenCalledWith({
+        command: BackgroundCommand.SEND_EVM_RESPONSE_TO_SW,
+        value: {
+          requestId: 99,
+          tab: 7,
+          origin: 'https://example.app',
+          requestSource: undefined,
+          result: true,
+        },
+      });
+    });
     expect(EvmTokensUtils.addCustomToken).not.toHaveBeenCalled();
-    expect(CommunicationUtils.runtimeSendMessage).not.toHaveBeenCalled();
+  });
+
+  it('warns that a zero balance stays off the home page until it is above zero', async () => {
+    jest.spyOn(EvmTokensUtils, 'getTokenBalance').mockResolvedValue({
+      balance: 0n,
+    } as any);
+
+    render(
+      <WatchAsset request={request} data={data} afterCancel={jest.fn()} />,
+    );
+
+    expect(
+      await screen.findByTestId('watch-asset-zero-balance'),
+    ).toHaveTextContent('evm_watch_asset_zero_balance');
+  });
+
+  it('hides the zero-balance warning when the account holds the token', async () => {
+    render(
+      <WatchAsset request={request} data={data} afterCancel={jest.fn()} />,
+    );
+
+    await waitUntilConfirmEnabled();
+    expect(
+      screen.queryByTestId('watch-asset-zero-balance'),
+    ).not.toBeInTheDocument();
   });
 });

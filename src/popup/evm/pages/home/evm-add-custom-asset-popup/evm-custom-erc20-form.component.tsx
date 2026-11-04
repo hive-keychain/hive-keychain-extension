@@ -49,6 +49,7 @@ interface Props {
   autoResolveContract?: boolean;
   title?: string;
   caption?: string;
+  notice?: string;
   onClose?: () => void;
   onSave?: (form: EvmCustomErc20FormData) => Promise<void> | void;
   renderFooter?: boolean;
@@ -137,6 +138,7 @@ export const EvmCustomErc20Form = forwardRef<
       autoResolveContract = false,
       title,
       caption,
+      notice,
       onClose,
       onSave,
       renderFooter = true,
@@ -483,6 +485,11 @@ export const EvmCustomErc20Form = forwardRef<
         {caption && <div className="popup-caption">{caption}</div>}
 
         <div className="custom-asset-form">
+          {notice && (
+            <div className="popup-note" data-testid="watch-asset-zero-balance">
+              {notice}
+            </div>
+          )}
           <div className="field">
             <InputComponent
               label="Contract address"

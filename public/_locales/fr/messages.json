@@ -7573,6 +7573,18 @@
     "message": "$1 vous demande d’ajouter un token personnalisé à Keychain.",
     "description": "Caption when a dApp requests wallet_watchAsset; $1 is the dApp domain"
   },
+  "evm_watch_asset_already_added_title": {
+    "message": "Token already added",
+    "description": "Title when wallet_watchAsset targets a token already saved on this chain"
+  },
+  "evm_watch_asset_already_added_caption": {
+    "message": "$1 asked to add a token that is already saved. Confirm to tell the site it is available.",
+    "description": "Caption when wallet_watchAsset targets an existing token; $1 is the dApp domain"
+  },
+  "evm_watch_asset_zero_balance": {
+    "message": "This token has no balance. Keychain saves it, and it appears on the home page once the balance is above zero.",
+    "description": "Warning on wallet_watchAsset when the connected account balance is zero"
+  },
   "evm_add_custom_nft_popup_caption": {
     "message": "Ajoutez un contrat NFT et les ID de tokens que vous possédez. Keychain détectera si le contrat est ERC721 ou ERC1155.",
     "description": "Add custom NFT popup caption"
