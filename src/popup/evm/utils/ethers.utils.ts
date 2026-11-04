@@ -16,8 +16,12 @@ import Logger from 'src/utils/logger.utils';
 let jsonRpcProvider: ethers.JsonRpcApiProvider;
 let chainId: EvmChain['chainId'];
 
-/** Safety buffer on eth_estimateGas results; ~12% is closer to industry norms than 50%. */
-const GAS_LIMIT_ESTIMATE_BUFFER = 1.2;
+const SIMPLE_TRANSFER_GAS_LIMIT_BUFFER = 1.2;
+/** Protect contract calls from RPC underestimation and state changes before inclusion. */
+const CONTRACT_CALL_GAS_LIMIT_BUFFER = 1.5;
+
+const getBufferedGasLimit = (estimation: bigint, buffer: number): number =>
+  Decimal.mul(Number(estimation), buffer).ceil().toNumber();
 
 const buildRpcFailover = (chain: EvmChain): EtherJsonRpcFailoverContext => ({
   network: ethers.Network.from(Number(chain.chainId)),
@@ -104,10 +108,7 @@ const getGasLimit = async (
         data: data ?? '0x',
       });
 
-      return Decimal.mul(
-        Number(estimation),
-        GAS_LIMIT_ESTIMATE_BUFFER,
-      ).toNumber();
+      return getBufferedGasLimit(estimation, CONTRACT_CALL_GAS_LIMIT_BUFFER);
     } catch (e) {
       const tx: TransactionRequest = {
         from: fromAddress,
@@ -142,8 +143,15 @@ const getGasLimitFromRawTx = async (
   provider: ethers.Provider,
 ) => {
   const estimation = await provider.estimateGas(tx);
+  const data = typeof tx.data === 'string' ? tx.data : undefined;
+  const hasContractCallData = Boolean(data && data !== '0x' && data !== '0x0');
 
-  return Decimal.mul(Number(estimation), GAS_LIMIT_ESTIMATE_BUFFER).toNumber();
+  return getBufferedGasLimit(
+    estimation,
+    hasContractCallData
+      ? CONTRACT_CALL_GAS_LIMIT_BUFFER
+      : SIMPLE_TRANSFER_GAS_LIMIT_BUFFER,
+  );
 };
 
 const reasonIncludes = (reason: string, patterns: string[]) => {
