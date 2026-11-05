@@ -40,7 +40,12 @@ describe('lavamoat webpack config', () => {
     expect(findLavaMoatPlugin(config)).toBeUndefined();
     expect(config.entry.popup).toBeDefined();
     expect(config.entry.evmKeychainProvider).toBeDefined();
-    expect(config.entry.hiveTx).toBeDefined();
+    expect(config.entry.hiveTx).toBe('./src/popup/hive-tx-bundle-entry.ts');
+    expect(
+      config.module.rules.some((rule) =>
+        String(rule.loader).includes('bluebird-ses-loader.js'),
+      ),
+    ).toBe(false);
   });
 
   it('protects extension entries and leaves page-world entries out when enabled', () => {
@@ -89,6 +94,19 @@ describe('lavamoat webpack config', () => {
     expect(
       chromiumPlugin.options.generatePolicyIncludeOverrides,
     ).toBeUndefined();
+
+    const bluebirdRule = chromium.module.rules.find(
+      (rule) =>
+        rule.test instanceof RegExp &&
+        rule.test.test('node_modules/bluebird/js/browser/bluebird.js'),
+    );
+    expect(String(bluebirdRule.loader)).toContain('bluebird-ses-loader.js');
+    expect(
+      bluebirdRule.test.test('node_modules/bluebird/js/release/errors.js'),
+    ).toBe(true);
+    expect(
+      bluebirdRule.test.test('node_modules/bluebird/js/release/util.js'),
+    ).toBe(true);
 
     const scssRule = chromium.module.rules.find(
       (rule) => rule.test instanceof RegExp && rule.test.test('styles.scss'),

@@ -19,7 +19,7 @@
     "default_icon": "/assets/images/iconhive.png"
   },
   "icons": { "128": "/assets/images/iconhive.png" },
-  "background": { "service_worker": "backgroundBundle.js", "type": "module" },
+  "background": { "service_worker": "backgroundBundle.js" },
   "web_accessible_resources": [
     {
       "resources": ["/images/logo.png", "hive_keychain.js", "_locales/*"],

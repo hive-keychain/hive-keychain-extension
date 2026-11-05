@@ -7,7 +7,9 @@ const useFastDev = process.env.WEBPACK_FS_CACHE === 'true';
 
 const config = {
   entry: {
-    hiveTx: 'hive-tx',
+    // Application entry, not the hive-tx package. LavaMoat must initialize the
+    // $root$ compartment before that package copies globals.
+    hiveTx: './src/popup/hive-tx-bundle-entry.ts',
     extensionApp: {
       import: './src/popup/multichain/extension-app-root.component.tsx',
       dependOn: 'hiveTx',

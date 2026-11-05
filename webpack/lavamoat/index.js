@@ -80,7 +80,13 @@ const applyLavaMoat = (webpackConfig, target) => {
     entry: withoutPageWorldEntries(webpackConfig.entry),
     module: {
       ...webpackConfig.module,
-      rules: excludeStyleModules(webpackConfig.module.rules),
+      rules: [
+        {
+          test: /[\\/]bluebird[\\/]js[\\/](?:browser[\\/]bluebird(?:\.core)?\.js|release[\\/](?:errors|util)\.js)$/,
+          loader: path.join(__dirname, 'bluebird-ses-loader.js'),
+        },
+        ...excludeStyleModules(webpackConfig.module.rules),
+      ],
     },
     plugins: [...webpackConfig.plugins, createLavaMoatPlugin(target)],
   };
