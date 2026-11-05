@@ -23,14 +23,7 @@ const getOpenSidePanelByDefault = async (): Promise<boolean> => {
     return value;
   }
 
-  const hasFinishedSignup = await LocalStorageUtils.getValueFromLocalStorage(
-    LocalStorageKeyEnum.HAS_FINISHED_SIGNUP,
-  );
-  if (hasFinishedSignup !== true) {
-    return true;
-  }
-
-  return value === true;
+  return true;
 };
 
 const isSidePanelSessionActive = async (): Promise<boolean> => {

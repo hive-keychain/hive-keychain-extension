@@ -72,20 +72,15 @@ describe('SidePanelPreferenceUtils', () => {
     expect(sessionGetMock).not.toHaveBeenCalled();
   });
 
-  it('returns true when open side panel preference is unset before signup is finished', async () => {
-    getValueFromLocalStorageMock.mockImplementation(async (key) => {
-      if (key === LocalStorageKeyEnum.HAS_FINISHED_SIGNUP) {
-        return false;
-      }
-      return undefined;
-    });
+  it('returns true when open side panel preference is unset', async () => {
+    getValueFromLocalStorageMock.mockResolvedValue(undefined);
 
     await expect(
       SidePanelPreferenceUtils.getOpenSidePanelByDefault(),
     ).resolves.toBe(true);
   });
 
-  it('returns false when migrating a signed up wallet without side panel preference', async () => {
+  it('returns true when migrating a signed up wallet without side panel preference', async () => {
     getValueFromLocalStorageMock.mockImplementation(async (key) => {
       if (key === LocalStorageKeyEnum.HAS_FINISHED_SIGNUP) {
         return true;
@@ -95,7 +90,7 @@ describe('SidePanelPreferenceUtils', () => {
 
     await expect(
       SidePanelPreferenceUtils.getOpenSidePanelByDefault(),
-    ).resolves.toBe(false);
+    ).resolves.toBe(true);
   });
 
   it('returns true when open side panel preference is enabled', async () => {
@@ -104,6 +99,14 @@ describe('SidePanelPreferenceUtils', () => {
     await expect(
       SidePanelPreferenceUtils.getOpenSidePanelByDefault(),
     ).resolves.toBe(true);
+  });
+
+  it('returns false when open side panel preference is disabled', async () => {
+    getValueFromLocalStorageMock.mockResolvedValue(false);
+
+    await expect(
+      SidePanelPreferenceUtils.getOpenSidePanelByDefault(),
+    ).resolves.toBe(false);
   });
 
   it('persists preference and syncs side panel startup settings', async () => {
