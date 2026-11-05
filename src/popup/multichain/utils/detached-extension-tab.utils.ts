@@ -23,11 +23,24 @@ const openExtensionPageInSidePanel = async (path: string): Promise<boolean> => {
     return false;
   }
 
-  void sidePanel.setOptions({
+  await sidePanel.setOptions({
     path,
     enabled: true,
   });
   await sidePanel.open({ windowId: chrome.windows.WINDOW_ID_CURRENT });
+  if (
+    path.startsWith(`${SIDE_PANEL_PATH}#`) ||
+    path.startsWith(`${SIDE_PANEL_PATH}?`)
+  ) {
+    try {
+      await sidePanel.setOptions({
+        path: SIDE_PANEL_PATH,
+        enabled: true,
+      });
+    } catch {
+      // The panel is already open. Leave it up if the default path cannot be restored.
+    }
+  }
   await SidePanelPreferenceUtils.markSidePanelActive();
   return true;
 };

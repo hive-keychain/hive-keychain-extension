@@ -28,6 +28,7 @@ import { resetChain, setChain } from '@popup/multichain/actions/chain.actions';
 import {
   navigateTo,
   navigateToWithParams,
+  replaceNavigationStack,
 } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import {
@@ -143,6 +144,7 @@ const UnlockedApp = ({
   handleCompletedPaidHiveAccountCreations,
   navigateTo,
   navigateToWithParams,
+  replaceNavigationStack,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
   const store = useStore<RootState>();
@@ -702,6 +704,18 @@ const UnlockedApp = ({
         LocalStorageKeyEnum.DISPLAY_APPEARANCE_SETUP_COMPLETED,
       )) === true;
 
+    if (mk && mk.length > 0) {
+      const createWalletStack =
+        await EvmWalletSetupTabUtils.resolveCreateWalletNavigationOnStartup(
+          window.location.hash,
+        );
+      if (createWalletStack) {
+        EvmWalletSetupTabUtils.clearEvmWalletSetupHash();
+        replaceNavigationStack(createWalletStack);
+        return;
+      }
+    }
+
     if (mk && mk.length > 0 && hasAccounts) {
       setDisplaySplashscreen(true);
       const navStack = store.getState().navigation.stack;
@@ -737,18 +751,6 @@ const UnlockedApp = ({
           return;
         }
 
-        // EVM setup routes should not override Hive home when Hive accounts exist.
-        if (hiveAccounts.length === 0) {
-          const navigationTarget =
-            EvmWalletSetupTabUtils.resolveEvmAppNavigationOnReady(
-              window.location.hash,
-            );
-          if (navigationTarget === 'create_wallet') {
-            EvmWalletSetupTabUtils.clearEvmWalletSetupHash();
-            navigateTo(Screen.CREATE_EVM_WALLET);
-            return;
-          }
-        }
         const ledgerRoute = LedgerRouteUtils.parseHash(window.location.hash);
         if (ledgerRoute) {
           LedgerRouteUtils.clearHash();
@@ -952,6 +954,7 @@ const connector = connect(mapStateToProps, {
   handleCompletedPaidHiveAccountCreations,
   navigateTo,
   navigateToWithParams,
+  replaceNavigationStack,
   setTitleContainerProperties,
   resetChain,
 });

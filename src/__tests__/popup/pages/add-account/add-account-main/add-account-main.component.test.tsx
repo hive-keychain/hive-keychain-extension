@@ -10,6 +10,7 @@ import { openAddAccountPage } from 'src/__tests__/utils-for-testing/helpers/sett
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
 import { EvmChainUtils } from 'src/popup/evm/utils/evm-chain.utils';
+import { EvmWalletSetupTabUtils } from 'src/popup/evm/utils/evm-wallet-setup-tab.utils';
 import { EvmWalletUtils } from 'src/popup/evm/utils/wallet.utils';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import { AddAccountMainComponent } from 'src/popup/hive/pages/add-account/add-account-main/add-account-main.component';
@@ -266,6 +267,41 @@ describe('add-account-main.component tests:\n', () => {
       expect(store.getState().navigation.stack[0].currentPage).toBe(
         Screen.ACCOUNT_PAGE_ADD_ACCOUNTS_FROM_LEDGER,
       );
+    });
+
+    it('passes the current page when create-seed leaves the toolbar popup', async () => {
+      const startSpy = jest
+        .spyOn(EvmWalletSetupTabUtils, 'startEvmCreateWalletFromToolbarPopup')
+        .mockResolvedValue(undefined);
+      customRender(<AddAccountMainComponent />, {
+        initialState: {
+          ...initialEmptyStateStore,
+          navigation: {
+            stack: [
+              { currentPage: Screen.ACCOUNT_PAGE_INIT_ACCOUNT },
+              { currentPage: Screen.HOME_PAGE },
+            ],
+          },
+          hive: {
+            ...initialEmptyStateStore.hive,
+            accounts: accounts.twoAccounts,
+          },
+        },
+      });
+
+      await userEvent.click(screen.getByTestId('add-account-type-evm'));
+      await userEvent.click(screen.getByText('Create a new EVM wallet'));
+
+      try {
+        await waitFor(() => {
+          expect(startSpy).toHaveBeenCalledWith(expect.any(Function), [
+            { currentPage: Screen.ACCOUNT_PAGE_INIT_ACCOUNT },
+            { currentPage: Screen.HOME_PAGE },
+          ]);
+        });
+      } finally {
+        startSpy.mockRestore();
+      }
     });
 
     it('switches to an EVM chain before navigating to an EVM add method', async () => {

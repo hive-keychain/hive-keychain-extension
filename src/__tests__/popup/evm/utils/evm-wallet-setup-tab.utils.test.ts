@@ -1,5 +1,7 @@
+import { Screen } from '@interfaces/screen.interface';
 import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
 import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface.utils';
+import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import {
   EVM_CREATE_WALLET_HASH,
   EvmWalletSetupTabUtils,
@@ -77,9 +79,104 @@ describe('EvmWalletSetupTabUtils', () => {
     });
   });
 
+  describe('buildCreateWalletNavigationStack', () => {
+    it('keeps the current page under create-seed so back can return to it', () => {
+      expect(
+        EvmWalletSetupTabUtils.buildCreateWalletNavigationStack([
+          { currentPage: Screen.ACCOUNT_PAGE_INIT_ACCOUNT },
+          { currentPage: Screen.HOME_PAGE },
+        ]),
+      ).toEqual([
+        {
+          currentPage: Screen.CREATE_EVM_WALLET,
+          params: { selectedAccountType: ChainType.EVM },
+        },
+        {
+          currentPage: Screen.ACCOUNT_PAGE_INIT_ACCOUNT,
+          params: { selectedAccountType: ChainType.EVM },
+        },
+        { currentPage: Screen.HOME_PAGE },
+      ]);
+    });
+
+    it('uses add-account as the back target when the popup has no stack', () => {
+      expect(EvmWalletSetupTabUtils.buildCreateWalletNavigationStack([])).toEqual(
+        [
+          {
+            currentPage: Screen.CREATE_EVM_WALLET,
+            params: { selectedAccountType: ChainType.EVM },
+          },
+          {
+            currentPage: Screen.ACCOUNT_PAGE_INIT_ACCOUNT,
+            params: { selectedAccountType: ChainType.EVM },
+          },
+        ],
+      );
+    });
+  });
+
+  describe('resolveCreateWalletNavigationOnStartup', () => {
+    const sessionState: Record<string, unknown> = {};
+
+    beforeEach(() => {
+      Object.keys(sessionState).forEach((key) => {
+        delete sessionState[key];
+      });
+      chrome.storage.session = {
+        get: jest.fn(async (key: string) => ({ [key]: sessionState[key] })),
+        set: jest.fn(async (items: Record<string, unknown>) => {
+          Object.assign(sessionState, items);
+        }),
+        remove: jest.fn(async (key: string) => {
+          delete sessionState[key];
+        }),
+      } as unknown as typeof chrome.storage.session;
+    });
+
+    afterEach(() => {
+      delete (chrome.storage as { session?: unknown }).session;
+    });
+
+    it('restores the handed-off stack once', async () => {
+      const stack = EvmWalletSetupTabUtils.buildCreateWalletNavigationStack([
+        { currentPage: Screen.ACCOUNT_PAGE_INIT_ACCOUNT },
+      ]);
+      await EvmWalletSetupTabUtils.saveCreateWalletNavigationHandoff(stack);
+
+      await expect(
+        EvmWalletSetupTabUtils.resolveCreateWalletNavigationOnStartup(''),
+      ).resolves.toEqual(stack);
+      await expect(
+        EvmWalletSetupTabUtils.resolveCreateWalletNavigationOnStartup(
+          EVM_CREATE_WALLET_HASH,
+        ),
+      ).resolves.toEqual(
+        EvmWalletSetupTabUtils.buildCreateWalletNavigationStack([]),
+      );
+    });
+
+    it('falls back to create-seed with add-account underneath when only the hash is present', async () => {
+      await expect(
+        EvmWalletSetupTabUtils.resolveCreateWalletNavigationOnStartup(
+          EVM_CREATE_WALLET_HASH,
+        ),
+      ).resolves.toEqual(
+        EvmWalletSetupTabUtils.buildCreateWalletNavigationStack([]),
+      );
+    });
+
+    it('returns null when there is no handoff and no create hash', async () => {
+      await expect(
+        EvmWalletSetupTabUtils.resolveCreateWalletNavigationOnStartup(''),
+      ).resolves.toBeNull();
+    });
+  });
+
   describe('openEvmCreateWalletOutsideToolbarPopup', () => {
-    it('opens the outside-popup create-wallet route', () => {
-      EvmWalletSetupTabUtils.openEvmCreateWalletOutsideToolbarPopup();
+    it('opens the outside-popup create-wallet route', async () => {
+      await EvmWalletSetupTabUtils.openEvmCreateWalletOutsideToolbarPopup([
+        { currentPage: Screen.ACCOUNT_PAGE_INIT_ACCOUNT },
+      ]);
 
       expect(openDetachedExtensionMock).toHaveBeenCalledWith(
         EVM_CREATE_WALLET_HASH,
@@ -88,12 +185,13 @@ describe('EvmWalletSetupTabUtils', () => {
   });
 
   describe('startEvmCreateWalletFromToolbarPopup', () => {
-    it('opens outside the toolbar popup instead of navigating in place', () => {
+    it('opens outside the toolbar popup instead of navigating in place', async () => {
       isToolbarPopupMock.mockReturnValue(true);
       const navigateToCreateWallet = jest.fn();
 
-      EvmWalletSetupTabUtils.startEvmCreateWalletFromToolbarPopup(
+      await EvmWalletSetupTabUtils.startEvmCreateWalletFromToolbarPopup(
         navigateToCreateWallet,
+        [{ currentPage: Screen.ACCOUNT_PAGE_INIT_ACCOUNT }],
       );
 
       expect(openDetachedExtensionMock).toHaveBeenCalledWith(
@@ -102,12 +200,13 @@ describe('EvmWalletSetupTabUtils', () => {
       expect(navigateToCreateWallet).not.toHaveBeenCalled();
     });
 
-    it('navigates in place when not on the toolbar popup', () => {
+    it('navigates in place when not on the toolbar popup', async () => {
       isToolbarPopupMock.mockReturnValue(false);
       const navigateToCreateWallet = jest.fn();
 
-      EvmWalletSetupTabUtils.startEvmCreateWalletFromToolbarPopup(
+      await EvmWalletSetupTabUtils.startEvmCreateWalletFromToolbarPopup(
         navigateToCreateWallet,
+        [{ currentPage: Screen.ACCOUNT_PAGE_INIT_ACCOUNT }],
       );
 
       expect(openDetachedExtensionMock).not.toHaveBeenCalled();
