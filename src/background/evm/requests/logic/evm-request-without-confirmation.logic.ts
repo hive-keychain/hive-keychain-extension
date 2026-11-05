@@ -25,7 +25,10 @@ import { CommunicationUtils } from 'src/utils/communication.utils';
 import Logger from 'src/utils/logger.utils';
 import { getPendingRequestMessageOptions } from '@background/multichain/pending-request.interface';
 import { EvmCallBatchModule } from '@background/evm/evm-call-batch.module';
-import { EvmSubscriptionModule } from '@background/evm/evm-subscription.module';
+import {
+  EvmSubscriptionError,
+  EvmSubscriptionModule,
+} from '@background/evm/evm-subscription.module';
 import { EvmTransactionSubmissionModule } from '@background/evm/evm-transaction-submission.module';
 
 export const evmRequestWithoutConfirmation = async (
@@ -191,6 +194,12 @@ export const evmRequestWithoutConfirmation = async (
         const chainId =
           request.chainId ??
           (await EvmChainUtils.getLastEvmChainIdForOrigin(dappInfo.origin));
+        if (!chainId) {
+          throw new EvmSubscriptionError(
+            ProviderRpcErrorList.invalidMethodParams.code,
+            'Missing chain id',
+          );
+        }
         message.value.result = await EvmSubscriptionModule.handle({
           method: request.method,
           params: request.params,

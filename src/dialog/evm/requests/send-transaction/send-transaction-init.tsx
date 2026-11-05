@@ -930,17 +930,16 @@ export async function runSendTransactionInit(
               }
             }
 
+            const decodedCall = decodedTransactionData;
             const spendingPermission =
               EvmSpendingPermissionUtils.classifyDecodedCall({
-                method: decodedTransactionData.name,
-                inputs: decodedTransactionData.fragment.inputs?.map(
-                  (input) => ({
-                    name: input.name,
-                    type: input.type,
-                  }),
-                ),
-                args: decodedTransactionData.fragment.inputs?.map(
-                  (_input, index) => decodedTransactionData.args[index],
+                method: decodedCall.name,
+                inputs: decodedCall.fragment.inputs?.map((input) => ({
+                  name: input.name,
+                  type: input.type,
+                })),
+                args: decodedCall.fragment.inputs?.map(
+                  (_input, index) => decodedCall.args[index],
                 ),
                 tokenAddress: tokenAddress ?? undefined,
                 tokenSymbol: usedToken.symbol,
@@ -962,12 +961,10 @@ export async function runSendTransactionInit(
             }
 
             const swapPreview = EvmSwapPreviewUtils.classifyDecodedSwap({
-              method: decodedTransactionData.name,
-              inputs: toSwapPreviewInputs(
-                decodedTransactionData.fragment.inputs ?? [],
-              ),
-              args: decodedTransactionData.fragment.inputs?.map(
-                (_input, index) => decodedTransactionData.args[index],
+              method: decodedCall.name,
+              inputs: toSwapPreviewInputs(decodedCall.fragment.inputs ?? []),
+              args: decodedCall.fragment.inputs?.map(
+                (_input, index) => decodedCall.args[index],
               ),
               nativeValue: nativePaymentValue,
             });

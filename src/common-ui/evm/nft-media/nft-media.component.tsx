@@ -95,11 +95,12 @@ export const EvmNftMedia = ({ src, className }: Props) => {
       <video
         className={mediaClassName}
         src={mediaSrc}
-        referrerPolicy="no-referrer"
         autoPlay
         loop
         ref={(element) => {
-          if (element) element.muted = true;
+          if (!element) return;
+          element.muted = true;
+          element.setAttribute('referrerpolicy', 'no-referrer');
         }}
         playsInline
         onError={handleError}
