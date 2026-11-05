@@ -231,4 +231,19 @@ describe('EvmNftCollectionComponent', () => {
         .map((element) => element.textContent),
     ).toEqual(['Zebra', 'Alpha']);
   });
+
+  it('hides search, filter, and sort when the collection is empty', () => {
+    customRender(
+      <EvmNftCollectionComponent nftList={[]} onSelectNft={jest.fn()} />,
+      {
+        initialState: buildState(),
+      },
+    );
+
+    expect(
+      screen.queryByPlaceholderText('evm_nft_search_nft'),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId('nft-filter-button')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('nft-sort-button')).not.toBeInTheDocument();
+  });
 });

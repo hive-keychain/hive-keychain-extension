@@ -29,6 +29,5 @@ describe('MenuComponent', () => {
     expect(
       screen.getByRole('button', { name: 'X (Twitter)' }),
     ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Medium' })).toBeInTheDocument();
   });
 });

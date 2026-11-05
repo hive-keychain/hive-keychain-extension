@@ -69,7 +69,6 @@ const Config = {
     discord: 'https://discord.gg/BgNH8rRukz',
     peakd: 'https://peakd.com/@keychain',
     twitter: 'https://twitter.com/HiveKeychain',
-    medium: 'https://medium.com/@hivekeychain',
   },
   vault: {
     portName: 'vault-connection',

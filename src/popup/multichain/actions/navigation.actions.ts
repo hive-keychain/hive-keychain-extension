@@ -40,6 +40,18 @@ export const goBack = (): AppThunk => async (dispatch, getState) => {
   dispatch({ type: MultichainActionType.GO_BACK });
 };
 
+export const replaceNavigationStack =
+  (stack: { currentPage: Screen; params?: NavigationParams }[]): AppThunk =>
+  async (dispatch) => {
+    dispatch({ type: MultichainActionType.RESET_NAV });
+    [...stack].reverse().forEach((entry) => {
+      dispatch({
+        type: MultichainActionType.NAVIGATE_TO_WITH_PARAMS,
+        payload: { nextPage: entry.currentPage, params: entry.params },
+      });
+    });
+  };
+
 export const goBackToThenNavigate =
   (navigateTo: Screen, goBackTo?: Screen): AppThunk =>
   async (dispatch) => {

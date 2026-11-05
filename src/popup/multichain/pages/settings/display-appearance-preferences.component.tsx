@@ -73,7 +73,7 @@ interface DisplayAppearancePreferencesProps {
 
 export const DisplayAppearancePreferencesComponent = ({
   dataTestId = 'display-appearance-preferences',
-  defaultDisplayMode = DisplayMode.POPUP,
+  defaultDisplayMode = DisplayMode.SIDE_PANEL,
   loadStoredDisplayMode = true,
   loadStoredLanguage = true,
   persistDisplayModeOnChange = true,

@@ -110,11 +110,14 @@ const AddAccountMain = ({
       return;
     }
     await setChain(targetChain);
-    EvmWalletSetupTabUtils.startEvmCreateWalletFromToolbarPopup(() => {
-      navigateToWithParams(Screen.CREATE_EVM_WALLET, {
-        selectedAccountType: ChainType.EVM,
-      });
-    });
+    await EvmWalletSetupTabUtils.startEvmCreateWalletFromToolbarPopup(
+      () => {
+        navigateToWithParams(Screen.CREATE_EVM_WALLET, {
+          selectedAccountType: ChainType.EVM,
+        });
+      },
+      reduxStore.getState().navigation.stack,
+    );
   };
 
   const handleImportEvmWallet = (): void => {

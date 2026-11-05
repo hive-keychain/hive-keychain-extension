@@ -917,6 +917,92 @@ describe('UnlockedAppComponent', () => {
     window.location.hash = previousHash;
   });
 
+  it('opens create-seed from the popup handoff with the previous page underneath', async () => {
+    const sessionState: Record<string, unknown> = {
+      EVM_CREATE_WALLET_NAVIGATION_HANDOFF: [
+        {
+          currentPage: Screen.CREATE_EVM_WALLET,
+          params: { selectedAccountType: ChainType.EVM },
+        },
+        { currentPage: Screen.ACCOUNT_PAGE_INIT_ACCOUNT },
+        { currentPage: Screen.HOME_PAGE },
+      ],
+    };
+    const originalSession = chrome.storage.session;
+    chrome.storage.session = {
+      get: jest.fn(async (key: string) => ({ [key]: sessionState[key] })),
+      set: jest.fn(),
+      remove: jest.fn(async (key: string) => {
+        delete sessionState[key];
+      }),
+    } as unknown as typeof chrome.storage.session;
+
+    const { store } = customRender(<UnlockedAppComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk: mkData.user.one,
+        chain: hiveChain,
+        navigation: {
+          stack: [],
+        },
+        hive: {
+          ...initialEmptyStateStore.hive,
+          appStatus: {
+            ...initialEmptyStateStore.hive.appStatus,
+            priceLoaded: true,
+            globalPropertiesLoaded: true,
+          },
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(store.getState().navigation.stack.map((entry) => entry.currentPage)).toEqual([
+        Screen.CREATE_EVM_WALLET,
+        Screen.ACCOUNT_PAGE_INIT_ACCOUNT,
+        Screen.HOME_PAGE,
+      ]);
+    });
+
+    chrome.storage.session = originalSession;
+  });
+
+  it('opens create-seed from the hash when Hive accounts already exist', async () => {
+    const previousHash = window.location.hash;
+    window.location.hash = '#evm/create';
+
+    const { store } = customRender(<UnlockedAppComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk: mkData.user.one,
+        chain: hiveChain,
+        navigation: {
+          stack: [],
+        },
+        hive: {
+          ...initialEmptyStateStore.hive,
+          appStatus: {
+            ...initialEmptyStateStore.hive.appStatus,
+            priceLoaded: true,
+            globalPropertiesLoaded: true,
+          },
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(store.getState().navigation.stack[0]?.currentPage).toBe(
+        Screen.CREATE_EVM_WALLET,
+      );
+      expect(store.getState().navigation.stack[1]?.currentPage).toBe(
+        Screen.ACCOUNT_PAGE_INIT_ACCOUNT,
+      );
+    });
+    expect(window.location.hash).toBe('');
+
+    window.location.hash = previousHash;
+  });
+
   it('reconciles completed pending accounts while preserving EVM context', async () => {
     const importedAccount = {
       name: 'new-account',

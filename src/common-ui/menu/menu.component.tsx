@@ -70,9 +70,6 @@ const Menu = ({
   const goToTwitter = () => {
     chrome.tabs.create({ url: 'https://twitter.com/HiveKeychain' });
   };
-  const goToMedium = () => {
-    chrome.tabs.create({ url: 'https://medium.com/@hivekeychain' });
-  };
 
   return (
     <>
@@ -108,13 +105,6 @@ const Menu = ({
           icon={SVGIcons.MENU_BOTTOM_BAR_TWITTER}
           ariaLabel="X (Twitter)"
           onClick={goToTwitter}
-          hoverable
-        />
-        <SVGIcon
-          className="network-icon"
-          icon={SVGIcons.MENU_BOTTOM_BAR_MEDIUM}
-          ariaLabel="Medium"
-          onClick={goToMedium}
           hoverable
         />
       </div>

@@ -26,7 +26,7 @@ const DisplayAppearanceSetupPage = ({
   const isMigrationSetup = hasFinishedSignup === true;
   const setupDraft = SetupAppearanceDraftUtils.getDraft();
   const [selectedDisplayMode, setSelectedDisplayMode] = useState(
-    () => setupDraft?.displayMode ?? DisplayMode.POPUP,
+    () => setupDraft?.displayMode ?? DisplayMode.SIDE_PANEL,
   );
   const [selectedLanguage, setSelectedLanguage] = useState<I18nLanguageOption>(
     () =>
@@ -101,7 +101,7 @@ const DisplayAppearanceSetupPage = ({
       <div className="display-appearance-setup-content">
         <DisplayAppearancePreferencesComponent
           dataTestId="setup-display-appearance-preferences"
-          defaultDisplayMode={DisplayMode.POPUP}
+          defaultDisplayMode={DisplayMode.SIDE_PANEL}
           loadStoredDisplayMode={isMigrationSetup}
           loadStoredLanguage={isMigrationSetup}
           persistDisplayModeOnChange={false}

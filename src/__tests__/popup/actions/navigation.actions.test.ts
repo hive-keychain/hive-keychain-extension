@@ -120,6 +120,38 @@ describe('navigation.actions tests:\n', () => {
     });
   });
 
+  describe('replaceNavigationStack tests:\n', () => {
+    test('Must replace the stack and keep back history', async () => {
+      const fakeStore = getFakeStore({
+        ...initialEmptyStateStore,
+        navigation: {
+          stack: [{ currentPage: Screen.HOME_PAGE }],
+        },
+      });
+      await fakeStore.dispatch<any>(
+        navigationActions.replaceNavigationStack([
+          {
+            currentPage: Screen.CREATE_EVM_WALLET,
+            params: { selectedAccountType: 'EVM' },
+          },
+          { currentPage: Screen.ACCOUNT_PAGE_INIT_ACCOUNT },
+          { currentPage: Screen.HOME_PAGE },
+        ]),
+      );
+      expect(fakeStore.getState().navigation.stack).toEqual([
+        {
+          currentPage: Screen.CREATE_EVM_WALLET,
+          params: { selectedAccountType: 'EVM' },
+        },
+        {
+          currentPage: Screen.ACCOUNT_PAGE_INIT_ACCOUNT,
+          params: undefined,
+        },
+        { currentPage: Screen.HOME_PAGE, params: undefined },
+      ]);
+    });
+  });
+
   describe('goBack tests:\n', () => {
     test('Must return empty stack', async () => {
       const fakeStore = getFakeStore(initialEmptyStateStore);

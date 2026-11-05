@@ -89,8 +89,12 @@ describe('DetachedExtensionTabUtils', () => {
     await DetachedExtensionTabUtils.openDetachedExtension('#evm/create');
 
     expect(setPanelBehavior).not.toHaveBeenCalled();
-    expect(setOptions).toHaveBeenCalledWith({
+    expect(setOptions).toHaveBeenNthCalledWith(1, {
       path: 'sidepanel.html#evm/create',
+      enabled: true,
+    });
+    expect(setOptions).toHaveBeenNthCalledWith(2, {
+      path: 'sidepanel.html',
       enabled: true,
     });
     expect(open).toHaveBeenCalledWith({ windowId: -2 });

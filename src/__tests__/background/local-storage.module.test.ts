@@ -70,6 +70,71 @@ describe('local-storage.module tests:\n', () => {
     );
   });
 
+  it('stops the favorite migration and later steps when the wallet is locked', async () => {
+    jest.spyOn(MkModule, 'getMk').mockResolvedValue(undefined as any);
+    const migrateSpy = jest
+      .spyOn(EncryptedLocalStorageUtils, 'migrateIdentitySettings')
+      .mockResolvedValue(undefined);
+    const productionFavorites = {
+      alice: [{ value: 'stoodkev', subLabel: 'Kikou' }],
+    };
+    LocalStorageUtils.getValueFromLocalStorage = jest
+      .fn()
+      .mockImplementation((key: LocalStorageKeyEnum) => {
+        if (key === LocalStorageKeyEnum.LOCAL_STORAGE_VERSION) {
+          return 5;
+        }
+        if (key === LocalStorageKeyEnum.FAVORITE_USERS) {
+          return productionFavorites;
+        }
+        return undefined;
+      });
+    const saveSpy = jest
+      .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+      .mockResolvedValue(undefined);
+
+    await LocalStorageModule.checkAndUpdateLocalStorage();
+
+    expect(saveSpy).not.toHaveBeenCalled();
+    expect(migrateSpy).not.toHaveBeenCalled();
+  });
+
+  it('migrates production favorites and continues once the wallet is unlocked', async () => {
+    jest.spyOn(MkModule, 'getMk').mockResolvedValue(mk.user.one);
+    const migrateSpy = jest
+      .spyOn(EncryptedLocalStorageUtils, 'migrateIdentitySettings')
+      .mockResolvedValue(undefined);
+    LocalStorageUtils.getValueFromLocalStorage = jest
+      .fn()
+      .mockImplementation((key: LocalStorageKeyEnum) => {
+        if (key === LocalStorageKeyEnum.LOCAL_STORAGE_VERSION) {
+          return 5;
+        }
+        if (key === LocalStorageKeyEnum.FAVORITE_USERS) {
+          return { alice: [{ value: 'stoodkev', subLabel: 'Kikou' }] };
+        }
+        return undefined;
+      });
+    const saveSpy = jest
+      .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+      .mockResolvedValue(undefined);
+
+    await LocalStorageModule.checkAndUpdateLocalStorage();
+
+    expect(saveSpy).toHaveBeenCalledWith(LocalStorageKeyEnum.FAVORITE_USERS, {
+      alice: [{ label: 'stoodkev', value: 'stoodkev', subLabel: 'Kikou' }],
+    });
+    expect(saveSpy).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.LOCAL_STORAGE_VERSION,
+      6,
+    );
+    expect(migrateSpy).toHaveBeenCalledWith(mk.user.one);
+    expect(saveSpy).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.LOCAL_STORAGE_VERSION,
+      7,
+    );
+  });
+
   it('does not bump to version 7 when mk is missing', async () => {
     jest.spyOn(MkModule, 'getMk').mockResolvedValue(undefined as any);
     const migrateSpy = jest
