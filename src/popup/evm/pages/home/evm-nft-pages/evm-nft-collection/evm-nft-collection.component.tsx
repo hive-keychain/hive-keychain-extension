@@ -158,61 +158,63 @@ export const EvmNftCollectionComponent = ({
             )}
           </div>
         )}
-        <div className="nft-gallery-toolbar">
-          <InputComponent
-            value={query}
-            type={InputType.TEXT}
-            onChange={setQuery}
-            placeholder="evm_nft_search_nft"
-            logo={SVGIcons.INPUT_SEARCH}
-          />
-          {showFilter && (
+        {nftList.length > 0 && (
+          <div className="nft-gallery-toolbar">
+            <InputComponent
+              value={query}
+              type={InputType.TEXT}
+              onChange={setQuery}
+              placeholder="evm_nft_search_nft"
+              logo={SVGIcons.INPUT_SEARCH}
+            />
+            {showFilter && (
+              <EvmNftOptionsMenu
+                triggerLabel="evm_nft_filter"
+                active={filter !== 'all'}
+                testId="nft-filter-button"
+                items={[
+                  {
+                    label: 'evm_nft_filter_all',
+                    selected: filter === 'all',
+                    testId: 'nft-filter-all',
+                    onClick: () => setFilter('all'),
+                  },
+                  {
+                    label: 'evm_nft_filter_multiple',
+                    selected: filter === 'multiple',
+                    testId: 'nft-filter-multiple',
+                    onClick: () => setFilter('multiple'),
+                  },
+                ]}
+              />
+            )}
             <EvmNftOptionsMenu
-              triggerLabel="evm_nft_filter"
-              active={filter !== 'all'}
-              testId="nft-filter-button"
+              triggerLabel="evm_nft_sort"
+              active={sort !== defaultSort}
+              testId="nft-sort-button"
               items={[
                 {
-                  label: 'evm_nft_filter_all',
-                  selected: filter === 'all',
-                  testId: 'nft-filter-all',
-                  onClick: () => setFilter('all'),
+                  label: 'evm_nft_sort_name',
+                  selected: sort === 'name',
+                  testId: 'nft-sort-name',
+                  onClick: () => setSort('name'),
                 },
                 {
-                  label: 'evm_nft_filter_multiple',
-                  selected: filter === 'multiple',
-                  testId: 'nft-filter-multiple',
-                  onClick: () => setFilter('multiple'),
+                  label: 'evm_nft_sort_token_id',
+                  selected: sort === 'tokenId',
+                  testId: 'nft-sort-token-id',
+                  onClick: () => setSort('tokenId'),
+                },
+                {
+                  label: 'evm_nft_sort_quantity',
+                  selected: sort === 'quantity',
+                  testId: 'nft-sort-quantity',
+                  onClick: () => setSort('quantity'),
                 },
               ]}
             />
-          )}
-          <EvmNftOptionsMenu
-            triggerLabel="evm_nft_sort"
-            active={sort !== defaultSort}
-            testId="nft-sort-button"
-            items={[
-              {
-                label: 'evm_nft_sort_name',
-                selected: sort === 'name',
-                testId: 'nft-sort-name',
-                onClick: () => setSort('name'),
-              },
-              {
-                label: 'evm_nft_sort_token_id',
-                selected: sort === 'tokenId',
-                testId: 'nft-sort-token-id',
-                onClick: () => setSort('tokenId'),
-              },
-              {
-                label: 'evm_nft_sort_quantity',
-                selected: sort === 'quantity',
-                testId: 'nft-sort-quantity',
-                onClick: () => setSort('quantity'),
-              },
-            ]}
-          />
-        </div>
+          </div>
+        )}
         <div className="nft-list" ref={backToTopHook.list}>
           {visibleItems.map((listItem) => {
             const quantity = EvmNftDisplayUtils.getNftOwnedQuantity(

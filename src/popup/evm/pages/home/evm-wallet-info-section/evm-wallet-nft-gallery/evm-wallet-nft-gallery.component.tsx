@@ -129,6 +129,8 @@ const EvmWalletNftGallery = ({
     navigateTo(EvmScreen.EVM_CUSTOM_NFTS_PAGE);
   };
 
+  const showCollectionFilter = (filteredCollections?.length ?? 0) > 0;
+
   const handleHideEmptyCard = async () => {
     await setCustomNftEmptyCardHiddenForChain(chain.chainId);
     setEmptyCardState((prev) => ({ ...prev, showCard: false }));
@@ -145,24 +147,28 @@ const EvmWalletNftGallery = ({
               dataTestId="evm-nft-stale-alert"
             />
           )}
-          <div className="nft-gallery-toolbar">
-            <InputComponent
-              value={filterValue}
-              type={InputType.TEXT}
-              onChange={setFilterValue}
-              placeholder="evm_nft_search_collection"
-              logo={SVGIcons.INPUT_SEARCH}
-              dataTestId="nft-collection-search"
-            />
-            {isCustomChainSelected && (
-              <button
-                type="button"
-                className="nft-gallery-settings"
-                onClick={openAddCustomTokenPanel}>
-                <SVGIcon icon={SVGIcons.WALLET_SETTINGS} />
-              </button>
-            )}
-          </div>
+          {(showCollectionFilter || isCustomChainSelected) && (
+            <div className="nft-gallery-toolbar">
+              {showCollectionFilter && (
+                <InputComponent
+                  value={filterValue}
+                  type={InputType.TEXT}
+                  onChange={setFilterValue}
+                  placeholder="evm_nft_search_collection"
+                  logo={SVGIcons.INPUT_SEARCH}
+                  dataTestId="nft-collection-search"
+                />
+              )}
+              {isCustomChainSelected && (
+                <button
+                  type="button"
+                  className="nft-gallery-settings"
+                  onClick={openAddCustomTokenPanel}>
+                  <SVGIcon icon={SVGIcons.WALLET_SETTINGS} />
+                </button>
+              )}
+            </div>
+          )}
           {emptyCardState.ready && emptyCardState.showCard && (
             <Card className="evm-custom-erc20-empty-card">
               <p
