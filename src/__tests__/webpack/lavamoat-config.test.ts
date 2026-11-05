@@ -71,6 +71,12 @@ describe('lavamoat webpack config', () => {
       expect(config.entry.evmKeychainLegacyYielding).toBeUndefined();
     });
 
+    expect(
+      chromium.plugins.some(
+        (plugin) => plugin?.constructor?.name === 'LavaMoatStyleExclusionPlugin',
+      ),
+    ).toBe(true);
+
     const chromiumPlugin = findLavaMoatPlugin(chromium);
     const firefoxPlugin = findLavaMoatPlugin(firefox);
     const betaPlugin = findLavaMoatPlugin(beta);

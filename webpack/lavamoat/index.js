@@ -1,5 +1,8 @@
 const path = require('path');
 const LavaMoatPlugin = require('@lavamoat/webpack');
+const {
+  LavaMoatStyleExclusionPlugin,
+} = require('./style-exclusion');
 
 // Browser checklist: webpack/lavamoat/SMOKE_TEST.md
 
@@ -88,7 +91,11 @@ const applyLavaMoat = (webpackConfig, target) => {
         ...excludeStyleModules(webpackConfig.module.rules),
       ],
     },
-    plugins: [...webpackConfig.plugins, createLavaMoatPlugin(target)],
+    plugins: [
+      ...webpackConfig.plugins,
+      createLavaMoatPlugin(target),
+      new LavaMoatStyleExclusionPlugin(),
+    ],
   };
 };
 

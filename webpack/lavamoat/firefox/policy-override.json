@@ -4,6 +4,12 @@
       "globals": {
         "chrome": false
       }
+    },
+    "socket.io-client>engine.io-client": {
+      "globals": {
+        "clearTimeout": true,
+        "setTimeout": true
+      }
     }
   }
 }
