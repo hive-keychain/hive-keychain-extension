@@ -5,9 +5,10 @@ import { setTitleContainerProperties } from '@popup/multichain/actions/title-con
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import FlatList from 'flatlist-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
+import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -18,6 +19,44 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 import { HtmlUtils } from 'src/utils/html.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
+
+export const TokenFilterName = ({ name }: { name: string }) => {
+  const nameRef = useRef<HTMLDivElement>(null);
+  const [isTruncated, setIsTruncated] = useState(false);
+
+  useLayoutEffect(() => {
+    const element = nameRef.current;
+    if (!element) {
+      return;
+    }
+
+    const updateTruncation = () => {
+      setIsTruncated(element.scrollWidth > element.clientWidth);
+    };
+
+    updateTruncation();
+
+    if (typeof ResizeObserver === 'undefined') {
+      return;
+    }
+
+    const resizeObserver = new ResizeObserver(updateTruncation);
+    resizeObserver.observe(element);
+    return () => resizeObserver.disconnect();
+  }, [name]);
+
+  return (
+    <CustomTooltip
+      message={isTruncated ? name : undefined}
+      skipTranslation
+      additionalClassName="token-filter-name-tooltip">
+      <div className="name" ref={nameRef}>
+        {name}
+      </div>
+    </CustomTooltip>
+  );
+};
+
 const TokensFilter = ({
   tokens,
   loadTokens,
@@ -113,7 +152,7 @@ const TokensFilter = ({
                   <div
                     data-testid="token-list-item-description"
                     className="description">
-                    <div className="name">{token.name}</div>
+                    <TokenFilterName name={token.name} />
                     <div className="extra-info">
                       <div className="details">
                         <div className="logo-container">
