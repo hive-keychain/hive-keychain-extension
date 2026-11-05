@@ -166,6 +166,10 @@ const checkAndUpdateLocalStorage = async () => {
         saveNewLocalStorageVersion(5);
       }
       case 5: {
+        const mk = await MkModule.getMk();
+        if (!mk) {
+          return;
+        }
         const newFavoriteUsers: any = {};
         const favoriteUsers = await LocalStorageUtils.getValueFromLocalStorage(
           LocalStorageKeyEnum.FAVORITE_USERS,
@@ -176,6 +180,7 @@ const checkAndUpdateLocalStorage = async () => {
             for (const item of favoriteUsers[user]) {
               newFavoriteUsers[user].push({
                 label: item.value,
+                value: item.value,
                 subLabel: item.subLabel,
               } as AutoCompleteValue);
             }
@@ -186,7 +191,7 @@ const checkAndUpdateLocalStorage = async () => {
           );
         }
 
-        saveNewLocalStorageVersion(6);
+        await saveNewLocalStorageVersion(6);
       }
       case 6: {
         const mk = await MkModule.getMk();
