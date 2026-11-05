@@ -1,0 +1,1884 @@
+{
+  "resources": {
+    "@atlaskit/pragmatic-drag-and-drop": {
+      "globals": {
+        "DOMRect.fromRect": true,
+        "Element": true,
+        "HTMLElement": true,
+        "HTMLIFrameElement": true,
+        "Node": true,
+        "cancelAnimationFrame": true,
+        "console.warn": true,
+        "document": true,
+        "innerHeight": true,
+        "innerWidth": true,
+        "navigator": true,
+        "process.env.NODE_ENV": true,
+        "requestAnimationFrame": true
+      },
+      "packages": {
+        "redux>@babel/runtime": true,
+        "@atlaskit/pragmatic-drag-and-drop>bind-event-listener": true,
+        "@atlaskit/pragmatic-drag-and-drop>raf-schd": true
+      }
+    },
+    "react-dropdown-select>@emotion/react>@emotion/cache": {
+      "globals": {
+        "document.head": true,
+        "document.querySelectorAll": true
+      },
+      "packages": {
+        "react-dropdown-select>@emotion/react>@emotion/cache>@emotion/memoize": true,
+        "react-dropdown-select>@emotion/react>@emotion/sheet": true,
+        "react-dropdown-select>@emotion/react>@emotion/cache>@emotion/weak-memoize": true,
+        "react-dropdown-select>@emotion/react>@emotion/cache>stylis": true
+      }
+    },
+    "react-dropdown-select>@emotion/styled>@emotion/is-prop-valid": {
+      "packages": {
+        "react-dropdown-select>@emotion/react>@emotion/cache>@emotion/memoize": true
+      }
+    },
+    "react-dropdown-select>@emotion/react": {
+      "globals": {
+        "HTMLElement": true,
+        "process.env.NODE_ENV": true
+      },
+      "packages": {
+        "redux>@babel/runtime": true,
+        "react-dropdown-select>@emotion/react>@emotion/cache": true,
+        "react-dropdown-select>@emotion/react>@emotion/serialize": true,
+        "react-dropdown-select>@emotion/react>@emotion/utils": true,
+        "react-dropdown-select>@emotion/react>@emotion/weak-memoize": true,
+        "react": true
+      }
+    },
+    "react-dropdown-select>@emotion/react>@emotion/serialize": {
+      "packages": {
+        "react-dropdown-select>@emotion/react>@emotion/serialize>@emotion/hash": true,
+        "react-dropdown-select>@emotion/react>@emotion/cache>@emotion/memoize": true,
+        "react-dropdown-select>@emotion/react>@emotion/serialize>@emotion/unitless": true
+      }
+    },
+    "react-dropdown-select>@emotion/react>@emotion/sheet": {
+      "globals": {
+        "document.createElement": true,
+        "document.createTextNode": true,
+        "document.styleSheets": true
+      }
+    },
+    "react-dropdown-select>@emotion/styled": {
+      "globals": {
+        "console.error": true,
+        "process.env.NODE_ENV": true
+      },
+      "packages": {
+        "redux>@babel/runtime": true,
+        "react-dropdown-select>@emotion/styled>@emotion/is-prop-valid": true,
+        "react-dropdown-select>@emotion/react": true,
+        "react-dropdown-select>@emotion/react>@emotion/serialize": true,
+        "react-dropdown-select>@emotion/react>@emotion/utils": true,
+        "react": true
+      }
+    },
+    "@engrave/ledger-app-hive": {
+      "globals": {
+        "Buffer.alloc": true,
+        "Buffer.concat": true,
+        "Buffer.from": true
+      },
+      "packages": {
+        "@engrave/ledger-app-hive>@ledgerhq/errors": true,
+        "ethers>@noble/hashes": true,
+        "@engrave/ledger-app-hive>asn1.js": true,
+        "@engrave/ledger-app-hive>bip32-path": true,
+        "hive-tx>bs58": true,
+        "@hiveio/hive-js>buffer": true,
+        "moment": true,
+        "@engrave/ledger-app-hive>varint": true
+      }
+    },
+    "@metamask/eth-sig-util>@ethereumjs/util>@ethereumjs/rlp": {
+      "globals": {
+        "TextEncoder": true
+      }
+    },
+    "@metamask/eth-sig-util>@ethereumjs/util": {
+      "globals": {
+        "Buffer.alloc": true,
+        "Buffer.allocUnsafe": true,
+        "Buffer.byteLength": true,
+        "Buffer.concat": true,
+        "Buffer.from": true,
+        "Buffer.isBuffer": true,
+        "console.warn": true
+      },
+      "packages": {
+        "@metamask/eth-sig-util>@ethereumjs/util>@ethereumjs/rlp": true,
+        "@hiveio/hive-js>buffer": true,
+        "@metamask/eth-sig-util>ethereum-cryptography": true,
+        "webpack>events": true,
+        "@metamask/eth-sig-util>@ethereumjs/util>micro-ftch": true
+      }
+    },
+    "@ledgerhq/hw-app-eth>@ethersproject/abi": {
+      "globals": {
+        "console.log": true
+      },
+      "packages": {
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/address": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/bignumber": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/bytes": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/constants": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/hash": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/keccak256": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/logger": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/properties": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/strings": true
+      }
+    },
+    "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/address": {
+      "packages": {
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/bignumber": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/bytes": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/keccak256": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/logger": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/rlp": true
+      }
+    },
+    "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/bignumber": {
+      "packages": {
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/bytes": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/logger": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/bignumber>bn.js": true
+      }
+    },
+    "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/bytes": {
+      "packages": {
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/logger": true
+      }
+    },
+    "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/constants": {
+      "packages": {
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/bignumber": true
+      }
+    },
+    "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/hash": {
+      "packages": {
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/keccak256": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/strings": true
+      }
+    },
+    "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/keccak256": {
+      "packages": {
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/bytes": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/keccak256>js-sha3": true
+      }
+    },
+    "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/logger": {
+      "globals": {
+        "console": true
+      }
+    },
+    "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/properties": {
+      "packages": {
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/logger": true
+      }
+    },
+    "@ledgerhq/hw-app-eth>@ethersproject/rlp": {
+      "packages": {
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/bytes": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/logger": true
+      }
+    },
+    "@ledgerhq/hw-app-eth>@ethersproject/transactions>@ethersproject/signing-key": {
+      "packages": {
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/bytes": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/logger": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/properties": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/transactions>@ethersproject/signing-key>bn.js": true,
+        "hive-tx>secp256k1>elliptic>hash.js": true
+      }
+    },
+    "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/strings": {
+      "packages": {
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/bytes": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/logger": true
+      }
+    },
+    "@ledgerhq/hw-app-eth>@ethersproject/transactions": {
+      "packages": {
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/address": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/bignumber": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/bytes": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/constants": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/keccak256": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/logger": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/properties": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/rlp": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/transactions>@ethersproject/signing-key": true
+      }
+    },
+    "@hiveio/hive-js": {
+      "globals": {
+        "Buffer": true,
+        "WebSocket": true,
+        "console.error": true,
+        "console.log": true,
+        "console.warn": true,
+        "history.length": true,
+        "location": true,
+        "navigator.language": true,
+        "navigator.mimeTypes": true,
+        "process.env.npm_config__graphene_serializer_hex_dump": true,
+        "screen.availHeight": true,
+        "screen.availWidth": true,
+        "screen.colorDepth": true,
+        "screen.height": true,
+        "screen.pixelDepth": true,
+        "screen.width": true,
+        "setTimeout": true
+      },
+      "packages": {
+        "@hiveio/hive-js>@steemit/rpc-auth": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>assert": true,
+        "@hiveio/dhive>bigi": true,
+        "@hiveio/hive-js>bluebird": true,
+        "@hiveio/hive-js>browserify-aes": true,
+        "@hiveio/hive-js>bs58": true,
+        "@hiveio/hive-js>buffer": true,
+        "hive-tx>bytebuffer": true,
+        "@hiveio/hive-js>create-hash": true,
+        "@hiveio/hive-js>create-hmac": true,
+        "@hiveio/dhive>cross-fetch": true,
+        "@hiveio/hive-js>debug": true,
+        "@hiveio/hive-js>detect-node": true,
+        "@hiveio/dhive>ecurve": true,
+        "webpack>events": true,
+        "@hiveio/dhive>jsbi": true,
+        "lodash": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>process": true,
+        "@hiveio/hive-js>retry": true,
+        "@hiveio/dhive>ripemd160": true,
+        "@hiveio/hive-js>secure-random": true
+      }
+    },
+    "@hookform/resolvers": {
+      "packages": {
+        "react-hook-form": true
+      }
+    },
+    "@ledgerhq/hw-transport>@ledgerhq/devices": {
+      "globals": {
+        "Buffer.alloc": true,
+        "Buffer.concat": true
+      },
+      "packages": {
+        "@ledgerhq/hw-transport>@ledgerhq/devices>@ledgerhq/errors": true,
+        "@hiveio/hive-js>buffer": true,
+        "@ledgerhq/hw-transport>@ledgerhq/devices>semver": true
+      }
+    },
+    "@ledgerhq/hw-app-eth>@ledgerhq/domain-service": {
+      "packages": {
+        "@ledgerhq/hw-app-eth>@ledgerhq/logs": true,
+        "axios": true
+      }
+    },
+    "@engrave/ledger-app-hive>@ledgerhq/errors": {
+      "globals": {
+        "console.warn": true
+      }
+    },
+    "@ledgerhq/hw-transport>@ledgerhq/devices>@ledgerhq/errors": {
+      "globals": {
+        "console.warn": true
+      }
+    },
+    "@ledgerhq/hw-transport>@ledgerhq/errors": {
+      "globals": {
+        "console.warn": true
+      }
+    },
+    "@ledgerhq/hw-transport-webhid>@ledgerhq/errors": {
+      "globals": {
+        "console.warn": true
+      }
+    },
+    "@ledgerhq/hw-transport-webusb>@ledgerhq/errors": {
+      "globals": {
+        "console.warn": true
+      }
+    },
+    "@ledgerhq/hw-app-eth>@ledgerhq/evm-tools": {
+      "globals": {
+        "Intl.DateTimeFormat": true
+      },
+      "packages": {
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/constants": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/hash": true,
+        "@ledgerhq/hw-app-eth>@ledgerhq/evm-tools>@ledgerhq/live-env": true,
+        "axios": true,
+        "crypto-js": true
+      }
+    },
+    "@ledgerhq/hw-app-eth": {
+      "globals": {
+        "Buffer.alloc": true,
+        "Buffer.concat": true,
+        "Buffer.from": true,
+        "RLP": true,
+        "console.warn": true
+      },
+      "packages": {
+        "@ledgerhq/hw-app-eth>@ethersproject/abi": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/rlp": true,
+        "@ledgerhq/hw-app-eth>@ethersproject/transactions": true,
+        "@ledgerhq/hw-app-eth>@ledgerhq/domain-service": true,
+        "@ledgerhq/hw-app-eth>@ledgerhq/evm-tools": true,
+        "@ledgerhq/hw-app-eth>@ledgerhq/logs": true,
+        "axios": true,
+        "@ledgerhq/hw-app-eth>bignumber.js": true,
+        "@hiveio/hive-js>buffer": true,
+        "@ledgerhq/hw-app-eth>semver": true
+      }
+    },
+    "@ledgerhq/hw-transport": {
+      "globals": {
+        "Buffer.alloc": true,
+        "Buffer.concat": true,
+        "Buffer.from": true,
+        "clearTimeout": true,
+        "console.warn": true,
+        "setTimeout": true
+      },
+      "packages": {
+        "@ledgerhq/hw-transport>@ledgerhq/errors": true,
+        "@ledgerhq/hw-app-eth>@ledgerhq/logs": true,
+        "@hiveio/hive-js>buffer": true,
+        "webpack>events": true
+      }
+    },
+    "@ledgerhq/hw-transport-webhid": {
+      "globals": {
+        "Buffer.from": true,
+        "navigator": true
+      },
+      "packages": {
+        "@ledgerhq/hw-transport>@ledgerhq/devices": true,
+        "@ledgerhq/hw-transport-webhid>@ledgerhq/errors": true,
+        "@ledgerhq/hw-transport": true,
+        "@ledgerhq/hw-app-eth>@ledgerhq/logs": true,
+        "@hiveio/hive-js>buffer": true
+      }
+    },
+    "@ledgerhq/hw-transport-webusb": {
+      "globals": {
+        "Buffer.from": true,
+        "DOMException": true,
+        "console.warn": true,
+        "navigator": true
+      },
+      "packages": {
+        "@ledgerhq/hw-transport>@ledgerhq/devices": true,
+        "@ledgerhq/hw-transport-webusb>@ledgerhq/errors": true,
+        "@ledgerhq/hw-transport": true,
+        "@ledgerhq/hw-app-eth>@ledgerhq/logs": true,
+        "@hiveio/hive-js>buffer": true
+      }
+    },
+    "@ledgerhq/hw-app-eth>@ledgerhq/evm-tools>@ledgerhq/live-env": {
+      "globals": {
+        "console.warn": true
+      }
+    },
+    "@ledgerhq/hw-app-eth>@ledgerhq/logs": {
+      "globals": {
+        "__ledgerLogsListen": "write",
+        "console.error": true
+      }
+    },
+    "@metamask/eth-sig-util>@metamask/abi-utils": {
+      "packages": {
+        "@metamask/eth-sig-util>@metamask/utils>@metamask/superstruct": true,
+        "@metamask/eth-sig-util>@metamask/utils": true
+      }
+    },
+    "@metamask/eth-sig-util": {
+      "globals": {
+        "Buffer.byteLength": true,
+        "Buffer.from": true
+      },
+      "packages": {
+        "@metamask/eth-sig-util>@ethereumjs/util": true,
+        "@metamask/eth-sig-util>@metamask/abi-utils": true,
+        "@metamask/eth-sig-util>@metamask/utils": true,
+        "@metamask/eth-sig-util>@scure/base": true,
+        "@hiveio/hive-js>buffer": true,
+        "@metamask/eth-sig-util>ethereum-cryptography": true,
+        "@metamask/eth-sig-util>tweetnacl": true
+      }
+    },
+    "@metamask/eth-sig-util>@metamask/utils": {
+      "globals": {
+        "Buffer": true,
+        "TextDecoder": true,
+        "TextEncoder": true
+      },
+      "packages": {
+        "@metamask/eth-sig-util>@metamask/utils>@metamask/superstruct": true,
+        "ethers>@noble/hashes": true,
+        "@metamask/eth-sig-util>@scure/base": true,
+        "@hiveio/hive-js>buffer": true,
+        "eslint>debug": true,
+        "@metamask/eth-sig-util>@metamask/utils>pony-cause": true,
+        "@metamask/eth-sig-util>@metamask/utils>semver": true
+      }
+    },
+    "@metamask/eth-sig-util>ethereum-cryptography>@noble/curves": {
+      "globals": {
+        "TextEncoder": true
+      },
+      "packages": {
+        "@metamask/eth-sig-util>ethereum-cryptography>@noble/curves>@noble/hashes": true
+      }
+    },
+    "ethers>@noble/curves": {
+      "globals": {
+        "TextEncoder": true
+      },
+      "packages": {
+        "ethers>@noble/hashes": true
+      }
+    },
+    "@metamask/eth-sig-util>ethereum-cryptography>@noble/curves>@noble/hashes": {
+      "globals": {
+        "TextEncoder": true,
+        "crypto": true
+      }
+    },
+    "@metamask/eth-sig-util>ethereum-cryptography>@noble/hashes": {
+      "globals": {
+        "TextEncoder": true,
+        "crypto": true
+      }
+    },
+    "ethers>@noble/hashes": {
+      "globals": {
+        "TextEncoder": true,
+        "crypto": true
+      }
+    },
+    "@metamask/eth-sig-util>@scure/base": {
+      "globals": {
+        "TextDecoder": true,
+        "TextEncoder": true
+      }
+    },
+    "@hiveio/hive-js>@steemit/rpc-auth>@steemit/libcrypto": {
+      "globals": {
+        "addEventListener": true,
+        "console": "write",
+        "crypto": true,
+        "document.attachEvent": true,
+        "document.detachEvent": true,
+        "msCrypto": true,
+        "orientation": true,
+        "performance": true,
+        "removeEventListener": true
+      }
+    },
+    "@hiveio/hive-js>@steemit/rpc-auth": {
+      "globals": {
+        "Buffer.from": true
+      },
+      "packages": {
+        "@hiveio/hive-js>@steemit/rpc-auth>@steemit/libcrypto": true,
+        "@hiveio/hive-js>buffer": true
+      }
+    },
+    "react-svg>@tanem/svg-injector": {
+      "globals": {
+        "SVGSVGElement": true,
+        "XMLHttpRequest": true,
+        "location.protocol": true,
+        "setTimeout": true
+      },
+      "packages": {
+        "react-svg>@tanem/svg-injector>content-type": true,
+        "react-svg>@tanem/svg-injector>tslib": true
+      }
+    },
+    "@engrave/ledger-app-hive>asn1.js": {
+      "packages": {
+        "hive-tx>secp256k1>bn.js": true,
+        "@babel/cli>glob>inherits": true,
+        "@engrave/ledger-app-hive>asn1.js>minimalistic-assert": true,
+        "@engrave/ledger-app-hive>asn1.js>safer-buffer": true
+      }
+    },
+    "node-polyfill-webpack-plugin>node-stdlib-browser>assert": {
+      "globals": {
+        "console": true,
+        "process.emitWarning": true,
+        "process.stderr": true
+      },
+      "packages": {
+        "patch-package>json-stable-stringify>call-bind": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>assert>is-nan": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>assert>object-is": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>assert>object.assign": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>process": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>util": true
+      }
+    },
+    "node-polyfill-webpack-plugin>node-stdlib-browser>util>which-typed-array>available-typed-arrays": {
+      "packages": {
+        "node-polyfill-webpack-plugin>node-stdlib-browser>util>which-typed-array>available-typed-arrays>possible-typed-array-names": true
+      }
+    },
+    "axios": {
+      "globals": {
+        "AbortController": true,
+        "Blob": true,
+        "FormData": true,
+        "ReadableStream": true,
+        "URL": true,
+        "URLSearchParams": true,
+        "WorkerGlobalScope": true,
+        "XMLHttpRequest": true,
+        "btoa": true,
+        "clearTimeout": true,
+        "console.warn": true,
+        "cookieStore": true,
+        "document": true,
+        "fetch": true,
+        "importScripts": true,
+        "location.href": true,
+        "navigator": true,
+        "performance": true,
+        "process": true,
+        "queueMicrotask": true,
+        "setImmediate": true,
+        "setTimeout": true
+      },
+      "packages": {
+        "node-polyfill-webpack-plugin>node-stdlib-browser>process": true
+      }
+    },
+    "@hiveio/hive-js>bs58>base-x": {
+      "packages": {
+        "hive-tx>secp256k1>safe-buffer": true
+      }
+    },
+    "hive-keychain-commons>bs58>base-x": {
+      "packages": {
+        "hive-tx>secp256k1>safe-buffer": true
+      }
+    },
+    "@hiveio/dhive>bigi": {
+      "globals": {
+        "Buffer": true
+      },
+      "packages": {
+        "node-polyfill-webpack-plugin>node-stdlib-browser>assert": true,
+        "@hiveio/hive-js>buffer": true
+      }
+    },
+    "@ledgerhq/hw-app-eth>bignumber.js": {
+      "globals": {
+        "crypto": true
+      }
+    },
+    "hive-tx>secp256k1>bip66": {
+      "packages": {
+        "hive-tx>secp256k1>safe-buffer": true
+      }
+    },
+    "@hiveio/hive-js>bluebird": {
+      "globals": {
+        "CustomEvent": true,
+        "Event": true,
+        "MutationObserver": true,
+        "P": "write",
+        "_dereq_": true,
+        "clearTimeout": true,
+        "console": true,
+        "cordova": true,
+        "define": true,
+        "document.createElement": true,
+        "document.createEvent": true,
+        "document.documentElement": true,
+        "navigator": true,
+        "process": true,
+        "setImmediate": true,
+        "setTimeout": true
+      },
+      "packages": {
+        "node-polyfill-webpack-plugin>node-stdlib-browser>process": true
+      }
+    },
+    "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/bignumber>bn.js": {
+      "globals": {
+        "Buffer": true
+      }
+    },
+    "@ledgerhq/hw-app-eth>@ethersproject/transactions>@ethersproject/signing-key>bn.js": {
+      "globals": {
+        "Buffer": true
+      }
+    },
+    "hive-tx>secp256k1>bn.js": {
+      "globals": {
+        "Buffer": true
+      }
+    },
+    "hive-tx>secp256k1>elliptic>brorand": {
+      "globals": {
+        "crypto": true,
+        "msCrypto": true
+      }
+    },
+    "@hiveio/hive-js>browserify-aes": {
+      "globals": {
+        "Buffer.concat": true
+      },
+      "packages": {
+        "@hiveio/hive-js>browserify-aes>buffer-xor": true,
+        "@hiveio/hive-js>buffer": true,
+        "@hiveio/hive-js>create-hash>cipher-base": true,
+        "@hiveio/hive-js>browserify-aes>evp_bytestokey": true,
+        "@babel/cli>glob>inherits": true,
+        "hive-tx>secp256k1>safe-buffer": true
+      }
+    },
+    "node-polyfill-webpack-plugin>node-stdlib-browser>browserify-zlib": {
+      "globals": {
+        "Buffer.alloc": true,
+        "process.nextTick": true
+      },
+      "packages": {
+        "node-polyfill-webpack-plugin>node-stdlib-browser>assert": true,
+        "@hiveio/hive-js>buffer": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>browserify-zlib>pako": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>process": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>stream-browserify": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>util": true
+      }
+    },
+    "@hiveio/hive-js>bs58": {
+      "packages": {
+        "@hiveio/hive-js>bs58>base-x": true
+      }
+    },
+    "hive-keychain-commons>bs58": {
+      "packages": {
+        "hive-keychain-commons>bs58>base-x": true
+      }
+    },
+    "hive-tx>bs58": {
+      "packages": {
+        "hive-tx>bs58>base-x": true
+      }
+    },
+    "@hiveio/hive-js>browserify-aes>buffer-xor": {
+      "globals": {
+        "Buffer": true
+      },
+      "packages": {
+        "@hiveio/hive-js>buffer": true
+      }
+    },
+    "@hiveio/hive-js>buffer": {
+      "globals": {
+        "console": true
+      },
+      "packages": {
+        "@hiveio/hive-js>buffer>base64-js": true,
+        "@hiveio/hive-js>buffer>ieee754": true
+      }
+    },
+    "hive-tx>bytebuffer": {
+      "globals": {
+        "console": true,
+        "define": true
+      },
+      "packages": {
+        "hive-tx>bytebuffer>long": true
+      }
+    },
+    "patch-package>json-stable-stringify>call-bind>call-bind-apply-helpers": {
+      "packages": {
+        "babel-plugin-module-resolver>resolve>es-errors": true,
+        "axios>form-data>hasown>function-bind": true
+      }
+    },
+    "patch-package>json-stable-stringify>call-bind": {
+      "packages": {
+        "patch-package>json-stable-stringify>call-bind>call-bind-apply-helpers": true,
+        "patch-package>json-stable-stringify>call-bind>es-define-property": true,
+        "axios>form-data>es-set-tostringtag>get-intrinsic": true,
+        "patch-package>json-stable-stringify>call-bind>set-function-length": true
+      }
+    },
+    "patch-package>json-stable-stringify>call-bound": {
+      "packages": {
+        "patch-package>json-stable-stringify>call-bind>call-bind-apply-helpers": true,
+        "axios>form-data>es-set-tostringtag>get-intrinsic": true
+      }
+    },
+    "@hiveio/hive-js>create-hash>cipher-base": {
+      "packages": {
+        "@babel/cli>glob>inherits": true,
+        "hive-tx>secp256k1>safe-buffer": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>stream-browserify": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>string_decoder": true,
+        "@hiveio/dhive>ripemd160>hash-base>to-buffer": true
+      }
+    },
+    "react-responsive-carousel>classnames": {
+      "globals": {
+        "classNames": "write",
+        "define": true
+      }
+    },
+    "@hiveio/dhive>ripemd160>hash-base>readable-stream>core-util-is": {
+      "packages": {
+        "@hiveio/hive-js>buffer": true
+      }
+    },
+    "@hiveio/hive-js>create-hash": {
+      "packages": {
+        "@hiveio/hive-js>create-hash>cipher-base": true,
+        "@babel/cli>glob>inherits": true,
+        "@hiveio/hive-js>create-hash>md5.js": true,
+        "@hiveio/dhive>ripemd160": true,
+        "@hiveio/hive-js>create-hash>sha.js": true
+      }
+    },
+    "@hiveio/hive-js>create-hmac": {
+      "packages": {
+        "@hiveio/hive-js>create-hash>cipher-base": true,
+        "@hiveio/hive-js>create-hash": true,
+        "@babel/cli>glob>inherits": true,
+        "@hiveio/dhive>ripemd160": true,
+        "hive-tx>secp256k1>safe-buffer": true,
+        "@hiveio/hive-js>create-hash>sha.js": true
+      }
+    },
+    "@hiveio/dhive>cross-fetch": {
+      "globals": {
+        "AbortController": true,
+        "Blob": true,
+        "FileReader": true,
+        "FormData": true,
+        "URLSearchParams.prototype.isPrototypeOf": true,
+        "XMLHttpRequest": true,
+        "console.warn": true,
+        "setTimeout": true
+      }
+    },
+    "crypto-js": {
+      "globals": {
+        "Float32Array": true,
+        "Float64Array": true,
+        "crypto": true,
+        "define": true,
+        "msCrypto": true
+      }
+    },
+    "sanitize-html>launder>dayjs": {
+      "globals": {
+        "define": true
+      }
+    },
+    "@hiveio/hive-js>debug": {
+      "globals": {
+        "chrome": true,
+        "console": true,
+        "document": true,
+        "localStorage": true,
+        "navigator": true,
+        "process": true
+      },
+      "packages": {
+        "@hiveio/hive-js>debug>ms": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>process": true
+      }
+    },
+    "eslint>debug": {
+      "globals": {
+        "console": true,
+        "document": true,
+        "localStorage": true,
+        "navigator": true,
+        "process": true
+      },
+      "packages": {
+        "jsonwebtoken>ms": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>process": true
+      }
+    },
+    "decimal.js": {
+      "globals": {
+        "crypto": true
+      }
+    },
+    "patch-package>json-stable-stringify>call-bind>set-function-length>define-data-property": {
+      "packages": {
+        "patch-package>json-stable-stringify>call-bind>es-define-property": true,
+        "babel-plugin-module-resolver>resolve>es-errors": true,
+        "axios>form-data>es-set-tostringtag>get-intrinsic>gopd": true
+      }
+    },
+    "node-polyfill-webpack-plugin>node-stdlib-browser>assert>is-nan>define-properties": {
+      "packages": {
+        "patch-package>json-stable-stringify>call-bind>set-function-length>define-data-property": true,
+        "patch-package>json-stable-stringify>call-bind>set-function-length>has-property-descriptors": true,
+        "patch-package>json-stable-stringify>object-keys": true
+      }
+    },
+    "sanitize-html>htmlparser2>domutils>dom-serializer": {
+      "packages": {
+        "sanitize-html>htmlparser2>domelementtype": true,
+        "sanitize-html>htmlparser2>entities": true
+      }
+    },
+    "sanitize-html>htmlparser2>domhandler": {
+      "packages": {
+        "sanitize-html>htmlparser2>domelementtype": true
+      }
+    },
+    "sanitize-html>htmlparser2>domutils": {
+      "packages": {
+        "sanitize-html>htmlparser2>domutils>dom-serializer": true,
+        "sanitize-html>htmlparser2>domelementtype": true,
+        "sanitize-html>htmlparser2>domhandler": true
+      }
+    },
+    "axios>form-data>es-set-tostringtag>get-intrinsic>get-proto>dunder-proto": {
+      "packages": {
+        "patch-package>json-stable-stringify>call-bind>call-bind-apply-helpers": true,
+        "axios>form-data>es-set-tostringtag>get-intrinsic>gopd": true
+      }
+    },
+    "@hiveio/dhive>ecurve": {
+      "packages": {
+        "node-polyfill-webpack-plugin>node-stdlib-browser>assert": true,
+        "@hiveio/dhive>bigi": true,
+        "hive-tx>secp256k1>safe-buffer": true
+      }
+    },
+    "hive-tx>secp256k1>elliptic": {
+      "packages": {
+        "hive-tx>secp256k1>bn.js": true,
+        "hive-tx>secp256k1>elliptic>brorand": true,
+        "hive-tx>secp256k1>elliptic>hash.js": true,
+        "hive-tx>secp256k1>elliptic>hmac-drbg": true,
+        "@babel/cli>glob>inherits": true,
+        "@engrave/ledger-app-hive>asn1.js>minimalistic-assert": true,
+        "hive-tx>secp256k1>elliptic>minimalistic-crypto-utils": true
+      }
+    },
+    "socket.io-client>engine.io-client": {
+      "globals": {
+        "Headers": true,
+        "WebTransport": true,
+        "XMLHttpRequest": true,
+        "addEventListener": true,
+        "attachEvent": true,
+        "document": true,
+        "fetch": true,
+        "location": true,
+        "navigator": true,
+        "removeEventListener": true
+      },
+      "packages": {
+        "socket.io-client>@socket.io/component-emitter": true,
+        "socket.io-client>engine.io-client>engine.io-parser": true
+      }
+    },
+    "socket.io-client>engine.io-client>engine.io-parser": {
+      "globals": {
+        "Blob": true,
+        "FileReader": true,
+        "TextDecoder": true,
+        "TextEncoder": true,
+        "TransformStream": true
+      }
+    },
+    "@metamask/eth-sig-util>ethereum-cryptography": {
+      "globals": {
+        "TextDecoder": true,
+        "crypto": true
+      },
+      "packages": {
+        "@metamask/eth-sig-util>ethereum-cryptography>@noble/curves": true,
+        "@metamask/eth-sig-util>ethereum-cryptography>@noble/hashes": true
+      }
+    },
+    "ethers": {
+      "globals": {
+        "AbortController": true,
+        "Headers": true,
+        "atob": true,
+        "btoa": true,
+        "clearTimeout": true,
+        "console.log": true,
+        "fetch": true,
+        "setTimeout": true
+      },
+      "packages": {
+        "ethers>@adraffy/ens-normalize": true,
+        "ethers>@noble/curves": true,
+        "ethers>@noble/hashes": true,
+        "ethers>aes-js": true
+      }
+    },
+    "webpack>events": {
+      "globals": {
+        "console": true
+      }
+    },
+    "@hiveio/hive-js>browserify-aes>evp_bytestokey": {
+      "packages": {
+        "@hiveio/hive-js>create-hash>md5.js": true,
+        "hive-tx>secp256k1>safe-buffer": true
+      }
+    },
+    "flatlist-react": {
+      "globals": {
+        "addEventListener": true,
+        "console.error": true,
+        "console.warn": true,
+        "document.createElement": true,
+        "document.head.appendChild": true,
+        "getComputedStyle": true,
+        "process": true,
+        "removeEventListener": true,
+        "requestAnimationFrame": true,
+        "setTimeout": true
+      },
+      "packages": {
+        "node-polyfill-webpack-plugin>node-stdlib-browser>process": true,
+        "react-svg>prop-types": true,
+        "react": true,
+        "flatlist-react>warning": true
+      }
+    },
+    "node-polyfill-webpack-plugin>node-stdlib-browser>util>which-typed-array>for-each": {
+      "packages": {
+        "node-polyfill-webpack-plugin>node-stdlib-browser>util>which-typed-array>for-each>is-callable": true
+      }
+    },
+    "axios>form-data>es-set-tostringtag>get-intrinsic": {
+      "globals": {
+        "AggregateError": true,
+        "FinalizationRegistry": true,
+        "Float16Array": true,
+        "Float32Array": true,
+        "Float64Array": true,
+        "WeakRef": true
+      },
+      "packages": {
+        "patch-package>json-stable-stringify>call-bind>call-bind-apply-helpers": true,
+        "patch-package>json-stable-stringify>call-bind>es-define-property": true,
+        "babel-plugin-module-resolver>resolve>es-errors": true,
+        "axios>form-data>es-set-tostringtag>get-intrinsic>es-object-atoms": true,
+        "axios>form-data>hasown>function-bind": true,
+        "axios>form-data>es-set-tostringtag>get-intrinsic>get-proto": true,
+        "axios>form-data>es-set-tostringtag>get-intrinsic>gopd": true,
+        "axios>form-data>es-set-tostringtag>get-intrinsic>has-symbols": true,
+        "axios>form-data>es-set-tostringtag>hasown": true,
+        "axios>form-data>es-set-tostringtag>get-intrinsic>math-intrinsics": true
+      }
+    },
+    "axios>form-data>es-set-tostringtag>get-intrinsic>get-proto": {
+      "packages": {
+        "axios>form-data>es-set-tostringtag>get-intrinsic>get-proto>dunder-proto": true,
+        "axios>form-data>es-set-tostringtag>get-intrinsic>es-object-atoms": true
+      }
+    },
+    "patch-package>json-stable-stringify>call-bind>set-function-length>has-property-descriptors": {
+      "packages": {
+        "patch-package>json-stable-stringify>call-bind>es-define-property": true
+      }
+    },
+    "axios>form-data>es-set-tostringtag>has-tostringtag": {
+      "packages": {
+        "axios>form-data>es-set-tostringtag>get-intrinsic>has-symbols": true
+      }
+    },
+    "@hiveio/dhive>ripemd160>hash-base": {
+      "packages": {
+        "@babel/cli>glob>inherits": true,
+        "@hiveio/dhive>ripemd160>hash-base>readable-stream": true,
+        "hive-tx>secp256k1>safe-buffer": true,
+        "@hiveio/dhive>ripemd160>hash-base>to-buffer": true
+      }
+    },
+    "hive-tx>secp256k1>elliptic>hash.js": {
+      "packages": {
+        "@babel/cli>glob>inherits": true,
+        "@engrave/ledger-app-hive>asn1.js>minimalistic-assert": true
+      }
+    },
+    "axios>form-data>es-set-tostringtag>hasown": {
+      "packages": {
+        "axios>form-data>hasown>function-bind": true
+      }
+    },
+    "hive-keychain-commons": {
+      "globals": {
+        "Buffer": true,
+        "console.error": true,
+        "console.info": true,
+        "fetch": true,
+        "process.env.IS_FIREFOX": true,
+        "setTimeout": true
+      },
+      "packages": {
+        "hive-keychain-commons>bs58": true,
+        "@hiveio/hive-js>buffer": true,
+        "crypto-js": true,
+        "hive-tx": true,
+        "hive-keychain-commons>jsbi": true,
+        "moment": true
+      }
+    },
+    "hive-tx": {
+      "globals": {
+        "AbortController": true,
+        "Buffer": true,
+        "console.log": true,
+        "fetch": true,
+        "setTimeout": true
+      },
+      "packages": {
+        "hive-tx>bs58": true,
+        "@hiveio/hive-js>buffer": true,
+        "hive-tx>bytebuffer": true,
+        "crypto-js": true,
+        "hive-tx>secp256k1": true
+      }
+    },
+    "hive-uri": {
+      "globals": {
+        "Buffer.from": true,
+        "URL": true,
+        "URLSearchParams": true,
+        "atob": true,
+        "btoa": true
+      },
+      "packages": {
+        "@hiveio/hive-js>buffer": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>url": true
+      }
+    },
+    "hive-tx>secp256k1>elliptic>hmac-drbg": {
+      "packages": {
+        "hive-tx>secp256k1>elliptic>hash.js": true,
+        "@engrave/ledger-app-hive>asn1.js>minimalistic-assert": true,
+        "hive-tx>secp256k1>elliptic>minimalistic-crypto-utils": true
+      }
+    },
+    "react-redux>hoist-non-react-statics": {
+      "packages": {
+        "react-redux>hoist-non-react-statics>react-is": true
+      }
+    },
+    "hotkeys-js": {
+      "globals": {
+        "document": true,
+        "event": true,
+        "hotkeys": "write",
+        "navigator": true
+      }
+    },
+    "sanitize-html>htmlparser2": {
+      "globals": {
+        "DomUtils": true,
+        "ElementType": true
+      },
+      "packages": {
+        "sanitize-html>htmlparser2>domelementtype": true,
+        "sanitize-html>htmlparser2>domhandler": true,
+        "sanitize-html>htmlparser2>domutils": true,
+        "sanitize-html>htmlparser2>entities": true
+      }
+    },
+    "node-polyfill-webpack-plugin>node-stdlib-browser>https-browserify": {
+      "packages": {
+        "node-polyfill-webpack-plugin>node-stdlib-browser>stream-http": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>url": true
+      }
+    },
+    "i18next": {
+      "globals": {
+        "Intl": true,
+        "console": true,
+        "navigator": true,
+        "setTimeout": true
+      },
+      "packages": {
+        "redux>@babel/runtime": true
+      }
+    },
+    "node-polyfill-webpack-plugin>node-stdlib-browser>util>is-arguments": {
+      "packages": {
+        "patch-package>json-stable-stringify>call-bound": true,
+        "axios>form-data>es-set-tostringtag>has-tostringtag": true
+      }
+    },
+    "node-polyfill-webpack-plugin>node-stdlib-browser>util>which-typed-array>for-each>is-callable": {
+      "globals": {
+        "document": true
+      }
+    },
+    "node-polyfill-webpack-plugin>node-stdlib-browser>util>is-generator-function": {
+      "packages": {
+        "patch-package>json-stable-stringify>call-bound": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>util>is-generator-function>generator-function": true,
+        "axios>form-data>es-set-tostringtag>get-intrinsic>get-proto": true,
+        "axios>form-data>es-set-tostringtag>has-tostringtag": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>util>is-generator-function>safe-regex-test": true
+      }
+    },
+    "node-polyfill-webpack-plugin>node-stdlib-browser>assert>is-nan": {
+      "packages": {
+        "patch-package>json-stable-stringify>call-bind": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>assert>is-nan>define-properties": true
+      }
+    },
+    "@testing-library/react>@testing-library/dom>aria-query>deep-equal>is-regex": {
+      "packages": {
+        "patch-package>json-stable-stringify>call-bound": true,
+        "axios>form-data>es-set-tostringtag>get-intrinsic>gopd": true,
+        "axios>form-data>es-set-tostringtag>has-tostringtag": true,
+        "axios>form-data>es-set-tostringtag>hasown": true
+      }
+    },
+    "node-polyfill-webpack-plugin>node-stdlib-browser>util>is-typed-array": {
+      "packages": {
+        "node-polyfill-webpack-plugin>node-stdlib-browser>util>which-typed-array": true
+      }
+    },
+    "jdenticon": {
+      "globals": {
+        "document": true
+      }
+    },
+    "joi": {
+      "globals": {
+        "TextEncoder": true,
+        "URL": true,
+        "define": true
+      }
+    },
+    "@ledgerhq/hw-app-eth>@ethersproject/abi>@ethersproject/keccak256>js-sha3": {
+      "globals": {
+        "define": true,
+        "process": true
+      },
+      "packages": {
+        "node-polyfill-webpack-plugin>node-stdlib-browser>process": true
+      }
+    },
+    "@hiveio/dhive>jsbi": {
+      "globals": {
+        "Float64Array": true,
+        "define": true
+      }
+    },
+    "hive-keychain-commons>jsbi": {
+      "globals": {
+        "Float64Array": true,
+        "define": true
+      }
+    },
+    "sanitize-html>launder": {
+      "packages": {
+        "sanitize-html>launder>dayjs": true
+      }
+    },
+    "lodash": {
+      "globals": {
+        "define": true
+      }
+    },
+    "hive-tx>bytebuffer>long": {
+      "globals": {
+        "define": true
+      }
+    },
+    "@hiveio/hive-js>create-hash>md5.js": {
+      "packages": {
+        "@hiveio/dhive>ripemd160>hash-base": true,
+        "@babel/cli>glob>inherits": true,
+        "hive-tx>secp256k1>safe-buffer": true
+      }
+    },
+    "@metamask/eth-sig-util>@ethereumjs/util>micro-ftch": {
+      "globals": {
+        "Buffer.concat": true,
+        "Headers": true,
+        "TextDecoder": true,
+        "URL": true,
+        "btoa": true,
+        "fetch": true,
+        "process": true
+      },
+      "packages": {
+        "node-polyfill-webpack-plugin>node-stdlib-browser>browserify-zlib": true,
+        "@hiveio/hive-js>buffer": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>https-browserify": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>process": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>stream-http": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>url": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>util": true
+      }
+    },
+    "moment": {
+      "globals": {
+        "console": true,
+        "define": true
+      }
+    },
+    "object-hash": {
+      "globals": {
+        "addEventListener": true,
+        "console.log": true,
+        "define": true,
+        "postMessage": true,
+        "setImmediate": true,
+        "setTimeout": true
+      }
+    },
+    "webpack-dev-server>express>qs>side-channel>object-inspect": {
+      "globals": {
+        "HTMLElement": true,
+        "WeakRef": true
+      }
+    },
+    "node-polyfill-webpack-plugin>node-stdlib-browser>assert>object-is": {
+      "packages": {
+        "patch-package>json-stable-stringify>call-bind": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>assert>is-nan>define-properties": true
+      }
+    },
+    "node-polyfill-webpack-plugin>node-stdlib-browser>assert>object.assign": {
+      "packages": {
+        "patch-package>json-stable-stringify>call-bound": true,
+        "axios>form-data>es-set-tostringtag>get-intrinsic>es-object-atoms": true,
+        "axios>form-data>es-set-tostringtag>get-intrinsic>has-symbols": true,
+        "patch-package>json-stable-stringify>object-keys": true
+      }
+    },
+    "sanitize-html>parse-srcset": {
+      "globals": {
+        "console": true,
+        "define": true
+      }
+    },
+    "css-loader>postcss": {
+      "globals": {
+        "Buffer": true,
+        "URL": true,
+        "atob": true,
+        "btoa": true,
+        "console": true,
+        "process.env.LANG": true,
+        "process.env.NODE_ENV": true
+      },
+      "packages": {
+        "@hiveio/hive-js>buffer": true,
+        "pretty-checkbox-react>nanoid": true,
+        "webpack-bundle-analyzer>picocolors": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>process": true
+      }
+    },
+    "@hiveio/dhive>ripemd160>hash-base>readable-stream>process-nextick-args": {
+      "globals": {
+        "process": true
+      },
+      "packages": {
+        "node-polyfill-webpack-plugin>node-stdlib-browser>process": true
+      }
+    },
+    "node-polyfill-webpack-plugin>node-stdlib-browser>process": {
+      "globals": {
+        "clearTimeout": true,
+        "setTimeout": true
+      }
+    },
+    "react-svg>prop-types": {
+      "globals": {
+        "process.env.NODE_ENV": true
+      }
+    },
+    "node-polyfill-webpack-plugin>node-stdlib-browser>url>punycode": {
+      "globals": {
+        "define": true
+      }
+    },
+    "webpack-dev-server>express>qs": {
+      "packages": {
+        "patch-package>json-stable-stringify>call-bind>es-define-property": true,
+        "webpack-dev-server>express>qs>side-channel": true
+      }
+    },
+    "@atlaskit/pragmatic-drag-and-drop>raf-schd": {
+      "globals": {
+        "cancelAnimationFrame": true,
+        "requestAnimationFrame": true
+      }
+    },
+    "react": {
+      "globals": {
+        "process.env.NODE_ENV": true
+      },
+      "packages": {
+        "react>object-assign": true
+      }
+    },
+    "react-dom": {
+      "globals": {
+        "MSApp": true,
+        "__REACT_DEVTOOLS_GLOBAL_HOOK__": true,
+        "addEventListener": true,
+        "clearTimeout": true,
+        "clipboardData": true,
+        "console.error": true,
+        "document": true,
+        "process.env.NODE_ENV": true,
+        "removeEventListener": true,
+        "setTimeout": true
+      },
+      "packages": {
+        "react>object-assign": true,
+        "react": true,
+        "react-dom>scheduler": true
+      }
+    },
+    "react-dropdown-select": {
+      "globals": {
+        "clearTimeout": true,
+        "document": true,
+        "process.env.NODE_ENV": true,
+        "setTimeout": true,
+        "window": "write"
+      },
+      "packages": {
+        "react-dropdown-select>@emotion/styled": true,
+        "react-svg>prop-types": true,
+        "react": true,
+        "react-dom": true
+      }
+    },
+    "react-responsive-carousel>react-easy-swipe": {
+      "globals": {
+        "addEventListener": true,
+        "define": true,
+        "document.addEventListener": true,
+        "document.removeEventListener": true
+      },
+      "packages": {
+        "react-svg>prop-types": true,
+        "react": true
+      }
+    },
+    "react-error-boundary": {
+      "packages": {
+        "react": true
+      }
+    },
+    "react-hook-form": {
+      "globals": {
+        "Blob": true,
+        "FileList": true,
+        "FormData": true,
+        "HTMLElement": true,
+        "clearTimeout": true,
+        "document": true,
+        "fetch": true,
+        "performance": true,
+        "setTimeout": true
+      },
+      "packages": {
+        "react": true
+      }
+    },
+    "react-i18next": {
+      "packages": {
+        "redux>@babel/runtime": true,
+        "react": true
+      }
+    },
+    "react-redux>hoist-non-react-statics>react-is": {
+      "globals": {
+        "process.env.NODE_ENV": true
+      }
+    },
+    "react-redux>react-is": {
+      "globals": {
+        "process.env.NODE_ENV": true
+      }
+    },
+    "react-qr-code": {
+      "packages": {
+        "react-svg>prop-types": true,
+        "react-qr-code>qr.js": true,
+        "react": true
+      }
+    },
+    "react-redux": {
+      "globals": {
+        "document": true,
+        "process.env.NODE_ENV": true
+      },
+      "packages": {
+        "redux>@babel/runtime": true,
+        "react-redux>hoist-non-react-statics": true,
+        "react-svg>prop-types": true,
+        "react": true,
+        "react-dom": true,
+        "react-redux>react-is": true
+      }
+    },
+    "react-responsive-carousel": {
+      "globals": {
+        "clearTimeout": true,
+        "console.warn": true,
+        "document": true,
+        "getComputedStyle": true,
+        "setTimeout": true
+      },
+      "packages": {
+        "react-responsive-carousel>classnames": true,
+        "react": true,
+        "react-responsive-carousel>react-easy-swipe": true
+      }
+    },
+    "react-shimmer": {
+      "globals": {
+        "clearTimeout": true,
+        "console.error": true,
+        "document": true,
+        "process.env.NODE_ENV": true,
+        "regeneratorRuntime": "write",
+        "setTimeout": true
+      },
+      "packages": {
+        "react-tabs>clsx": true,
+        "react-svg>prop-types": true,
+        "react": true
+      }
+    },
+    "react-svg": {
+      "globals": {
+        "document": true
+      },
+      "packages": {
+        "redux>@babel/runtime": true,
+        "react-svg>@tanem/svg-injector": true,
+        "react-svg>prop-types": true,
+        "react": true
+      }
+    },
+    "react-toastify": {
+      "globals": {
+        "Event": true,
+        "addEventListener": true,
+        "clearTimeout": true,
+        "document": true,
+        "removeEventListener": true,
+        "requestAnimationFrame": true,
+        "setTimeout": true
+      },
+      "packages": {
+        "react-tabs>clsx": true,
+        "react": true,
+        "react-dom": true
+      }
+    },
+    "@hiveio/dhive>ripemd160>hash-base>readable-stream": {
+      "globals": {
+        "process.browser": true,
+        "process.stderr": true,
+        "process.stdout": true,
+        "process.version.slice": true,
+        "setImmediate": true
+      },
+      "packages": {
+        "@hiveio/dhive>ripemd160>hash-base>readable-stream>core-util-is": true,
+        "webpack>events": true,
+        "@babel/cli>glob>inherits": true,
+        "@hiveio/dhive>ripemd160>hash-base>readable-stream>isarray": true,
+        "@hiveio/dhive>ripemd160>hash-base>readable-stream>process-nextick-args": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>process": true,
+        "@hiveio/dhive>ripemd160>hash-base>readable-stream>safe-buffer": true,
+        "@hiveio/dhive>ripemd160>hash-base>readable-stream>string_decoder": true,
+        "css-loader>postcss-modules-scope>postcss-selector-parser>util-deprecate": true
+      }
+    },
+    "node-polyfill-webpack-plugin>node-stdlib-browser>stream-browserify>readable-stream": {
+      "globals": {
+        "process.nextTick": true,
+        "process.stderr": true,
+        "process.stdout": true
+      },
+      "packages": {
+        "@hiveio/hive-js>buffer": true,
+        "webpack>events": true,
+        "@babel/cli>glob>inherits": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>process": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>string_decoder": true,
+        "css-loader>postcss-modules-scope>postcss-selector-parser>util-deprecate": true
+      }
+    },
+    "node-polyfill-webpack-plugin>node-stdlib-browser>stream-http>readable-stream": {
+      "globals": {
+        "process.nextTick": true,
+        "process.stderr": true,
+        "process.stdout": true
+      },
+      "packages": {
+        "@hiveio/hive-js>buffer": true,
+        "webpack>events": true,
+        "@babel/cli>glob>inherits": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>process": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>string_decoder": true,
+        "css-loader>postcss-modules-scope>postcss-selector-parser>util-deprecate": true
+      }
+    },
+    "redux": {
+      "globals": {
+        "console": true,
+        "process.env.NODE_ENV": true
+      },
+      "packages": {
+        "redux>@babel/runtime": true
+      }
+    },
+    "@hiveio/hive-js>retry": {
+      "globals": {
+        "clearTimeout": true,
+        "console.log": true,
+        "setTimeout": true
+      }
+    },
+    "@hiveio/dhive>ripemd160": {
+      "packages": {
+        "@hiveio/hive-js>buffer": true,
+        "@hiveio/dhive>ripemd160>hash-base": true,
+        "@babel/cli>glob>inherits": true
+      }
+    },
+    "@hiveio/dhive>ripemd160>hash-base>readable-stream>safe-buffer": {
+      "packages": {
+        "@hiveio/hive-js>buffer": true
+      }
+    },
+    "hive-tx>secp256k1>safe-buffer": {
+      "packages": {
+        "@hiveio/hive-js>buffer": true
+      }
+    },
+    "node-polyfill-webpack-plugin>node-stdlib-browser>util>is-generator-function>safe-regex-test": {
+      "packages": {
+        "patch-package>json-stable-stringify>call-bound": true,
+        "babel-plugin-module-resolver>resolve>es-errors": true,
+        "@testing-library/react>@testing-library/dom>aria-query>deep-equal>is-regex": true
+      }
+    },
+    "@engrave/ledger-app-hive>asn1.js>safer-buffer": {
+      "globals": {
+        "process.binding": true
+      },
+      "packages": {
+        "@hiveio/hive-js>buffer": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>process": true
+      }
+    },
+    "sanitize-html": {
+      "globals": {
+        "URL": true,
+        "console": true
+      },
+      "packages": {
+        "eslint>escape-string-regexp": true,
+        "sanitize-html>htmlparser2": true,
+        "sanitize-html>is-plain-object": true,
+        "sanitize-html>launder": true,
+        "sanitize-html>parse-srcset": true,
+        "css-loader>postcss": true
+      }
+    },
+    "react-dom>scheduler": {
+      "globals": {
+        "MessageChannel": true,
+        "cancelAnimationFrame": true,
+        "clearTimeout": true,
+        "console": true,
+        "performance": true,
+        "process.env.NODE_ENV": true,
+        "requestAnimationFrame": true,
+        "setTimeout": true
+      }
+    },
+    "hive-tx>secp256k1": {
+      "globals": {
+        "Buffer.isBuffer": true
+      },
+      "packages": {
+        "hive-tx>secp256k1>bip66": true,
+        "hive-tx>secp256k1>bn.js": true,
+        "@hiveio/hive-js>buffer": true,
+        "@hiveio/hive-js>create-hash": true,
+        "hive-tx>secp256k1>elliptic": true,
+        "hive-tx>secp256k1>safe-buffer": true
+      }
+    },
+    "@hiveio/hive-js>secure-random": {
+      "globals": {
+        "Buffer": true,
+        "crypto": true,
+        "define": true,
+        "msCrypto": true,
+        "process": true
+      },
+      "packages": {
+        "@hiveio/hive-js>buffer": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>process": true
+      }
+    },
+    "@ledgerhq/hw-transport>@ledgerhq/devices>semver": {
+      "globals": {
+        "console.error": true,
+        "process": true
+      },
+      "packages": {
+        "node-polyfill-webpack-plugin>node-stdlib-browser>process": true
+      }
+    },
+    "@ledgerhq/hw-app-eth>semver": {
+      "globals": {
+        "console.error": true,
+        "process": true
+      },
+      "packages": {
+        "node-polyfill-webpack-plugin>node-stdlib-browser>process": true
+      }
+    },
+    "@metamask/eth-sig-util>@metamask/utils>semver": {
+      "globals": {
+        "console.error": true,
+        "process": true
+      },
+      "packages": {
+        "node-polyfill-webpack-plugin>node-stdlib-browser>process": true
+      }
+    },
+    "patch-package>json-stable-stringify>call-bind>set-function-length": {
+      "packages": {
+        "patch-package>json-stable-stringify>call-bind>set-function-length>define-data-property": true,
+        "babel-plugin-module-resolver>resolve>es-errors": true,
+        "axios>form-data>es-set-tostringtag>get-intrinsic": true,
+        "axios>form-data>es-set-tostringtag>get-intrinsic>gopd": true,
+        "patch-package>json-stable-stringify>call-bind>set-function-length>has-property-descriptors": true
+      }
+    },
+    "@hiveio/hive-js>create-hash>sha.js": {
+      "packages": {
+        "@babel/cli>glob>inherits": true,
+        "hive-tx>secp256k1>safe-buffer": true,
+        "@hiveio/dhive>ripemd160>hash-base>to-buffer": true
+      }
+    },
+    "webpack-dev-server>express>qs>side-channel>side-channel-list": {
+      "packages": {
+        "babel-plugin-module-resolver>resolve>es-errors": true,
+        "webpack-dev-server>express>qs>side-channel>object-inspect": true
+      }
+    },
+    "webpack-dev-server>express>qs>side-channel>side-channel-map": {
+      "packages": {
+        "patch-package>json-stable-stringify>call-bound": true,
+        "babel-plugin-module-resolver>resolve>es-errors": true,
+        "axios>form-data>es-set-tostringtag>get-intrinsic": true,
+        "webpack-dev-server>express>qs>side-channel>object-inspect": true
+      }
+    },
+    "webpack-dev-server>express>qs>side-channel>side-channel-weakmap": {
+      "packages": {
+        "patch-package>json-stable-stringify>call-bound": true,
+        "babel-plugin-module-resolver>resolve>es-errors": true,
+        "axios>form-data>es-set-tostringtag>get-intrinsic": true,
+        "webpack-dev-server>express>qs>side-channel>object-inspect": true,
+        "webpack-dev-server>express>qs>side-channel>side-channel-map": true
+      }
+    },
+    "webpack-dev-server>express>qs>side-channel": {
+      "packages": {
+        "babel-plugin-module-resolver>resolve>es-errors": true,
+        "webpack-dev-server>express>qs>side-channel>object-inspect": true,
+        "webpack-dev-server>express>qs>side-channel>side-channel-list": true,
+        "webpack-dev-server>express>qs>side-channel>side-channel-map": true,
+        "webpack-dev-server>express>qs>side-channel>side-channel-weakmap": true
+      }
+    },
+    "socket.io-client": {
+      "globals": {
+        "location": true
+      },
+      "packages": {
+        "socket.io-client>@socket.io/component-emitter": true,
+        "socket.io-client>engine.io-client": true,
+        "socket.io-client>socket.io-parser": true
+      }
+    },
+    "socket.io-client>socket.io-parser": {
+      "globals": {
+        "Blob": true,
+        "File": true
+      },
+      "packages": {
+        "socket.io-client>@socket.io/component-emitter": true
+      }
+    },
+    "node-polyfill-webpack-plugin>node-stdlib-browser>stream-browserify": {
+      "packages": {
+        "webpack>events": true,
+        "@babel/cli>glob>inherits": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>stream-browserify>readable-stream": true
+      }
+    },
+    "node-polyfill-webpack-plugin>node-stdlib-browser>stream-http": {
+      "globals": {
+        "AbortController": true,
+        "Blob": true,
+        "Buffer.alloc": true,
+        "Buffer.from": true,
+        "MSStreamReader": true,
+        "ReadableStream": true,
+        "WritableStream": true,
+        "XDomainRequest": true,
+        "XMLHttpRequest": true,
+        "clearTimeout": true,
+        "fetch": true,
+        "location.protocol.search": true,
+        "process.nextTick": true,
+        "setTimeout": true
+      },
+      "packages": {
+        "@hiveio/hive-js>buffer": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>stream-http>builtin-status-codes": true,
+        "@babel/cli>glob>inherits": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>process": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>stream-http>readable-stream": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>url": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>stream-http>xtend": true
+      }
+    },
+    "node-polyfill-webpack-plugin>node-stdlib-browser>string_decoder": {
+      "packages": {
+        "hive-tx>secp256k1>safe-buffer": true
+      }
+    },
+    "@hiveio/dhive>ripemd160>hash-base>readable-stream>string_decoder": {
+      "packages": {
+        "@hiveio/dhive>ripemd160>hash-base>readable-stream>safe-buffer": true
+      }
+    },
+    "style-loader": {
+      "globals": {
+        "HTMLIFrameElement": true,
+        "__webpack_nonce__": true,
+        "btoa": true,
+        "document.createElement": true,
+        "document.createTextNode": true,
+        "document.querySelector": true
+      }
+    },
+    "@hiveio/dhive>ripemd160>hash-base>to-buffer": {
+      "packages": {
+        "patch-package>json-stable-stringify>isarray": true,
+        "hive-tx>secp256k1>safe-buffer": true,
+        "@hiveio/dhive>ripemd160>hash-base>to-buffer>typed-array-buffer": true
+      }
+    },
+    "react-svg>@tanem/svg-injector>tslib": {
+      "globals": {
+        "AsyncIterator": true,
+        "Iterator": true,
+        "SuppressedError": true
+      }
+    },
+    "@metamask/eth-sig-util>tweetnacl": {
+      "globals": {
+        "Float64Array": true,
+        "crypto": true,
+        "msCrypto": true,
+        "nacl": "write"
+      }
+    },
+    "@hiveio/dhive>ripemd160>hash-base>to-buffer>typed-array-buffer": {
+      "packages": {
+        "patch-package>json-stable-stringify>call-bound": true,
+        "babel-plugin-module-resolver>resolve>es-errors": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>util>is-typed-array": true
+      }
+    },
+    "node-polyfill-webpack-plugin>node-stdlib-browser>url": {
+      "packages": {
+        "node-polyfill-webpack-plugin>node-stdlib-browser>url>punycode": true,
+        "webpack-dev-server>express>qs": true
+      }
+    },
+    "css-loader>postcss-modules-scope>postcss-selector-parser>util-deprecate": {
+      "globals": {
+        "console.trace": true,
+        "console.warn": true,
+        "localStorage": true
+      }
+    },
+    "node-polyfill-webpack-plugin>node-stdlib-browser>util": {
+      "globals": {
+        "console.error": true,
+        "console.log": true,
+        "console.trace": true,
+        "process": true
+      },
+      "packages": {
+        "@babel/cli>glob>inherits": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>util>is-arguments": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>util>is-generator-function": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>util>is-typed-array": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>process": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>util>which-typed-array": true
+      }
+    },
+    "uuid": {
+      "globals": {
+        "crypto": true
+      }
+    },
+    "flatlist-react>warning": {
+      "globals": {
+        "console": true,
+        "process.env.NODE_ENV": true
+      }
+    },
+    "node-polyfill-webpack-plugin>node-stdlib-browser>util>which-typed-array": {
+      "packages": {
+        "node-polyfill-webpack-plugin>node-stdlib-browser>util>which-typed-array>available-typed-arrays": true,
+        "patch-package>json-stable-stringify>call-bind": true,
+        "patch-package>json-stable-stringify>call-bound": true,
+        "node-polyfill-webpack-plugin>node-stdlib-browser>util>which-typed-array>for-each": true,
+        "axios>form-data>es-set-tostringtag>get-intrinsic>get-proto": true,
+        "axios>form-data>es-set-tostringtag>get-intrinsic>gopd": true,
+        "axios>form-data>es-set-tostringtag>has-tostringtag": true
+      }
+    }
+  }
+}

@@ -5,8 +5,9 @@ const { DefinePlugin } = require('webpack');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const { toDefinePluginEnv } = require('../env');
+const { applyLavaMoat } = require('../lavamoat');
 
-module.exports = merge(common, {
+module.exports = applyLavaMoat(merge(common, {
   mode: 'production',
   devtool: false,
   output: {
@@ -28,4 +29,6 @@ module.exports = merge(common, {
       exclude: ['../../node_modules', '../../src/utils/logger.utils.ts'],
     }),
   ],
-});
+}),
+  'chromium',
+);

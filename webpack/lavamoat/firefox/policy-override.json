@@ -1,0 +1,9 @@
+{
+  "resources": {
+    "@hiveio/hive-js>debug": {
+      "globals": {
+        "chrome": false
+      }
+    }
+  }
+}

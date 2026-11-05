@@ -93,6 +93,7 @@ module.exports = {
   modulePaths: ['<rootDir>'],
   collectCoverageFrom: ['<rootDir>/**/*.{ts, tsx}'],
   collectCoverage: false,
+  testPathIgnorePatterns: ['/node_modules/', 'lavamoat-runtime.test'],
   modulePathIgnorePatterns: [
     '<rootDir>/src/__tests__/utils-for-testing/',
     'mocks',

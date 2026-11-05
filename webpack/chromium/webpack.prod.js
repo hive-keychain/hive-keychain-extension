@@ -6,8 +6,9 @@ const ESLintPlugin = require('eslint-webpack-plugin');
 const BundleAnalyzerPlugin =
   require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const { toDefinePluginEnv } = require('../env');
+const { applyLavaMoat } = require('../lavamoat');
 
-module.exports = merge(common, {
+module.exports = applyLavaMoat(merge(common, {
   mode: 'production',
   devtool: false,
   output: {
@@ -30,4 +31,6 @@ module.exports = merge(common, {
   // optimization: {
   //   runtimeChunk: 'single',
   // },
-});
+}),
+  'chromium',
+);
