@@ -86,6 +86,8 @@
             justify-content: center;
             .nft-media {
               width: 50%;
+              height: 260px;
+              object-fit: contain;
             }
           }
         }

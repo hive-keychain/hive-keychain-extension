@@ -20,6 +20,7 @@
   .nft-media.nft-send-summary-media {
     width: 80px;
     height: 80px;
+    object-fit: contain;
     border-radius: 12px;
     flex-shrink: 0;
   }

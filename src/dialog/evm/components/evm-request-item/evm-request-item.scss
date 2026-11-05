@@ -330,7 +330,10 @@
           display: flex;
           justify-content: center;
           img {
-            width: 300px;
+            width: 100%;
+            max-width: 300px;
+            height: 260px;
+            object-fit: contain;
           }
         }
       }

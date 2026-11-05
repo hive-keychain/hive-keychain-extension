@@ -41,5 +41,11 @@
     .value.address-content {
       cursor: url('assets/images/global/copy-icon.png'), copy;
     }
+
+    .nft-media {
+      width: 100%;
+      height: 160px;
+      object-fit: contain;
+    }
   }
 }
