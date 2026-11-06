@@ -35,6 +35,7 @@
     },
     "socket.io-client>engine.io-client": {
       "globals": {
+        "WebSocket": true,
         "clearTimeout": true,
         "setTimeout": true
       }
