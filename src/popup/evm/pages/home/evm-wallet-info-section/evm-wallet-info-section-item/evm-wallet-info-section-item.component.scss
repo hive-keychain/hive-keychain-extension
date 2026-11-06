@@ -12,6 +12,9 @@
   border: 1px solid var(--wallet-card-border);
   cursor: pointer;
 
+  button {
+    cursor: pointer;
+  }
   rect,
   path {
     transition: fill 0.225s linear;

@@ -16,6 +16,10 @@ path {
   border: 1px solid var(--wallet-card-border);
   cursor: pointer;
 
+  button {
+    cursor: pointer;
+  }
+
   &.opened {
     border: 1px solid var(--wallet-card-opened-border);
   }
@@ -46,7 +50,6 @@ path {
       &:focus {
         outline: none;
       }
-
     }
     .currency-icon {
       border-radius: 50%;
