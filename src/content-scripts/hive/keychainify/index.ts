@@ -21,7 +21,10 @@ type Process = {
   };
   observerTimer?: number;
   initObserver: () => void;
-  checkAnchors: (isKeychainifyEnabled: boolean) => void;
+  checkAnchors: (
+    isKeychainifyEnabled: boolean,
+    finalizeHiveSignerLinks?: boolean,
+  ) => void;
 };
 
 let contentScript: Props = {
@@ -51,6 +54,7 @@ let contentScript: Props = {
       let body = document.body;
 
       keychainify.isKeychainifyEnabled().then((isKeychainifyEnabled) => {
+        contentScript.process.checkAnchors(isKeychainifyEnabled, true);
         // Using a MutationObserver to wait for a DOM change
         // This is to scan dynamically loaded content (lazyload of comments for example)
         contentScript.process.observer = new MutationObserver(
@@ -79,7 +83,10 @@ let contentScript: Props = {
     /**
      * Verify all anchors to find HiveSigner links
      */
-    checkAnchors: async function (isKeychainifyEnabled: boolean) {
+    checkAnchors: function (
+      isKeychainifyEnabled: boolean,
+      finalizeHiveSignerLinks = true,
+    ) {
       let anchors: NodeListOf<HTMLAnchorElement> = document.querySelectorAll(
         'a[href]:not(.keychainify-checked)',
       );
@@ -90,24 +97,30 @@ let contentScript: Props = {
           anchor.href &&
           !anchor.classList.contains('keychainify-checked') // That was not checked before
         ) {
+          const isHiveUri = keychainify.isSupportedHiveUri(anchor.href);
+          const isHiveSigner = keychainify.isSupportedHiveSignerUrl(anchor.href);
           /**
            * When keychainify is enabled, both hivesigner and hive-uri will be supported. Otherwise only hive-uri.
            */
-          const isSupportedUrl = isKeychainifyEnabled
-            ? keychainify.isSupportedHiveSignerUrl(anchor.href) ||
-              keychainify.isSupportedHiveUri(anchor.href)
-            : keychainify.isSupportedHiveUri(anchor.href);
+          const isSupportedUrl =
+            isHiveUri || (isKeychainifyEnabled && isHiveSigner);
 
           /**
            * Attach click event listener when url is supported
            */
           if (isSupportedUrl) {
-            anchor.addEventListener('click', async function (e) {
+            anchor.addEventListener('click', function (e) {
               e.preventDefault();
               e.stopPropagation();
               keychainify.keychainifyUrl(this.href);
               return false;
             });
+          }
+
+          // The first pass runs before storage resolves. Leave HiveSigner links unmarked
+          // so the enabled pass can still attach a handler.
+          if (isHiveSigner && !isKeychainifyEnabled && !finalizeHiveSignerLinks) {
+            continue;
           }
         }
 
@@ -120,7 +133,8 @@ let contentScript: Props = {
      */
     init: function () {
       contentScript.process.initObserver();
-      contentScript.process.checkAnchors(false); // by default, all hive-uri will be checked
+      // Hive-uri links work before the setting loads. HiveSigner links stay unmarked until then.
+      contentScript.process.checkAnchors(false, false);
     },
   },
 };
