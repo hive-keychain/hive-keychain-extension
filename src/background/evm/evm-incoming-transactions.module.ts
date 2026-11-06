@@ -36,6 +36,7 @@ let socket: Socket | undefined;
 let localAccounts: EvmAccount[] = [];
 let registeredAddresses = new Set<string>();
 let syncVersion = 0;
+let hasLoggedSocketConnectError = false;
 
 const getNotificationId = (payload: IncomingTransactionPayload) =>
   `${NOTIFICATION_ID_PREFIX}:${payload.chainId}:${payload.item.txId}:${payload.item.opIndex}`;
@@ -67,7 +68,10 @@ const getSocket = () => {
     reconnection: true,
     autoConnect: false,
   });
-  socket.on('connect', registerAccounts);
+  socket.on('connect', () => {
+    hasLoggedSocketConnectError = false;
+    registerAccounts();
+  });
   socket.on(INCOMING_TRANSACTION_EVENT, (payload: unknown) => {
     void handleIncomingTransaction(payload).catch((error) => {
       Logger.warn(
@@ -78,6 +82,10 @@ const getSocket = () => {
     });
   });
   socket.on('connect_error', (error) => {
+    if (hasLoggedSocketConnectError) {
+      return;
+    }
+    hasLoggedSocketConnectError = true;
     Logger.warn(
       `Unable to connect to EVM incoming transaction socket: ${error.message}`,
     );
@@ -88,6 +96,7 @@ const getSocket = () => {
 const disconnect = () => {
   registeredAddresses = new Set();
   localAccounts = [];
+  hasLoggedSocketConnectError = false;
   socket?.disconnect();
 };
 

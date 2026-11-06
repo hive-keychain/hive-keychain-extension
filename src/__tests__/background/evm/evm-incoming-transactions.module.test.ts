@@ -189,6 +189,30 @@ describe('evm-incoming-transactions.module', () => {
     expect(chrome.runtime.sendMessage).toHaveBeenCalledTimes(1);
   });
 
+  it('logs the first socket connection failure until the socket connects', async () => {
+    mockGetValueFromVault.mockResolvedValue('mk');
+    mockRebuildAccounts.mockResolvedValue([{ wallet: { address: ADDRESS } }]);
+
+    const { EvmIncomingTransactionsModule } = await import(
+      '@background/evm/evm-incoming-transactions.module'
+    );
+    const Logger = (await import('src/utils/logger.utils')).default;
+    EvmIncomingTransactionsModule.start();
+    await flushAsync();
+
+    mockSocketHandlers.connect_error({ message: 'timeout' });
+    mockSocketHandlers.connect_error({ message: 'timeout' });
+
+    expect(Logger.warn).toHaveBeenCalledTimes(1);
+    expect(Logger.warn).toHaveBeenCalledWith(
+      'Unable to connect to EVM incoming transaction socket: timeout',
+    );
+
+    mockSocketHandlers.connect();
+    mockSocketHandlers.connect_error({ message: 'timeout' });
+    expect(Logger.warn).toHaveBeenCalledTimes(2);
+  });
+
   it('disconnects after an internal wallet lock-state message', async () => {
     mockGetValueFromVault
       .mockResolvedValueOnce('mk')
