@@ -3,7 +3,7 @@ import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface
 import { SidePanelPreferenceUtils } from 'src/utils/side-panel-preference.utils';
 
 const redirectToolbarPopupToSidePanelIfNeeded = async (): Promise<boolean> => {
-  if (!ExtensionSurfaceUtils.isToolbarPopup()) {
+  if (process.env.IS_FIREFOX || !ExtensionSurfaceUtils.isToolbarPopup()) {
     return false;
   }
 
