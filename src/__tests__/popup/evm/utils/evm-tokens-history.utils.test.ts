@@ -103,6 +103,120 @@ describe('evm-tokens-history.utils tests:\n', () => {
     });
   });
 
+  it('shows a synthetic native-token transfer as the chain main token', () => {
+    const settings = {
+      smartContracts: {
+        displayPossibleSpam: false,
+        displayNonVerifiedContracts: false,
+      },
+    } as any;
+    const item = {
+      in: [
+        {
+          kind: 'ERC20',
+          tokenAddress: '0xffffFFFfFFffffffffffffffFfFFFfffFFFfFFfE',
+          symbol: null,
+          amount: '0.0001',
+          verified: false,
+          possibleSpam: false,
+        },
+      ],
+      out: [],
+    } as any;
+
+    expect(
+      EvmTokensHistoryUtils.getVisibleHistoryItem(item, settings),
+    ).toMatchObject({
+      in: [
+        {
+          kind: 'NATIVE',
+          amount: '0.0001',
+          amountWei: '100000000000000',
+          possibleSpam: false,
+        },
+      ],
+      out: [],
+    });
+  });
+
+  it('keeps the synthetic native transfer in history and hides other unverified tokens', async () => {
+    const getHistory = jest
+      .spyOn(EvmLightNodeUtils, 'getHistory')
+      .mockResolvedValue({
+        items: [
+          {
+            txId: '0xnative',
+            blockNumber: 130,
+            blockTime: '2026-01-01T00:00:00.000Z',
+            opIndex: '80',
+            opName: 'ERC20_RECEIVE',
+            status: 'SUCCESS',
+            fromAddress: '0x2222222222222222222222222222222222222222',
+            toAddress: '0x1111111111111111111111111111111111111111',
+            action: null,
+            in: [
+              {
+                kind: 'ERC20',
+                tokenAddress: '0xfffffffffffffffffffffffffffffffffffffffe',
+                symbol: null,
+                amount: '0.0001',
+                verified: false,
+                possibleSpam: false,
+              },
+            ],
+            out: [],
+          },
+          {
+            txId: '0xunverified',
+            blockNumber: 129,
+            blockTime: '2026-01-01T00:00:00.000Z',
+            opIndex: '1',
+            opName: 'ERC20_RECEIVE',
+            status: 'SUCCESS',
+            fromAddress: '0x2222222222222222222222222222222222222222',
+            toAddress: '0x1111111111111111111111111111111111111111',
+            action: null,
+            in: [
+              {
+                kind: 'ERC20',
+                tokenAddress: '0x3333333333333333333333333333333333333333',
+                symbol: 'SPAM',
+                amount: '1',
+                verified: false,
+                possibleSpam: false,
+              },
+            ],
+            out: [],
+          },
+        ],
+        nextCursor: null,
+        catchupStatus: CatchupStatus.DONE,
+      } as any);
+
+    const history = await EvmTokensHistoryUtils.fetchHistory2(
+      '0x1111111111111111111111111111111111111111',
+      chain,
+    );
+
+    expect(getHistory).toHaveBeenCalledWith(
+      chain.chainId,
+      '0x1111111111111111111111111111111111111111',
+      expect.stringContaining('showUnverified=true'),
+    );
+    expect(history.events).toHaveLength(1);
+    expect(history.events[0].label).toBe(
+      'You received 0.0001 ETH from 0x2222...2222',
+    );
+    expect(history.events[0].detailFields).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          label: 'popup_html_transfer_amount',
+          value: '0.0001 ETH',
+        }),
+      ]),
+    );
+  });
+
   it.each([
     { catchupStatus: CatchupStatus.DONE, expectedFullyFetch: true },
     { catchupStatus: CatchupStatus.ERROR, expectedFullyFetch: true },

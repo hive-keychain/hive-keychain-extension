@@ -24,6 +24,10 @@ import Decimal from 'decimal.js';
 import { I18nUtils } from 'src/utils/i18n.utils';
 const LIMIT = 50;
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+// Erigon-compatible nodes emit a native coin transfer as an ERC-20 Transfer
+// from this address. It is the chain's main token, not a token contract.
+const SYNTHETIC_NATIVE_TOKEN_ADDRESS =
+  '0xfffffffffffffffffffffffffffffffffffffffe';
 type HistoryFlow = LightNodeHistoryFlowWithMeta;
 type NftFlow = Extract<HistoryFlow, { kind: 'ERC721' | 'ERC1155' }>;
 type MintHistoryItemWithNativeAmountPaid = LightNodeHistoryItem & {
@@ -1068,6 +1072,34 @@ const parseItem = async (
   return parseSmartContractOperation(base, item, isOutgoing, chain);
 };
 
+const isSyntheticNativeTokenAddress = (address?: string | null) =>
+  address?.trim().toLowerCase() === SYNTHETIC_NATIVE_TOKEN_ADDRESS;
+
+const decimalAmountToWei = (amount: string) => {
+  try {
+    return new Decimal(amount).mul(new Decimal(10).pow(18)).toFixed(0);
+  } catch {
+    return '0';
+  }
+};
+
+const asChainNativeFlow = (flow: HistoryFlow): HistoryFlow => {
+  if (
+    flow.kind !== 'ERC20' ||
+    !isSyntheticNativeTokenAddress(flow.tokenAddress)
+  ) {
+    return flow;
+  }
+
+  return {
+    kind: 'NATIVE',
+    amount: flow.amount,
+    amountWei: decimalAmountToWei(flow.amount),
+    verified: false,
+    possibleSpam: false,
+  };
+};
+
 const isHistoryFlowVisible = (
   flow: HistoryFlow,
   settings: EvmSettings,
@@ -1094,8 +1126,12 @@ const getVisibleHistoryItem = (
 ): LightNodeHistoryItem | undefined => {
   const visibleItem = {
     ...item,
-    in: item.in.filter((flow) => isHistoryFlowVisible(flow, settings)),
-    out: item.out.filter((flow) => isHistoryFlowVisible(flow, settings)),
+    in: item.in
+      .map(asChainNativeFlow)
+      .filter((flow) => isHistoryFlowVisible(flow, settings)),
+    out: item.out
+      .map(asChainNativeFlow)
+      .filter((flow) => isHistoryFlowVisible(flow, settings)),
   };
   const hadFlows = item.in.length > 0 || item.out.length > 0;
   const hasVisibleFlows =
@@ -1142,12 +1178,12 @@ const fetchHistory2 = async (
 
   const settings = await EvmSettingsUtils.getSettings();
   const showPossibleSpam =
-    settings?.smartContracts?.displayPossibleSpam ?? false;
-  const showUnverified =
-    settings?.smartContracts?.displayNonVerifiedContracts ?? false;
+    settings.smartContracts.displayPossibleSpam ?? false;
 
   params.set('showPossibleSpam', String(showPossibleSpam));
-  params.set('showUnverified', String(showUnverified));
+  // The synthetic native address arrives as an unverified ERC-20. Fetch those
+  // flows, reclassify that address, then apply displayNonVerifiedContracts.
+  params.set('showUnverified', 'true');
 
   const response = await EvmLightNodeUtils.getHistory(
     chain.chainId,
@@ -1156,9 +1192,13 @@ const fetchHistory2 = async (
   );
 
   const localAccounts = await EvmWalletUtils.getAllLocalAccounts();
+  const visibleItems = response.items.flatMap((item) => {
+    const visibleItem = getVisibleHistoryItem(item, settings);
+    return visibleItem ? [visibleItem] : [];
+  });
 
   const parsedItems = await Promise.all(
-    response.items.map((item) =>
+    visibleItems.map((item) =>
       parseHistoryItem(item, chain, walletAddress, localAccounts),
     ),
   );
