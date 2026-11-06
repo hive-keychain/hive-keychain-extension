@@ -66,6 +66,17 @@ describe('lavamoat webpack config', () => {
       expect(config.entry.popup).toBeDefined();
       expect(config.entry.hiveTx.dependOn).toBeUndefined();
       expect(config.entry.extensionApp.dependOn).toBe('hiveTx');
+      expect(config.entry.evmContentScript).toBe(
+        './src/content-scripts/evm/evm-content-script.ts',
+      );
+      expect(config.entry.keychainify).toEqual({
+        import: './src/content-scripts/hive/keychainify/index.ts',
+        dependOn: 'evmContentScript',
+      });
+      expect(config.entry.web_interface).toEqual({
+        import: './src/content-scripts/hive/web-interface/index.ts',
+        dependOn: 'evmContentScript',
+      });
       expect(config.entry.evmKeychainProvider).toBeUndefined();
       expect(config.entry.evmKeychainLegacyPreferred).toBeUndefined();
       expect(config.entry.evmKeychainLegacyYielding).toBeUndefined();

@@ -28,6 +28,14 @@ const PAGE_WORLD_BUNDLES = [
   'evmKeychainLegacyYieldingBundle.js',
 ];
 
+const CONTENT_SCRIPT_DEPENDENT_BUNDLES = [
+  'keychainifyBundle.js',
+  'web_interfaceBundle.js',
+];
+
+const LAVAMOAT_RUNTIME_MARKER =
+  'LavaMoatPlugin: runtime execution started without SES present';
+
 const readBundle = (outputDir, fileName) => {
   const filePath = path.join(outputDir, fileName);
   if (!fs.existsSync(filePath)) {
@@ -63,6 +71,15 @@ UNPREFIXED_BUNDLES.forEach((fileName) => {
   if (count !== 0) {
     throw new Error(
       `${fileName} should not include the SES lockdown prefix, found ${count}`,
+    );
+  }
+});
+
+CONTENT_SCRIPT_DEPENDENT_BUNDLES.forEach((fileName) => {
+  const source = readBundle(resolvedOutputDir, fileName);
+  if (source.includes(LAVAMOAT_RUNTIME_MARKER)) {
+    throw new Error(
+      `${fileName} must share the evmContentScript LavaMoat runtime`,
     );
   }
 });

@@ -41,6 +41,18 @@ const withoutPageWorldEntries = (entry) => {
   return nextEntry;
 };
 
+const withSharedContentScriptRuntime = (entry) => ({
+  ...entry,
+  web_interface: {
+    import: entry.web_interface,
+    dependOn: 'evmContentScript',
+  },
+  keychainify: {
+    import: entry.keychainify,
+    dependOn: 'evmContentScript',
+  },
+});
+
 const pageWorldEntries = (entry) => {
   const nextEntry = {};
   PAGE_WORLD_ENTRY_NAMES.forEach((name) => {
@@ -80,7 +92,9 @@ const applyLavaMoat = (webpackConfig, target) => {
 
   return {
     ...webpackConfig,
-    entry: withoutPageWorldEntries(webpackConfig.entry),
+    entry: withSharedContentScriptRuntime(
+      withoutPageWorldEntries(webpackConfig.entry),
+    ),
     module: {
       ...webpackConfig.module,
       rules: [
@@ -108,6 +122,7 @@ module.exports = {
   isLavaMoatEnabled,
   policyDirectory,
   withoutPageWorldEntries,
+  withSharedContentScriptRuntime,
   pageWorldEntries,
   applyLavaMoat,
 };
