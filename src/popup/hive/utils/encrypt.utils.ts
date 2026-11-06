@@ -1,5 +1,6 @@
 import CryptoJS from 'crypto-js';
 import LegacyEncryptUtils from 'src/popup/hive/utils/encrypt.legacy.utils';
+import Logger from 'src/utils/logger.utils';
 
 const KEY_SIZE = 256;
 const IV_SIZE = 128;
@@ -135,11 +136,60 @@ const isEncryptedPayloadV2 = (
   );
 };
 
+// chrome.storage can hand back the v2 envelope as an object, or a String
+// object whose prototype has no trim. Both used to throw inside decrypt.
+const normalizeEncryptedMessage = (
+  message: unknown,
+): string | EncryptedPayloadV2 | null => {
+  if (typeof message === 'string') {
+    return message;
+  }
+  if (isEncryptedPayloadV2(message)) {
+    return message;
+  }
+  if (
+    message !== null &&
+    typeof message === 'object' &&
+    Object.prototype.toString.call(message) === '[object String]'
+  ) {
+    const value = message.valueOf();
+    return typeof value === 'string' ? value : null;
+  }
+  return null;
+};
+
+const trimmedText = (message: string) =>
+  typeof message.trim === 'function' ? message.trim() : message;
+
+const startsWithJsonObject = (message: string) =>
+  typeof message.startsWith === 'function'
+    ? message.startsWith('{')
+    : message[0] === '{';
+
 const getVersionedPayload = (
-  message: string,
+  message: unknown,
 ): { isVersioned: boolean; payload: EncryptedPayloadV2 | null } => {
-  const trimmed = message?.trim();
-  if (!trimmed?.startsWith('{')) {
+  const normalized = normalizeEncryptedMessage(message);
+  if (isEncryptedPayloadV2(normalized)) {
+    return { isVersioned: true, payload: normalized };
+  }
+  if (typeof normalized !== 'string') {
+    if (message != null && message !== '') {
+      const keys =
+        typeof message === 'object'
+          ? Object.keys(message as object).join(',')
+          : '';
+      Logger.warn(
+        `Ignoring encrypted payload of type ${typeof message}${
+          keys ? ` (${keys})` : ''
+        }`,
+      );
+    }
+    return { isVersioned: false, payload: null };
+  }
+
+  const trimmed = trimmedText(normalized);
+  if (!trimmed || !startsWithJsonObject(trimmed)) {
     return { isVersioned: false, payload: null };
   }
 
@@ -260,7 +310,7 @@ function decryptNoIV(content: string, encryptPassword: string) {
 }
 
 const decryptToJsonWithLegacySupport = async (
-  msg: string,
+  msg: unknown,
   pwd: string,
 ): Promise<any> => {
   const { isVersioned, payload } = getVersionedPayload(msg);
@@ -279,11 +329,15 @@ const decryptToJsonWithLegacySupport = async (
     return decryptedJSON?.list != null ? decryptedJSON : null;
   }
 
+  if (typeof msg !== 'string') {
+    return null;
+  }
+
   return LegacyEncryptUtils.decryptToJsonWithoutHashCheck(msg, pwd);
 };
 
 const decryptToAnyJsonWithLegacySupport = async (
-  msg: string,
+  msg: unknown,
   pwd: string,
 ): Promise<any> => {
   const { isVersioned, payload } = getVersionedPayload(msg);
@@ -301,11 +355,15 @@ const decryptToAnyJsonWithLegacySupport = async (
     return JSON.parse(decrypted);
   }
 
+  if (typeof msg !== 'string') {
+    return null;
+  }
+
   return LegacyEncryptUtils.decryptToJsonWithoutHashCheck(msg, pwd);
 };
 
-const decryptToJson = async (msg: string, pwd: string): Promise<any> => {
-  if (!msg) {
+const decryptToJson = async (msg: unknown, pwd: string): Promise<any> => {
+  if (msg == null || msg === '') {
     return null;
   }
 
@@ -328,10 +386,14 @@ const decryptToJson = async (msg: string, pwd: string): Promise<any> => {
     }
   }
 
+  if (typeof msg !== 'string') {
+    return null;
+  }
+
   return LegacyEncryptUtils.decryptToJson(msg, pwd);
 };
 
-const isEncryptedJsonV2 = (msg: string) =>
+const isEncryptedJsonV2 = (msg: unknown) =>
   getVersionedPayload(msg).payload !== null;
 
 const EncryptUtils = {

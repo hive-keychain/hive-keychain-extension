@@ -145,6 +145,34 @@ describe('encrypt.utils tests:\n', () => {
     expect(await EncryptUtils.decryptToJson('', password)).toBeNull();
   });
 
+  it('decrypts a v2 payload object without calling trim', async () => {
+    const encrypted = await EncryptUtils.encryptJson(accountPayload, password);
+    const payload = JSON.parse(encrypted);
+
+    expect(EncryptUtils.isEncryptedJsonV2(payload)).toBe(true);
+    expect(await EncryptUtils.decryptToJson(payload, password)).toEqual(
+      accountPayload,
+    );
+    expect(
+      await EncryptUtils.decryptToJsonWithLegacySupport(payload, password),
+    ).toEqual(accountPayload);
+  });
+
+  it('decrypts a boxed string payload', async () => {
+    const encrypted = await EncryptUtils.encryptJson(accountPayload, password);
+
+    expect(
+      await EncryptUtils.decryptToJson(new String(encrypted), password),
+    ).toEqual(accountPayload);
+  });
+
+  it('ignores a non-string payload instead of calling trim', async () => {
+    expect(await EncryptUtils.decryptToJson({ list: [] }, password)).toBeNull();
+    expect(
+      await EncryptUtils.decryptToJsonWithLegacySupport({ list: [] }, password),
+    ).toBeNull();
+  });
+
   it('decryptToJsonWithLegacySupport throws on invalid v2 envelope', async () => {
     await expect(
       EncryptUtils.decryptToJsonWithLegacySupport('{not valid json', password),

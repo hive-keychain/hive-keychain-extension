@@ -20,4 +20,45 @@ describe('LavaMoat policy overrides', () => {
       expect(globals.clearTimeout).toBe(true);
     },
   );
+
+  it.each(overridePaths)(
+    'gives react-dom HTMLIFrameElement for its selection check in %s',
+    (overridePath) => {
+      const policy = JSON.parse(
+        fs.readFileSync(path.resolve(__dirname, overridePath), 'utf8'),
+      );
+
+      expect(policy.resources['react-dom'].globals.HTMLIFrameElement).toBe(
+        true,
+      );
+    },
+  );
+
+  it.each(overridePaths)(
+    'gives react-dropdown-select the window listeners it registers in %s',
+    (overridePath) => {
+      const policy = JSON.parse(
+        fs.readFileSync(path.resolve(__dirname, overridePath), 'utf8'),
+      );
+      const globals = policy.resources['react-dropdown-select'].globals;
+
+      expect(globals.addEventListener).toBe(true);
+      expect(globals.removeEventListener).toBe(true);
+      expect(globals.innerHeight).toBe(true);
+    },
+  );
+
+  it.each(overridePaths)(
+    'gives drag-and-drop the window listeners it binds in %s',
+    (overridePath) => {
+      const policy = JSON.parse(
+        fs.readFileSync(path.resolve(__dirname, overridePath), 'utf8'),
+      );
+      const globals =
+        policy.resources['@atlaskit/pragmatic-drag-and-drop'].globals;
+
+      expect(globals.addEventListener).toBe(true);
+      expect(globals.removeEventListener).toBe(true);
+    },
+  );
 });

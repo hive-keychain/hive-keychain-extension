@@ -1,8 +1,26 @@
 {
   "resources": {
+    "@atlaskit/pragmatic-drag-and-drop": {
+      "globals": {
+        "addEventListener": true,
+        "removeEventListener": true
+      }
+    },
     "@hiveio/hive-js>debug": {
       "globals": {
         "chrome": false
+      }
+    },
+    "react-dom": {
+      "globals": {
+        "HTMLIFrameElement": true
+      }
+    },
+    "react-dropdown-select": {
+      "globals": {
+        "addEventListener": true,
+        "innerHeight": true,
+        "removeEventListener": true
       }
     },
     "socket.io-client>engine.io-client": {
