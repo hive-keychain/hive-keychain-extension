@@ -49,6 +49,28 @@ describe('LavaMoat policy overrides', () => {
   );
 
   it.each(overridePaths)(
+    'gives ethers crypto so randomBytes can use the compartment global in %s',
+    (overridePath) => {
+      const policy = JSON.parse(
+        fs.readFileSync(path.resolve(__dirname, overridePath), 'utf8'),
+      );
+
+      expect(policy.resources.ethers.globals.crypto).toBe(true);
+    },
+  );
+
+  it.each(overridePaths)(
+    'gives axios crypto for multipart boundaries in %s',
+    (overridePath) => {
+      const policy = JSON.parse(
+        fs.readFileSync(path.resolve(__dirname, overridePath), 'utf8'),
+      );
+
+      expect(policy.resources.axios.globals.crypto).toBe(true);
+    },
+  );
+
+  it.each(overridePaths)(
     'gives drag-and-drop the window listeners it binds in %s',
     (overridePath) => {
       const policy = JSON.parse(

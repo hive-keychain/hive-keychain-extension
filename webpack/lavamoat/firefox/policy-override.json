@@ -11,6 +11,16 @@
         "chrome": false
       }
     },
+    "axios": {
+      "globals": {
+        "crypto": true
+      }
+    },
+    "ethers": {
+      "globals": {
+        "crypto": true
+      }
+    },
     "react-dom": {
       "globals": {
         "HTMLIFrameElement": true
