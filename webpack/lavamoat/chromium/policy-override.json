@@ -26,6 +26,18 @@
         "HTMLIFrameElement": true
       }
     },
+    "@ledgerhq/hw-transport-webhid": {
+      "globals": {
+        "navigator": false,
+        "navigator.hid": true
+      }
+    },
+    "@ledgerhq/hw-transport-webusb": {
+      "globals": {
+        "navigator": false,
+        "navigator.usb": true
+      }
+    },
     "react-dropdown-select": {
       "globals": {
         "addEventListener": true,

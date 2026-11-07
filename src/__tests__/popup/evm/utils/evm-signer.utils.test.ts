@@ -132,4 +132,64 @@ describe('evm signer utils', () => {
     );
     expect(response).toMatchObject({ hash: '0xtransactionhash' });
   });
+
+  it('recovers the Ledger account from a typed-transaction parity byte', async () => {
+    const wallet = new ethers.Wallet('0x' + '11'.repeat(32));
+    const request = {
+      to: '0x0000000000000000000000000000000000000002',
+      nonce: 4,
+      gasLimit: 21000n,
+      maxFeePerGas: 2n,
+      maxPriorityFeePerGas: 1n,
+      chainId: 56,
+      type: 2,
+      value: 1n,
+      data: '0x',
+    };
+    const unsigned = ethers.Transaction.from(request);
+    const signature = wallet.signingKey.sign(unsigned.unsignedHash);
+    (EvmLedgerUtils.signTransaction as jest.Mock).mockResolvedValue({
+      r: signature.r.slice(2),
+      s: signature.s.slice(2),
+      v: signature.yParity === 0 ? '00' : '01',
+    });
+
+    const raw = await EvmSignerUtils.signTransaction(
+      { ...ledgerWallet, address: wallet.address },
+      { ...request, from: wallet.address },
+    );
+    const signed = ethers.Transaction.from(raw);
+
+    expect(signed.from).toBe(wallet.address);
+    expect(signed.chainId).toBe(56n);
+    expect(signed.nonce).toBe(4);
+  });
+
+  it('uses the other parity when the Ledger v byte recovers a different account', async () => {
+    const wallet = new ethers.Wallet('0x' + '11'.repeat(32));
+    const request = {
+      to: '0x0000000000000000000000000000000000000002',
+      nonce: 4,
+      gasLimit: 21000n,
+      chainId: 1,
+      type: 0,
+      value: 1n,
+      gasPrice: 1n,
+      data: '0x',
+    };
+    const unsigned = ethers.Transaction.from(request);
+    const signature = wallet.signingKey.sign(unsigned.unsignedHash);
+    (EvmLedgerUtils.signTransaction as jest.Mock).mockResolvedValue({
+      r: signature.r.slice(2),
+      s: signature.s.slice(2),
+      v: signature.yParity === 0 ? '01' : '00',
+    });
+
+    const raw = await EvmSignerUtils.signTransaction(
+      { ...ledgerWallet, address: wallet.address },
+      { ...request, from: wallet.address },
+    );
+
+    expect(ethers.Transaction.from(raw).from).toBe(wallet.address);
+  });
 });

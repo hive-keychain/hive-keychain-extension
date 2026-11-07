@@ -18,6 +18,7 @@ import { EthersUtils } from '@popup/evm/utils/ethers.utils';
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { ethers } from 'ethers';
 import { KeychainError } from 'src/keychain-error';
+import { LedgerBrowserDeviceUtils } from 'src/utils/ledger-browser-device.utils';
 
 const DEFAULT_EMPTY_ACCOUNT_LIMIT = 2;
 const CLEAR_SIGNING_RESOLUTION_CONFIG = { erc20: true, nft: true };
@@ -64,6 +65,7 @@ interface EvmLedgerTransportCandidate {
     list: () => Promise<unknown[]>;
     request: () => Promise<Transport>;
     create: () => Promise<Transport>;
+    open: (device: unknown) => Promise<Transport>;
   };
 }
 
@@ -294,10 +296,40 @@ const getSupportedTransportCandidates = async () => {
   return candidates.filter(({ supported }) => supported);
 };
 
+const listPageDevices = (candidate: EvmLedgerTransportCandidate) => {
+  if (candidate.type === EvmLedgerTransportType.WEBHID) {
+    return LedgerBrowserDeviceUtils.listPageHidDevices();
+  }
+  return LedgerBrowserDeviceUtils.listPageUsbDevices();
+};
+
+const openPageDevice = async (candidate: EvmLedgerTransportCandidate) => {
+  if (candidate.type === EvmLedgerTransportType.WEBHID) {
+    const device = await LedgerBrowserDeviceUtils.requestPageHidDevice();
+    if (!device) {
+      throw new KeychainError('evm_ledger_connect_device');
+    }
+    return candidate.transport.open(device);
+  }
+  const device = await LedgerBrowserDeviceUtils.requestPageUsbDevice();
+  return candidate.transport.open(device);
+};
+
 const createTransport = async (
   candidate: EvmLedgerTransportCandidate,
   fromTab: boolean,
 ) => {
+  const pageDevices = await listPageDevices(candidate);
+  if (pageDevices) {
+    if (pageDevices.length > 0) {
+      return candidate.transport.open(pageDevices[0]);
+    }
+    if (!fromTab) {
+      throw new KeychainError('evm_ledger_connect_device');
+    }
+    return openPageDevice(candidate);
+  }
+
   const connectedDevices = await candidate.transport.list();
   if (connectedDevices.length === 0) {
     if (fromTab) {
@@ -341,14 +373,16 @@ const resetLedgerInstance = () => {
   activeTransportType = undefined;
 };
 
-const getLedgerInstance = async (): Promise<LedgerEthApp> => {
+const getLedgerInstance = async (
+  allowPrompt = false,
+): Promise<LedgerEthApp> => {
   if (!evmLedger) {
-    await EvmLedgerUtils.init(false);
+    await EvmLedgerUtils.init(allowPrompt);
   } else {
     try {
       await evmLedger.getAppConfiguration();
     } catch (error) {
-      await EvmLedgerUtils.init(false);
+      await EvmLedgerUtils.init(allowPrompt);
     }
   }
 
@@ -357,7 +391,7 @@ const getLedgerInstance = async (): Promise<LedgerEthApp> => {
 
 const getAddressFromDerivationPath = async (path: string) => {
   try {
-    const ledger = await EvmLedgerUtils.getLedgerInstance();
+    const ledger = await EvmLedgerUtils.getLedgerInstance(true);
     const address = await ledger.getAddress(getLedgerPath(path));
     return address.address;
   } catch (error) {
@@ -438,7 +472,7 @@ const signTransaction = async (
   unsignedTransactionHex: string,
 ) => {
   try {
-    const ledger = await EvmLedgerUtils.getLedgerInstance();
+    const ledger = await EvmLedgerUtils.getLedgerInstance(true);
     return await ledger.clearSignTransaction(
       getLedgerPath(path),
       unsignedTransactionHex.replace(/^0x/, ''),
@@ -452,7 +486,7 @@ const signTransaction = async (
 
 const signPersonalMessage = async (path: string, messageHex: string) => {
   try {
-    const ledger = await EvmLedgerUtils.getLedgerInstance();
+    const ledger = await EvmLedgerUtils.getLedgerInstance(true);
     return await ledger.signPersonalMessage(
       getLedgerPath(path),
       messageHex.replace(/^0x/, ''),
@@ -468,7 +502,7 @@ const signEIP712HashedMessage = async (
   hashStructMessageHex: string,
 ) => {
   try {
-    const ledger = await EvmLedgerUtils.getLedgerInstance();
+    const ledger = await EvmLedgerUtils.getLedgerInstance(true);
     return await ledger.signEIP712HashedMessage(
       getLedgerPath(path),
       domainSeparatorHex.replace(/^0x/, ''),

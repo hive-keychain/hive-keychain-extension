@@ -72,6 +72,24 @@ describe('LavaMoat policy overrides', () => {
   );
 
   it.each(overridePaths)(
+    'binds Ledger transports to the page WebUSB and WebHID objects in %s',
+    (overridePath) => {
+      const policy = JSON.parse(
+        fs.readFileSync(path.resolve(__dirname, overridePath), 'utf8'),
+      );
+      const webUsb =
+        policy.resources['@ledgerhq/hw-transport-webusb'].globals;
+      const webHid =
+        policy.resources['@ledgerhq/hw-transport-webhid'].globals;
+
+      expect(webUsb.navigator).toBe(false);
+      expect(webUsb['navigator.usb']).toBe(true);
+      expect(webHid.navigator).toBe(false);
+      expect(webHid['navigator.hid']).toBe(true);
+    },
+  );
+
+  it.each(overridePaths)(
     'gives drag-and-drop the window listeners it binds in %s',
     (overridePath) => {
       const policy = JSON.parse(
