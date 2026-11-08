@@ -586,8 +586,8 @@ const getTokenBalance = async (
   chain: EvmChain,
   token: EvmSmartContractInfo,
 ): Promise<EvmTokenBalanceResult | undefined> => {
-  const provider = await EthersUtils.getProvider(chain);
   try {
+    const provider = await EthersUtils.getProvider(chain);
     let formattedBalance;
     let balance;
     let balanceInteger;

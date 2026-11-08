@@ -204,6 +204,27 @@ describe('EVM active-account.actions (custom chain)', () => {
     ).toBe('0x00000000000000000000000000000000000000cc');
   });
 
+  it('loadEvmActiveAccount does not start when the store chain is not that EVM chain', async () => {
+    const store = getFakeStore({
+      ...initialEmptyStateStore,
+      chain: {
+        name: '',
+        type: ChainType.NONE,
+        logo: '',
+        chainId: '',
+        rpcs: [],
+      },
+    });
+
+    await store.dispatch<any>(loadEvmActiveAccount(baseEvmChain, wallet));
+
+    expect(EvmTokensUtils.getTokenBalances).not.toHaveBeenCalled();
+    expect(store.getState().evm.activeAccount.wallet?.address).toBeUndefined();
+    expect(
+      store.getState().evm.activeAccount.nativeAndErc20Tokens.loading,
+    ).toBe(true);
+  });
+
   it('loadEvmActiveAccount sets wallet identity before loading tokens', async () => {
     const getDiscoveredTokensSpy = jest
       .spyOn(EvmLightNodeUtils, 'getDiscoveredTokens')
