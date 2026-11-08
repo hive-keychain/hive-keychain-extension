@@ -70,6 +70,7 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
 const chromeMessageHandler = (
   backgroundMessage: BackgroundMessage,
   sender: chrome.runtime.MessageSender,
+  sendResponse: (response?: unknown) => void,
 ) => {
   if (
     process.env.IS_FIREFOX &&
@@ -91,17 +92,26 @@ const chromeMessageHandler = (
         void SidePanelPreferenceUtils.markSidePanelInactive();
       }
       return true;
-    // Replace vault by persistent data storage for Firefox
+    // Firefox delivers runtime.onMessage replies only through sendResponse
+    // or a returned promise. A plain return value never reaches the popup.
     case VaultCommand.GET_VALUE:
       if (!process.env.IS_FIREFOX) return false;
-      return MkModule.getMk();
+      void Promise.resolve(MkModule.getMk()).then(
+        (mk) => sendResponse(mk),
+        () => sendResponse(undefined),
+      );
+      return true;
     case VaultCommand.SET_VALUE:
       if (!process.env.IS_FIREFOX) return false;
-      MkModule.saveMk(backgroundMessage.value);
+      void MkModule.saveMk(backgroundMessage.value).then(
+        () => sendResponse(true),
+        () => sendResponse(false),
+      );
       return true;
     case VaultCommand.REMOVE_VALUE:
       if (!process.env.IS_FIREFOX) return false;
       MkModule.lock();
+      sendResponse(true);
       return true;
   }
   return false;
