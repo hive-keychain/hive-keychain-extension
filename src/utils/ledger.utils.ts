@@ -6,6 +6,7 @@ import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { KeychainError } from 'src/keychain-error';
 import { ErrorUtils } from 'src/popup/hive/utils/error.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
+import { LedgerBrowserDeviceUtils } from 'src/utils/ledger-browser-device.utils';
 
 let hiveLedger: LedgerHiveApp;
 
@@ -16,22 +17,40 @@ export enum LedgerKeyType {
   MEMO = 4,
 }
 
-const init = async (fromTab: boolean): Promise<boolean> => {
-  if (await LedgerUtils.isLedgerSupported()) {
-    const connectedDevices = await TransportWebUSB.list();
-    let transport;
-    if (connectedDevices.length === 0) {
-      if (fromTab) {
-        transport = await TransportWebUSB.request();
-      } else {
-        throw new KeychainError('html_ledger_not_detected');
-      }
+const connectTransport = async (fromTab: boolean) => {
+  const pageDevices = await LedgerBrowserDeviceUtils.listPageUsbDevices();
+  if (pageDevices) {
+    if (pageDevices.length > 0) {
+      return TransportWebUSB.open(pageDevices[0]);
     }
-    transport = await TransportWebUSB.create();
+    if (!fromTab) {
+      throw new KeychainError('html_ledger_not_detected');
+    }
+    const device = await LedgerBrowserDeviceUtils.requestPageUsbDevice();
+    return TransportWebUSB.open(device);
+  }
+
+  const connectedDevices = await TransportWebUSB.list();
+  if (connectedDevices.length === 0) {
+    if (!fromTab) {
+      throw new KeychainError('html_ledger_not_detected');
+    }
+    await TransportWebUSB.request();
+  }
+  return TransportWebUSB.create();
+};
+
+const init = async (fromTab: boolean): Promise<boolean> => {
+  try {
+    if (!(await LedgerUtils.isLedgerSupported())) {
+      throw new KeychainError('html_ledger_not_supported');
+    }
+
+    const transport = await connectTransport(fromTab);
     hiveLedger = new LedgerHiveApp(transport);
     return true;
-  } else {
-    throw new KeychainError('html_ledger_not_supported');
+  } catch (error) {
+    throw ErrorUtils.parseLedger(error);
   }
 };
 
@@ -143,14 +162,16 @@ const buildDerivationPath = (keyType: LedgerKeyType, accountIndex: number) => {
   return `m/${PURPOSE}' /${HIVE_NETWORK}' /${keyType}' /${accountIndex}' /${0}'`;
 };
 
-const getLedgerInstance = async (): Promise<LedgerHiveApp> => {
+const getLedgerInstance = async (
+  allowPrompt = false,
+): Promise<LedgerHiveApp> => {
   if (!hiveLedger) {
-    await LedgerUtils.init(false);
+    await LedgerUtils.init(allowPrompt);
   } else {
     try {
       await hiveLedger.getAppName();
     } catch (err) {
-      await LedgerUtils.init(false);
+      await LedgerUtils.init(allowPrompt);
     }
   }
   return hiveLedger;
@@ -162,7 +183,7 @@ const signTransaction = async (
   chainId?: string,
 ): Promise<SignedTransaction> => {
   try {
-    let ledger = await LedgerUtils.getLedgerInstance();
+    let ledger = await LedgerUtils.getLedgerInstance(true);
     if (!ledger) throw new KeychainError('html_ledger_error_while_connecting');
     const res = await ledger.signTransaction(
       transaction,
@@ -177,7 +198,7 @@ const signTransaction = async (
 /* istanbul ignore next */
 const signHash = async (digest: string, key: Key) => {
   try {
-    let ledger = await LedgerUtils.getLedgerInstance();
+    let ledger = await LedgerUtils.getLedgerInstance(true);
     if (!ledger) throw new KeychainError('html_ledger_error_while_connecting');
     return await ledger.signHash(
       digest,

@@ -23,9 +23,8 @@ import {
   getHostnameFromUrl,
   getOriginFromUrl,
 } from 'src/utils/browser-origin.utils';
-import Logger from 'src/utils/logger.utils';
-
 import { I18nUtils } from 'src/utils/i18n.utils';
+
 const EvmDappStatus = ({
   activeAccount,
   accounts,
@@ -61,15 +60,7 @@ const EvmDappStatus = ({
     if (activeTab?.url && activeTab.url.length > 0) setDapp(activeTab);
   };
 
-  const getCurrentOrigin = () => {
-    const origin = getOriginFromUrl(dapp?.url);
-    if (!origin) {
-      Logger.error("Can't find origin");
-      return null;
-    }
-
-    return origin;
-  };
+  const getCurrentOrigin = () => getOriginFromUrl(dapp?.url);
 
   const onAddressLoaded = async () => {
     const origin = getCurrentOrigin();

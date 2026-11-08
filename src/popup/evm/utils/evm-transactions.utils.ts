@@ -443,6 +443,9 @@ const deleteFromPendingTransactions = async (txHash: string) => {
 };
 
 const hasPendingTransaction = async (fromAddress: string, chain: EvmChain) => {
+  if (Array.isArray(chain?.rpcs) && chain.rpcs.length === 0) {
+    return;
+  }
   try {
     const provider = await EthersUtils.getProvider(chain);
     const [[pendingNonce, latestNonce], localPendingTransactions] =

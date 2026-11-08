@@ -23,6 +23,7 @@ jest.mock('@popup/multichain/utils/detached-extension-tab.utils', () => ({
 }));
 
 describe('PopupToolbarStartupUtils', () => {
+  const originalFirefox = process.env.IS_FIREFOX;
   const isToolbarPopupMock =
     ExtensionSurfaceUtils.isToolbarPopup as jest.MockedFunction<
       typeof ExtensionSurfaceUtils.isToolbarPopup
@@ -42,10 +43,19 @@ describe('PopupToolbarStartupUtils', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    delete process.env.IS_FIREFOX;
     isToolbarPopupMock.mockReturnValue(false);
     getOpenSidePanelByDefaultMock.mockResolvedValue(false);
     isSidePanelSessionActiveMock.mockResolvedValue(false);
     openDetachedExtensionMock.mockResolvedValue();
+  });
+
+  afterEach(() => {
+    if (originalFirefox === undefined) {
+      delete process.env.IS_FIREFOX;
+      return;
+    }
+    process.env.IS_FIREFOX = originalFirefox;
   });
 
   it('does not redirect when not opened from the toolbar popup', async () => {
@@ -71,6 +81,21 @@ describe('PopupToolbarStartupUtils', () => {
 
     expect(openDetachedExtensionMock).not.toHaveBeenCalled();
     expect(close).toHaveBeenCalled();
+  });
+
+  it('keeps the toolbar popup open on Firefox', async () => {
+    process.env.IS_FIREFOX = 'true';
+    isToolbarPopupMock.mockReturnValue(true);
+    getOpenSidePanelByDefaultMock.mockResolvedValue(true);
+    isSidePanelSessionActiveMock.mockResolvedValue(true);
+
+    await expect(
+      PopupToolbarStartupUtils.redirectToolbarPopupToSidePanelIfNeeded(),
+    ).resolves.toBe(false);
+
+    expect(openDetachedExtensionMock).not.toHaveBeenCalled();
+    expect(getOpenSidePanelByDefaultMock).not.toHaveBeenCalled();
+    expect(isSidePanelSessionActiveMock).not.toHaveBeenCalled();
   });
 
   it('redirects toolbar popup to the side panel when preference is enabled', async () => {

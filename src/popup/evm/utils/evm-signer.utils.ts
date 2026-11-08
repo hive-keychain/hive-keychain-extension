@@ -22,8 +22,19 @@ import {
 const addHexPrefix = (value: string) =>
   value.startsWith('0x') ? value : `0x${value}`;
 
-const getSignatureV = (v: number) => {
-  return v < 27 ? v + 27 : v;
+const getLedgerSignatureV = (v: string | number) => {
+  return typeof v === 'number' ? v : parseInt(v.replace(/^0x/, ''), 16);
+};
+
+const getLedgerYParity = (v: number): 0 | 1 => {
+  if (v === 0 || v === 27) {
+    return 0;
+  }
+  if (v === 1 || v === 28) {
+    return 1;
+  }
+  const parity = v >= 35 ? (v - 35) % 2 : v % 2;
+  return parity === 0 ? 0 : 1;
 };
 
 const formatLedgerSignature = (signature: {
@@ -31,16 +42,45 @@ const formatLedgerSignature = (signature: {
   s: string;
   v: string | number;
 }) => {
-  const v =
-    typeof signature.v === 'number'
-      ? signature.v
-      : parseInt(signature.v.replace(/^0x/, ''), 16);
-  const normalizedV = getSignatureV(v);
+  const yParity = getLedgerYParity(getLedgerSignatureV(signature.v));
   return ethers.Signature.from({
     r: addHexPrefix(signature.r),
     s: addHexPrefix(signature.s),
-    v: normalizedV,
+    yParity,
   });
+};
+
+const serializeLedgerTransaction = (
+  unsignedSerialized: string,
+  signature: { r: string; s: string; v: string | number },
+  expectedAddress: string,
+) => {
+  const yParity = getLedgerYParity(getLedgerSignatureV(signature.v));
+  const withParity = (parity: 0 | 1) => {
+    const signedTransaction = ethers.Transaction.from(unsignedSerialized);
+    signedTransaction.signature = ethers.Signature.from({
+      r: addHexPrefix(signature.r),
+      s: addHexPrefix(signature.s),
+      yParity: parity,
+    });
+    return signedTransaction;
+  };
+
+  const signedTransaction = withParity(yParity);
+  if (
+    signedTransaction.from?.toLowerCase() === expectedAddress.toLowerCase()
+  ) {
+    return signedTransaction.serialized;
+  }
+
+  const flippedTransaction = withParity(yParity === 0 ? 1 : 0);
+  if (
+    flippedTransaction.from?.toLowerCase() === expectedAddress.toLowerCase()
+  ) {
+    return flippedTransaction.serialized;
+  }
+
+  return signedTransaction.serialized;
 };
 
 const isLedgerWallet = (wallet: EvmWallet): wallet is EvmLedgerWallet => {
@@ -163,11 +203,11 @@ const signTransaction = async (
     wallet.path,
     unsignedTransaction.unsignedSerialized,
   );
-  const signedTransaction = ethers.Transaction.from(
+  return serializeLedgerTransaction(
     unsignedTransaction.unsignedSerialized,
+    signature,
+    wallet.address,
   );
-  signedTransaction.signature = formatLedgerSignature(signature);
-  return signedTransaction.serialized;
 };
 
 const sendTransaction = async (

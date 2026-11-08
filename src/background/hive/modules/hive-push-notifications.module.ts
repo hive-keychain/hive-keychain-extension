@@ -39,6 +39,7 @@ let globalPropertiesPromise:
   | ReturnType<typeof DynamicGlobalPropertiesUtils.getDynamicGlobalProperties>
   | undefined;
 const eventSources = new Map<string, EventSource>();
+const loggedClosedPushStreams = new Set<string>();
 const accountConfigs = new Map<string, NotificationConfig>();
 const seenNotificationIds = new Set<string>();
 const notificationTargets = new Map<string, PushNotificationTarget>();
@@ -97,6 +98,7 @@ const closeEventSource = (username: string) => {
   eventSources.get(username)?.close();
   eventSources.delete(username);
   accountConfigs.delete(username);
+  loggedClosedPushStreams.delete(username);
 };
 
 const disconnect = () => {
@@ -216,6 +218,13 @@ const connectAccount = (username: string) => {
     })();
   };
   eventSource.onerror = (event) => {
+    if (getEventSourceReadyStateLabel(eventSource.readyState) !== 'CLOSED') {
+      return;
+    }
+    if (loggedClosedPushStreams.has(username)) {
+      return;
+    }
+    loggedClosedPushStreams.add(username);
     Logger.warn(
       `Hive push notification stream error for @${username} (${getPushStreamErrorDetails(
         event,

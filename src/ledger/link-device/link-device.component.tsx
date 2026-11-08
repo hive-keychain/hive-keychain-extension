@@ -6,6 +6,7 @@ import ButtonComponent, {
 } from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { ErrorUtils } from 'src/popup/hive/utils/error.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
@@ -25,6 +26,7 @@ const LinkLedgerDevice = ({
   onLoadingChange,
 }: LinkLedgerDeviceProps) => {
   const [done, setDone] = useState(false);
+  const [message, setMessage] = useState('');
 
   const [theme, setTheme] = useState<Theme>();
   useEffect(() => {
@@ -42,6 +44,7 @@ const LinkLedgerDevice = ({
   };
 
   const linkDevice = async () => {
+    setMessage('');
     onLoadingChange?.(true);
     try {
       const linked = await LedgerUtils.init(true);
@@ -49,6 +52,8 @@ const LinkLedgerDevice = ({
       if (linked) {
         onLinked?.();
       }
+    } catch (error) {
+      setMessage(ErrorUtils.parseLedger(error).message);
     } finally {
       onLoadingChange?.(false);
     }
@@ -84,6 +89,9 @@ const LinkLedgerDevice = ({
           <div className="confirmation">
             {I18nUtils.getMessage('ledger_link_device_linked')}
           </div>
+        )}
+        {message && (
+          <div className="error">{I18nUtils.getMessage(message)}</div>
         )}
         <div className="fill-space"></div>
 

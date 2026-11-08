@@ -16,6 +16,7 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import MkUtils from 'src/popup/hive/utils/mk.utils';
+import LegalDocumentsUtils from 'src/utils/legal-documents.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
 const SignUp = ({
@@ -31,13 +32,14 @@ const SignUp = ({
   useEffect(() => {
     resetTitleContainerProperties();
   }, [resetTitleContainerProperties]);
-  const submitMk = (): any => {
+  const submitMk = async (): Promise<void> => {
     if (!accepted) {
       setErrorMessage('html_popup_sign_up_need_accept_pp');
       return;
     }
     if (newPassword === newPasswordConfirm) {
       if (MkUtils.isPasswordValid(newPassword)) {
+        await LegalDocumentsUtils.acceptLegalDocumentHashes();
         setMk(newPassword, true);
         navigateTo(Screen.SETUP_DISPLAY_APPEARANCE, true);
       } else {

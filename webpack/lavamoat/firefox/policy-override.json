@@ -1,0 +1,56 @@
+{
+  "resources": {
+    "@atlaskit/pragmatic-drag-and-drop": {
+      "globals": {
+        "addEventListener": true,
+        "removeEventListener": true
+      }
+    },
+    "@hiveio/hive-js>debug": {
+      "globals": {
+        "chrome": false
+      }
+    },
+    "axios": {
+      "globals": {
+        "crypto": true
+      }
+    },
+    "ethers": {
+      "globals": {
+        "crypto": true
+      }
+    },
+    "react-dom": {
+      "globals": {
+        "HTMLIFrameElement": true
+      }
+    },
+    "@ledgerhq/hw-transport-webhid": {
+      "globals": {
+        "navigator": false,
+        "navigator.hid": true
+      }
+    },
+    "@ledgerhq/hw-transport-webusb": {
+      "globals": {
+        "navigator": false,
+        "navigator.usb": true
+      }
+    },
+    "react-dropdown-select": {
+      "globals": {
+        "addEventListener": true,
+        "innerHeight": true,
+        "removeEventListener": true
+      }
+    },
+    "socket.io-client>engine.io-client": {
+      "globals": {
+        "WebSocket": true,
+        "clearTimeout": true,
+        "setTimeout": true
+      }
+    }
+  }
+}

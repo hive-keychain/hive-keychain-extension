@@ -137,6 +137,16 @@ describe('evm transactions utils', () => {
     jest.restoreAllMocks();
   });
 
+  it('does not read an RPC url when the chain has no rpcs', async () => {
+    const result = await EvmTransactionsUtils.hasPendingTransaction(
+      walletAddress,
+      { ...chain, rpcs: [] },
+    );
+
+    expect(result).toBeUndefined();
+    expect(EthersUtils.getProvider).not.toHaveBeenCalled();
+  });
+
   it('uses the blocking pending nonce when resolving pending transaction details', async () => {
     pendingTransactionsStorage = [
       {

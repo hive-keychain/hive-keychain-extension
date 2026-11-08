@@ -7,6 +7,10 @@ import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useRef, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
+import {
+  BackgroundType,
+  CheckboxPanelComponent,
+} from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -14,6 +18,7 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { retrieveAccounts } from 'src/popup/hive/actions/account.actions';
 import { setProcessingDecryptAccount } from 'src/popup/hive/actions/app-status.actions';
 import MkUtils from 'src/popup/hive/utils/mk.utils';
+import LegalDocumentsUtils from 'src/utils/legal-documents.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
 const SignIn = ({
@@ -25,6 +30,8 @@ const SignIn = ({
   setProcessingDecryptAccount,
 }: PropsFromRedux) => {
   const [password, setPassword] = useState('');
+  const [needsAcceptance, setNeedsAcceptance] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const ref = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -32,11 +39,30 @@ const SignIn = ({
   }, []);
 
   useEffect(() => {
+    let isCancelled = false;
+    void LegalDocumentsUtils.needsLegalDocumentAcceptance().then((needed) => {
+      if (!isCancelled) {
+        setNeedsAcceptance(needed);
+      }
+    });
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
     if (ref && ref.current) ref.current.focus();
   }, [ref]);
 
   const login = async () => {
+    if (needsAcceptance && !acceptedTerms) {
+      setErrorMessage('html_popup_sign_up_need_accept_pp');
+      return;
+    }
     if (await MkUtils.login(password)) {
+      if (needsAcceptance) {
+        await LegalDocumentsUtils.acceptLegalDocumentHashes();
+      }
       setProcessingDecryptAccount(true);
       setMk(password, true);
       retrieveAccounts(password);
@@ -75,6 +101,17 @@ const SignIn = ({
         dataTestId={'password-input'}
         ref={ref}
       />
+      {needsAcceptance && (
+        <div className="legal-acceptance">
+          <CheckboxPanelComponent
+            onChange={() => setAcceptedTerms(!acceptedTerms)}
+            checked={acceptedTerms}
+            backgroundType={BackgroundType.FILLED}
+            text="accept_terms_and_condition"
+            dataTestId="accept-terms-and-condition"
+          />
+        </div>
+      )}
       <div className="divider"></div>
       <div className="action-panel">
         <ButtonComponent

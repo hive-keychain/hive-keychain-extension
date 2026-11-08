@@ -139,6 +139,29 @@ describe('evm-keychain bootstrap tests:\n', () => {
     expect(getProviderCompatibilityController(page)?.provider).toBe(provider);
   });
 
+  it('yields to a MetaMask-compatible wallet and still announces Keychain', () => {
+    jest.useFakeTimers();
+    const provider = makeProvider('keychain');
+    mockGetProvider.mockReturnValue(provider);
+    const incumbent = {
+      id: 'incumbent',
+      isMetaMask: true,
+    } as LegacyEthereumProvider & { id: string; isMetaMask: boolean };
+    const { page, events } = createPageWindow();
+    page.ethereum = incumbent;
+
+    bootstrapEvmKeychain(page);
+    configureEvmKeychainLegacyMode('yielding', page);
+
+    expect(page.ethereum).toBe(incumbent);
+    expect(incumbent.providers).toEqual([incumbent, provider]);
+    expect(page.hiveKeychainEthereum).toBe(provider);
+    expect(page.hiveKeychain?.ethereum).toBe(provider);
+    const announcements = announcementsFor(events);
+    expect(announcements).toHaveLength(1);
+    expect((announcements[0] as CustomEvent).detail.provider).toBe(provider);
+  });
+
   it('bootstraps once when configuration runs before the static script', () => {
     jest.useFakeTimers();
     const provider = makeProvider('keychain');

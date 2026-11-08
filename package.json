@@ -1,6 +1,6 @@
 {
   "name": "hive-keychain",
-  "version": "4.0.7",
+  "version": "4.1.0",
   "description": "Hive Keychain extension",
   "main": "index.js",
   "directories": {
@@ -16,10 +16,17 @@
     "dev:chromium:safe": "webpack --config webpack/chromium/webpack.dev.js -w",
     "dev:firefox:safe": "webpack --config webpack/firefox/webpack.dev.js -w",
     "dev:safe": "npm outdated; concurrently \"npm:dev:chromium:safe\" \"npm:dev:firefox:safe\"",
-    "build": "npm outdated; concurrently \"npm:build:*\"",
+    "build": "npm outdated; concurrently \"npm:build:chromium\" \"npm:build:firefox\" \"npm:build:beta\"",
     "build:chromium": "rm -rf ./dist-prod && webpack --config webpack/chromium/webpack.prod.js",
     "build:firefox": "rm -rf ./dist-prod-firefox && webpack --config webpack/firefox/webpack.prod.js",
     "build:beta": "rm -rf ./dist-beta && webpack --config webpack/chromium/webpack.beta.js && cp dist-beta/assets/images/iconhive-beta.png dist-beta/assets/images/iconhive.png",
+    "build:chromium:lavamoat": "rm -rf ./dist-prod && LAVAMOAT=1 webpack --config webpack/chromium/webpack.prod.js && LAVAMOAT=1 webpack --config webpack/chromium/webpack.page-world.js",
+    "build:firefox:lavamoat": "rm -rf ./dist-prod-firefox && LAVAMOAT=1 webpack --config webpack/firefox/webpack.prod.js && LAVAMOAT=1 webpack --config webpack/firefox/webpack.page-world.js",
+    "build:beta:lavamoat": "rm -rf ./dist-beta && LAVAMOAT=1 webpack --config webpack/chromium/webpack.beta.js && LAVAMOAT=1 webpack --config webpack/chromium/webpack.beta.page-world.js && cp dist-beta/assets/images/iconhive-beta.png dist-beta/assets/images/iconhive.png",
+    "lavamoat:policy:chromium": "LAVAMOAT=1 LAVAMOAT_GENERATE_POLICY=true webpack --config webpack/chromium/webpack.prod.js",
+    "lavamoat:policy:firefox": "LAVAMOAT=1 LAVAMOAT_GENERATE_POLICY=true webpack --config webpack/firefox/webpack.prod.js",
+    "lavamoat:check-bundles": "node scripts/check-lavamoat-bundles.js",
+    "test:lavamoat": "jest --config jest.lavamoat.config.js --testPathPatterns src/__tests__/webpack/lavamoat-runtime",
     "analyze": "concurrently \"npm:analyze:*\"",
     "analyze:chromium": "npx webpack --profile --json > stats.json --config webpack/chromium/webpack.prod.js",
     "analyze:firefox": "npx webpack --profile --json > stats.json --config webpack/firefox/webpack.prod.js",
@@ -54,6 +61,9 @@
   ],
   "author": "stoodkev",
   "license": "MIT",
+  "engines": {
+    "node": "^24.0.0"
+  },
   "bugs": {
     "url": "https://github.com/stoodkev/hive-keychain/issues"
   },
@@ -131,6 +141,7 @@
     "@babel/preset-env": "^7.23.2",
     "@babel/preset-react": "^7.22.15",
     "@hiveio/dhive": "^1.2.7",
+    "@lavamoat/webpack": "3.0.1",
     "@svgr/webpack": "^8.0.1",
     "@testing-library/jest-dom": "5.16.5",
     "@testing-library/react": "12.1.5",

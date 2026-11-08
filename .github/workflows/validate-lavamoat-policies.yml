@@ -1,0 +1,50 @@
+name: Validate LavaMoat policies
+
+on:
+  pull_request:
+    branches: [pre-prod]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js 24
+        uses: actions/setup-node@v3
+        with:
+          node-version: 24.x
+          cache: npm
+      - run: npm ci
+      - run: npm run lavamoat:policy:chromium
+      - run: npm run lavamoat:policy:firefox
+      - name: Check LavaMoat policy drift
+        id: policy-drift
+        run: |
+          status="$(git status --porcelain -- webpack/lavamoat)"
+          git diff -- webpack/lavamoat > lavamoat-policy.diff || true
+          if [ -n "$status" ]; then
+            {
+              printf '%s\n' "$status"
+              echo
+              git ls-files --others --exclude-standard -- webpack/lavamoat | while read -r file; do
+                echo "===== $file ====="
+                cat "$file"
+              done
+            } >> lavamoat-policy.diff
+            cat lavamoat-policy.diff
+            echo "::error::LavaMoat policies drifted or include untracked files."
+            exit 1
+          fi
+      - name: Upload policy diff
+        if: failure() && steps.policy-drift.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: lavamoat-policy-diff
+          path: lavamoat-policy.diff
+      - run: npm run build:chromium:lavamoat
+      - run: npm run build:firefox:lavamoat
+      - run: node scripts/check-lavamoat-bundles.js dist-prod
+      - run: node scripts/check-lavamoat-bundles.js dist-prod-firefox
+      - run: npm run test:lavamoat

@@ -12,8 +12,17 @@ import { LoadingValuesConfiguration } from 'src/__tests__/utils-for-testing/load
 import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
 import { RootState } from 'src/popup/multichain/store';
 import { SignUpComponent } from 'src/popup/multichain/pages/sign-up/sign-up.component';
+import LegalDocumentsUtils from 'src/utils/legal-documents.utils';
 
 import { I18nUtils } from 'src/utils/i18n.utils';
+
+jest.mock('src/utils/legal-documents.utils', () => ({
+  __esModule: true,
+  default: {
+    needsLegalDocumentAcceptance: jest.fn().mockResolvedValue(false),
+    acceptLegalDocumentHashes: jest.fn().mockResolvedValue(undefined),
+  },
+}));
 /** Sign-up UI lives under ChainRouter when !mk; test the screen directly (not HiveApp). */
 describe('sign-up.component tests:\n', () => {
   let store: Store<RootState>;
@@ -39,6 +48,9 @@ describe('sign-up.component tests:\n', () => {
       initialState: initialEmptyStateStore,
     });
     store = result.store;
+    (
+      LegalDocumentsUtils.acceptLegalDocumentHashes as jest.Mock
+    ).mockClear();
     await waitFor(() => {});
   });
   afterEach(() => cleanup());
@@ -72,6 +84,7 @@ describe('sign-up.component tests:\n', () => {
         exact: true,
       }),
     ).toBeInTheDocument();
+    expect(LegalDocumentsUtils.acceptLegalDocumentHashes).not.toHaveBeenCalled();
   });
 
   it('Must show error message when using different passwords and clicking button', async () => {
@@ -150,6 +163,9 @@ describe('sign-up.component tests:\n', () => {
         Screen.SETUP_DISPLAY_APPEARANCE,
       );
     });
+    expect(LegalDocumentsUtils.acceptLegalDocumentHashes).toHaveBeenCalledTimes(
+      1,
+    );
   });
 
   it('Must navigate to display preferences with valid password and click button', async () => {
@@ -170,5 +186,8 @@ describe('sign-up.component tests:\n', () => {
         Screen.SETUP_DISPLAY_APPEARANCE,
       );
     });
+    expect(LegalDocumentsUtils.acceptLegalDocumentHashes).toHaveBeenCalledTimes(
+      1,
+    );
   });
 });

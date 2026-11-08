@@ -1,6 +1,8 @@
 import { afterEach, describe, expect, it, jest } from '@jest/globals';
 import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { evmRequestWithoutConfirmation } from '@background/evm/requests/logic/evm-request-without-confirmation.logic';
+import { ProviderRpcErrorList } from '@interfaces/evm-provider.interface';
+import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 
 jest.mock('@background/hive/modules/mk.module', () => ({
@@ -233,6 +235,47 @@ describe('evm request without confirmation', () => {
       tab: 6,
       origin: 'http://localhost:3000',
     });
+  });
+
+  it('keeps the invalid-params error when a subscription has no chain id', async () => {
+    const { CommunicationUtils } = await loadTestContext();
+    (EvmChainUtils.getLastEvmChainIdForOrigin as jest.Mock).mockResolvedValue(
+      null,
+    );
+    const requestHandler = {
+      removeRequestByLocator: jest.fn().mockResolvedValue(undefined),
+    } as any;
+
+    await evmRequestWithoutConfirmation(
+      requestHandler,
+      4,
+      {
+        request_id: 9,
+        method: EvmRequestMethod.SUBSCRIBE,
+        params: ['newHeads'],
+      } as any,
+      {
+        origin: 'http://localhost:3000',
+        domain: 'localhost',
+        protocol: 'http:',
+        logo: '',
+      },
+    );
+
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(
+      4,
+      {
+        command: BackgroundCommand.SEND_EVM_ERROR,
+        value: {
+          requestId: 9,
+          error: {
+            code: ProviderRpcErrorList.invalidMethodParams.code,
+            message: 'Missing chain id',
+          },
+        },
+      },
+      undefined,
+    );
   });
 
   it('switches provider chain with the requesting tab for whitelisted wallet_switchEthereumChain', async () => {

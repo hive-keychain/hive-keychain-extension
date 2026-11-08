@@ -11,6 +11,7 @@ const mockSocket = {
   on: jest.fn((event: string, handler: (payload?: any) => void) => {
     mockSocketHandlers[event] = handler;
   }),
+  timeout: jest.fn(),
 };
 const mockIo = jest.fn(() => mockSocket);
 const mockGetValueFromVault = jest.fn();
@@ -81,6 +82,7 @@ jest.mock('src/utils/i18n.utils', () => ({
 jest.mock('src/utils/logger.utils', () => ({
   __esModule: true,
   default: {
+    info: jest.fn(),
     warn: jest.fn(),
   },
 }));
@@ -113,8 +115,11 @@ describe('evm-incoming-transactions.module', () => {
   beforeEach(() => {
     jest.resetModules();
     jest.clearAllMocks();
-    Object.keys(mockSocketHandlers).forEach((key) => delete mockSocketHandlers[key]);
+    Object.keys(mockSocketHandlers).forEach(
+      (key) => delete mockSocketHandlers[key],
+    );
     mockSocket.connected = false;
+    mockSocket.timeout.mockReturnValue(mockSocket);
     mockAddWalletLockStateListener.mockReturnValue(jest.fn());
     mockGetChain.mockResolvedValue(chain);
     mockGetSettings.mockResolvedValue({});
@@ -125,13 +130,22 @@ describe('evm-incoming-transactions.module', () => {
   it('does not connect while the wallet is locked', async () => {
     mockGetValueFromVault.mockResolvedValue(undefined);
 
-    const { EvmIncomingTransactionsModule } = await import(
-      '@background/evm/evm-incoming-transactions.module'
-    );
+    const { EvmIncomingTransactionsModule } =
+      await import('@background/evm/evm-incoming-transactions.module');
+    const Logger = (await import('src/utils/logger.utils')).default;
     EvmIncomingTransactionsModule.start();
     await flushAsync();
 
     expect(mockIo).not.toHaveBeenCalled();
+    expect(Logger.info).toHaveBeenCalledTimes(1);
+    expect(Logger.info).toHaveBeenCalledWith(
+      'EVM incoming socket idle: wallet is locked',
+    );
+
+    const listener = mockAddWalletLockStateListener.mock.calls[0][0];
+    listener();
+    await flushAsync();
+    expect(Logger.info).toHaveBeenCalledTimes(1);
   });
 
   it('registers all accounts and displays incoming history notifications', async () => {
@@ -142,18 +156,34 @@ describe('evm-incoming-transactions.module', () => {
       { nickname: 'Main', wallet: { address: ADDRESS } },
     ]);
 
-    const { EvmIncomingTransactionsModule } = await import(
-      '@background/evm/evm-incoming-transactions.module'
-    );
+    const { EvmIncomingTransactionsModule } =
+      await import('@background/evm/evm-incoming-transactions.module');
     EvmIncomingTransactionsModule.start();
     await flushAsync();
 
     expect(mockSocket.connect).toHaveBeenCalledTimes(1);
+    const Logger = (await import('src/utils/logger.utils')).default;
+    expect(Logger.info).toHaveBeenCalledWith(
+      `EVM incoming socket connecting to https://light-node.test for 1 address(es): ${ADDRESS}`,
+    );
     mockSocketHandlers.connect();
 
-    expect(mockSocket.emit).toHaveBeenCalledWith('register_accounts', {
-      addresses: [ADDRESS],
-    });
+    expect(mockSocket.timeout).toHaveBeenCalledWith(10000);
+    expect(mockSocket.emit).toHaveBeenCalledWith(
+      'register_accounts',
+      {
+        addresses: [ADDRESS],
+      },
+      expect.any(Function),
+    );
+    expect(Logger.info).toHaveBeenCalledWith(
+      `EVM incoming socket connected to https://light-node.test for 1 address(es): ${ADDRESS}`,
+    );
+    const acknowledge = mockSocket.emit.mock.calls[0][2];
+    acknowledge(null, { subscribed: 1, rejected: 0 });
+    expect(Logger.info).toHaveBeenCalledWith(
+      'EVM incoming socket registration acknowledged for 1 address(es): subscribed 1, rejected 0',
+    );
 
     mockSocketHandlers.incoming_transaction({
       chainId: 1,
@@ -163,12 +193,19 @@ describe('evm-incoming-transactions.module', () => {
     await flushAsync();
 
     expect(mockGetVisibleHistoryItem).toHaveBeenCalledWith(incomingItem, {});
+    expect(Logger.info).toHaveBeenCalledWith(
+      `EVM incoming transaction received for ${ADDRESS} on chain 1 (0x1) tx ${TRANSACTION_HASH}`,
+    );
+    expect(Logger.info).toHaveBeenCalledWith(
+      `EVM incoming transaction notification for Main, Ledger on Ethereum (0x1) ${TRANSACTION_HASH}`,
+    );
     expect(chrome.notifications.create).toHaveBeenCalledWith(
       `evm-incoming:1:${TRANSACTION_HASH}:0`,
       expect.objectContaining({
         title: 'Main, Ledger · Incoming transaction on Ethereum',
         message: 'Received 1 ETH',
       }),
+      expect.any(Function),
     );
     expect(chrome.runtime.sendMessage).toHaveBeenCalledWith({
       command: 'evmIncomingTransaction',
@@ -187,6 +224,93 @@ describe('evm-incoming-transactions.module', () => {
     await flushAsync();
     expect(chrome.notifications.create).toHaveBeenCalledTimes(1);
     expect(chrome.runtime.sendMessage).toHaveBeenCalledTimes(1);
+    expect(Logger.warn).toHaveBeenCalledWith(
+      'Ignored invalid EVM incoming transaction socket payload: direction "OUT"',
+    );
+  });
+
+  it('logs the first socket connection failure until the socket connects', async () => {
+    mockGetValueFromVault.mockResolvedValue('mk');
+    mockRebuildAccounts.mockResolvedValue([{ wallet: { address: ADDRESS } }]);
+
+    const { EvmIncomingTransactionsModule } =
+      await import('@background/evm/evm-incoming-transactions.module');
+    const Logger = (await import('src/utils/logger.utils')).default;
+    EvmIncomingTransactionsModule.start();
+    await flushAsync();
+
+    mockSocketHandlers.connect_error({ message: 'timeout' });
+    mockSocketHandlers.connect_error({ message: 'timeout' });
+
+    expect(Logger.warn).toHaveBeenCalledTimes(1);
+    expect(Logger.warn).toHaveBeenCalledWith(
+      'Unable to connect to EVM incoming transaction socket: timeout',
+    );
+
+    mockSocketHandlers.connect();
+    mockSocketHandlers.connect_error({ message: 'timeout' });
+    expect(Logger.warn).toHaveBeenCalledTimes(2);
+  });
+
+  it('logs why a received incoming transaction is not displayed', async () => {
+    mockGetValueFromVault.mockResolvedValue('mk');
+    mockRebuildAccounts.mockResolvedValue([
+      { nickname: 'Main', wallet: { address: ADDRESS } },
+    ]);
+    mockGetChain
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce({ name: 'Ethereum', chainId: '0x1' });
+    mockGetVisibleHistoryItem.mockReturnValueOnce(undefined);
+
+    const { EvmIncomingTransactionsModule } =
+      await import('@background/evm/evm-incoming-transactions.module');
+    const Logger = (await import('src/utils/logger.utils')).default;
+    EvmIncomingTransactionsModule.start();
+    await flushAsync();
+    mockSocketHandlers.connect();
+
+    const otherAddress = '0x2222222222222222222222222222222222222222';
+    mockSocketHandlers.incoming_transaction({
+      chainId: 1,
+      address: otherAddress,
+      item: incomingItem,
+    });
+    await flushAsync();
+    expect(Logger.info).toHaveBeenCalledWith(
+      `EVM incoming transaction ignored for unregistered address ${otherAddress} on chain 0x1`,
+    );
+
+    mockSocketHandlers.incoming_transaction({
+      chainId: 1,
+      address: ADDRESS,
+      item: incomingItem,
+    });
+    await flushAsync();
+    expect(Logger.info).toHaveBeenCalledWith(
+      'EVM incoming transaction ignored because chain 0x1 is not loaded',
+    );
+
+    mockSocketHandlers.incoming_transaction({
+      chainId: 1,
+      address: ADDRESS,
+      item: incomingItem,
+    });
+    await flushAsync();
+    expect(Logger.info).toHaveBeenCalledWith(
+      `EVM incoming transaction ignored because chain Ethereum (0x1) has no block explorer`,
+    );
+
+    mockGetChain.mockResolvedValue(chain);
+    mockSocketHandlers.incoming_transaction({
+      chainId: 1,
+      address: ADDRESS,
+      item: incomingItem,
+    });
+    await flushAsync();
+    expect(Logger.info).toHaveBeenCalledWith(
+      `EVM incoming transaction hidden by spam or unverified-token display settings for ${ADDRESS} on Ethereum (0x1)`,
+    );
+    expect(chrome.notifications.create).not.toHaveBeenCalled();
   });
 
   it('disconnects after an internal wallet lock-state message', async () => {
@@ -195,9 +319,8 @@ describe('evm-incoming-transactions.module', () => {
       .mockResolvedValueOnce(undefined);
     mockRebuildAccounts.mockResolvedValue([{ wallet: { address: ADDRESS } }]);
 
-    const { EvmIncomingTransactionsModule } = await import(
-      '@background/evm/evm-incoming-transactions.module'
-    );
+    const { EvmIncomingTransactionsModule } =
+      await import('@background/evm/evm-incoming-transactions.module');
     EvmIncomingTransactionsModule.start();
     await flushAsync();
 
@@ -215,9 +338,8 @@ describe('evm-incoming-transactions.module', () => {
       .mockResolvedValueOnce(undefined);
     mockRebuildAccounts.mockReturnValue(accounts.promise);
 
-    const { EvmIncomingTransactionsModule } = await import(
-      '@background/evm/evm-incoming-transactions.module'
-    );
+    const { EvmIncomingTransactionsModule } =
+      await import('@background/evm/evm-incoming-transactions.module');
     EvmIncomingTransactionsModule.start();
     await flushAsync();
 
@@ -237,9 +359,8 @@ describe('evm-incoming-transactions.module', () => {
       'addListener',
     );
 
-    const { EvmIncomingTransactionsModule } = await import(
-      '@background/evm/evm-incoming-transactions.module'
-    );
+    const { EvmIncomingTransactionsModule } =
+      await import('@background/evm/evm-incoming-transactions.module');
     EvmIncomingTransactionsModule.start();
 
     const listener = addListenerSpy.mock.calls[0][0];

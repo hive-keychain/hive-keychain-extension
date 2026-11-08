@@ -65,7 +65,7 @@ const isSameTokenAddress = (left: string, right: string) =>
   left.trim().toLowerCase() === right.trim().toLowerCase();
 
 const isZeroBalance = (balance: bigint | undefined) =>
-  balance !== undefined && balance === 0n;
+  balance !== undefined && balance === BigInt(0);
 
 const readRawErc20Balance = async (
   walletAddress: string,

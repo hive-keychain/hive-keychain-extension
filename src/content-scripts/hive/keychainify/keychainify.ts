@@ -15,6 +15,24 @@ if (window.chrome) {
   window.chrome.storage.session = undefined;
 }
 
+const parseProposalIds = (value: unknown): number[] => {
+  if (typeof value !== 'string' || value.length === 0) {
+    return [];
+  }
+  try {
+    const parsed = JSON.parse(value);
+    if (Array.isArray(parsed)) {
+      return parsed
+        .map((id) => Number(id))
+        .filter((id) => Number.isFinite(id));
+    }
+  } catch {
+    // A single unencoded id is still a valid HiveSigner query value.
+  }
+  const id = Number(value);
+  return Number.isFinite(id) ? [id] : [];
+};
+
 /**
  *
  * @type {{requestTransfer: keychainify.requestTransfer, initBackground: keychainify.initBackground, isKeychainifyEnabled: (function(): Promise<boolean>), getVarsFromURL: (function(*)), requestWitnessVote: keychainify.requestWitnessVote, keychainifyUrl: keychainify.keychainifyUrl, requestDelegation: keychainify.requestDelegation,requestProxy: keychainify.requestProxy, dispatchRequest: keychainify.dispatchRequest}}
@@ -46,8 +64,9 @@ export default {
       url.includes('hivesigner.com/sign/account-witness-vote') ||
       url.includes('hivesigner.com/sign/delegate-vesting-shares') ||
       url.includes('hivesigner.com/sign/custom-json') ||
-      url.includes('hivesigner.com/sign/account-witness-proxy')
-      //
+      url.includes('hivesigner.com/sign/account-witness-proxy') ||
+      url.includes('hivesigner.com/sign/update-proposal-votes') ||
+      url.includes('hivesigner.com/sign/update_proposal_votes')
     );
   },
   isSupportedHiveUri: function (uri: string) {
@@ -168,6 +187,19 @@ export default {
        * Broadcast a custom-json
        * i.e. : https://hivesigner.com/sign/custom-json?required_posting_auths=%5Bstoodkev%5D&id=custom&json=%7B%22hive%22%3A%22keychain%22%7D
        */
+      /**
+       * Vote for a proposal
+       * i.e. : https://hivesigner.com/sign/update-proposal-votes?proposal_ids=%5B373%5D&approve=true
+       */
+      case url.includes('hivesigner.com/sign/update-proposal-votes') ||
+        url.includes('hivesigner.com/sign/update_proposal_votes'):
+        this.requestProposalVotes(
+          tab,
+          typeof vars.account === 'string' ? vars.account : undefined,
+          parseProposalIds(vars.proposal_ids),
+          !['false', '0'].includes(String(vars.approve)),
+        );
+        break;
       case url.includes('https://hivesigner.com/sign/custom-json') ||
         url.includes('https://hivesigner.com/sign/custom_json'):
         defaults = {
@@ -302,6 +334,8 @@ export default {
    */
   dispatchRequest: function (tab: any, request: any) {
     const now = new Date().getTime();
+    // The background rejects the request unless this id is on both the wrapper and the payload.
+    request.request_id = now;
 
     CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.SEND_REQUEST,
@@ -374,7 +408,7 @@ export default {
       type: KeychainRequestTypes.witnessVote,
       username: username,
       witness: witness,
-      vote: vote,
+      vote: Boolean(vote),
     };
 
     if (witness && vote !== undefined) {
@@ -492,15 +526,20 @@ export default {
    */
   requestProposalVotes(
     tab: any,
-    username: string,
+    username: string | undefined,
     proposal_ids: number[],
     approve: boolean,
   ) {
+    if (proposal_ids.length === 0) {
+      Logger.error('[keychainify] Missing parameters for proposal vote');
+      return;
+    }
     const request = {
       type: KeychainRequestTypes.updateProposalVote,
       username,
       proposal_ids,
       approve,
+      extensions: [],
     };
     this.dispatchRequest(tab, request);
   },

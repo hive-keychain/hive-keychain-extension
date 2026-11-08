@@ -110,7 +110,6 @@ export const validateRequest = (
   method: EvmRequestMethod,
   params: any,
 ): boolean => {
-  console.log('validateRequest', method, params);
   switch (method) {
     case EvmRequestMethod.WALLET_SEND_CALLS:
       EvmCallBatchValidationUtils.validateSendCalls(assertParamsArray(params));

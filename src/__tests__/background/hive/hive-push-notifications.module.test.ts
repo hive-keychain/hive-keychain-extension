@@ -212,8 +212,11 @@ describe('hive-push-notifications.module', () => {
     expect(chrome.notifications.create).toHaveBeenCalledTimes(1);
   });
 
-  it('logs EventSource error details when the push stream fails', async () => {
-    mockGetValueFromVault.mockResolvedValue('mk');
+  it('logs a closed push stream once and ignores reconnect attempts', async () => {
+    mockGetValueFromVault
+      .mockResolvedValueOnce('mk')
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce('mk');
     mockGetAccounts.mockResolvedValue([{ name: USERNAME }]);
 
     const { HivePushNotificationsModule } = await import(
@@ -232,16 +235,26 @@ describe('hive-push-notifications.module', () => {
         error: new Error('connection reset'),
       }),
     );
-
-    expect(Logger.warn).toHaveBeenCalledWith(
-      `Hive push notification stream error for @${USERNAME} (readyState=CONNECTING(0), type=error, url=${PUSH_URL}, message=network error, error=connection reset)`,
-    );
+    expect(Logger.warn).not.toHaveBeenCalled();
 
     eventSource!.readyState = 2;
     eventSource!.onerror?.(new Event('error'));
+    eventSource!.onerror?.(new Event('error'));
+    expect(Logger.warn).toHaveBeenCalledTimes(1);
     expect(Logger.warn).toHaveBeenCalledWith(
       `Hive push notification stream error for @${USERNAME} (readyState=CLOSED(2), type=error, url=${PUSH_URL})`,
     );
+
+    const listener = mockAddWalletLockStateListener.mock.calls[0][0];
+    listener();
+    await flushAsync();
+    listener();
+    await flushAsync();
+
+    const reconnectedEventSource = mockEventSources.get(PUSH_URL);
+    reconnectedEventSource!.readyState = 2;
+    reconnectedEventSource!.onerror?.(new Event('error'));
+    expect(Logger.warn).toHaveBeenCalledTimes(2);
   });
 
   it('skips browser notifications when pushNotification extension is disabled', async () => {

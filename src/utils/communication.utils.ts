@@ -43,4 +43,50 @@ const runtimeSendMessage = async (
   }
 };
 
-export const CommunicationUtils = { tabsSendMessage, runtimeSendMessage };
+// Firefox delivers chrome.runtime.sendMessage replies only through the
+// callback. Awaiting the return value resolves to undefined there.
+const sendRuntimeMessageForResponse = (
+  message: BackgroundMessage | DialogMessage | MultisigDialogMessage,
+): Promise<any> =>
+  new Promise((resolve, reject) => {
+    let settled = false;
+    const finish = (error?: Error, response?: any) => {
+      if (settled) return;
+      settled = true;
+      if (error) reject(error);
+      else resolve(response);
+    };
+
+    let returned: unknown;
+    try {
+      returned = chrome.runtime.sendMessage(message, (response) => {
+        const runtimeError = chrome.runtime.lastError;
+        if (runtimeError?.message) {
+          finish(new Error(runtimeError.message));
+          return;
+        }
+        finish(undefined, response);
+      });
+    } catch (error) {
+      finish(error instanceof Error ? error : new Error(String(error)));
+      return;
+    }
+
+    if (
+      returned !== null &&
+      returned !== undefined &&
+      typeof (returned as { then?: unknown }).then === 'function'
+    ) {
+      void Promise.resolve(returned as Promise<any>).then(
+        (response) => finish(undefined, response),
+        (error: unknown) =>
+          finish(error instanceof Error ? error : new Error(String(error))),
+      );
+    }
+  });
+
+export const CommunicationUtils = {
+  tabsSendMessage,
+  runtimeSendMessage,
+  sendRuntimeMessageForResponse,
+};

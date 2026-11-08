@@ -311,5 +311,15 @@ describe('error.utils.ts tests:\n', () => {
         }),
       ).toEqual(new KeychainError('popup_html_ledger_not_detected'));
     });
+
+    it('maps a dismissed WebUSB picker to no device selected', () => {
+      expect(
+        ErrorUtils.parseLedger({
+          name: 'NotFoundError',
+          message:
+            "Failed to execute 'requestDevice' on 'USB': No device selected.",
+        }),
+      ).toEqual(new KeychainError('html_ledger_no_device_selected'));
+    });
   });
 });
