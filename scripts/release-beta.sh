@@ -5,7 +5,7 @@ set -eu
 rm -rf _releases
 
 echo "Compiling beta..."
-npm run build:beta
+npm run build:beta:lavamoat
 
 mkdir -p _releases
 version=$(node -p "require('./manifests/chromium/manifest.json').version")

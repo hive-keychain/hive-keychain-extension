@@ -7,13 +7,13 @@ find . -name .DS_Store -delete
 npm ci
 
 echo "Compiling Chromium..."
-npm run build:chromium
+npm run build:chromium:lavamoat
 
 echo "Compiling Firefox..."
-npm run build:firefox
+npm run build:firefox:lavamoat
 
 echo "Compiling beta..."
-npm run build:beta
+npm run build:beta:lavamoat
 
 mkdir -p _releases
 version=$(node -p "require('./manifests/chromium/manifest.json').version")
