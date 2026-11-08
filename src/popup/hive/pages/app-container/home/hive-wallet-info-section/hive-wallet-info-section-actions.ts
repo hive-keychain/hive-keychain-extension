@@ -15,10 +15,14 @@ export interface ActionButton {
   onClick?: () => void;
 }
 
-const getPortfolioSwapAction = (): ActionButton => ({
+const getPortfolioSwapAction = (tokenSymbol: string): ActionButton => ({
   label: 'html_popup_swaps_process_swap',
   icon: SVGIcons.PORTFOLIO_SWAP,
-  onClick: PortfolioRouteUtils.openSwap,
+  onClick: () =>
+    PortfolioRouteUtils.openSwap({
+      symbol: tokenSymbol,
+      ecosystem: 'hive',
+    }),
 });
 
 export const HiveWalletInfoSectionActions = (
@@ -48,7 +52,7 @@ export const HiveWalletInfoSectionActions = (
         nextScreen: Screen.SAVINGS_PAGE,
         nextScreenParams: { selectedCurrency: 'hbd' },
       },
-      getPortfolioSwapAction(),
+      getPortfolioSwapAction(tokenSymbol),
     ];
   } else if (tokenSymbol === 'HIVE') {
     return [
@@ -78,7 +82,7 @@ export const HiveWalletInfoSectionActions = (
         nextScreen: Screen.SAVINGS_PAGE,
         nextScreenParams: { selectedCurrency: 'hive' },
       },
-      getPortfolioSwapAction(),
+      getPortfolioSwapAction(tokenSymbol),
     ];
   } else if (tokenSymbol === 'HP') {
     return [
@@ -144,7 +148,7 @@ export const HiveWalletInfoSectionActions = (
         icon: SVGIcons.WALLET_TOKEN_DELEGATIONS,
       });
     }
-    actions.push(getPortfolioSwapAction());
+    actions.push(getPortfolioSwapAction(tokenSymbol));
 
     return actions;
   }

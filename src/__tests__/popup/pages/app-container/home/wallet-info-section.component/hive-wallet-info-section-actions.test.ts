@@ -38,26 +38,52 @@ describe('hive-wallet-info-section-actions tests:\n', () => {
     );
 
     expect(hiveSwap?.icon).toBe(SVGIcons.PORTFOLIO_SWAP);
-    expect(hiveSwap?.onClick).toBe(PortfolioRouteUtils.openSwap);
-    expect(hbdSwap?.onClick).toBe(PortfolioRouteUtils.openSwap);
+    expect(hbdSwap).toBeDefined();
     expect(hpSwap).toBeUndefined();
   });
 
-  it('adds a portfolio swap action for Hive Engine tokens', () => {
-    const swapAction = HiveWalletInfoSectionActions('BEE').find(
-      (action) => action.label === 'html_popup_swaps_process_swap',
-    );
+  it('opens portfolio swap with the Hive token as the outgoing asset', () => {
+    const openSwap = jest
+      .spyOn(PortfolioRouteUtils, 'openSwap')
+      .mockImplementation(() => undefined);
 
-    expect(swapAction?.onClick).toBe(PortfolioRouteUtils.openSwap);
+    HiveWalletInfoSectionActions('HIVE')
+      .find((action) => action.label === 'html_popup_swaps_process_swap')
+      ?.onClick?.();
+    HiveWalletInfoSectionActions('HBD')
+      .find((action) => action.label === 'html_popup_swaps_process_swap')
+      ?.onClick?.();
+    HiveWalletInfoSectionActions('BEE')
+      .find((action) => action.label === 'html_popup_swaps_process_swap')
+      ?.onClick?.();
+
+    expect(openSwap).toHaveBeenNthCalledWith(1, {
+      symbol: 'HIVE',
+      ecosystem: 'hive',
+    });
+    expect(openSwap).toHaveBeenNthCalledWith(2, {
+      symbol: 'HBD',
+      ecosystem: 'hive',
+    });
+    expect(openSwap).toHaveBeenNthCalledWith(3, {
+      symbol: 'BEE',
+      ecosystem: 'hive',
+    });
+    openSwap.mockRestore();
   });
 });
 
 describe('evm-wallet-info-section-actions', () => {
-  it('adds portfolio buy and swap actions for EVM tokens', () => {
+  it('opens portfolio swap with the EVM token as the outgoing asset', () => {
+    const openSwap = jest
+      .spyOn(PortfolioRouteUtils, 'openSwap')
+      .mockImplementation(() => undefined);
     const actions = EVMWalletInfoSectionActions({
       tokenInfo: {
-        symbol: 'ETH',
-        type: EVMSmartContractType.NATIVE,
+        symbol: 'USDC',
+        type: EVMSmartContractType.ERC20,
+        chainId: '0x1',
+        contractAddress: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
       },
     } as unknown as NativeAndErc20Token);
 
@@ -69,9 +95,39 @@ describe('evm-wallet-info-section-actions', () => {
     );
 
     expect(actions[0].nextScreen).toBe(Screen.TRANSFER_FUND_PAGE);
-    expect(buyAction?.icon).toBe(SVGIcons.PORTFOLIO_BUY);
-    expect(buyAction?.onClick).toBe(PortfolioRouteUtils.openBuy);
+    expect(buyAction).toBeUndefined();
     expect(swapAction?.icon).toBe(SVGIcons.PORTFOLIO_SWAP);
-    expect(swapAction?.onClick).toBe(PortfolioRouteUtils.openSwap);
+    swapAction?.onClick?.();
+    expect(openSwap).toHaveBeenCalledWith({
+      symbol: 'USDC',
+      ecosystem: 'evm',
+      chainId: '0x1',
+      contractAddress: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+    });
+    openSwap.mockRestore();
+  });
+
+  it('omits a contract address for native EVM tokens', () => {
+    const openSwap = jest
+      .spyOn(PortfolioRouteUtils, 'openSwap')
+      .mockImplementation(() => undefined);
+    const swapAction = EVMWalletInfoSectionActions({
+      tokenInfo: {
+        symbol: 'ETH',
+        type: EVMSmartContractType.NATIVE,
+        chainId: '0x1',
+      },
+    } as unknown as NativeAndErc20Token).find(
+      (action) => action.label === 'html_popup_swaps_process_swap',
+    );
+
+    swapAction?.onClick?.();
+    expect(openSwap).toHaveBeenCalledWith({
+      symbol: 'ETH',
+      ecosystem: 'evm',
+      chainId: '0x1',
+      contractAddress: undefined,
+    });
+    openSwap.mockRestore();
   });
 });

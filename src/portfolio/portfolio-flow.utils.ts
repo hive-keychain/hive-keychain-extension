@@ -1715,6 +1715,54 @@ export const resolveDefaultSwapFromSelectOptionValue = (
   return pickHighestUsdPortfolioRow(gasCapableRows)?.key;
 };
 
+export const resolveRequestedSwapFromSelectOptionValue = (
+  request: {
+    symbol: string;
+    ecosystem: 'hive' | 'evm';
+    chainId?: string;
+    contractAddress?: string;
+  },
+  options: PortfolioFlowSelectOption[],
+  rows: PortfolioFlowRow[],
+): string | undefined => {
+  const optionValues = new Set(options.map((option) => option.value));
+  const symbol = request.symbol.trim().toUpperCase();
+  if (!symbol) {
+    return undefined;
+  }
+
+  const contractAddress = request.contractAddress?.trim().toLowerCase();
+  const match = rows.find((row) => {
+    if (!optionValues.has(row.key) || row.symbol.toUpperCase() !== symbol) {
+      return false;
+    }
+
+    if (request.ecosystem === 'hive') {
+      return row.isHive === true || row.key.startsWith('hive:');
+    }
+
+    const parsedRow = parsePortfolioEvmRowKey(row);
+    if (!parsedRow) {
+      return false;
+    }
+
+    if (
+      request.chainId &&
+      !chainIdsMatch(parsedRow.chainReference, request.chainId)
+    ) {
+      return false;
+    }
+
+    if (contractAddress) {
+      return parsedRow.contractAddress === contractAddress;
+    }
+
+    return parsedRow.contractAddress === null;
+  });
+
+  return match?.key;
+};
+
 export const isSwapFromTokenReadyToSelect = ({
   hasLoadedLastUsedSwapAssets,
   lastUsedFromOptionValue,
@@ -2288,6 +2336,7 @@ export const PortfolioFlowUtils = {
   formatPortfolioTokenBalance,
   getDefaultSelectOptionValue,
   resolveDefaultSwapFromSelectOptionValue,
+  resolveRequestedSwapFromSelectOptionValue,
   isSwapFromTokenReadyToSelect,
   getHivePortfolioRowEcosystem,
   getHiveTokenIcon,

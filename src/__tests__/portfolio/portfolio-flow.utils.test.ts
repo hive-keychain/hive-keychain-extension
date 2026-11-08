@@ -226,6 +226,104 @@ describe('PortfolioFlowUtils', () => {
     ).toBe('a');
   });
 
+  describe('resolveRequestedSwapFromSelectOptionValue', () => {
+    const hiveRow = {
+      key: 'hive:HIVE',
+      symbol: 'HIVE',
+      network: 'Hive',
+      balance: '10',
+      isHive: true,
+    };
+    const decRow = {
+      key: 'hive:DEC',
+      symbol: 'DEC',
+      network: 'Hive',
+      balance: '20',
+      isHive: true,
+    };
+    const ethRow = {
+      key: '0x1:ETH:native',
+      symbol: 'ETH',
+      network: 'Ethereum',
+      balance: '0.5',
+      chainId: '0x1',
+    };
+    const usdcRow = {
+      key: '0x1:USDC:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+      symbol: 'USDC',
+      network: 'Ethereum',
+      balance: '200',
+      chainId: '0x1',
+    };
+    const polygonUsdcRow = {
+      key: '0x89:USDC:0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      symbol: 'USDC',
+      network: 'Polygon',
+      balance: '50',
+      chainId: '0x89',
+    };
+    const toOptions = (rows: Array<{ key: string; symbol: string }>) =>
+      rows.map((row) => ({
+        label: row.symbol,
+        value: row.key,
+      }));
+
+    it('selects the Hive or Hive Engine row for that symbol', () => {
+      const rows = [hiveRow, decRow];
+      const options = toOptions(rows);
+
+      expect(
+        PortfolioFlowUtils.resolveRequestedSwapFromSelectOptionValue(
+          { symbol: 'dec', ecosystem: 'hive' },
+          options,
+          rows,
+        ),
+      ).toBe('hive:DEC');
+      expect(
+        PortfolioFlowUtils.resolveRequestedSwapFromSelectOptionValue(
+          { symbol: 'HIVE', ecosystem: 'hive' },
+          options,
+          rows,
+        ),
+      ).toBe('hive:HIVE');
+    });
+
+    it('selects the EVM token on the requested chain and contract', () => {
+      const rows = [ethRow, usdcRow, polygonUsdcRow];
+      const options = toOptions(rows);
+
+      expect(
+        PortfolioFlowUtils.resolveRequestedSwapFromSelectOptionValue(
+          {
+            symbol: 'USDC',
+            ecosystem: 'evm',
+            chainId: '1',
+            contractAddress: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+          },
+          options,
+          rows,
+        ),
+      ).toBe(usdcRow.key);
+      expect(
+        PortfolioFlowUtils.resolveRequestedSwapFromSelectOptionValue(
+          { symbol: 'ETH', ecosystem: 'evm', chainId: '0x1' },
+          options,
+          rows,
+        ),
+      ).toBe(ethRow.key);
+    });
+
+    it('ignores a requested token that is not an outgoing option', () => {
+      expect(
+        PortfolioFlowUtils.resolveRequestedSwapFromSelectOptionValue(
+          { symbol: 'DEC', ecosystem: 'hive' },
+          toOptions([hiveRow]),
+          [hiveRow, decRow],
+        ),
+      ).toBeUndefined();
+    });
+  });
+
   describe('resolveDefaultSwapFromSelectOptionValue', () => {
     const ethereumChain = {
       type: ChainType.EVM,

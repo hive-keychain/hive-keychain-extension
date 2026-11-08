@@ -37,6 +37,10 @@ import AccountSelectorOrderUtils, {
   AccountSelectorListItem,
 } from '@popup/multichain/utils/account-selector-order.utils';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import {
+  PortfolioRouteUtils,
+  PortfolioSwapOutgoingToken,
+} from '@popup/multichain/utils/portfolio-route.utils';
 import React, {
   useCallback,
   useEffect,
@@ -573,6 +577,16 @@ export const Portfolio = ({
   const [hiveEngineTokenLogoUrls, setHiveEngineTokenLogoUrls] = useState<
     Record<string, string>
   >({});
+  const [requestedOutgoingToken, setRequestedOutgoingToken] =
+    useState<PortfolioSwapOutgoingToken | null>(() => {
+      const outgoingToken = PortfolioRouteUtils.readSwapOutgoingToken(
+        window.location.search,
+      );
+      if (outgoingToken) {
+        PortfolioRouteUtils.clearSwapOutgoingTokenQuery();
+      }
+      return outgoingToken;
+    });
   const [fromAssetId, setFromAssetId] = useState('');
   const [toAssetId, setToAssetId] = useState('');
   const [lastUsedSwapAssets, setLastUsedSwapAssets] =
@@ -2117,6 +2131,18 @@ export const Portfolio = ({
     [],
   );
 
+  const requestedFromOptionValue = useMemo(() => {
+    if (section !== 'swap' || !requestedOutgoingToken) {
+      return undefined;
+    }
+
+    return PortfolioFlowUtils.resolveRequestedSwapFromSelectOptionValue(
+      requestedOutgoingToken,
+      fromAssetOptions,
+      rows,
+    );
+  }, [fromAssetOptions, requestedOutgoingToken, rows, section]);
+
   const lastUsedFromOptionValue = useMemo(() => {
     if (section !== 'swap' || !hasLoadedLastUsedSwapAssets) {
       return undefined;
@@ -2170,6 +2196,28 @@ export const Portfolio = ({
       return;
     }
 
+    if (section === 'swap' && requestedOutgoingToken) {
+      if (!requestedFromOptionValue) {
+        if (
+          !hasLoadedPortfolioBalances ||
+          !hasLoadedSwapAvailableAssets ||
+          isSwapAvailableAssetsLoading
+        ) {
+          return;
+        }
+
+        setRequestedOutgoingToken(null);
+        return;
+      }
+
+      if (fromAssetId !== requestedFromOptionValue) {
+        hasUserSelectedFromAssetRef.current = true;
+        setFromAssetId(requestedFromOptionValue);
+      }
+      setRequestedOutgoingToken(null);
+      return;
+    }
+
     const isSwapFromAssetSelectionPending =
       section === 'swap' && !isSwapFromTokenReady;
 
@@ -2219,9 +2267,14 @@ export const Portfolio = ({
     chain,
     fromAssetId,
     fromAssetOptions,
+    hasLoadedPortfolioBalances,
+    hasLoadedSwapAvailableAssets,
     isPortfolioLoading,
+    isSwapAvailableAssetsLoading,
     isSwapFromTokenReady,
     lastUsedFromOptionValue,
+    requestedFromOptionValue,
+    requestedOutgoingToken,
     rows,
     section,
   ]);
