@@ -134,4 +134,10 @@ export enum LocalStorageKeyEnum {
 
   /** Shared PBKDF2 salt for identity-setting ciphertext. Not a secret; device-local. */
   IDENTITY_STORAGE_SALT = 'IDENTITY_STORAGE_SALT',
+
+  /** Accepted legal documents: `{ termsHash, privacyHash, feesHash, acceptedAt, legalVersion }`. */
+  LEGAL_DOCUMENT_ACCEPTANCE = 'LEGAL_DOCUMENT_ACCEPTANCE',
+
+  /** Cached remote legal documents: `{ termsHash, privacyHash, feesHash, legalVersion, fetchedAt }`. */
+  LEGAL_DOCUMENT_HASH_CACHE = 'LEGAL_DOCUMENT_HASH_CACHE',
 }

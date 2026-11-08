@@ -8,6 +8,10 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import {
+  BackgroundType,
+  CheckboxPanelComponent,
+} from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
@@ -15,6 +19,7 @@ import { DialogCaption } from 'src/dialog/components/dialog-caption/dialog-capti
 import { DialogHeader } from 'src/dialog/components/dialog-header/dialog-header.component';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
+import LegalDocumentsUtils from 'src/utils/legal-documents.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
 type Props = {
@@ -41,8 +46,15 @@ export default ({ data, index }: Props) => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [wrongMk, setWrongMk] = useState(false);
+  const [needsAcceptance, setNeedsAcceptance] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [acceptanceError, setAcceptanceError] = useState(false);
   const isLoginPendingRef = useRef(false);
   const isVaultCheckPendingRef = useRef(false);
+  const needsAcceptanceRef = useRef(false);
+  const acceptedTermsRef = useRef(false);
+  needsAcceptanceRef.current = needsAcceptance;
+  acceptedTermsRef.current = acceptedTerms;
 
   useEffect(() => {
     setWrongMk(data.msg.wrongMk!);
@@ -55,13 +67,35 @@ export default ({ data, index }: Props) => {
     }
   }, [data]);
 
-  const sendUnlockRequest = useCallback((mk: string) => {
+  useEffect(() => {
+    let isCancelled = false;
+    void LegalDocumentsUtils.needsLegalDocumentAcceptance().then((needed) => {
+      if (!isCancelled) {
+        setNeedsAcceptance(needed);
+      }
+    });
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
+
+  const sendUnlockRequest = useCallback((mk: string, fromUser = false) => {
+    if (needsAcceptanceRef.current && !acceptedTermsRef.current) {
+      if (fromUser) {
+        setAcceptanceError(true);
+      }
+      return;
+    }
+
     if (isLoginPendingRef.current) {
       return;
     }
 
     isLoginPendingRef.current = true;
     setLoading(true);
+    if (needsAcceptanceRef.current) {
+      void LegalDocumentsUtils.acceptLegalDocumentHashes();
+    }
     void CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.UNLOCK_FROM_DIALOG,
       value: {
@@ -105,7 +139,7 @@ export default ({ data, index }: Props) => {
     };
   }, [sendUnlockRequest]);
 
-  const login = () => sendUnlockRequest(password);
+  const login = () => sendUnlockRequest(password, true);
 
   return (
     <div className="unlock-page">
@@ -119,6 +153,23 @@ export default ({ data, index }: Props) => {
         type={InputType.PASSWORD}
         onEnterPress={login}
       />
+      {needsAcceptance && (
+        <CheckboxPanelComponent
+          onChange={() => {
+            setAcceptedTerms(!acceptedTerms);
+            setAcceptanceError(false);
+          }}
+          checked={acceptedTerms}
+          backgroundType={BackgroundType.FILLED}
+          text="accept_terms_and_condition"
+          dataTestId="accept-terms-and-condition"
+        />
+      )}
+      {acceptanceError && (
+        <div className="error">
+          {I18nUtils.getMessage('html_popup_sign_up_need_accept_pp')}
+        </div>
+      )}
       {wrongMk && (
         <div className="error">
           {I18nUtils.getMessage('dialog_header_wrong_pwd')}
