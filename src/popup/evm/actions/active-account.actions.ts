@@ -526,6 +526,10 @@ export const loadMoreTokensInActiveAccount =
 export const loadEvmActiveAccount =
   (chain: EvmChain, wallet: EvmWallet): AppThunk =>
   async (dispatch, getState) => {
+    if (!isSameEvmChain(getState().chain as Chain, chain)) {
+      return;
+    }
+
     dispatchEvmActiveAccountIdentity(dispatch, wallet);
 
     if (chain.isCustom === true) {
@@ -573,9 +577,6 @@ export const loadEvmActiveAccount =
       return;
     }
 
-    if (!isSameEvmChain(getState().chain as Chain, chain)) {
-      return;
-    }
     const additionalAssetLoadPromises = [
       dispatch(loadEvmActiveAccountNfts(chain, wallet)),
       dispatch(loadEvmHistory()),

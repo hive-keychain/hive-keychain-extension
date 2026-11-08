@@ -345,7 +345,7 @@ const UnlockedApp = ({
       return;
     }
     void initActiveEvmAccount(evmAccounts, chain as EvmChain);
-  }, [chain?.chainId]);
+  }, [isAppReady, chain?.chainId, evmAccounts.length]);
 
   useEffect(() => {
     const onResolvedEvmTransaction = (message: BackgroundMessage) => {

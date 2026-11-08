@@ -824,6 +824,29 @@ describe('evm-tokens.utils proxy metadata tests:\n', () => {
     expect(balances[0].tokenInfo.type).toBe(EVMSmartContractType.NATIVE);
   });
 
+  it('skips a token when the provider cannot be created', async () => {
+    jest
+      .spyOn(EthersUtils, 'getProvider')
+      .mockRejectedValue(new Error('missing rpc url'));
+    jest.spyOn(Logger, 'error').mockImplementation(() => {});
+
+    const balances = await EvmTokensUtils.getTokenBalances(
+      '0x1234567890123456789012345678901234567890',
+      { chainId: '1', rpcs: [] } as any,
+      [
+        {
+          name: 'Ether',
+          symbol: 'ETH',
+          logo: '',
+          chainId: '1',
+          type: EVMSmartContractType.NATIVE,
+        } as EvmSmartContractInfoNative,
+      ],
+    );
+
+    expect(balances).toEqual([]);
+  });
+
   it('omits zero-balance ERC20 tokens from token balances', async () => {
     const walletAddress = '0x1234567890123456789012345678901234567890';
     const nativeToken = {
