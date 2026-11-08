@@ -5529,7 +5529,7 @@
     "description": "Evm Gas fee estimate label"
   },
   "popup_html_evm_gas_fee_estimated": {
-    "message": "Taxas de rede estimadas",
+    "message": "Taxas estimadas",
     "description": "EVM transaction result pending fee label"
   },
   "popup_html_evm_gas_fee_estimate_duration": {
