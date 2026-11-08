@@ -185,7 +185,7 @@ export const SendCalls = ({
     setWarningsOpen(false);
     warningHooks.current = {};
     try {
-      const response = await chrome.runtime.sendMessage({
+      const response = await CommunicationUtils.sendRuntimeMessageForResponse({
         command: BackgroundCommand.PREVIEW_EVM_CALLS,
         value: { locator, from },
       });

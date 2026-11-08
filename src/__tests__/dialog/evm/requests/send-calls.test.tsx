@@ -206,7 +206,11 @@ jest.mock('src/common-ui/button/button.component', () => ({
   ),
 }));
 jest.mock('src/utils/communication.utils', () => ({
-  CommunicationUtils: { runtimeSendMessage: jest.fn() },
+  CommunicationUtils: {
+    runtimeSendMessage: jest.fn(),
+    sendRuntimeMessageForResponse: (message: unknown) =>
+      chrome.runtime.sendMessage(message),
+  },
 }));
 
 const address = '0x' + '11'.repeat(20);

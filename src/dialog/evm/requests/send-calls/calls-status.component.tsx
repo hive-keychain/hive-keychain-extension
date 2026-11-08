@@ -15,7 +15,7 @@ export const CallsStatus = ({ data }: { data: EvmRequestMessage }) => {
     let timeout: ReturnType<typeof setTimeout>;
     const refresh = async () => {
       try {
-        const response = await chrome.runtime.sendMessage({
+        const response = await CommunicationUtils.sendRuntimeMessageForResponse({
           command: BackgroundCommand.GET_EVM_CALLS_STATUS,
           value: {
             locator: {

@@ -1,6 +1,7 @@
 import { EvmTransactionSubmissionModule } from '@background/evm/evm-transaction-submission.module';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { ContextType } from '@reference-data/context-type.enum';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 
 export type EvmSubmissionCommand =
   | { action: 'reserve'; from: string; chainId: string; forcedNonce?: number }
@@ -35,7 +36,7 @@ const send = async (command: EvmSubmissionCommand) => {
       .contextType === ContextType.SERVICE_WORKER
   )
     return execute(command);
-  const response = await chrome.runtime.sendMessage({
+  const response = await CommunicationUtils.sendRuntimeMessageForResponse({
     command: BackgroundCommand.EVM_TRANSACTION_SUBMISSION,
     value: command,
   });

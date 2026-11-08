@@ -1,4 +1,5 @@
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { VaultCommand, VaultKey } from '@reference-data/vault-message-key.enum';
 
 jest.mock('@background/evm/evm-service-worker', () => ({
   EvmServiceWorker: { initializeServiceWorker: jest.fn() },
@@ -56,10 +57,42 @@ jest.mock('src/utils/side-panel-preference.utils', () => ({
   },
 }));
 
+const internalSender = () =>
+  ({
+    id: chrome.runtime.id,
+    url: chrome.runtime.getURL('popup.html'),
+  }) as chrome.runtime.MessageSender;
+
+const flushVaultReply = async () => {
+  await Promise.resolve();
+  await Promise.resolve();
+};
+
+const loadMkModule = async () =>
+  (await import('@background/hive/modules/mk.module')).default;
+
 describe('multichain service worker message routing', () => {
+  const originalFirefox = process.env.IS_FIREFOX;
+
   beforeEach(() => {
     jest.resetModules();
     jest.clearAllMocks();
+    delete process.env.IS_FIREFOX;
+    Object.defineProperty(chrome.runtime, 'id', {
+      configurable: true,
+      value: 'keychain-test-extension',
+    });
+    (chrome.runtime.getURL as jest.Mock).mockImplementation(
+      (path: string) => `chrome-extension://keychain-test-extension/${path}`,
+    );
+  });
+
+  afterEach(() => {
+    if (originalFirefox === undefined) {
+      delete process.env.IS_FIREFOX;
+    } else {
+      process.env.IS_FIREFOX = originalFirefox;
+    }
   });
 
   it('does not answer EVM transaction submission messages', async () => {
@@ -78,7 +111,102 @@ describe('multichain service worker message routing', () => {
       listener(
         { command: BackgroundCommand.EVM_TRANSACTION_SUBMISSION },
         {} as chrome.runtime.MessageSender,
+        jest.fn(),
       ),
     ).toBe(false);
+  });
+
+  it('sends the Firefox master password back to the popup', async () => {
+    process.env.IS_FIREFOX = 'true';
+    const mkModule = await loadMkModule();
+    (mkModule.getMk as jest.Mock).mockReturnValue('secret-mk');
+    const addListenerSpy = jest.spyOn(chrome.runtime.onMessage, 'addListener');
+    await import('@background/multichain/multichain-service-worker');
+    const listener = addListenerSpy.mock.calls[0][0] as (
+      message: unknown,
+      sender: chrome.runtime.MessageSender,
+      sendResponse: (response?: unknown) => void,
+    ) => boolean;
+    const sendResponse = jest.fn();
+
+    expect(
+      listener(
+        { command: VaultCommand.GET_VALUE, key: VaultKey.__MK },
+        internalSender(),
+        sendResponse,
+      ),
+    ).toBe(true);
+    await flushVaultReply();
+
+    expect(mkModule.getMk).toHaveBeenCalledTimes(1);
+    expect(sendResponse).toHaveBeenCalledWith('secret-mk');
+  });
+
+  it('ignores Firefox vault reads from outside the extension', async () => {
+    process.env.IS_FIREFOX = 'true';
+    const mkModule = await loadMkModule();
+    const addListenerSpy = jest.spyOn(chrome.runtime.onMessage, 'addListener');
+    await import('@background/multichain/multichain-service-worker');
+    const listener = addListenerSpy.mock.calls[0][0] as (
+      message: unknown,
+      sender: chrome.runtime.MessageSender,
+      sendResponse: (response?: unknown) => void,
+    ) => boolean;
+    const sendResponse = jest.fn();
+
+    expect(
+      listener(
+        { command: VaultCommand.GET_VALUE, key: VaultKey.__MK },
+        {
+          id: 'other-extension',
+          url: 'https://malicious.example/',
+        } as chrome.runtime.MessageSender,
+        sendResponse,
+      ),
+    ).toBe(false);
+    await flushVaultReply();
+
+    expect(mkModule.getMk).not.toHaveBeenCalled();
+    expect(sendResponse).not.toHaveBeenCalled();
+  });
+
+  it('settles Firefox vault writes and removals', async () => {
+    process.env.IS_FIREFOX = 'true';
+    const mkModule = await loadMkModule();
+    (mkModule.saveMk as jest.Mock).mockResolvedValue(undefined);
+    const addListenerSpy = jest.spyOn(chrome.runtime.onMessage, 'addListener');
+    await import('@background/multichain/multichain-service-worker');
+    const listener = addListenerSpy.mock.calls[0][0] as (
+      message: unknown,
+      sender: chrome.runtime.MessageSender,
+      sendResponse: (response?: unknown) => void,
+    ) => boolean;
+    const saveResponse = jest.fn();
+    const removeResponse = jest.fn();
+
+    expect(
+      listener(
+        {
+          command: VaultCommand.SET_VALUE,
+          key: VaultKey.__MK,
+          value: 'secret-mk',
+        },
+        internalSender(),
+        saveResponse,
+      ),
+    ).toBe(true);
+    expect(
+      listener(
+        { command: VaultCommand.REMOVE_VALUE, key: VaultKey.__MK },
+        internalSender(),
+        removeResponse,
+      ),
+    ).toBe(true);
+    await flushVaultReply();
+
+    expect(mkModule.saveMk).toHaveBeenCalledWith('secret-mk');
+    expect(saveResponse).toHaveBeenCalledWith(true);
+    expect(mkModule.lock).toHaveBeenCalledTimes(1);
+    expect(removeResponse).toHaveBeenCalledWith(true);
   });
 });
