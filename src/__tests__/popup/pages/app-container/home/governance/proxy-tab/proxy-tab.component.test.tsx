@@ -1,3 +1,4 @@
+import BlockchainTransactionUtils from '@hiveapp/utils/blockchain.utils';
 import ProxyUtils from '@hiveapp/utils/proxy.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
@@ -58,7 +59,10 @@ describe('proxy-tab.component tests:\n', () => {
         ).toBeInTheDocument();
       });
 
-      it('Must set proxy and show message', async () => {
+      it('Must wait before refreshing the account when setting the proxy', async () => {
+        const delayRefresh = jest
+          .spyOn(BlockchainTransactionUtils, 'delayRefresh')
+          .mockResolvedValue(undefined);
         ProxyUtils.setAsProxy = jest.fn().mockResolvedValue({
           tx_id: 'tx_id',
           id: 'id',
@@ -73,6 +77,7 @@ describe('proxy-tab.component tests:\n', () => {
             screen.getByTestId(dataTestIdButton.operation.proxy.tab.setAsProxy),
           );
         });
+        expect(delayRefresh).toHaveBeenCalled();
         expect(
           await screen.findByText(
             I18nUtils.getMessage('popup_success_proxy', ['keychain']),
@@ -165,6 +170,26 @@ describe('proxy-tab.component tests:\n', () => {
               'keychain',
             ]),
           ),
+        ).toBeInTheDocument();
+      });
+
+      it('Must wait before refreshing the account when clearing the proxy', async () => {
+        const delayRefresh = jest
+          .spyOn(BlockchainTransactionUtils, 'delayRefresh')
+          .mockResolvedValue(undefined);
+        ProxyUtils.removeProxy = jest.fn().mockResolvedValue({
+          tx_id: 'tx_id',
+          id: 'id',
+          confirmed: true,
+        } as TransactionResult);
+        await act(async () => {
+          await userEvent.click(
+            screen.getByTestId(dataTestIdButton.operation.proxy.tab.clear),
+          );
+        });
+        expect(delayRefresh).toHaveBeenCalled();
+        expect(
+          await screen.findByText(I18nUtils.getMessage('bgd_ops_unproxy')),
         ).toBeInTheDocument();
       });
     });

@@ -28,6 +28,7 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { MetadataPopup } from 'src/common-ui/metadata-popup/metadata-popup.component';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
+import BlockchainTransactionUtils from 'src/popup/hive/utils/blockchain.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import ProxyUtils from 'src/popup/hive/utils/proxy.utils';
 
@@ -73,8 +74,9 @@ const ProxyTab = ({
         if (success.isUsingMultisig) {
           setSuccessMessage('multisig_transaction_sent_to_signers');
         } else {
-          setSuccessMessage('popup_success_proxy', [proxyUsername]);
+          await BlockchainTransactionUtils.delayRefresh();
           refreshActiveAccount();
+          setSuccessMessage('popup_success_proxy', [proxyUsername]);
         }
       } else {
         setErrorMessage('html_popup_set_as_proxy_error');
@@ -134,6 +136,7 @@ const ProxyTab = ({
         if (success.isUsingMultisig) {
           setSuccessMessage('multisig_transaction_sent_to_signers');
         } else {
+          await BlockchainTransactionUtils.delayRefresh();
           refreshActiveAccount();
           setSuccessMessage('bgd_ops_unproxy', [`@${proxyUsername}`]);
         }
