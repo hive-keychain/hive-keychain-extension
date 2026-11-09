@@ -16,7 +16,7 @@
     "description": "tutorial popup"
   },
   "popup_html_tutorial_popup_description": {
-    "message": "If you are new to Keychain, or Hive in general, please check our onboarding tutorial.<br/>You can always access it later on in Settings > Help > Tutorial",
+    "message": "If you are new to Keychain, or Hive in general, please check our onboarding tutorial.<br/>You can always access it later on in Settings > Help > Hive tutorial",
     "description": "tutorial popup"
   },
   "popup_html_tutorial_popup_show_label": {
@@ -2803,7 +2803,7 @@
     "description": "Contact support"
   },
   "popup_html_tutorial": {
-    "message": "Tutorial",
+    "message": "Hive tutorial",
     "description": "Contact support"
   },
   "popup_html_wallet_info_transfer_in": {

@@ -16,7 +16,7 @@
     "description": "tutorial popup"
   },
   "popup_html_tutorial_popup_description": {
-    "message": "Baru di Keychain, atau Hive? Cek tutorial onboarding kami. <br/> Bisa diakses kapan saja di pengaturan> Bantuan> Tutorial",
+    "message": "Baru di Keychain, atau Hive? Cek tutorial onboarding kami. <br/> Bisa diakses kapan saja di pengaturan> Bantuan> Tutorial Hive",
     "description": "tutorial popup"
   },
   "popup_html_tutorial_popup_show_label": {
@@ -2803,7 +2803,7 @@
     "description": "Contact support"
   },
   "popup_html_tutorial": {
-    "message": "tutorial",
+    "message": "Tutorial Hive",
     "description": "Contact support"
   },
   "popup_html_wallet_info_transfer_in": {

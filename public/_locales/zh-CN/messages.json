@@ -16,7 +16,7 @@
     "description": "tutorial popup"
   },
   "popup_html_tutorial_popup_description": {
-    "message": "如果您刚开始使用 Keychain 或 Hive，请查看我们的新手教程。<br/>您之后也可以随时在“设置 > 帮助 > 教程”中打开。",
+    "message": "如果您刚开始使用 Keychain 或 Hive，请查看我们的新手教程。<br/>您之后也可以随时在“设置 > 帮助 > Hive 教程”中打开。",
     "description": "tutorial popup"
   },
   "popup_html_tutorial_popup_show_label": {
@@ -2803,7 +2803,7 @@
     "description": "Contact support"
   },
   "popup_html_tutorial": {
-    "message": "教程",
+    "message": "Hive 教程",
     "description": "Contact support"
   },
   "popup_html_wallet_info_transfer_in": {
