@@ -25,6 +25,13 @@ import {
 } from 'src/utils/browser-origin.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 
+const getActiveTab = () =>
+  new Promise<chrome.tabs.Tab | undefined>((resolve) => {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      resolve(tabs?.[0]);
+    });
+  });
+
 const EvmDappStatus = ({
   activeAccount,
   accounts,
@@ -46,17 +53,11 @@ const EvmDappStatus = ({
   }, [activeAccount.address, dapp]);
 
   const init = async () => {
-    chrome.tabs.onActivated.addListener(async (activeInfo) => {
-      const [activeTab] = await chrome.tabs.query({
-        active: true,
-        currentWindow: true,
-      });
+    chrome.tabs.onActivated.addListener(async () => {
+      const activeTab = await getActiveTab();
       if (activeTab?.url && activeTab.url.length > 0) setDapp(activeTab);
     });
-    const [activeTab] = await chrome.tabs.query({
-      active: true,
-      currentWindow: true,
-    });
+    const activeTab = await getActiveTab();
     if (activeTab?.url && activeTab.url.length > 0) setDapp(activeTab);
   };
 

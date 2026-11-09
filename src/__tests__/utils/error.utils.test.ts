@@ -215,9 +215,29 @@ describe('error.utils.ts tests:\n', () => {
   });
   describe('parse cases:/n', () => {
     it('Must return error if no context on stack', () => {
-      expect(
-        ErrorUtils.parse({ data: { stack: [{ format: 'format' }] } }),
-      ).toEqual(new KeychainError('error_while_broadcasting'));
+      const parsed = ErrorUtils.parse({
+        data: { stack: [{ format: 'format' }] },
+      });
+      expect(parsed.message).toBe('error_while_broadcasting');
+      expect(parsed.messageParams).toEqual(['format']);
+    });
+
+    it('fills chain placeholders in the broadcast error', () => {
+      const parsed = ErrorUtils.parse({
+        data: {
+          stack: [
+            {
+              format:
+                'Collateralized convert request with id ${id} already exists',
+              data: { id: 4 },
+            },
+          ],
+        },
+      });
+      expect(parsed.message).toBe('error_while_broadcasting');
+      expect(parsed.messageParams).toEqual([
+        'Collateralized convert request with id 4 already exists',
+      ]);
     });
 
     it('Must return error if statusText', () => {

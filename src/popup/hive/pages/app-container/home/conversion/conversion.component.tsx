@@ -208,7 +208,7 @@ const ConversionPage = ({
             );
           }
         } catch (err: any) {
-          setErrorMessage(err.message);
+          setErrorMessage(err.message, err.messageParams);
         } finally {
           removeFromLoadingList('html_popup_conversion_operation');
         }

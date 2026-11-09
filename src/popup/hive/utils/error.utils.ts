@@ -18,6 +18,37 @@ enum HiveEngineErrorType {
   USER_NOT_EXISTING = 'invalid to',
 }
 
+const formatChainMessage = (stack: {
+  format?: string;
+  data?: Record<string, unknown>;
+}) => {
+  const format = stack.format ?? '';
+  const data = stack.data;
+  if (!data) {
+    return format;
+  }
+
+  return format.replace(/\$\{([^}]+)\}/g, (match, key: string) => {
+    if (!Object.prototype.hasOwnProperty.call(data, key)) {
+      return match;
+    }
+
+    const value = data[key];
+    if (value === null || value === undefined) {
+      return match;
+    }
+    if (
+      typeof value === 'string' ||
+      typeof value === 'number' ||
+      typeof value === 'boolean'
+    ) {
+      return String(value);
+    }
+
+    return JSON.stringify(value);
+  });
+};
+
 const parse = (error: any) => {
   Logger.log(error);
   const stack = error?.data?.stack[0];
@@ -116,7 +147,11 @@ const parse = (error: any) => {
     return new KeychainError('not_enough_rc', [], error);
   }
   if (stack && stack.format && !stack.format.includes('${what}')) {
-    return new KeychainError('error_while_broadcasting', [stack.format], error);
+    return new KeychainError(
+      'error_while_broadcasting',
+      [formatChainMessage(stack)],
+      error,
+    );
   }
   return new KeychainError('html_popup_error_while_broadcasting', [], error);
 };
