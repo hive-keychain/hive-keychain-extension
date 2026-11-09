@@ -12,6 +12,7 @@ import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { Icons } from 'src/common-ui/icons.enum';
+import { KeychainError } from 'src/keychain-error';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import FormatUtils from 'src/utils/format.utils';
 
@@ -137,6 +138,34 @@ describe('conversion.component tests:\n', () => {
         );
       });
       expect(await screen.findByText('Error HIVE to HBD')).toBeInTheDocument();
+    });
+
+    it('Must show the chain reason when HIVE to HBD conversion is rejected', async () => {
+      const chainError = 'Account does not have sufficient funds';
+      ConversionUtils.sendConvert = jest
+        .fn()
+        .mockRejectedValue(
+          new KeychainError('error_while_broadcasting', [chainError]),
+        );
+      await act(async () => {
+        await userEvent.clear(screen.getByTestId(dataTestIdInput.amount));
+        await userEvent.type(
+          screen.getByTestId(dataTestIdInput.amount),
+          parseFloat(
+            accounts.extended.balance.toString().split(' ')[0],
+          ).toString(),
+        );
+        await userEvent.click(
+          await screen.findByTestId(dataTestIdButton.submit),
+        );
+        await userEvent.click(
+          await screen.findByTestId(dataTestIdButton.dialog.confirm),
+        );
+      });
+      expect(
+        await screen.findByText(new RegExp(chainError)),
+      ).toBeInTheDocument();
+      expect(screen.queryByText(/keychainParam1/)).not.toBeInTheDocument();
     });
   });
 
