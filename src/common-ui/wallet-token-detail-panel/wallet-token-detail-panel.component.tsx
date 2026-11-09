@@ -25,15 +25,28 @@ const getFocusableElements = (container: HTMLElement) =>
 const getThemePortalRoot = (): HTMLElement =>
   document.querySelector<HTMLElement>('#root .theme') ?? document.body;
 
-const TOKEN_DETAIL_PANEL_MAX_HEIGHT_RATIO = 0.75;
+const TOKEN_DETAIL_PANEL_POPUP_MAX_HEIGHT_RATIO = 0.95;
+const TOKEN_DETAIL_PANEL_EXTENDED_SURFACE_MAX_HEIGHT_RATIO = 0.75;
+
+const getTokenDetailPanelMaxHeightRatio = (): number => {
+  const pageClasses = document.documentElement.classList;
+  if (
+    pageClasses.contains('sidepanel-page') ||
+    pageClasses.contains('detached-window-page')
+  ) {
+    return TOKEN_DETAIL_PANEL_EXTENDED_SURFACE_MAX_HEIGHT_RATIO;
+  }
+  return TOKEN_DETAIL_PANEL_POPUP_MAX_HEIGHT_RATIO;
+};
 
 export const getTokenDetailPanelHeight = (
   panelHeight: number,
   contentClientHeight: number,
   contentScrollHeight: number,
   frameHeight: number,
+  maximumHeightRatio: number,
 ): number | undefined => {
-  if (panelHeight <= 0 || frameHeight <= 0) {
+  if (panelHeight <= 0 || frameHeight <= 0 || maximumHeightRatio <= 0) {
     return undefined;
   }
 
@@ -42,9 +55,7 @@ export const getTokenDetailPanelHeight = (
     contentScrollHeight - contentClientHeight,
   );
   const naturalPanelHeight = panelHeight + hiddenContentHeight;
-  const maximumPanelHeight = Math.floor(
-    frameHeight * TOKEN_DETAIL_PANEL_MAX_HEIGHT_RATIO,
-  );
+  const maximumPanelHeight = Math.floor(frameHeight * maximumHeightRatio);
 
   return Math.min(naturalPanelHeight, maximumPanelHeight);
 };
@@ -133,6 +144,7 @@ export const WalletTokenDetailPanel = ({
         content.clientHeight,
         content.scrollHeight,
         overlay.clientHeight,
+        getTokenDetailPanelMaxHeightRatio(),
       );
       if (panelHeight !== undefined) {
         card.style.height = `${panelHeight}px`;

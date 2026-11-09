@@ -5,15 +5,16 @@ import {
 
 describe('getTokenDetailPanelHeight', () => {
   it('keeps the panel at its natural height when all content is visible', () => {
-    expect(getTokenDetailPanelHeight(400, 300, 300, 800)).toBe(400);
+    expect(getTokenDetailPanelHeight(400, 300, 300, 800, 0.9)).toBe(400);
   });
 
   it('grows the panel by the hidden content height before scrolling', () => {
-    expect(getTokenDetailPanelHeight(500, 300, 400, 1000)).toBe(600);
+    expect(getTokenDetailPanelHeight(500, 300, 400, 1000, 0.9)).toBe(600);
   });
 
-  it('caps the panel at 75% of the available frame height', () => {
-    expect(getTokenDetailPanelHeight(500, 300, 600, 800)).toBe(600);
+  it('caps the panel at the surface-specific frame height ratio', () => {
+    expect(getTokenDetailPanelHeight(500, 300, 600, 800, 0.75)).toBe(600);
+    expect(getTokenDetailPanelHeight(500, 300, 600, 800, 0.9)).toBe(720);
   });
 });
 
