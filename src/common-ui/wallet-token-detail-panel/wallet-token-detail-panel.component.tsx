@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 interface Props {
@@ -24,6 +24,30 @@ const getFocusableElements = (container: HTMLElement) =>
 
 const getThemePortalRoot = (): HTMLElement =>
   document.querySelector<HTMLElement>('#root .theme') ?? document.body;
+
+const TOKEN_DETAIL_PANEL_MAX_HEIGHT_RATIO = 0.75;
+
+export const getTokenDetailPanelHeight = (
+  panelHeight: number,
+  contentClientHeight: number,
+  contentScrollHeight: number,
+  frameHeight: number,
+): number | undefined => {
+  if (panelHeight <= 0 || frameHeight <= 0) {
+    return undefined;
+  }
+
+  const hiddenContentHeight = Math.max(
+    0,
+    contentScrollHeight - contentClientHeight,
+  );
+  const naturalPanelHeight = panelHeight + hiddenContentHeight;
+  const maximumPanelHeight = Math.floor(
+    frameHeight * TOKEN_DETAIL_PANEL_MAX_HEIGHT_RATIO,
+  );
+
+  return Math.min(naturalPanelHeight, maximumPanelHeight);
+};
 
 export const scrollTokenDetailPanelContent = (
   scrollTop: number,
@@ -88,6 +112,56 @@ export const WalletTokenDetailPanel = ({
     };
   }, [isOpen]);
 
+  useLayoutEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const card = cardRef.current;
+    const content = contentRef.current;
+    const overlay = overlayRef.current;
+    if (!card || !content || !overlay) {
+      return;
+    }
+
+    let animationFrame = 0;
+    const fitPanelToContent = () => {
+      card.style.height = '';
+
+      const panelHeight = getTokenDetailPanelHeight(
+        card.getBoundingClientRect().height,
+        content.clientHeight,
+        content.scrollHeight,
+        overlay.clientHeight,
+      );
+      if (panelHeight !== undefined) {
+        card.style.height = `${panelHeight}px`;
+      }
+    };
+    const schedulePanelFit = () => {
+      cancelAnimationFrame(animationFrame);
+      animationFrame = requestAnimationFrame(fitPanelToContent);
+    };
+
+    fitPanelToContent();
+    window.addEventListener('resize', schedulePanelFit);
+
+    const resizeObserver =
+      typeof ResizeObserver === 'undefined'
+        ? undefined
+        : new ResizeObserver(schedulePanelFit);
+    Array.from(content.children).forEach((child) =>
+      resizeObserver?.observe(child),
+    );
+
+    return () => {
+      cancelAnimationFrame(animationFrame);
+      window.removeEventListener('resize', schedulePanelFit);
+      resizeObserver?.disconnect();
+      card.style.height = '';
+    };
+  }, [isOpen]);
+
   useEffect(() => {
     if (!isOpen) {
       return;
@@ -95,8 +169,14 @@ export const WalletTokenDetailPanel = ({
 
     const handleWheel = (event: WheelEvent) => {
       const overlay = overlayRef.current;
+      const card = cardRef.current;
       const content = contentRef.current;
-      if (!overlay || !content || !isTokenDetailPanelWheelTarget(event.target)) {
+      if (
+        !overlay ||
+        !card ||
+        !content ||
+        !isTokenDetailPanelWheelTarget(event.target)
+      ) {
         return;
       }
       if (!overlay.contains(event.target as Node)) {
@@ -107,7 +187,10 @@ export const WalletTokenDetailPanel = ({
       event.stopPropagation();
 
       const target = event.target;
-      if (!(target instanceof Node) || !content.contains(target)) {
+      if (!(target instanceof Node) || !card.contains(target)) {
+        return;
+      }
+      if (content.scrollHeight <= content.clientHeight) {
         return;
       }
 

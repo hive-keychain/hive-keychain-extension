@@ -30,6 +30,8 @@ import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { WalletInfoSectionItemButton } from 'src/common-ui/wallet-info-section-item-button/wallet-info-section-item-button.component';
 import { WalletTokenDetailPanel } from 'src/common-ui/wallet-token-detail-panel/wallet-token-detail-panel.component';
+import { WalletTokenHoldings } from 'src/common-ui/wallet-token-holdings/wallet-token-holdings.component';
+import { WalletTokenHoldingsUtils } from 'src/common-ui/wallet-token-holdings/wallet-token-holdings.utils';
 import { WalletTokenPriceChart } from 'src/common-ui/wallet-token-price-chart/wallet-token-price-chart.component';
 import {
   TokenPriceHistory,
@@ -82,6 +84,36 @@ const walletInfoSectionActionButtonTestId = (
   }
 };
 
+const getHiveTokenUnitPriceUsd = (
+  tokenSymbol: string,
+  hiveUsd: number | undefined,
+  hiveDollarUsd: number | undefined,
+  tokenBalance: TokenBalance | undefined,
+  tokenMarket: TokenMarket[] | undefined,
+): number | undefined => {
+  if (tokenSymbol === 'HBD') {
+    return hiveDollarUsd;
+  }
+  if (tokenSymbol === 'HIVE' || tokenSymbol === 'HP') {
+    return hiveUsd;
+  }
+  if (!tokenBalance || !tokenMarket) {
+    return undefined;
+  }
+  const priceInHive = TokensUtils.getHiveEngineTokenPrice(
+    tokenBalance,
+    tokenMarket,
+  );
+  if (
+    hiveUsd === undefined ||
+    !WalletTokenPriceChartUtils.hasKnownTokenPrice(priceInHive) ||
+    !WalletTokenPriceChartUtils.hasKnownTokenPrice(hiveUsd)
+  ) {
+    return undefined;
+  }
+  return priceInHive * hiveUsd;
+};
+
 interface WalletSectionInfoItemProps {
   tokenSymbol: string;
   tokenInfo?: Token;
@@ -109,6 +141,7 @@ export const WalletInfoSectionItem = ({
   subValue,
   subValueLabel,
   hive,
+  hiveDollar,
   pendingUnstaking,
   navigateToWithParams,
 }: PropsFromRedux) => {
@@ -134,6 +167,17 @@ export const WalletInfoSectionItem = ({
     );
   const showsPriceChart = Boolean(hivePriceHistoryPath) || hasEngineTokenPrice;
   const tokenDisplayName = tokenInfo?.name?.trim() || mainValueLabel;
+  const balanceAmountLabel = FormatUtils.formatCurrencyValue(mainValue);
+  const balanceUsdLabel = WalletTokenHoldingsUtils.formatWalletTokenHoldingUsd(
+    WalletTokenHoldingsUtils.parseWalletTokenAmount(mainValue),
+    getHiveTokenUnitPriceUsd(
+      tokenSymbol,
+      hive?.usd,
+      hiveDollar?.usd,
+      tokenBalance,
+      tokenMarket,
+    ),
+  );
 
   const [hasButtonsInList, setHasButtonInList] = useState(false);
 
@@ -450,6 +494,11 @@ export const WalletInfoSectionItem = ({
               priceHistoryLoading={priceHistoryLoading}
             />
           )}
+          <WalletTokenHoldings
+            symbol={tokenSymbol}
+            amount={balanceAmountLabel}
+            usdValue={balanceUsdLabel}
+          />
           {tokenInfo && tokenBalance && tokenMarket && (
             <div
               className={`token-info-panel ${
@@ -642,6 +691,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     globalProperties: state.hive.globalProperties,
     hive: state.hive.currencyPrices.hive,
+    hiveDollar: state.hive.currencyPrices.hive_dollar,
     pendingUnstaking: state.hive.tokensPendingUnstaking,
   };
 };

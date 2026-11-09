@@ -226,99 +226,118 @@ describe('PortfolioFlowUtils', () => {
     ).toBe('a');
   });
 
-  describe('resolveRequestedSwapFromSelectOptionValue', () => {
-    const hiveRow = {
-      key: 'hive:HIVE',
+  describe('resolveRequestedSwapToAssetId', () => {
+    const portfolioChains = {
+      ethereum: {
+        id: 'ethereum',
+        name: 'Ethereum',
+        logoUrl: null,
+        numericChainId: 1,
+        rankScore: 0,
+      },
+      polygon: {
+        id: 'polygon',
+        name: 'Polygon',
+        logoUrl: null,
+        numericChainId: 137,
+        rankScore: 0,
+      },
+    };
+    const hiveSwapAsset = createTestCanonicalAsset({
+      assetId: 'hive-hive',
+      ecosystem: 'hive',
       symbol: 'HIVE',
-      network: 'Hive',
-      balance: '10',
-      isHive: true,
-    };
-    const decRow = {
-      key: 'hive:DEC',
+      name: 'Hive',
+    });
+    const decSwapAsset = createTestCanonicalAsset({
+      assetId: 'hive_engine:DEC',
+      ecosystem: 'hive_engine',
       symbol: 'DEC',
-      network: 'Hive',
-      balance: '20',
-      isHive: true,
-    };
-    const ethRow = {
-      key: '0x1:ETH:native',
+      name: 'Dark Energy Crystals',
+    });
+    const ethSwapAsset = createTestCanonicalAsset({
+      assetId: 'evm:native:ethereum',
+      ecosystem: 'evm',
       symbol: 'ETH',
-      network: 'Ethereum',
-      balance: '0.5',
-      chainId: '0x1',
-    };
-    const usdcRow = {
-      key: '0x1:USDC:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+      name: 'Ether',
+      chainId: 'ethereum',
+      isNative: true,
+    });
+    const usdcSwapAsset = createTestCanonicalAsset({
+      assetId: 'evm:token:ethereum:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+      ecosystem: 'evm',
       symbol: 'USDC',
-      network: 'Ethereum',
-      balance: '200',
-      chainId: '0x1',
-    };
-    const polygonUsdcRow = {
-      key: '0x89:USDC:0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      name: 'USD Coin',
+      chainId: 'ethereum',
+      address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+    });
+    const polygonUsdcSwapAsset = createTestCanonicalAsset({
+      assetId: 'evm:token:polygon:0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      ecosystem: 'evm',
       symbol: 'USDC',
-      network: 'Polygon',
-      balance: '50',
-      chainId: '0x89',
-    };
-    const toOptions = (rows: Array<{ key: string; symbol: string }>) =>
-      rows.map((row) => ({
-        label: row.symbol,
-        value: row.key,
-      }));
+      name: 'USD Coin',
+      chainId: 'polygon',
+      address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+    });
+    const assets = [
+      hiveSwapAsset,
+      decSwapAsset,
+      ethSwapAsset,
+      usdcSwapAsset,
+      polygonUsdcSwapAsset,
+    ];
 
-    it('selects the Hive or Hive Engine row for that symbol', () => {
-      const rows = [hiveRow, decRow];
-      const options = toOptions(rows);
-
+    it('selects Hive and Hive Engine assets by symbol', () => {
       expect(
-        PortfolioFlowUtils.resolveRequestedSwapFromSelectOptionValue(
+        PortfolioFlowUtils.resolveRequestedSwapToAssetId(
           { symbol: 'dec', ecosystem: 'hive' },
-          options,
-          rows,
+          assets,
         ),
-      ).toBe('hive:DEC');
+      ).toBe('hive_engine:DEC');
       expect(
-        PortfolioFlowUtils.resolveRequestedSwapFromSelectOptionValue(
+        PortfolioFlowUtils.resolveRequestedSwapToAssetId(
           { symbol: 'HIVE', ecosystem: 'hive' },
-          options,
-          rows,
+          assets,
         ),
-      ).toBe('hive:HIVE');
+      ).toBe('hive-hive');
     });
 
     it('selects the EVM token on the requested chain and contract', () => {
-      const rows = [ethRow, usdcRow, polygonUsdcRow];
-      const options = toOptions(rows);
-
       expect(
-        PortfolioFlowUtils.resolveRequestedSwapFromSelectOptionValue(
+        PortfolioFlowUtils.resolveRequestedSwapToAssetId(
           {
             symbol: 'USDC',
             ecosystem: 'evm',
-            chainId: '1',
+            chainId: '0x1',
             contractAddress: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
           },
-          options,
-          rows,
+          assets,
+          [],
+          portfolioChains,
         ),
-      ).toBe(usdcRow.key);
+      ).toBe(usdcSwapAsset.assetId);
       expect(
-        PortfolioFlowUtils.resolveRequestedSwapFromSelectOptionValue(
-          { symbol: 'ETH', ecosystem: 'evm', chainId: '0x1' },
-          options,
-          rows,
+        PortfolioFlowUtils.resolveRequestedSwapToAssetId(
+          { symbol: 'ETH', ecosystem: 'evm', chainId: '1' },
+          assets,
+          [],
+          portfolioChains,
         ),
-      ).toBe(ethRow.key);
+      ).toBe(ethSwapAsset.assetId);
     });
 
-    it('ignores a requested token that is not an outgoing option', () => {
+    it('does not match a different chain for the same symbol', () => {
       expect(
-        PortfolioFlowUtils.resolveRequestedSwapFromSelectOptionValue(
-          { symbol: 'DEC', ecosystem: 'hive' },
-          toOptions([hiveRow]),
-          [hiveRow, decRow],
+        PortfolioFlowUtils.resolveRequestedSwapToAssetId(
+          {
+            symbol: 'USDC',
+            ecosystem: 'evm',
+            chainId: '0x89',
+            contractAddress: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+          },
+          assets,
+          [],
+          portfolioChains,
         ),
       ).toBeUndefined();
     });

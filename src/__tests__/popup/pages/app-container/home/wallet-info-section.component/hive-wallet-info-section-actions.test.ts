@@ -42,7 +42,7 @@ describe('hive-wallet-info-section-actions tests:\n', () => {
     expect(hpSwap).toBeUndefined();
   });
 
-  it('opens portfolio swap with the Hive token as the outgoing asset', () => {
+  it('opens portfolio swap with the Hive token as the incoming asset', () => {
     const openSwap = jest
       .spyOn(PortfolioRouteUtils, 'openSwap')
       .mockImplementation(() => undefined);
@@ -74,7 +74,7 @@ describe('hive-wallet-info-section-actions tests:\n', () => {
 });
 
 describe('evm-wallet-info-section-actions', () => {
-  it('opens portfolio swap with the EVM token as the outgoing asset', () => {
+  it('opens portfolio swap with the EVM token as the incoming asset', () => {
     const openSwap = jest
       .spyOn(PortfolioRouteUtils, 'openSwap')
       .mockImplementation(() => undefined);

@@ -102,6 +102,15 @@ describe('EVM WalletInfoSectionItem', () => {
       screen.getByTestId('wallet-token-price-chart-ETH'),
     ).toBeInTheDocument();
     expect(
+      screen.getByTestId('wallet-token-holdings-amount-ETH'),
+    ).toHaveTextContent('1.0 ETH');
+    expect(screen.getByTestId('wallet-token-holdings-usd-ETH')).toHaveTextContent(
+      '$1.00',
+    );
+    expect(
+      screen.queryByTestId('wallet-token-detail-panel-contract-ETH'),
+    ).not.toBeInTheDocument();
+    expect(
       screen.getByTestId('wallet-token-detail-panel-ETH-footer'),
     ).toBeInTheDocument();
 
@@ -183,6 +192,12 @@ describe('EVM WalletInfoSectionItem', () => {
     expect(
       screen.getByTestId('wallet-token-detail-panel-USDC-logo'),
     ).toBeInTheDocument();
+    expect(
+      screen.getByTestId('wallet-token-holdings-amount-USDC'),
+    ).toHaveTextContent('5.0 USDC');
+    expect(
+      screen.getByTestId('wallet-token-holdings-usd-USDC'),
+    ).toHaveTextContent('$5.00');
     expect(
       screen.getByTestId('wallet-token-detail-panel-contract-USDC'),
     ).toHaveTextContent(contractAddress);
@@ -390,6 +405,15 @@ describe('EVM WalletInfoSectionItem', () => {
     expect(
       screen.queryByTestId('wallet-token-price-chart-DUST'),
     ).not.toBeInTheDocument();
+    expect(
+      screen.getByTestId('wallet-token-holdings-amount-DUST'),
+    ).toHaveTextContent('1.0 DUST');
+    expect(
+      screen.queryByTestId('wallet-token-holdings-usd-DUST'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByTestId('wallet-token-detail-panel-contract-DUST'),
+    ).toHaveTextContent('0xabc');
     expect(EvmLightNodeApi.get).not.toHaveBeenCalled();
   });
 });

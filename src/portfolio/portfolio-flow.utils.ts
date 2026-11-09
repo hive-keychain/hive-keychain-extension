@@ -1715,52 +1715,94 @@ export const resolveDefaultSwapFromSelectOptionValue = (
   return pickHighestUsdPortfolioRow(gasCapableRows)?.key;
 };
 
-export const resolveRequestedSwapFromSelectOptionValue = (
+const HIVE_CORE_SWAP_SYMBOLS = new Set(['HIVE', 'HBD']);
+
+export const resolveRequestedSwapToAssetId = (
   request: {
     symbol: string;
     ecosystem: 'hive' | 'evm';
     chainId?: string;
     contractAddress?: string;
   },
-  options: PortfolioFlowSelectOption[],
-  rows: PortfolioFlowRow[],
+  assets: PortfolioCanonicalAsset[],
+  chains: EvmChain[] = [],
+  portfolioChains: PortfolioChainDisplayRecord = {},
 ): string | undefined => {
-  const optionValues = new Set(options.map((option) => option.value));
   const symbol = request.symbol.trim().toUpperCase();
   if (!symbol) {
     return undefined;
   }
 
   const contractAddress = request.contractAddress?.trim().toLowerCase();
-  const match = rows.find((row) => {
-    if (!optionValues.has(row.key) || row.symbol.toUpperCase() !== symbol) {
+  const match = assets.find((asset) => {
+    if (
+      isPortfolioSwapExcludedAsset(asset) ||
+      asset.symbol.toUpperCase() !== symbol
+    ) {
       return false;
     }
 
     if (request.ecosystem === 'hive') {
-      return row.isHive === true || row.key.startsWith('hive:');
+      const ecosystem = HIVE_CORE_SWAP_SYMBOLS.has(symbol)
+        ? 'hive'
+        : 'hive_engine';
+      return asset.ecosystem === ecosystem;
     }
 
-    const parsedRow = parsePortfolioEvmRowKey(row);
-    if (!parsedRow) {
+    if (asset.ecosystem !== 'evm') {
       return false;
     }
 
     if (
       request.chainId &&
-      !chainIdsMatch(parsedRow.chainReference, request.chainId)
+      !assetChainMatchesRow(asset, request.chainId, chains, portfolioChains)
     ) {
       return false;
     }
 
+    const assetAddress = (
+      asset.address ??
+      getContractAddressFromAssetId(asset.assetId) ??
+      ''
+    ).toLowerCase();
     if (contractAddress) {
-      return parsedRow.contractAddress === contractAddress;
+      return assetAddress === contractAddress;
     }
 
-    return parsedRow.contractAddress === null;
+    return isNativeCanonicalAsset(asset);
   });
 
-  return match?.key;
+  return match?.assetId;
+};
+
+export const resolveSwapFromOptionAssetId = (
+  optionValue: string,
+  rows: PortfolioFlowRow[],
+  assets: PortfolioCanonicalAsset[],
+  chains: EvmChain[] = [],
+  portfolioChains: PortfolioChainDisplayRecord = {},
+  swapSourceAssets: PortfolioCanonicalAsset[] = [],
+): string | undefined => {
+  const row = rows.find((item) => item.key === optionValue);
+  if (row && swapSourceAssets.length > 0) {
+    const swapFromAssetId = resolvePortfolioRowToSwapFromAssetId(
+      row,
+      swapSourceAssets,
+      chains,
+      portfolioChains,
+    );
+    if (swapFromAssetId) {
+      return swapFromAssetId;
+    }
+  }
+
+  return resolveFromRowKeyToCanonicalAssetId(
+    optionValue,
+    rows,
+    assets,
+    chains,
+    portfolioChains,
+  );
 };
 
 export const isSwapFromTokenReadyToSelect = ({
@@ -2336,7 +2378,8 @@ export const PortfolioFlowUtils = {
   formatPortfolioTokenBalance,
   getDefaultSelectOptionValue,
   resolveDefaultSwapFromSelectOptionValue,
-  resolveRequestedSwapFromSelectOptionValue,
+  resolveRequestedSwapToAssetId,
+  resolveSwapFromOptionAssetId,
   isSwapFromTokenReadyToSelect,
   getHivePortfolioRowEcosystem,
   getHiveTokenIcon,

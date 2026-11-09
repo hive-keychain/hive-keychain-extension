@@ -1,4 +1,21 @@
-import { scrollTokenDetailPanelContent } from 'src/common-ui/wallet-token-detail-panel/wallet-token-detail-panel.component';
+import {
+  getTokenDetailPanelHeight,
+  scrollTokenDetailPanelContent,
+} from 'src/common-ui/wallet-token-detail-panel/wallet-token-detail-panel.component';
+
+describe('getTokenDetailPanelHeight', () => {
+  it('keeps the panel at its natural height when all content is visible', () => {
+    expect(getTokenDetailPanelHeight(400, 300, 300, 800)).toBe(400);
+  });
+
+  it('grows the panel by the hidden content height before scrolling', () => {
+    expect(getTokenDetailPanelHeight(500, 300, 400, 1000)).toBe(600);
+  });
+
+  it('caps the panel at 75% of the available frame height', () => {
+    expect(getTokenDetailPanelHeight(500, 300, 600, 800)).toBe(600);
+  });
+});
 
 describe('scrollTokenDetailPanelContent', () => {
   it('moves the panel content without leaving its scroll range', () => {

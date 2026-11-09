@@ -39,7 +39,7 @@ import AccountSelectorOrderUtils, {
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import {
   PortfolioRouteUtils,
-  PortfolioSwapOutgoingToken,
+  PortfolioSwapIncomingToken,
 } from '@popup/multichain/utils/portfolio-route.utils';
 import React, {
   useCallback,
@@ -577,15 +577,15 @@ export const Portfolio = ({
   const [hiveEngineTokenLogoUrls, setHiveEngineTokenLogoUrls] = useState<
     Record<string, string>
   >({});
-  const [requestedOutgoingToken, setRequestedOutgoingToken] =
-    useState<PortfolioSwapOutgoingToken | null>(() => {
-      const outgoingToken = PortfolioRouteUtils.readSwapOutgoingToken(
+  const [requestedIncomingToken, setRequestedIncomingToken] =
+    useState<PortfolioSwapIncomingToken | null>(() => {
+      const incomingToken = PortfolioRouteUtils.readSwapIncomingToken(
         window.location.search,
       );
-      if (outgoingToken) {
-        PortfolioRouteUtils.clearSwapOutgoingTokenQuery();
+      if (incomingToken) {
+        PortfolioRouteUtils.clearSwapIncomingTokenQuery();
       }
-      return outgoingToken;
+      return incomingToken;
     });
   const [fromAssetId, setFromAssetId] = useState('');
   const [toAssetId, setToAssetId] = useState('');
@@ -2131,17 +2131,24 @@ export const Portfolio = ({
     [],
   );
 
-  const requestedFromOptionValue = useMemo(() => {
-    if (section !== 'swap' || !requestedOutgoingToken) {
+  const requestedToAssetId = useMemo(() => {
+    if (section !== 'swap' || !requestedIncomingToken) {
       return undefined;
     }
 
-    return PortfolioFlowUtils.resolveRequestedSwapFromSelectOptionValue(
-      requestedOutgoingToken,
-      fromAssetOptions,
-      rows,
+    return PortfolioFlowUtils.resolveRequestedSwapToAssetId(
+      requestedIncomingToken,
+      swapAvailableAssets,
+      toAssetEvmChains,
+      portfolioChains,
     );
-  }, [fromAssetOptions, requestedOutgoingToken, rows, section]);
+  }, [
+    portfolioChains,
+    requestedIncomingToken,
+    section,
+    swapAvailableAssets,
+    toAssetEvmChains,
+  ]);
 
   const lastUsedFromOptionValue = useMemo(() => {
     if (section !== 'swap' || !hasLoadedLastUsedSwapAssets) {
@@ -2196,28 +2203,6 @@ export const Portfolio = ({
       return;
     }
 
-    if (section === 'swap' && requestedOutgoingToken) {
-      if (!requestedFromOptionValue) {
-        if (
-          !hasLoadedPortfolioBalances ||
-          !hasLoadedSwapAvailableAssets ||
-          isSwapAvailableAssetsLoading
-        ) {
-          return;
-        }
-
-        setRequestedOutgoingToken(null);
-        return;
-      }
-
-      if (fromAssetId !== requestedFromOptionValue) {
-        hasUserSelectedFromAssetRef.current = true;
-        setFromAssetId(requestedFromOptionValue);
-      }
-      setRequestedOutgoingToken(null);
-      return;
-    }
-
     const isSwapFromAssetSelectionPending =
       section === 'swap' && !isSwapFromTokenReady;
 
@@ -2236,25 +2221,49 @@ export const Portfolio = ({
       return;
     }
 
+    const selectableFromOptions =
+      section === 'swap' && requestedToAssetId
+        ? fromAssetOptions.filter(
+            (option) =>
+              PortfolioFlowUtils.resolveSwapFromOptionAssetId(
+                option.value,
+                rows,
+                canonicalAssetsForRowResolution,
+                toAssetEvmChains,
+                portfolioChains,
+                swapSourceAssets,
+              ) !== requestedToAssetId,
+          )
+        : fromAssetOptions;
+    const fromOptionsForSelection =
+      selectableFromOptions.length > 0
+        ? selectableFromOptions
+        : fromAssetOptions;
+
     if (
       fromAssetId &&
-      fromAssetOptions.some((option) => option.value === fromAssetId) &&
+      fromOptionsForSelection.some((option) => option.value === fromAssetId) &&
       (section === 'swap' || hasUserSelectedFromAssetRef.current)
     ) {
       return;
     }
 
     const preferredFromOptionValue =
-      lastUsedFromOptionValue ??
+      (lastUsedFromOptionValue &&
+      fromOptionsForSelection.some(
+        (option) => option.value === lastUsedFromOptionValue,
+      )
+        ? lastUsedFromOptionValue
+        : undefined) ??
       (section === 'swap'
         ? PortfolioFlowUtils.resolveDefaultSwapFromSelectOptionValue(
-            fromAssetOptions,
+            fromOptionsForSelection,
             rows,
             chain,
           )
         : undefined);
     const nextFromAssetId = PortfolioFlowUtils.getDefaultSelectOptionValue(
-      fromAssetOptions,
+      fromOptionsForSelection,
       preferredFromOptionValue,
     );
 
@@ -2264,23 +2273,71 @@ export const Portfolio = ({
 
     setFromAssetId(nextFromAssetId);
   }, [
+    canonicalAssetsForRowResolution,
     chain,
     fromAssetId,
     fromAssetOptions,
-    hasLoadedPortfolioBalances,
-    hasLoadedSwapAvailableAssets,
     isPortfolioLoading,
-    isSwapAvailableAssetsLoading,
     isSwapFromTokenReady,
     lastUsedFromOptionValue,
-    requestedFromOptionValue,
-    requestedOutgoingToken,
+    portfolioChains,
+    requestedToAssetId,
     rows,
     section,
+    swapSourceAssets,
+    toAssetEvmChains,
   ]);
 
   useEffect(() => {
     if (section !== 'buy' && section !== 'sell' && section !== 'swap') {
+      return;
+    }
+
+    if (section === 'swap' && requestedIncomingToken) {
+      if (
+        !hasLoadedSwapAvailableAssets ||
+        isSwapAvailableAssetsLoading ||
+        !isSwapFromTokenReady ||
+        !fromAssetId ||
+        !fromCanonicalAsset
+      ) {
+        return;
+      }
+
+      if (!requestedToAssetId) {
+        setRequestedIncomingToken(null);
+        return;
+      }
+
+      if (fromCanonicalAsset.assetId === requestedToAssetId) {
+        const canUseAnotherFrom = fromAssetOptions.some(
+          (option) =>
+            PortfolioFlowUtils.resolveSwapFromOptionAssetId(
+              option.value,
+              rows,
+              canonicalAssetsForRowResolution,
+              toAssetEvmChains,
+              portfolioChains,
+              swapSourceAssets,
+            ) !== requestedToAssetId,
+        );
+        if (canUseAnotherFrom) {
+          return;
+        }
+
+        setRequestedIncomingToken(null);
+        return;
+      }
+
+      if (toAssetOptions.some((option) => option.value === requestedToAssetId)) {
+        if (toAssetId !== requestedToAssetId) {
+          setToAssetId(requestedToAssetId);
+        }
+        setRequestedIncomingToken(null);
+        return;
+      }
+
+      setRequestedIncomingToken(null);
       return;
     }
 
@@ -2309,9 +2366,22 @@ export const Portfolio = ({
       ),
     );
   }, [
+    canonicalAssetsForRowResolution,
+    fromAssetId,
+    fromAssetOptions,
+    fromCanonicalAsset,
     hasLoadedLastUsedSwapAssets,
+    hasLoadedSwapAvailableAssets,
+    isSwapAvailableAssetsLoading,
+    isSwapFromTokenReady,
     lastUsedSwapAssets?.toAssetId,
+    portfolioChains,
+    requestedIncomingToken,
+    requestedToAssetId,
+    rows,
     section,
+    swapSourceAssets,
+    toAssetEvmChains,
     toAssetId,
     toAssetOptions,
   ]);

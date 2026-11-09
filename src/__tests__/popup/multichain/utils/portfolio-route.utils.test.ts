@@ -42,7 +42,7 @@ describe('PortfolioRouteUtils', () => {
     );
   });
 
-  it('opens portfolio swap with the outgoing token in the query', () => {
+  it('opens portfolio swap with the incoming token in the query', () => {
     PortfolioRouteUtils.openSwap({
       symbol: 'USDC',
       ecosystem: 'evm',
@@ -51,31 +51,31 @@ describe('PortfolioRouteUtils', () => {
     });
 
     expect(ExtensionPageUtils.openInTab).toHaveBeenCalledWith(
-      'portfolio.html?fromSymbol=USDC&fromEcosystem=evm&fromChainId=0x1&fromContract=0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48#swap',
+      'portfolio.html?toSymbol=USDC&toEcosystem=evm&toChainId=0x1&toContract=0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48#swap',
     );
   });
 
-  it('reads and clears the outgoing swap token query', () => {
+  it('reads and clears the incoming swap token query', () => {
     const originalUrl = window.location.href;
     window.history.replaceState(
       null,
       document.title,
-      '/portfolio.html?fromSymbol=HIVE&fromEcosystem=hive&kept=1#swap',
+      '/portfolio.html?toSymbol=HIVE&toEcosystem=hive&kept=1#swap',
     );
 
     expect(
-      PortfolioRouteUtils.readSwapOutgoingToken(window.location.search),
+      PortfolioRouteUtils.readSwapIncomingToken(window.location.search),
     ).toEqual({
       symbol: 'HIVE',
       ecosystem: 'hive',
     });
 
-    PortfolioRouteUtils.clearSwapOutgoingTokenQuery();
+    PortfolioRouteUtils.clearSwapIncomingTokenQuery();
 
     expect(window.location.search).toBe('?kept=1');
     expect(window.location.hash).toBe('#swap');
     expect(
-      PortfolioRouteUtils.readSwapOutgoingToken('?fromEcosystem=hive'),
+      PortfolioRouteUtils.readSwapIncomingToken('?toEcosystem=hive'),
     ).toBeNull();
     window.history.replaceState(null, document.title, originalUrl);
   });

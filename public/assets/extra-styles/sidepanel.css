@@ -118,8 +118,7 @@ html.sidepanel-page #root .theme .wallet-token-detail-panel-overlay .wallet-toke
   inset: 0;
 }
 
-html.sidepanel-page #root .theme .account-selector-overlay .account-selector-card,
-html.sidepanel-page #root .theme .wallet-token-detail-panel-overlay .wallet-token-detail-panel-card {
+html.sidepanel-page #root .theme .account-selector-overlay .account-selector-card {
   position: absolute;
   left: 0;
   right: 0;
@@ -129,9 +128,15 @@ html.sidepanel-page #root .theme .wallet-token-detail-panel-overlay .wallet-toke
   max-height: 540px;
 }
 
-html.sidepanel-page #root .theme .wallet-token-detail-panel-overlay .wallet-token-detail-panel-card.is-compact {
+html.sidepanel-page #root .theme .wallet-token-detail-panel-overlay .wallet-token-detail-panel-card {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
   height: auto;
-  max-height: none;
+  min-height: min(300px, 75%);
+  max-height: 75%;
 }
 
 html.sidepanel-page #root .theme .hive-select-account-section.main-page .react-dropdown-select-dropdown {

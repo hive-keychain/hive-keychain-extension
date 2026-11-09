@@ -227,6 +227,107 @@ describe('Hive WalletInfoSectionItem', () => {
     expect(
       screen.getByTestId('wallet-token-price-chart-price-HIVE'),
     ).toHaveTextContent('$1.20');
+    expect(
+      screen.getByTestId('wallet-token-holdings-amount-HIVE'),
+    ).toHaveTextContent('1.000 HIVE');
+    expect(
+      screen.queryByTestId('wallet-token-holdings-usd-HIVE'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows the HIVE balance in token units and USD', async () => {
+    const user = userEvent.setup();
+    render(
+      <WalletInfoSectionItem
+        {...connectedProps}
+        hive={{ usd: 0.25 }}
+        tokenSymbol="HIVE"
+        icon={SVGIcons.WALLET_HIVE_LOGO}
+        mainValue="4.000"
+        mainValueLabel="HIVE"
+      />,
+    );
+
+    await user.click(screen.getByTestId('dropdown-arrow-hive'));
+
+    expect(
+      screen.getByTestId('wallet-token-holdings-amount-HIVE'),
+    ).toHaveTextContent('4.000 HIVE');
+    expect(screen.getByTestId('wallet-token-holdings-usd-HIVE')).toHaveTextContent(
+      '$1.00',
+    );
+    expect(
+      screen.queryByTestId('wallet-token-detail-panel-contract-HIVE'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('prices HBD from the HBD dollar rate', async () => {
+    const user = userEvent.setup();
+    render(
+      <WalletInfoSectionItem
+        {...connectedProps}
+        hiveDollar={{ usd: 1 }}
+        tokenSymbol="HBD"
+        icon={SVGIcons.WALLET_HBD_LOGO}
+        mainValue="2.000"
+        mainValueLabel="HBD"
+      />,
+    );
+
+    await user.click(screen.getByTestId('dropdown-arrow-hbd'));
+    expect(screen.getByTestId('wallet-token-holdings-usd-HBD')).toHaveTextContent(
+      '$2.00',
+    );
+    await screen.findByTestId('wallet-token-price-chart-price-HBD');
+  });
+
+  it('prices a Hive Engine balance from the market and the HIVE dollar rate', async () => {
+    const user = userEvent.setup();
+    const nowSeconds = Math.floor(Date.now() / 1000);
+    (BaseApi.get as jest.Mock).mockResolvedValue([
+      { timestamp: nowSeconds - 7200, close: '2' },
+      { timestamp: nowSeconds - 3600, close: '4' },
+    ]);
+
+    render(
+      <WalletInfoSectionItem
+        {...connectedProps}
+        hive={{ usd: 2 }}
+        tokenSymbol="BEE"
+        tokenInfo={
+          {
+            name: 'Bee Token',
+            symbol: 'BEE',
+            metadata: { url: '', icon: '', desc: '' },
+          } as Token
+        }
+        tokenBalance={
+          {
+            symbol: 'BEE',
+            balance: '2',
+          } as TokenBalance
+        }
+        tokenMarket={[
+          {
+            symbol: 'BEE',
+            highestBid: '1',
+            lowestAsk: '1',
+            lastPrice: '3',
+          } as TokenMarket,
+        ]}
+        mainValue="2"
+        mainValueLabel="BEE"
+      />,
+    );
+
+    await user.click(screen.getByTestId('token-user-item'));
+    expect(
+      screen.getByTestId('wallet-token-holdings-amount-BEE'),
+    ).toHaveTextContent('2.000 BEE');
+    expect(screen.getByTestId('wallet-token-holdings-usd-BEE')).toHaveTextContent(
+      '$12.00',
+    );
+    await screen.findByTestId('wallet-token-price-chart-price-BEE');
   });
 
   it('loads HBD chart history and skips an empty 24h category', async () => {

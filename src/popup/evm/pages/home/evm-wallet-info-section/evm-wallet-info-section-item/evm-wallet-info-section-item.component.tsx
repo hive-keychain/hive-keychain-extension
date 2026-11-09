@@ -10,22 +10,21 @@ import React, { BaseSyntheticEvent, useCallback, useEffect, useState } from 'rea
 import { ConnectedProps, connect } from 'react-redux';
 import { EvmLightNodeApi } from '@api/evm-light-node';
 import { SVGIcons } from 'src/common-ui/icons.enum';
-import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
-import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import {
   COPY_GENERIC_MESSAGE_KEY,
   copyTextWithToast,
 } from 'src/common-ui/toast/copy-toast.utils';
 import { WalletInfoSectionItemButton } from 'src/common-ui/wallet-info-section-item-button/wallet-info-section-item-button.component';
 import { WalletTokenDetailPanel } from 'src/common-ui/wallet-token-detail-panel/wallet-token-detail-panel.component';
+import { WalletTokenHoldings } from 'src/common-ui/wallet-token-holdings/wallet-token-holdings.component';
+import { WalletTokenHoldingsUtils } from 'src/common-ui/wallet-token-holdings/wallet-token-holdings.utils';
 import { WalletTokenPriceChart } from 'src/common-ui/wallet-token-price-chart/wallet-token-price-chart.component';
 import {
   TokenPriceHistory,
   WalletTokenPriceChartUtils,
 } from 'src/common-ui/wallet-token-price-chart/wallet-token-price-chart.utils';
 import FormatUtils from 'src/utils/format.utils';
-import { I18nUtils } from 'src/utils/i18n.utils';
 import Logger from 'src/utils/logger.utils';
 
 interface EVMWalletSectionInfoItemProps {
@@ -88,6 +87,17 @@ export const WalletInfoSectionItem = ({
       ? token.tokenInfo.symbol
       : token.tokenInfo.name?.trim() || mainValueLabel;
   const hasTokenPrice = WalletTokenPriceChartUtils.hasKnownTokenPrice(
+    token.tokenInfo.priceUsd,
+  );
+  const balanceAmountLabel =
+    token.formattedBalance?.trim() || mainValue?.toString() || '';
+  const balanceAmountForUsd =
+    typeof token.balanceInteger === 'number' &&
+    Number.isFinite(token.balanceInteger)
+      ? token.balanceInteger
+      : WalletTokenHoldingsUtils.parseWalletTokenAmount(mainValue);
+  const balanceUsdLabel = WalletTokenHoldingsUtils.formatWalletTokenHoldingUsd(
+    balanceAmountForUsd,
     token.tokenInfo.priceUsd,
   );
 
@@ -305,45 +315,16 @@ export const WalletInfoSectionItem = ({
               priceHistoryLoading={priceHistoryLoading}
             />
           )}
-          {contractAddress && (
-            <div className="wallet-token-detail-panel-contract">
-              <div className="wallet-token-detail-panel-contract-label">
-                {I18nUtils.getMessage('evm_operation_smart_contract_address')}
-              </div>
-              <div className="wallet-token-detail-panel-contract-row">
-                <span
-                  className="wallet-token-detail-panel-contract-address"
-                  data-testid={`wallet-token-detail-panel-contract-${token.tokenInfo.symbol}`}>
-                  {contractAddress}
-                </span>
-                <button
-                  type="button"
-                  className="wallet-token-detail-panel-contract-copy"
-                  aria-label={I18nUtils.getMessage('html_popup_copy')}
-                  data-testid={`wallet-token-detail-panel-contract-copy-${token.tokenInfo.symbol}`}
-                  onClick={copyContractAddress}>
-                  <SVGIcon icon={SVGIcons.SELECT_COPY} />
-                </button>
-                {tokenExplorerUrl && (
-                  <CustomTooltip
-                    message="portfolio_history_view_on_explorer"
-                    position="top"
-                    delayShow={300}>
-                    <button
-                      type="button"
-                      className="wallet-token-detail-panel-contract-explorer"
-                      aria-label={I18nUtils.getMessage(
-                        'portfolio_history_view_on_explorer',
-                      )}
-                      data-testid={`wallet-token-detail-panel-contract-explorer-${token.tokenInfo.symbol}`}
-                      onClick={openTokenInBlockExplorer}>
-                      <SVGIcon icon={SVGIcons.GLOBAL_EXTERNAL_LINK} />
-                    </button>
-                  </CustomTooltip>
-                )}
-              </div>
-            </div>
-          )}
+          <WalletTokenHoldings
+            symbol={token.tokenInfo.symbol}
+            amount={balanceAmountLabel}
+            usdValue={balanceUsdLabel}
+            contractAddress={contractAddress}
+            onCopyContract={contractAddress ? copyContractAddress : undefined}
+            onOpenContractExplorer={
+              tokenExplorerUrl ? openTokenInBlockExplorer : undefined
+            }
+          />
         </div>
       </WalletTokenDetailPanel>
     </div>

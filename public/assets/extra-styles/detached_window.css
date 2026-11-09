@@ -169,12 +169,7 @@ html.detached-window-page
   #root
   .theme
   .account-selector-overlay
-  .account-selector-card,
-html.detached-window-page
-  #root
-  .theme
-  .wallet-token-detail-panel-overlay
-  .wallet-token-detail-panel-card {
+  .account-selector-card {
   position: absolute;
   left: 0;
   right: 0;
@@ -187,9 +182,15 @@ html.detached-window-page
   #root
   .theme
   .wallet-token-detail-panel-overlay
-  .wallet-token-detail-panel-card.is-compact {
+  .wallet-token-detail-panel-card {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
   height: auto;
-  max-height: none;
+  min-height: min(300px, 75%);
+  max-height: 75%;
 }
 html.detached-window-page
   #root
