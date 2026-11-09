@@ -72,7 +72,7 @@
     "description": "guided tour add evm chains step 1 description"
   },
   "popup_html_guided_tour_add_evm_chains_step2_title": {
-    "message": "Selecciona una red EVM o haz clic en Administrar redes para añadir más",
+    "message": "Haz clic en Administrar redes para añadir más",
     "description": "guided tour add evm chains step 2 title"
   },
   "popup_html_guided_tour_add_evm_chains_step3_title": {

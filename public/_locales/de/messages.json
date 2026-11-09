@@ -72,7 +72,7 @@
     "description": "guided tour add evm chains step 1 description"
   },
   "popup_html_guided_tour_add_evm_chains_step2_title": {
-    "message": "Wähle eine EVM-Chain oder klicke auf Chains verwalten, um mehr hinzuzufügen",
+    "message": "Klicke auf Chains verwalten, um mehr hinzuzufügen",
     "description": "guided tour add evm chains step 2 title"
   },
   "popup_html_guided_tour_add_evm_chains_step3_title": {

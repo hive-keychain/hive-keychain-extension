@@ -14,6 +14,7 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { initialStateForHome } from 'src/__tests__/utils-for-testing/initial-states';
 import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
+import { GuidedTourUtils } from 'src/utils/guided-tour.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const mockTargetRect = {
@@ -79,6 +80,7 @@ describe('GuidedTourComponent', () => {
 
   afterEach(() => {
     cleanup();
+    GuidedTourUtils.consumeAddEvmChainsTourRequest();
     jest.restoreAllMocks();
   });
 
@@ -403,6 +405,8 @@ describe('GuidedTourComponent', () => {
   });
 
   it('shows the chain tour when an EVM account is selected for the first time', async () => {
+    await GuidedTourUtils.requestAddEvmChainsTour();
+
     renderTour(
       <>
         <button data-guided-tour={GuidedTourTarget.CHAIN_DROPDOWN_TRIGGER}>
@@ -420,6 +424,24 @@ describe('GuidedTourComponent', () => {
     expect(screen.getByTestId('guided-tour-tooltip')).toHaveTextContent(
       'You can add chains here!',
     );
+  });
+
+  it('does not show the chain tour when an EVM account was imported', async () => {
+    renderTour(
+      <>
+        <button data-guided-tour={GuidedTourTarget.CHAIN_DROPDOWN_TRIGGER}>
+          Chains
+        </button>
+        <GuidedTourComponent />
+      </>,
+      getEvmSelectedTourState(),
+    );
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(screen.queryByTestId('guided-tour-overlay')).not.toBeInTheDocument();
   });
 
   it('does not show the chain tour when EVM accounts exist but a Hive account is selected', async () => {
@@ -443,8 +465,11 @@ describe('GuidedTourComponent', () => {
     expect(screen.queryByTestId('guided-tour-overlay')).not.toBeInTheDocument();
   });
 
-  it('moves the spotlight onto the open chain menu so manage chains stays clickable', async () => {
+  it('moves the spotlight onto manage chains and ignores chain clicks', async () => {
+    const user = userEvent.setup();
     const saveSpy = jest.spyOn(LocalStorageUtils, 'saveValueInLocalStorage');
+    await GuidedTourUtils.requestAddEvmChainsTour();
+    saveSpy.mockClear();
     const triggerRect = {
       x: 280,
       y: 8,
@@ -456,15 +481,15 @@ describe('GuidedTourComponent', () => {
       height: 32,
       toJSON: () => ({}),
     } as DOMRect;
-    const panelRect = {
-      x: 140,
-      y: 44,
-      top: 44,
-      left: 140,
-      right: 340,
-      bottom: 204,
-      width: 200,
-      height: 160,
+    const manageChainsRect = {
+      x: 148,
+      y: 168,
+      top: 168,
+      left: 148,
+      right: 332,
+      bottom: 200,
+      width: 184,
+      height: 32,
       toJSON: () => ({}),
     } as DOMRect;
 
@@ -474,8 +499,8 @@ describe('GuidedTourComponent', () => {
         const tourTarget = this.closest('[data-guided-tour]')?.getAttribute(
           'data-guided-tour',
         );
-        if (tourTarget === GuidedTourTarget.CHAIN_DROPDOWN_PANEL) {
-          return panelRect;
+        if (tourTarget === GuidedTourTarget.CHAIN_DROPDOWN_MANAGE_CHAINS) {
+          return manageChainsRect;
         }
         if (tourTarget === GuidedTourTarget.CHAIN_DROPDOWN_TRIGGER) {
           return triggerRect;
@@ -509,20 +534,22 @@ describe('GuidedTourComponent', () => {
     );
 
     const panel = document.createElement('div');
-    panel.setAttribute(
-      'data-guided-tour',
-      GuidedTourTarget.CHAIN_DROPDOWN_PANEL,
-    );
+    const chainButton = document.createElement('button');
+    chainButton.textContent = 'Ethereum';
     const manageChains = document.createElement('button');
+    manageChains.setAttribute(
+      'data-guided-tour',
+      GuidedTourTarget.CHAIN_DROPDOWN_MANAGE_CHAINS,
+    );
     manageChains.textContent = 'Manage chains';
-    panel.append(manageChains);
+    panel.append(chainButton, manageChains);
     act(() => {
       document.body.append(panel);
     });
 
     await waitFor(() => {
       expect(screen.getByTestId('guided-tour-tooltip')).toHaveTextContent(
-        'Select an EVM chain or click on Manage chains to add more',
+        'Click on Manage chains to add more',
       );
     });
     expect(
@@ -532,16 +559,28 @@ describe('GuidedTourComponent', () => {
       'blocking',
     );
     expect(screen.getByTestId('guided-tour-highlight')).toHaveStyle({
-      top: '44px',
-      left: '140px',
-      width: '200px',
-      height: '160px',
+      top: '168px',
+      left: '148px',
+      width: '184px',
+      height: '32px',
     });
 
     const tooltipTop = Number.parseFloat(
       screen.getByTestId('guided-tour-tooltip').style.top,
     );
-    expect(tooltipTop).toBeGreaterThanOrEqual(panelRect.bottom);
+    expect(tooltipTop).toBeGreaterThanOrEqual(manageChainsRect.bottom);
+
+    await user.click(screen.getByText('Ethereum'));
+    expect(saveSpy).not.toHaveBeenCalledWith(
+      LocalStorageKeyEnum.GUIDED_TOURS,
+      expect.objectContaining({
+        [GuidedTourId.ADD_EVM_CHAINS]: expect.objectContaining({
+          currentStep: 2,
+        }),
+      }),
+    );
+
+    await user.click(screen.getByText('Manage chains'));
 
     await waitFor(() => {
       expect(saveSpy).toHaveBeenCalledWith(
@@ -549,7 +588,7 @@ describe('GuidedTourComponent', () => {
         expect.objectContaining({
           [GuidedTourId.ADD_EVM_CHAINS]: {
             status: GuidedTourStatus.IN_PROGRESS,
-            currentStep: 1,
+            currentStep: 2,
           },
         }),
       );

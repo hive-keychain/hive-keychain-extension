@@ -72,7 +72,7 @@
     "description": "guided tour add evm chains step 1 description"
   },
   "popup_html_guided_tour_add_evm_chains_step2_title": {
-    "message": "Pilih chain EVM atau klik Kelola chain untuk menambah",
+    "message": "Klik Kelola chain untuk menambah",
     "description": "guided tour add evm chains step 2 title"
   },
   "popup_html_guided_tour_add_evm_chains_step3_title": {

@@ -36,6 +36,7 @@ import InputComponent from 'src/common-ui/input/input.component';
 import { ResultMessagePageComponent } from 'src/common-ui/result-message-page/result-message-page.component';
 import { MathUtils } from 'src/utils/math.utils';
 
+import { GuidedTourUtils } from 'src/utils/guided-tour.utils';
 import { I18nUtils } from 'src/utils/i18n.utils';
 const EVM_CREATE_WALLET_LOADING_OPERATION = 'html_popup_evm_creating_wallet';
 
@@ -140,6 +141,7 @@ const CreateNewWalletVerification = ({
         return;
       }
 
+      await GuidedTourUtils.requestAddEvmChainsTour();
       setEvmAccounts(rebuiltAccounts);
       setActiveAccountType(ChainType.EVM);
 

@@ -88,7 +88,6 @@ const ChainDropdown = ({
           additionalClassname="chain-selector"
           ariaLabel="Chain dropdown"
           guidedTourTarget={GuidedTourTarget.CHAIN_DROPDOWN_TRIGGER}
-          dropdownGuidedTourTarget={GuidedTourTarget.CHAIN_DROPDOWN_PANEL}
           options={options}
           selectedItem={{
             key: chain.chainId,
@@ -104,6 +103,7 @@ const ChainDropdown = ({
             <button
               type="button"
               className="manage-chains-panel"
+              data-guided-tour={GuidedTourTarget.CHAIN_DROPDOWN_MANAGE_CHAINS}
               onClick={handleOnManageChainsClicked}>
               <SVGIcon icon={SVGIcons.MENU_ADVANCED_SETTINGS_RPC_NODE} />
               <div className="text">

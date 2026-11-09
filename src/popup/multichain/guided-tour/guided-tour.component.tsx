@@ -4,7 +4,10 @@ import { GuidedTourOverlayComponent } from '@popup/multichain/guided-tour/guided
 import { GUIDED_TOURS } from '@popup/multichain/guided-tour/guided-tours.list';
 import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
-import { GuidedTourStatus } from '@reference-data/guided-tour.enum';
+import {
+  GuidedTourId,
+  GuidedTourStatus,
+} from '@reference-data/guided-tour.enum';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ConnectedProps, connect } from 'react-redux';
@@ -65,11 +68,19 @@ const GuidedTour = ({
     if (!hasHydrated || !mk || modal || loading > 0) {
       return undefined;
     }
-    return GuidedTourUtils.getActiveTour(GUIDED_TOURS, progressMap, {
+    const tour = GuidedTourUtils.getActiveTour(GUIDED_TOURS, progressMap, {
       hiveAccountsCount,
       evmAccountsCount: visibleEvmAccountsCount,
       isEvmAccountSelected: activeAccountType === ChainType.EVM,
     });
+    if (
+      tour?.id === GuidedTourId.ADD_EVM_CHAINS &&
+      !progressMap[tour.id] &&
+      !GuidedTourUtils.hasAddEvmChainsTourRequest()
+    ) {
+      return undefined;
+    }
+    return tour;
   }, [
     activeAccountType,
     hasHydrated,
@@ -133,7 +144,9 @@ const GuidedTour = ({
     let isCancelled = false;
     void GuidedTourUtils.loadProgressMap().then((storedProgress) => {
       if (!isCancelled) {
-        setProgressMap(storedProgress);
+        setProgressMap((current) =>
+          GuidedTourUtils.mergeProgressMaps(storedProgress, current),
+        );
         setHasHydrated(true);
       }
     });
@@ -187,6 +200,9 @@ const GuidedTour = ({
       );
 
       if (!progressMap[activeTour.id] && !persistInFlightRef.current) {
+        if (activeTour.id === GuidedTourId.ADD_EVM_CHAINS) {
+          GuidedTourUtils.consumeAddEvmChainsTourRequest();
+        }
         void persistProgress(activeTour.id, GuidedTourUtils.getStartedProgress());
       } else if (stepIndex > storedStep) {
         void persistProgress(activeTour.id, {

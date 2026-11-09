@@ -9,6 +9,7 @@ import {
 } from '@interfaces/guided-tour.interface';
 import {
   GUIDED_TOUR_TARGET_ATTRIBUTE,
+  GuidedTourId,
   GuidedTourStatus,
 } from '@reference-data/guided-tour.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -27,6 +28,8 @@ const TERMINAL_STATUSES: GuidedTourStatus[] = [
   GuidedTourStatus.COMPLETED,
   GuidedTourStatus.DISMISSED,
 ];
+
+let addEvmChainsTourRequested = false;
 
 const isGuidedTourStatus = (value: unknown): value is GuidedTourStatus =>
   value === GuidedTourStatus.IN_PROGRESS ||
@@ -213,6 +216,30 @@ const saveProgressMap = async (
   );
 };
 
+const hasAddEvmChainsTourRequest = (): boolean => addEvmChainsTourRequested;
+
+const consumeAddEvmChainsTourRequest = (): void => {
+  addEvmChainsTourRequested = false;
+};
+
+const requestAddEvmChainsTour = async (): Promise<void> => {
+  const progressMap = await loadProgressMap();
+  const existingProgress = progressMap[GuidedTourId.ADD_EVM_CHAINS];
+  if (isFinished(existingProgress)) {
+    return;
+  }
+
+  addEvmChainsTourRequested = true;
+  if (existingProgress) {
+    return;
+  }
+
+  await saveProgressMap({
+    ...progressMap,
+    [GuidedTourId.ADD_EVM_CHAINS]: getStartedProgress(),
+  });
+};
+
 const clamp = (value: number, min: number, max: number): number =>
   Math.min(Math.max(value, min), max);
 
@@ -352,6 +379,9 @@ export const GuidedTourUtils = {
   getDismissedProgress,
   loadProgressMap,
   saveProgressMap,
+  hasAddEvmChainsTourRequest,
+  consumeAddEvmChainsTourRequest,
+  requestAddEvmChainsTour,
   expandBorderRadius,
   getTargetBorderRadius,
   getOverlayLayout,

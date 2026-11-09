@@ -72,7 +72,7 @@
     "description": "guided tour add evm chains step 1 description"
   },
   "popup_html_guided_tour_add_evm_chains_step2_title": {
-    "message": "選擇一條 EVM 鏈，或點擊管理鏈來新增更多",
+    "message": "點擊管理鏈來新增更多",
     "description": "guided tour add evm chains step 2 title"
   },
   "popup_html_guided_tour_add_evm_chains_step3_title": {

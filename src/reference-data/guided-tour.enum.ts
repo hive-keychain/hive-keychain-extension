@@ -9,7 +9,7 @@ export enum GuidedTourTarget {
   ACCOUNT_SELECTOR_CREATE_BUTTON = 'account-selector-create-button',
   ADD_ACCOUNT_TYPE_EVM = 'add-account-type-evm',
   CHAIN_DROPDOWN_TRIGGER = 'chain-dropdown-trigger',
-  CHAIN_DROPDOWN_PANEL = 'chain-dropdown-panel',
+  CHAIN_DROPDOWN_MANAGE_CHAINS = 'chain-dropdown-manage-chains',
   CHAIN_SELECTOR = 'chain-selector',
 }
 

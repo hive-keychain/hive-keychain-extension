@@ -48,7 +48,7 @@ const addEvmChainsTour: GuidedTourDefinition = {
       descriptionKey: 'chains-1-desc',
     },
     {
-      target: GuidedTourTarget.CHAIN_DROPDOWN_PANEL,
+      target: GuidedTourTarget.CHAIN_DROPDOWN_MANAGE_CHAINS,
       titleKey: 'chains-2',
       descriptionKey: 'chains-2-desc',
     },
@@ -75,6 +75,7 @@ const evmSelectedEligibility = {
 describe('guided-tour.utils tests:\n', () => {
   afterEach(() => {
     document.body.innerHTML = '';
+    GuidedTourUtils.consumeAddEvmChainsTourRequest();
     jest.restoreAllMocks();
   });
 
@@ -166,7 +167,7 @@ describe('guided-tour.utils tests:\n', () => {
     );
     const presentTargets = new Set<string>([
       GuidedTourTarget.CHAIN_DROPDOWN_TRIGGER,
-      GuidedTourTarget.CHAIN_DROPDOWN_PANEL,
+      GuidedTourTarget.CHAIN_DROPDOWN_MANAGE_CHAINS,
     ]);
 
     expect(
@@ -181,7 +182,7 @@ describe('guided-tour.utils tests:\n', () => {
   it('keeps the current step when the next target is mounted without showWhenPresent', () => {
     const presentTargets = new Set<string>([
       GuidedTourTarget.CHAIN_DROPDOWN_TRIGGER,
-      GuidedTourTarget.CHAIN_DROPDOWN_PANEL,
+      GuidedTourTarget.CHAIN_DROPDOWN_MANAGE_CHAINS,
     ]);
 
     expect(
@@ -402,6 +403,44 @@ describe('guided-tour.utils tests:\n', () => {
     };
     await GuidedTourUtils.saveProgressMap(nextMap);
     expect(saveSpy).toHaveBeenCalledWith(LocalStorageKeyEnum.GUIDED_TOURS, nextMap);
+  });
+
+  it('arms the chains tour after a wallet is created', async () => {
+    const saveSpy = jest
+      .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+      .mockResolvedValue(undefined as never);
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockResolvedValue(undefined);
+
+    await GuidedTourUtils.requestAddEvmChainsTour();
+
+    expect(GuidedTourUtils.hasAddEvmChainsTourRequest()).toBe(true);
+    expect(saveSpy).toHaveBeenCalledWith(LocalStorageKeyEnum.GUIDED_TOURS, {
+      [GuidedTourId.ADD_EVM_CHAINS]: {
+        status: GuidedTourStatus.IN_PROGRESS,
+        currentStep: 0,
+      },
+    });
+  });
+
+  it('does not arm the chains tour again after it is finished', async () => {
+    const saveSpy = jest
+      .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+      .mockResolvedValue(undefined as never);
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockResolvedValue({
+        [GuidedTourId.ADD_EVM_CHAINS]: {
+          status: GuidedTourStatus.COMPLETED,
+          currentStep: 2,
+        },
+      });
+
+    await GuidedTourUtils.requestAddEvmChainsTour();
+
+    expect(GuidedTourUtils.hasAddEvmChainsTourRequest()).toBe(false);
+    expect(saveSpy).not.toHaveBeenCalled();
   });
 
   it('finds marked tour targets in the document', () => {
