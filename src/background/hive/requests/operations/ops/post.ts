@@ -1,0 +1,64 @@
+import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
+import { createMessage, feedbackI18n } from '@background/hive/requests/operations/operations.utils';
+import { RequestId, RequestPost } from '@interfaces/keychain.interface';
+import { TransactionOptions } from '@interfaces/keys.interface';
+import { KeychainError } from 'src/keychain-error';
+import { BloggingUtils } from 'src/popup/hive/utils/blogging.utils';
+import Logger from 'src/utils/logger.utils';
+
+import { I18nUtils } from 'src/utils/i18n.utils';
+// TODO : when compatible
+export const broadcastPost = async (
+  requestHandler: HiveRequestsHandler,
+  data: RequestPost & RequestId,
+  options?: TransactionOptions,
+) => {
+  const request = requestHandler.getRequestData(data.request_id);
+
+  let err, result, err_message;
+  const key = requestHandler.getRequestData(data.request_id)?.key;
+  try {
+    if (data.comment_options === '') {
+      result = await BloggingUtils.post(
+        data.parent_username || '',
+        data.parent_perm,
+        data.username,
+        data.permlink,
+        data.title || '',
+        data.body,
+        data.json_metadata,
+        key!,
+      );
+    } else {
+      result = await BloggingUtils.comment(
+        data.parent_username || '',
+        data.parent_perm,
+        data.username,
+        data.permlink,
+        data.title || '',
+        data.body,
+        data.json_metadata,
+        data.comment_options,
+        key!,
+        options,
+      );
+    }
+  } catch (e: any) {
+    Logger.error(e);
+    err = (e as KeychainError).trace || e;
+    err_message = feedbackI18n(
+      (e as KeychainError).message,
+      (e as KeychainError).messageParams,
+    );
+  } finally {
+    const message = await createMessage(
+      err,
+      result,
+      data,
+      request?.tab!,
+      feedbackI18n('bgd_ops_post'),
+      err_message,
+    );
+    return message;
+  }
+};

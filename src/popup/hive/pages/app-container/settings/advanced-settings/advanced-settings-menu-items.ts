@@ -1,14 +1,10 @@
+import { Screen } from '@interfaces/screen.interface';
+import { LedgerRouteUtils } from '@popup/multichain/utils/ledger-route.utils';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { MenuItem } from 'src/interfaces/menu-item.interface';
-import { Screen } from 'src/reference-data/screen.enum';
 
-const getAdvancedSettingsMenuItems = (isLedgerSupported: boolean) => {
+export const getAdvancedSettingsMenuItems = (isLedgerSupported: boolean) => {
   let settings: MenuItem[] = [
-    {
-      label: 'popup_html_rpc_node',
-      icon: SVGIcons.MENU_ADVANCED_SETTINGS_RPC_NODE,
-      nextScreen: Screen.SETTINGS_RPC_NODES,
-    },
     {
       label: 'popup_html_autolock',
       icon: SVGIcons.MENU_ADVANCED_SETTINGS_AUTO_LOCK,
@@ -25,24 +21,10 @@ const getAdvancedSettingsMenuItems = (isLedgerSupported: boolean) => {
       nextScreen: Screen.SETTINGS_CHANGE_PASSWORD,
     },
     {
-      label: 'popup_html_keychainify',
-      icon: SVGIcons.MENU_ADVANCED_SETTINGS_KEYCHAINIFY,
-      nextScreen: Screen.SETTINGS_KEYCHAINIFY,
-    },
-    // {
-    //   label: 'popup_html_analytics',
-    //   icon: SVGIcons.MENU_ADVANCED_SETTINGS_ANALYTICS,
-    //   nextScreen: Screen.SETTINGS_ANALYTICS,
-    // },
-    {
       label: 'ledger_link_ledger_device',
       icon: SVGIcons.MENU_ADVANCED_SETTINGS_LINK_LEDGER_DEVICE,
-      action: async () => {
-        const extensionId = (await chrome.management.getSelf()).id;
-        chrome.tabs.create({
-          url: `chrome-extension://${extensionId}/link-ledger-device.html`,
-        });
-      },
+      nextScreen: Screen.SETTINGS_LINK_LEDGER_DEVICE,
+      sidePanelHash: LedgerRouteUtils.LINK_DEVICE_HASH,
     },
     {
       label: 'popup_html_import_export_settings',

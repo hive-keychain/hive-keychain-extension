@@ -8,6 +8,7 @@ import { ProposalItemComponent } from 'src/popup/hive/pages/app-container/home/g
 import ProposalUtils from 'src/popup/hive/utils/proposal.utils';
 import ProxyUtils from 'src/popup/hive/utils/proxy.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const ProposalTab = ({ activeAccount, globalProperties }: PropsFromRedux) => {
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [isLoading, setLoading] = useState(false);
@@ -54,7 +55,7 @@ const ProposalTab = ({ activeAccount, globalProperties }: PropsFromRedux) => {
         <>
           {displayingProxyVotes && (
             <div className="using-proxy">
-              {chrome.i18n.getMessage('html_popup_currently_using_proxy', [
+              {I18nUtils.getMessage('html_popup_currently_using_proxy', [
                 activeAccount.account.proxy,
               ])}
             </div>

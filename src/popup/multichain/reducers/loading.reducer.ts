@@ -40,6 +40,9 @@ export const LoadingReducer = (
   >,
 ): LoadingState => {
   switch (type) {
+    case MultichainActionType.RESET_LOADING: {
+      return { loadingOperations: [], caption: undefined };
+    }
     case MultichainActionType.ADD_TO_LOADING_LIST: {
       const loadingPayload = payload as LoadingPayload;
       if (

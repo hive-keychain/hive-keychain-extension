@@ -1,4 +1,5 @@
 import { TransactionOptions } from '@interfaces/keys.interface';
+import { Screen } from '@interfaces/screen.interface';
 import {
   loadDelegatees,
   loadDelegators,
@@ -17,22 +18,22 @@ import {
   navigateTo,
   navigateToWithParams,
 } from '@popup/multichain/actions/navigation.actions';
+import { HiveChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { KeychainKeyTypes } from 'hive-keychain-commons';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { ConfirmationPageFieldType } from 'src/common-ui/confirmation-page/confirmation-field.interface';
-import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
+import { HiveConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
-import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { DelegationUtils } from 'src/popup/hive/utils/delegation.utils';
-import { Screen } from 'src/reference-data/screen.enum';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface IncomingOutgoingProps {
   delegationType: DelegationType;
   username?: string;
@@ -80,7 +81,7 @@ const IncomingOutgoing = ({
   const cancelDelegation = async () => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
-      message: chrome.i18n.getMessage(
+      message: I18nUtils.getMessage(
         'popup_html_confirm_cancel_delegation_message',
       ),
       title: 'popup_html_cancel_delegation',
@@ -104,11 +105,12 @@ const IncomingOutgoing = ({
             options,
           );
           if (success) {
+            removeFromLoadingList('html_popup_cancel_delegation_operation');
             if (success.isUsingMultisig) {
               setSuccessMessage('multisig_transaction_sent_to_signers');
             } else setSuccessMessage('popup_html_cancel_delegation_successful');
-            await refreshDelegations();
             goBack();
+            void refreshDelegations();
           } else {
             setErrorMessage('popup_html_cancel_delegation_fail');
           }
@@ -118,7 +120,7 @@ const IncomingOutgoing = ({
           removeFromLoadingList('html_popup_cancel_delegation_operation');
         }
       },
-    } as ConfirmationPageParams);
+    } as HiveConfirmationPageParams);
   };
 
   const enterEditMode = () => {
@@ -137,6 +139,7 @@ const IncomingOutgoing = ({
 
     if (Number(value) <= 0) {
       cancelDelegation();
+      return;
     }
 
     const formattedAmount = `${parseFloat(value.toString()).toFixed(3)} ${
@@ -149,7 +152,7 @@ const IncomingOutgoing = ({
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
-      message: chrome.i18n.getMessage('popup_html_confirm_delegation', [
+      message: I18nUtils.getMessage('popup_html_confirm_delegation', [
         value,
         `@${username}`,
       ]),
@@ -182,11 +185,12 @@ const IncomingOutgoing = ({
             options,
           );
           if (success) {
+            removeFromLoadingList('html_popup_delegation_operation');
             if (success.isUsingMultisig) {
               setSuccessMessage('multisig_transaction_sent_to_signers');
             } else setSuccessMessage('popup_html_delegation_successful');
-            await refreshDelegations();
             goBack();
+            void refreshDelegations();
           } else {
             setErrorMessage('popup_html_delegation_fail');
           }
@@ -196,7 +200,7 @@ const IncomingOutgoing = ({
           removeFromLoadingList('html_popup_delegation_operation');
         }
       },
-    } as ConfirmationPageParams);
+    } as HiveConfirmationPageParams);
   };
 
   const refreshDelegations = async () => {
@@ -233,7 +237,7 @@ const IncomingOutgoing = ({
                     className="edit-label"
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
-                    placeholder={chrome.i18n.getMessage(
+                    placeholder={I18nUtils.getMessage(
                       'popup_html_favorite_user_nickname',
                     )}
                   />
@@ -272,7 +276,7 @@ const IncomingOutgoing = ({
                       onClick={() => enterEditMode()}>
                       <SVGIcon icon={SVGIcons.FAVORITE_ACCOUNTS_EDIT} />
                       <span className="label">
-                        {chrome.i18n.getMessage('html_popup_button_edit_label')}
+                        {I18nUtils.getMessage('html_popup_button_edit_label')}
                       </span>
                     </div>
                     <div
@@ -280,7 +284,7 @@ const IncomingOutgoing = ({
                       onClick={() => cancelDelegation()}>
                       <SVGIcon icon={SVGIcons.FAVORITE_ACCOUNTS_DELETE} />
                       <span className="label">
-                        {chrome.i18n.getMessage('delete_label')}
+                        {I18nUtils.getMessage('delete_label')}
                       </span>
                     </div>
                   </div>
@@ -308,9 +312,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.hive.activeAccount,
     globalProperties: state.hive.globalProperties.globals,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(
-      state.hive.activeRpc?.testnet!,
-    ),
+    currencyLabels: (state.chain as HiveChain).mainTokens,
   };
 };
 

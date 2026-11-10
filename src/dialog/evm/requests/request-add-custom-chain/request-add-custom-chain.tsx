@@ -1,0 +1,93 @@
+import { Card } from '@common-ui/card/card.component';
+import { EvmDappInfo, EvmRequest } from '@interfaces/evm-provider.interface';
+import { CustomEvmChainForm } from '@popup/evm/pages/home/settings/evm-custom-chains/custom-evm-chain-form.component';
+import { ChainListOrgUtils } from '@popup/evm/utils/chain-list-org.utils';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import React, { useEffect, useState } from 'react';
+import { CommunicationUtils } from 'src/utils/communication.utils';
+
+import { I18nUtils } from 'src/utils/i18n.utils';
+interface Props {
+  request: EvmRequest;
+  dappInfo: EvmDappInfo;
+  tab: number;
+  requestedChainId: string;
+  initialChain?: Partial<EvmChain>;
+}
+
+export const RequestAddCustomEvmChain = ({
+  request,
+  dappInfo,
+  tab,
+  requestedChainId,
+  initialChain,
+}: Props) => {
+  const [defaultChain, setDefaultChain] = useState<EvmChain | undefined>(
+    undefined,
+  );
+
+  useEffect(() => {
+    if (initialChain) {
+      ChainListOrgUtils.findByChainId(Number(requestedChainId)).then(
+        (chain) => {
+          if (chain) {
+            setDefaultChain(
+              ChainListOrgUtils.getEvmChain(chain, requestedChainId, {
+                manualLoadHistory: false,
+                onlyCustomFee: true,
+              }),
+            );
+          }
+        },
+      );
+    }
+  }, []);
+  const handleCancel = async () => {
+    await CommunicationUtils.runtimeSendMessage({
+      command: BackgroundCommand.REJECT_EVM_TRANSACTION,
+      value: {
+        request,
+        tab,
+        domain: dappInfo.domain,
+        origin: dappInfo.origin,
+      },
+    });
+    window.close();
+  };
+
+  const handleSubmit = async (chain: EvmChain) => {
+    await CommunicationUtils.runtimeSendMessage({
+      command: BackgroundCommand.ACCEPT_ADD_CUSTOM_EVM_CHAIN,
+      value: {
+        request,
+        tab,
+        dappInfo,
+        requestedChain: chain,
+      },
+    });
+    window.close();
+  };
+
+  return (
+    <div className="request-add-custom-chain-page">
+      <Card className="request-add-custom-chain-card">
+        <div className="title">
+          {I18nUtils.getMessage('evm_request_add_custom_chain_title')}
+        </div>
+        <div className="caption">
+          {I18nUtils.getMessage('evm_request_add_custom_chain_caption', [
+            dappInfo.domain,
+            requestedChainId,
+          ])}
+        </div>
+        <CustomEvmChainForm
+          onCancel={handleCancel}
+          onSubmit={handleSubmit}
+          initialChain={defaultChain ?? { chainId: requestedChainId }}
+          submitLabel="dialog_confirm"
+        />
+      </Card>
+    </div>
+  );
+};

@@ -1,0 +1,56 @@
+import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import React from 'react';
+import { CustomEvmChainForm } from '@popup/evm/pages/home/settings/evm-custom-chains/custom-evm-chain-form.component';
+
+interface OwnProps {
+  onSuccess: () => void;
+  onCancel: () => void;
+  /** When set, form loads this chain and saves it as a custom chain update or default-chain override. */
+  chainToEdit?: EvmChain;
+  isDefaultChain?: boolean;
+  onUpdateRpc?: () => void;
+}
+
+/** Errors are shown inside the form so they stay above the modal content (global setErrorMessage renders behind the modal). */
+export const AddCustomEvmChainForm = ({
+  onSuccess,
+  onCancel,
+  chainToEdit,
+  isDefaultChain,
+  onUpdateRpc,
+}: OwnProps) => {
+  return (
+    <CustomEvmChainForm
+      onCancel={onCancel}
+      chainToEdit={chainToEdit}
+      isDefaultChain={isDefaultChain}
+      onUpdateRpc={onUpdateRpc}
+      onResetToDefault={
+        isDefaultChain && chainToEdit
+          ? async () => {
+              await ChainUtils.resetDefaultChainOverride(chainToEdit.chainId);
+              await onSuccess();
+            }
+          : undefined
+      }
+      onSubmit={async (chain) => {
+        if (chainToEdit && isDefaultChain) {
+          await ChainUtils.updateDefaultChainOverride(
+            chainToEdit.chainId,
+            chain,
+          );
+        } else if (chainToEdit) {
+          await ChainUtils.updateCustomChain(chainToEdit.chainId, chain);
+        } else {
+          await ChainUtils.addCustomChain(chain);
+        }
+        if (!chainToEdit && chain.rpcs.length > 0) {
+          await EvmRpcUtils.setActiveRpc(chain.rpcs[0], chain);
+        }
+        await onSuccess();
+      }}
+    />
+  );
+};

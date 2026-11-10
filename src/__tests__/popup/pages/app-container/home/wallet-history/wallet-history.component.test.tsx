@@ -1,8 +1,8 @@
+import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { Screen } from '@reference-data/screen.enum';
 import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
 import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
 import walletHistory from 'src/__tests__/utils-for-testing/data/history/transactions/wallet-history';
@@ -10,10 +10,10 @@ import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import { DEFAULT_FILTER } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history.component';
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('wallet-history.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
-    jest.resetModules();
     cleanup();
   });
   describe('No transactions to show', () => {
@@ -27,12 +27,12 @@ describe('wallet-history.component tests:\n', () => {
     it('Must show empty transactions & try clear filter, messages', async () => {
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_transaction_list_is_empty'),
+          I18nUtils.getMessage('popup_html_transaction_list_is_empty'),
         ),
       ).toBeInTheDocument();
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage(
+          I18nUtils.getMessage(
             'popup_html_transaction_list_is_empty_try_clear_filter',
           ),
         ),
@@ -73,7 +73,7 @@ describe('wallet-history.component tests:\n', () => {
     it('Must show available all filters', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByTestId(dataTestIdDiv.wallet.history.filterPanel),
+          await screen.findByTestId(dataTestIdDiv.wallet.history.filterPanel),
         );
       });
       Object.keys(DEFAULT_FILTER.selectedTransactionTypes).map(
@@ -96,7 +96,7 @@ describe('wallet-history.component tests:\n', () => {
     it('Must set search box filter value & display try clear message', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByTestId(dataTestIdDiv.wallet.history.filterPanel),
+          await screen.findByTestId(dataTestIdDiv.wallet.history.filterPanel),
         );
         await userEvent.type(
           screen.getByTestId(dataTestIdInput.filter.walletHistory),
@@ -108,7 +108,7 @@ describe('wallet-history.component tests:\n', () => {
       ).toHaveValue('one op');
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage(
+          I18nUtils.getMessage(
             'popup_html_transaction_list_is_empty_try_clear_filter',
           ),
         ),
@@ -118,7 +118,7 @@ describe('wallet-history.component tests:\n', () => {
     it('Must filter by an specific value and display 1 transaction', async () => {
       await act(async () => {
         await userEvent.click(
-          screen.getByTestId(dataTestIdDiv.wallet.history.filterPanel),
+          await screen.findByTestId(dataTestIdDiv.wallet.history.filterPanel),
         );
         await userEvent.type(
           screen.getByTestId(dataTestIdInput.filter.walletHistory),

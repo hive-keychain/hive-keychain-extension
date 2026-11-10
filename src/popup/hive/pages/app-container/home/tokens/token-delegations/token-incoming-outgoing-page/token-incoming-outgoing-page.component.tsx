@@ -1,8 +1,8 @@
+import { Screen } from '@interfaces/screen.interface';
 import { TokenDelegation } from '@interfaces/token-delegation.interface';
 import { Token, TokenBalance } from '@interfaces/tokens.interface';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
-import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
@@ -10,6 +10,7 @@ import { TokenIncomingOutgoingItemComponent } from 'src/popup/hive/pages/app-con
 import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const TokenIncomingOutgoingPage = ({
   delegationType,
   tokenBalance,
@@ -28,6 +29,7 @@ const TokenIncomingOutgoingPage = ({
   useEffect(() => {
     setTitleContainerProperties({
       title: delegationType,
+      titleParams: [tokenBalance.symbol],
       isBackButtonEnabled: true,
     });
     init();
@@ -70,7 +72,7 @@ const TokenIncomingOutgoingPage = ({
       {delegationType === DelegationType.OUTGOING &&
         tokenInfo.undelegationCooldown > 0 && (
           <div className="cooldown-message">
-            {chrome.i18n.getMessage(
+            {I18nUtils.getMessage(
               'popup_html_token_undelegation_cooldown_disclaimer',
               [tokenInfo.symbol, tokenInfo.undelegationCooldown.toString()],
             )}
@@ -80,7 +82,7 @@ const TokenIncomingOutgoingPage = ({
       <div className="list-panel">
         <div className="panel">
           <div className="total">
-            <div className="label">{chrome.i18n.getMessage(header)}</div>
+            <div className="label">{I18nUtils.getMessage(header)}</div>
             <div className="value">
               {total} {tokenBalance.symbol}
             </div>

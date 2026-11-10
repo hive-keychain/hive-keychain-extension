@@ -7,7 +7,6 @@ import { DynamicGlobalPropertiesUtils } from '@popup/hive/utils/dynamic-global-p
 import { HiveEngineConfigUtils } from '@popup/hive/utils/hive-engine-config.utils';
 import { HiveInternalMarketUtils } from '@popup/hive/utils/hive-internal-market.utils';
 import { HiveTxUtils } from '@popup/hive/utils/hive-tx.utils';
-import HiveUtils from '@popup/hive/utils/hive.utils';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Asset } from 'hive-keychain-commons';
@@ -45,23 +44,28 @@ const loadUsersTokens = async (
   accountNames: string[],
   onProgress?: (currentAccountIndex: number, currentAccount: string) => void,
 ) => {
-  let tempTokenBalanceList: any[] = [];
+  const userTokenBalances: {
+    username: string;
+    tokensBalance: TokenBalance[];
+  }[] = [];
 
   let currentAccountIndex = 0;
   for (const username of accountNames) {
     currentAccountIndex++;
     if (onProgress) onProgress(currentAccountIndex, username);
-    let tokensBalance: TokenBalance[] = await TokensUtils.getUserBalance(
+    const tokensBalance = await TokensUtils.getUserBalance(
       username,
     );
-    tempTokenBalanceList.push({
-      username: username,
-      tokensBalance: tokensBalance,
+    userTokenBalances.push({
+      username,
+      tokensBalance,
     });
-    await AsyncUtils.sleep(500);
+    if (currentAccountIndex < accountNames.length) {
+      await AsyncUtils.sleep(500);
+    }
   }
 
-  return tempTokenBalanceList;
+  return userTokenBalances;
 };
 
 const loadTokenMarket = async () => {
@@ -76,40 +80,69 @@ const loadTokenMarket = async () => {
   return tokensMarket;
 };
 
+export interface PortfolioLoadOptions {
+  onProgress?: (
+    currentAccountIndex: number,
+    currentAccount: string,
+  ) => void;
+  loadTokens?: () => Promise<Token[]>;
+}
+
+export interface PortfolioLoadResult {
+  portfolio: UserPortfolio[];
+  orderedTokenList: string[];
+  tokens: Token[];
+}
+
 const getPortfolio = async (
   extendedAccounts: ExtendedAccount[],
-  onProgress?: (currentAccountIndex: number, currentAccount: string) => void,
-) => {
+  options: PortfolioLoadOptions = {},
+): Promise<PortfolioLoadResult> => {
   await PortfolioUtils.loadAndSetRPCsAndApis();
-  const [globals, price, rewardFund] = await Promise.all([
+  const accountNames = extendedAccounts.map((account) => account.name);
+  const [
+    globals,
+    prices,
+    usersTokens,
+    tokensMarket,
+    tokens,
+    hiddenTokensList,
+    lockedOrdersEntries,
+  ] = await Promise.all([
     DynamicGlobalPropertiesUtils.getDynamicGlobalProperties(),
-    HiveUtils.getCurrentMedianHistoryPrice(),
-    HiveUtils.getRewardFund(),
-  ]);
-  const [prices, usersTokens, tokensMarket] = await Promise.all([
     CurrencyPricesUtils.getPrices() as unknown as CurrencyPrices,
-    loadUsersTokens(
-      extendedAccounts.map((acc: ExtendedAccount) => acc.name),
-      onProgress,
-    ),
+    loadUsersTokens(accountNames, options.onProgress),
     loadTokenMarket(),
+    options.loadTokens?.() ?? TokensUtils.getAllTokens(),
+    LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.HIDDEN_TOKENS,
+    ),
+    Promise.all(
+      accountNames.map(async (accountName) =>
+        [
+          accountName,
+          await HiveInternalMarketUtils.getHiveInternalMarketOrders(
+            accountName,
+          ),
+        ] as const,
+      ),
+    ),
   ]);
 
   const tokensFullList = getTokensFullList(usersTokens);
 
   const portfolio: UserPortfolio[] = [];
-  const tokens = await TokensUtils.getAllTokens();
-  const hiddenTokensList =
-    (await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.HIDDEN_TOKENS,
-    )) || [];
+  const hiddenTokenSymbols = Array.isArray(hiddenTokensList)
+    ? hiddenTokensList
+    : [];
+  const lockedOrdersByAccount = new Map(lockedOrdersEntries);
   for (const userTokens of usersTokens) {
     const userPortfolio = generateUserLayerTwoPortolio(
       userTokens,
       prices,
       tokensMarket,
       tokens,
-      hiddenTokensList,
+      hiddenTokenSymbols,
     );
     portfolio.push({
       account: userTokens.username,
@@ -136,28 +169,32 @@ const getPortfolio = async (
     } = extendedAccounts.find(
       (extAcc) => extAcc.name === userPortfolio.account,
     )!;
-    const lockedInOrders =
-      await HiveInternalMarketUtils.getHiveInternalMarketOrders(
-        userPortfolio.account,
-      );
+    const lockedInOrders = lockedOrdersByAccount.get(userPortfolio.account) ?? {
+      hive: 0,
+      hbd: 0,
+    };
+    const hiveSavings = Asset.fromString(savings_balance.toString()).amount;
+    const hbdSavings = Asset.fromString(savings_hbd_balance.toString()).amount;
     const totalHIVE =
       Asset.fromString(balance.toString()).amount +
-      Asset.fromString(savings_balance.toString()).amount +
+      hiveSavings +
       lockedInOrders.hive;
     const totalHBD =
       Asset.fromString(hbd_balance.toString()).amount +
-      Asset.fromString(savings_hbd_balance.toString()).amount +
+      hbdSavings +
       lockedInOrders.hbd;
     const totalVESTS = Asset.fromString(vesting_shares.toString()).amount;
     const totalHP = FormatUtils.toHP(totalVESTS.toString(), globals);
     userPortfolio.balances.push({
       symbol: 'HIVE',
       balance: totalHIVE,
+      spendableBalance: totalHIVE - hiveSavings,
       usdValue: totalHIVE * (prices.hive.usd ?? 1),
     });
     userPortfolio.balances.push({
       symbol: 'HBD',
       balance: totalHBD,
+      spendableBalance: totalHBD - hbdSavings,
       usdValue: totalHBD * (prices.hive_dollar.usd ?? 1),
     });
     userPortfolio.balances.push({
@@ -168,19 +205,62 @@ const getPortfolio = async (
   }
   for (const userPortfolio of portfolio) {
     let totalUSD = 0;
-    let totalHive = 0;
     for (const balance of userPortfolio.balances) {
-      const tokenMarket = tokensMarket.find(
-        (tm) => tm.symbol === balance.symbol,
-      );
       totalUSD += balance.usdValue;
     }
     userPortfolio.totalUSD = totalUSD;
     userPortfolio.totalHive = userPortfolio.totalUSD / (prices?.hive?.usd ?? 0);
   }
 
-  return [portfolio, orderedTokenList];
+  return { portfolio, orderedTokenList, tokens };
 };
+
+const HIVE_CORE_TOKEN_SYMBOLS = ['HIVE', 'HBD', 'HP'] as const;
+
+export type HivePortfolioDisplaySortItem = {
+  symbol: string;
+  usdValue: number | null;
+};
+
+const getHiveCoreTokenSortIndex = (symbol: string): number | null => {
+  const normalizedSymbol = symbol.toUpperCase();
+  const coreIndex = HIVE_CORE_TOKEN_SYMBOLS.indexOf(
+    normalizedSymbol as (typeof HIVE_CORE_TOKEN_SYMBOLS)[number],
+  );
+
+  return coreIndex >= 0 ? coreIndex : null;
+};
+
+const compareHivePortfolioItemsByDisplayOrder = (
+  left: HivePortfolioDisplaySortItem,
+  right: HivePortfolioDisplaySortItem,
+): number => {
+  const leftOrder =
+    getHiveCoreTokenSortIndex(left.symbol) ?? HIVE_CORE_TOKEN_SYMBOLS.length;
+  const rightOrder =
+    getHiveCoreTokenSortIndex(right.symbol) ?? HIVE_CORE_TOKEN_SYMBOLS.length;
+
+  if (leftOrder !== rightOrder) {
+    return leftOrder - rightOrder;
+  }
+
+  return (right.usdValue ?? -1) - (left.usdValue ?? -1);
+};
+
+const sortHivePortfolioBalancesByDisplayOrder = (
+  balances: PortfolioBalance[],
+): PortfolioBalance[] =>
+  [...balances].sort(compareHivePortfolioItemsByDisplayOrder);
+
+const sortPortfolioDisplayItems = <T extends HivePortfolioDisplaySortItem>(
+  items: T[],
+  useHiveCoreTokenOrder: boolean,
+): T[] =>
+  [...items].sort((left, right) =>
+    useHiveCoreTokenOrder
+      ? compareHivePortfolioItemsByDisplayOrder(left, right)
+      : (right.usdValue ?? -1) - (left.usdValue ?? -1),
+  );
 
 const getOrderedTokenFullList = (
   tokensFullList: string[],
@@ -236,27 +316,71 @@ const getTokensFullList = (
   return tokensFullList;
 };
 
+const parseHiveEngineAmountWithPrecision = (
+  value: string,
+  precision: number,
+): number => parseFloat(parseFloat(value).toFixed(precision));
+
 const getPortfolioHETokenData = (
   tokenBalanceItem: TokenBalance,
   tokenMarket: TokenMarket[],
   currencyPrices: CurrencyPrices,
   tokens: Token[],
 ): PortfolioBalance => {
+  const hiveUsd = currencyPrices.hive?.usd ?? 0;
   const totalBalanceUsdValue = TokensUtils.getHiveEngineTokenValue(
     tokenBalanceItem,
     tokenMarket,
     currencyPrices!.hive!,
     tokens,
   );
+  const priceInHive = TokensUtils.getHiveEngineTokenPrice(
+    tokenBalanceItem,
+    tokenMarket,
+  );
+  const priceUsd = priceInHive > 0 ? priceInHive * hiveUsd : null;
+  const precision =
+    tokens.find((token) => token.symbol === tokenBalanceItem.symbol)
+      ?.precision ?? 8;
+  const liquid = parseHiveEngineAmountWithPrecision(
+    tokenBalanceItem.balance,
+    precision,
+  );
+  const stake = parseHiveEngineAmountWithPrecision(
+    tokenBalanceItem.stake,
+    precision,
+  );
+  const delegationsIn = parseHiveEngineAmountWithPrecision(
+    tokenBalanceItem.delegationsIn,
+    precision,
+  );
+  const delegationsOut = parseHiveEngineAmountWithPrecision(
+    tokenBalanceItem.delegationsOut,
+    precision,
+  );
+  const pendingUnstake = parseHiveEngineAmountWithPrecision(
+    tokenBalanceItem.pendingUnstake,
+    precision,
+  );
+  const pendingUndelegations = parseHiveEngineAmountWithPrecision(
+    tokenBalanceItem.pendingUndelegations,
+    precision,
+  );
+
   return {
     symbol: tokenBalanceItem.symbol,
-    balance:
-      +tokenBalanceItem.balance +
-      +tokenBalanceItem.delegationsOut +
-      +tokenBalanceItem.stake +
-      +tokenBalanceItem.pendingUndelegations +
-      +tokenBalanceItem.pendingUnstake,
+    // Match wallet main amount: liquid only. Stake/pending/etc. live in breakdown.
+    balance: liquid,
     usdValue: totalBalanceUsdValue,
+    priceUsd,
+    breakdown: {
+      liquid,
+      stake,
+      delegationsIn,
+      delegationsOut,
+      pendingUnstake,
+      pendingUndelegations,
+    },
   };
 };
 
@@ -296,4 +420,7 @@ export const PortfolioUtils = {
   getTotals,
   getOrderedTokenFullList,
   generateUserLayerTwoPortolio,
+  compareHivePortfolioItemsByDisplayOrder,
+  sortHivePortfolioBalancesByDisplayOrder,
+  sortPortfolioDisplayItems,
 };

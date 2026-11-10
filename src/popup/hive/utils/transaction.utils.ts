@@ -31,6 +31,7 @@ import HiveUtils from 'src/popup/hive/utils/hive.utils';
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const NB_TRANSACTION_FETCHED = 1000;
 export const HAS_IN_OUT_TRANSACTIONS = ['transfer', 'delegate_vesting_shares'];
 export const TRANSFER_TYPE_TRANSACTIONS = [
@@ -332,14 +333,14 @@ const decodeMemoIfNeeded = (transfer: Transfer, memoKey: string) => {
         transfer.memo = decodedMemo.substring(1);
       } catch (e) {
         if (e instanceof KeychainError) {
-          transfer.memo = chrome.i18n.getMessage(
+          transfer.memo = I18nUtils.getMessage(
             'decode_with_memo_key_in_ledger',
           );
         }
         Logger.error('Error while decoding', '');
       }
     } else {
-      transfer.memo = chrome.i18n.getMessage('popup_accounts_add_memo');
+      transfer.memo = I18nUtils.getMessage('popup_accounts_add_memo');
     }
   }
   return transfer;

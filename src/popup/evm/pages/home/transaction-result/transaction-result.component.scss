@@ -1,0 +1,125 @@
+.evm-transaction-result {
+  .tx-card {
+    @include small-card();
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    row-gap: 16px;
+
+    .amount-panel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      column-gap: 16px;
+
+      .transaction-status {
+        flex: 1;
+        text-align: right;
+        @include icon-size(18px);
+      }
+
+      .amount-row {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+
+        @include poppins400(15px);
+        .status {
+          font-style: italic;
+          align-self: flex-start;
+          font-size: 14px;
+        }
+        .warning {
+          font-style: italic;
+          font-size: 12px;
+          color: var($red);
+        }
+      }
+    }
+    .buttons-panel {
+      display: flex;
+      column-gap: 16px;
+      align-self: center;
+      width: 100%;
+    }
+  }
+  .transaction-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-auto-rows: 80px;
+    gap: 12px;
+    margin: 12px;
+
+    .gas-fee-value {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}
+
+// Portaled to document.body — must not be nested under .evm-transaction-result
+.transaction-gas-fee-popup {
+  .popup-content {
+    row-gap: 16px;
+    border-color: var(--wallet-card-border);
+    box-shadow: 0px 4px 9px 0px var(--button-alternative-shadow-color);
+  }
+
+  .gas-fee-estimate-loading-row {
+    display: flex;
+    align-items: center;
+    column-gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: 1px solid var(--wallet-card-border);
+    border-radius: 16px;
+    background: var(--button-alternative-background-color);
+    @include poppins400(12px);
+    color: var(--main-font-color);
+    opacity: 0.9;
+
+    .gas-fee-estimate-spinner {
+      width: 12px;
+      height: 12px;
+      border: 2px solid rgba(128, 128, 128, 0.35);
+      border-top-color: var(--button-background-color);
+      border-radius: 50%;
+      animation: tx-result-gas-fee-spin 0.75s linear infinite;
+      flex-shrink: 0;
+    }
+  }
+
+  .title-panel {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+
+    .title {
+      @include poppins500(16px);
+      color: var(--main-font-color);
+    }
+
+    .svg-icon {
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+  }
+
+  .gas-fee-panel {
+    width: 100%;
+    border: unset;
+    padding: unset;
+  }
+}
+
+@keyframes tx-result-gas-fee-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

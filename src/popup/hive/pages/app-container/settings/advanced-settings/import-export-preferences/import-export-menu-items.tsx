@@ -1,20 +1,25 @@
+import { MenuItem } from '@interfaces/menu-item.interface';
+import AccountUtils from '@popup/hive/utils/account.utils';
+import ImportAccountsFileUtils from '@popup/hive/utils/import-accounts-file.utils';
+import { store } from '@popup/multichain/store';
 import { SVGIcons } from 'src/common-ui/icons.enum';
-import { MenuItem } from 'src/interfaces/menu-item.interface';
-import SettingsUtils from 'src/popup/hive/utils/settings.utils';
 
 const ImportExportSubMenuItems: MenuItem[] = [
   {
     label: 'popup_html_import_permissions',
     icon: SVGIcons.MENU_ADVANCED_SETTINGS_IMPORT_SETTINGS,
     action: () => {
-      SettingsUtils.importSettings();
+      ImportAccountsFileUtils.startImportAccountsFromFile(store);
     },
   },
   {
     label: 'popup_html_export_permissions',
     icon: SVGIcons.MENU_ADVANCED_SETTINGS_EXPORT_SETTINGS,
     action: () => {
-      SettingsUtils.exportSettings();
+      AccountUtils.downloadAccounts(
+        store.getState().hive.accounts,
+        store.getState().mk,
+      );
     },
   },
 ];

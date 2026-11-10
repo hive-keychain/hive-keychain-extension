@@ -3,19 +3,21 @@ import { capitalize } from 'lodash';
 import { FieldError } from 'react-hook-form';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const FormValidationError: Record<string, string> = {
   ['string.empty']: 'validation_error_mandatory',
   ['number.base']: 'validation_error_mandatory',
   ['number.less']: 'validation_error_greater_than_value',
   ['number.max']: 'validation_error_less_or_equal_value',
   ['number.positive']: 'popup_html_need_positive_amount',
+  ['portfolio.recipient.invalid']: 'portfolio_recipient_address_invalid',
 };
 
 const parseJoiError = (error: FieldError) => {
   Logger.error('Error in form: ', error);
   if (error.type === 'number.min')
     return capitalize(error.message?.replace(/"/g, ''));
-  let errMessage = chrome.i18n.getMessage(
+  let errMessage = I18nUtils.getMessage(
     FormValidationError[error.type],
     error.ref?.value ? [error.ref.value] : [],
   );
@@ -27,4 +29,31 @@ const createRules = <T>(data: PartialSchemaMap<T>) => {
   return Joi.object<T>(data).unknown(true);
 };
 
-export const FormUtils = { parseJoiError, createRules };
+const setNestedValue = <T extends object>(
+  obj: T,
+  path: string,
+  value: any,
+): T => {
+  const keys = path.split('.');
+  const lastKey = keys.pop(); // Get the last key (the property to set)
+
+  if (!lastKey) {
+    return obj; // No valid path provided
+  }
+
+  let current: any = obj;
+  for (const key of keys) {
+    if (typeof current !== 'object' || current === null) {
+      // If a part of the path is not an object, create it or handle error
+      current[key] = {};
+    }
+    current = current[key];
+  }
+
+  if (typeof current === 'object' && current !== null) {
+    current[lastKey] = value;
+  }
+  return obj;
+};
+
+export const FormUtils = { parseJoiError, createRules, setNestedValue };

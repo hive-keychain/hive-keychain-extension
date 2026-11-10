@@ -20,6 +20,7 @@ describe('encrypt.utils tests:\n', () => {
     '0000009b000000770000005700000029000000ae0000008d000000ae00000046WHrXFxuZRaj4uDwLXR8vFw+tW0M7fUZqAfRqnqga+fvyVCNAEnutR76JDJ+Hi6zfX2bMEkzk2c/fnL2FZb9e+ZNoklar2xYnxvM3tXjkh8Qj0roAbwXfWt+DzjqMfeTvuzHzbgnCzir7r5v6NgDug0pBplvNAsk83kj5Kd3gBmJfhRieDf8VRk18bZ8DUmhGqu0U0EmFn9KqSE6HxOKo/sZFRu0In8090s/05IHro9OLCZQ3vEy6A0GPyzoc5PyL/a7qgNiERpK37e3h3LXZBG9HkmDh0HimY2GoQzBYr7sOKFrrmfZlT7rtIuXWfa0nhQSM1pI9Y1s9Y2GWkoiUlweNRuTuAwFAi+SuEHRHBtmokqkgChUUT4bNs0fGbszm3NuB3rqiCXj27kcVWw/aqglb0qJGT77cv2gqhqSKu3BJkw7KNwkjFRYow/5ScHvh6RP1hUPEpEavIiuYZEi0cMu7cmROyZYbc8XLDry8Jpc=';
 
   afterEach(() => {
+    EncryptUtils.clearDerivedKeyCache();
     jest.clearAllMocks();
     jest.resetModules();
     jest.restoreAllMocks();
@@ -116,8 +117,60 @@ describe('encrypt.utils tests:\n', () => {
     );
   });
 
+  it('encryptJsonWithSalt reuses the supplied salt and still decrypts', async () => {
+    const salt = EncryptUtils.generateAesGcmSaltBase64();
+    const first = await EncryptUtils.encryptJsonWithSalt(
+      accountPayload,
+      password,
+      salt,
+    );
+    const second = await EncryptUtils.encryptJsonWithSalt(
+      accountPayload,
+      password,
+      salt,
+    );
+
+    expect(JSON.parse(first).salt).toBe(salt);
+    expect(JSON.parse(second).salt).toBe(salt);
+    expect(JSON.parse(first).iv).not.toBe(JSON.parse(second).iv);
+    expect(await EncryptUtils.decryptToJson(first, password)).toEqual(
+      accountPayload,
+    );
+    expect(await EncryptUtils.decryptToJson(second, password)).toEqual(
+      accountPayload,
+    );
+  });
+
   it('decryptToJson returns null for empty input', async () => {
     expect(await EncryptUtils.decryptToJson('', password)).toBeNull();
+  });
+
+  it('decrypts a v2 payload object without calling trim', async () => {
+    const encrypted = await EncryptUtils.encryptJson(accountPayload, password);
+    const payload = JSON.parse(encrypted);
+
+    expect(EncryptUtils.isEncryptedJsonV2(payload)).toBe(true);
+    expect(await EncryptUtils.decryptToJson(payload, password)).toEqual(
+      accountPayload,
+    );
+    expect(
+      await EncryptUtils.decryptToJsonWithLegacySupport(payload, password),
+    ).toEqual(accountPayload);
+  });
+
+  it('decrypts a boxed string payload', async () => {
+    const encrypted = await EncryptUtils.encryptJson(accountPayload, password);
+
+    expect(
+      await EncryptUtils.decryptToJson(new String(encrypted), password),
+    ).toEqual(accountPayload);
+  });
+
+  it('ignores a non-string payload instead of calling trim', async () => {
+    expect(await EncryptUtils.decryptToJson({ list: [] }, password)).toBeNull();
+    expect(
+      await EncryptUtils.decryptToJsonWithLegacySupport({ list: [] }, password),
+    ).toBeNull();
   });
 
   it('decryptToJsonWithLegacySupport throws on invalid v2 envelope', async () => {

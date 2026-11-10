@@ -1,205 +1,285 @@
-import ChainRouter from '@popup/multichain/chain-router.component';
-import { Chain, ChainContext } from '@popup/multichain/multichain.context';
-import { store } from '@popup/multichain/store';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
+import { setChain } from '@popup/multichain/actions/chain.actions';
+import { ChainComponentWithBoundary } from '@popup/multichain/chain.component';
+import {
+  Chain,
+  ChainType,
+} from '@popup/multichain/interfaces/chains.interface';
+import { RootState, store } from '@popup/multichain/store';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
+import { resolvePopupInitialChain } from '@popup/multichain/utils/popup-initial-chain.utils';
+import { getProviderBootstrapForPopup } from '@popup/multichain/utils/provider-chain-bootstrap.utils';
+import { PopupTabChainContextUtils } from '@popup/multichain/utils/popup-tab-chain-context.utils';
+import { PopupThemeStartupUtils } from '@popup/multichain/utils/popup-theme-startup.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import hotkeys from 'hotkeys-js';
-import React, { useCallback, useEffect, useState } from 'react';
-import { withErrorBoundary } from 'react-error-boundary';
-import { Provider } from 'react-redux';
-import { ErrorFallback } from 'src/common-ui/error-fallback/error-fallback.component';
-import { ShortcutActionType, ShortcutDefinition } from 'src/interfaces/shortcut.interface';
-import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
-import { ConversionType } from 'src/popup/hive/pages/app-container/home/conversion/conversion-type.enum';
-import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
-import { PowerType } from 'src/popup/hive/pages/app-container/home/power-up-down/power-type.enum';
-import {
-  navigateTo,
-  navigateToWithParams,
-} from 'src/popup/multichain/actions/navigation.actions';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { ConnectedProps, connect } from 'react-redux';
+import { SplashscreenComponent } from 'src/common-ui/splashscreen/splashscreen.component';
+import { ShortcutDefinition } from 'src/interfaces/shortcut.interface';
 import { Theme, ThemeContext } from 'src/popup/theme.context';
-import { Screen } from 'src/reference-data/screen.enum';
+import {
+  findDappByTabOrigin,
+  getActiveTabOrigin,
+  getEcosystemCategoriesForPopup,
+} from 'src/utils/ecosystem-dapps-cache.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import {
+  executeShortcut,
+  isShortcutTargetChainReady,
+} from 'src/utils/shortcuts-execution.utils';
 import ShortcutsUtils from 'src/utils/shortcuts.utils';
 
-export const MultichainContainer = () => {
-  const [chain, setChain] = useState<Chain>();
-  const [theme, setTheme] = useState<Theme>();
-  const [ready, setReady] = useState(false);
-  const shortcutsRef = React.useRef<ShortcutDefinition[]>([]);
-  const registeredCombosRef = React.useRef<string[]>([]);
+interface PendingShortcut {
+  shortcut: ShortcutDefinition;
+  targetChain: Chain;
+  executeAfter: number;
+}
 
-  useEffect(() => {
-    init();
-  }, []);
+interface OwnProps {
+  initialTheme?: Theme | null;
+}
+
+const MultichainContainer = ({
+  chain,
+  evmActiveAccountReady,
+  hiveActiveAccountName,
+  hiveActiveRpcUri,
+  initialTheme,
+  mk,
+  setChain,
+}: Props) => {
+  const [theme, setTheme] = useState<Theme>(initialTheme ?? Theme.LIGHT);
+  const [hasHydratedSettings, setHasHydratedSettings] = useState(false);
+  const [isBootstrapping, setIsBootstrapping] = useState(true);
+  const shortcutsRef = useRef<ShortcutDefinition[]>([]);
+  const registeredCombosRef = useRef<string[]>([]);
+  const pendingShortcutRef = useRef<PendingShortcut | null>(null);
+  const shouldPersistActiveChainRef = useRef(true);
 
   const handleDetachWindow = useCallback(() => {
-    chrome.tabs.create({
-      url: `detached_window.html`,
+    void DetachedExtensionTabUtils.openDetachedExtension();
+  }, []);
+
+  const toggleTheme = useCallback(() => {
+    setTheme((oldTheme) => {
+      return oldTheme === Theme.DARK ? Theme.LIGHT : Theme.DARK;
     });
   }, []);
 
-  const executeShortcut = useCallback((shortcut: ShortcutDefinition) => {
-    if (shortcut.actionType === ShortcutActionType.CHANGE_ACCOUNT) {
-      const account = store
-        .getState()
-        .hive.accounts.find((item) => item.name === shortcut.target);
-      if (account) store.dispatch(loadActiveAccount(account));
-      return;
-    }
-
-    if (shortcut.actionType !== ShortcutActionType.NAVIGATE) return;
-
-    const targetScreen = shortcut.target as Screen;
-    const params = shortcut.params ?? {};
-
-    if (
-      targetScreen === Screen.TRANSFER_FUND_PAGE ||
-      targetScreen === Screen.SAVINGS_PAGE
-    ) {
-      if (params.selectedCurrency) {
-        store.dispatch(
-          navigateToWithParams(targetScreen, {
-            selectedCurrency: params.selectedCurrency,
-          }),
-        );
-        return;
-      }
-    }
-
-    if (targetScreen === Screen.CONVERSION_PAGE) {
-      if (params.selectedCurrency) {
-        const conversionType =
-          params.selectedCurrency === 'hive'
-            ? ConversionType.CONVERT_HIVE_TO_HBD
-            : ConversionType.CONVERT_HBD_TO_HIVE;
-        store.dispatch(
-          navigateToWithParams(targetScreen, {
-            conversionType,
-          }),
-        );
-        return;
-      }
-    }
-
-    if (targetScreen === Screen.POWER_UP_PAGE) {
-      store.dispatch(
-        navigateToWithParams(targetScreen, {
-          powerType: PowerType.POWER_UP,
-        }),
-      );
-      return;
-    }
-
-    if (targetScreen === Screen.POWER_DOWN_PAGE) {
-      store.dispatch(
-        navigateToWithParams(targetScreen, {
-          powerType: PowerType.POWER_DOWN,
-        }),
-      );
-      return;
-    }
-
-    if (
-      targetScreen === Screen.TOKENS_HISTORY ||
-      targetScreen === Screen.TOKENS_TRANSFER ||
-      targetScreen === Screen.TOKENS_DELEGATIONS
-    ) {
-      if (!params.tokenSymbol) return;
-      const tokenBalance = store
-        .getState()
-        .hive.userTokens.list.find(
-          (item) => item.symbol === params.tokenSymbol,
-        );
-      const tokenInfo = store
-        .getState()
-        .hive.tokens.find((item) => item.symbol === params.tokenSymbol);
-      if (!tokenBalance) return;
-      if (targetScreen === Screen.TOKENS_HISTORY) {
-        store.dispatch(
-          navigateToWithParams(targetScreen, {
-            tokenBalance,
-          }),
-        );
-        return;
-      }
-      if (!tokenInfo) return;
-      if (targetScreen === Screen.TOKENS_TRANSFER) {
-        store.dispatch(
-          navigateToWithParams(targetScreen, {
-            tokenBalance,
-            tokenInfo,
-          }),
-        );
-        return;
-      }
-      const delegationType =
-        (params.delegationType as DelegationType) ??
-        DelegationType.OUTGOING;
-      store.dispatch(
-        navigateToWithParams(targetScreen, {
-          tokenBalance,
-          tokenInfo,
-          delegationType,
-        }),
-      );
-      return;
-    }
-
-    store.dispatch(navigateTo(targetScreen));
-  }, []);
-
-  const registerShortcuts = useCallback((shortcuts: ShortcutDefinition[]) => {
-    registeredCombosRef.current.forEach((combo) => hotkeys.unbind(combo));
-    registeredCombosRef.current = [];
-
-    shortcuts.forEach((shortcut) => {
-      const combo = ShortcutsUtils.normalizeShortcutCombo(shortcut.combo);
-      if (!combo) return;
-      registeredCombosRef.current.push(combo);
-      hotkeys(combo, (event) => {
-        if (ShortcutsUtils.isEditableTarget(event.target)) return;
-        event.preventDefault();
-        executeShortcut(shortcut);
+  const executeRegisteredShortcut = useCallback(
+    async (shortcut: ShortcutDefinition) => {
+      const result = await executeShortcut(shortcut, {
+        toggleTheme,
+        openKeychainInTab: handleDetachWindow,
       });
-    });
-  }, [executeShortcut]);
+      if (result.deferred && result.targetChain) {
+        pendingShortcutRef.current = {
+          shortcut,
+          targetChain: result.targetChain,
+          executeAfter: Date.now() + 700,
+        };
+      }
+    },
+    [handleDetachWindow, toggleTheme],
+  );
 
   useEffect(() => {
-    hotkeys('ctrl+alt+t', (event) => {
-      if (ShortcutsUtils.isEditableTarget(event.target)) return;
-      event.preventDefault();
-      setTheme((previous) => {
-        return previous === Theme.LIGHT ? Theme.DARK : Theme.LIGHT;
+    const pendingShortcut = pendingShortcutRef.current;
+    if (!pendingShortcut) return;
+    if (
+      !isShortcutTargetChainReady(
+        pendingShortcut.shortcut,
+        store.getState(),
+        pendingShortcut.targetChain,
+      )
+    ) {
+      return;
+    }
+    const delay = pendingShortcut.executeAfter - Date.now();
+    if (delay > 0) {
+      const timeoutId = window.setTimeout(() => {
+        const latestPendingShortcut = pendingShortcutRef.current;
+        if (!latestPendingShortcut) return;
+        if (
+          !isShortcutTargetChainReady(
+            latestPendingShortcut.shortcut,
+            store.getState(),
+            latestPendingShortcut.targetChain,
+          )
+        ) {
+          return;
+        }
+        pendingShortcutRef.current = null;
+        void executeShortcut(latestPendingShortcut.shortcut, {
+          skipChainSwitch: true,
+        });
+      }, delay);
+      return () => window.clearTimeout(timeoutId);
+    }
+    pendingShortcutRef.current = null;
+    void executeShortcut(pendingShortcut.shortcut, { skipChainSwitch: true });
+  }, [chain, evmActiveAccountReady, hiveActiveAccountName, hiveActiveRpcUri]);
+
+  const registerShortcuts = useCallback(
+    (shortcuts: ShortcutDefinition[]) => {
+      registeredCombosRef.current.forEach((combo) => hotkeys.unbind(combo));
+      registeredCombosRef.current = [];
+
+      shortcuts.forEach((shortcut) => {
+        const combo = ShortcutsUtils.normalizeShortcutCombo(shortcut.combo);
+        if (!combo) return;
+        registeredCombosRef.current.push(combo);
+        hotkeys(combo, (event) => {
+          if (ShortcutsUtils.isEditableTarget(event.target)) return;
+          event.preventDefault();
+          void executeRegisteredShortcut(shortcut);
+        });
       });
-    });
-    hotkeys('ctrl+d', (event) => {
-      if (ShortcutsUtils.isEditableTarget(event.target)) return;
-      event.preventDefault();
-      handleDetachWindow();
-    });
+    },
+    [executeRegisteredShortcut],
+  );
+
+  useEffect(() => {
+    let isMounted = true;
+    const isSameChain = (left: Chain | null, right: Chain | null) =>
+      !!left?.chainId &&
+      !!right?.chainId &&
+      left.chainId.toLowerCase() === right.chainId.toLowerCase();
+
+    const init = async () => {
+      const storagePromise = LocalStorageUtils.getMultipleValueFromLocalStorage(
+        [
+          LocalStorageKeyEnum.ACTIVE_THEME,
+          LocalStorageKeyEnum.ACTIVE_CHAIN,
+          LocalStorageKeyEnum.SHORTCUTS,
+          LocalStorageKeyEnum.SHORTCUT_PRESETS_MIGRATED,
+        ],
+      );
+      const tabOriginPromise = getActiveTabOrigin();
+      const ecosystemPromise = getEcosystemCategoriesForPopup();
+
+      const res = await storagePromise;
+
+      if (!isMounted) return;
+
+      const activeTheme =
+        res.ACTIVE_THEME === Theme.DARK || res.ACTIVE_THEME === Theme.LIGHT
+          ? res.ACTIVE_THEME
+          : Theme.LIGHT;
+      setTheme(activeTheme);
+      PopupThemeStartupUtils.cacheTheme(activeTheme);
+
+      const shortcutsValue = res[LocalStorageKeyEnum.SHORTCUTS];
+      const hasMigratedShortcutPresets =
+        res[LocalStorageKeyEnum.SHORTCUT_PRESETS_MIGRATED] === true;
+      shortcutsRef.current =
+        Array.isArray(shortcutsValue) && hasMigratedShortcutPresets
+          ? shortcutsValue
+          : Array.isArray(shortcutsValue)
+            ? ShortcutsUtils.getShortcutsWithDefaultPresets(shortcutsValue)
+            : ShortcutsUtils.DEFAULT_SHORTCUTS;
+      if (!hasMigratedShortcutPresets && Array.isArray(shortcutsValue)) {
+        LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.SHORTCUTS,
+          shortcutsRef.current,
+        );
+        LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.SHORTCUT_PRESETS_MIGRATED,
+          true,
+        );
+      }
+      registerShortcuts(shortcutsRef.current);
+      setHasHydratedSettings(true);
+
+      const storedChain = res.ACTIVE_CHAIN
+        ? await ChainUtils.getChain<Chain>(res.ACTIVE_CHAIN)
+        : null;
+
+      if (!isMounted) return;
+
+      // Fast path: apply stored chain and unblock rendering immediately.
+      if (storedChain) {
+        setChain(storedChain);
+      }
+      setIsBootstrapping(false);
+
+      // Refine chain selection in background without blocking popup first paint.
+      void (async () => {
+        try {
+          const [tabOrigin, categories] = await Promise.all([
+            tabOriginPromise,
+            ecosystemPromise,
+          ]);
+          if (!isMounted) return;
+
+          const connectedEvmWallets = tabOrigin
+            ? await EvmWalletUtils.getConnectedWallets(tabOrigin)
+            : [];
+          const hasConnectedEvmAccountsForOrigin =
+            connectedEvmWallets.length > 0;
+
+          const ecosystemDapp = findDappByTabOrigin(categories, tabOrigin);
+          const ecosystemChain = ecosystemDapp?.chainId
+            ? ((await ChainUtils.getChain<Chain>(ecosystemDapp.chainId)) ?? null)
+            : null;
+
+          const providerBootstrap = await getProviderBootstrapForPopup({
+            tabOrigin,
+            hasConnectedEvmAccountsForOrigin,
+          });
+          if (!isMounted) return;
+
+          const hasRequestedProviderChain = !!(
+            tabOrigin && hasConnectedEvmAccountsForOrigin
+          );
+          const { chain: refinedChain, source: refinedChainSource } =
+            resolvePopupInitialChain({
+              providerChain: providerBootstrap.resolvedChain,
+              hasRequestedProviderChain,
+              ecosystemChain,
+              storedChain,
+            });
+
+          if (!refinedChain) return;
+          if (
+            refinedChainSource === 'ecosystem' ||
+            refinedChainSource === 'provider'
+          ) {
+            PopupTabChainContextUtils.setTabInferredChainId(refinedChain.chainId);
+          }
+
+          const currentChain = store.getState().chain as Chain | null;
+          const isTabInferredEvmChain =
+            (refinedChainSource === 'ecosystem' ||
+              refinedChainSource === 'provider') &&
+            refinedChain.type === ChainType.EVM;
+          if (!isSameChain(currentChain, refinedChain)) {
+            shouldPersistActiveChainRef.current = !isTabInferredEvmChain;
+            setChain(refinedChain, {
+              saveLastUsedChain: !isTabInferredEvmChain,
+            });
+          }
+        } catch {
+          // Best-effort refinement only: keep stored/default chain on errors.
+        }
+      })();
+    };
+
+    void init();
+
     return () => {
-      hotkeys.unbind('ctrl+alt+t');
-      hotkeys.unbind('ctrl+d');
+      isMounted = false;
+    };
+  }, [registerShortcuts, setChain]);
+
+  useEffect(() => {
+    return () => {
       registeredCombosRef.current.forEach((combo) => hotkeys.unbind(combo));
       registeredCombosRef.current = [];
     };
-  }, [handleDetachWindow]);
-
-  const init = async () => {
-    const res = await LocalStorageUtils.getMultipleValueFromLocalStorage([
-      LocalStorageKeyEnum.ACTIVE_THEME,
-      LocalStorageKeyEnum.ACTIVE_CHAIN,
-      LocalStorageKeyEnum.SHORTCUTS,
-    ]);
-
-    setTheme(res.ACTIVE_THEME ?? Theme.LIGHT);
-    setChain(res.ACTIVE_CHAIN ?? Chain.HIVE);
-    const shortcutsValue = res[LocalStorageKeyEnum.SHORTCUTS];
-    shortcutsRef.current = Array.isArray(shortcutsValue) ? shortcutsValue : [];
-    registerShortcuts(shortcutsRef.current);
-
-    setReady(true);
-  };
+  }, []);
 
   useEffect(() => {
     const handleStorageChange = (
@@ -209,10 +289,14 @@ export const MultichainContainer = () => {
       if (areaName !== 'local') return;
       const change = changes[LocalStorageKeyEnum.SHORTCUTS];
       if (!change) return;
-      shortcutsRef.current = Array.isArray(change.newValue)
-        ? change.newValue
-        : [];
-      registerShortcuts(shortcutsRef.current);
+      void LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.SHORTCUTS,
+      ).then((shortcutsValue) => {
+        shortcutsRef.current = Array.isArray(shortcutsValue)
+          ? shortcutsValue
+          : [];
+        registerShortcuts(shortcutsRef.current);
+      });
     };
     chrome.storage.onChanged.addListener(handleStorageChange);
     return () => {
@@ -221,50 +305,69 @@ export const MultichainContainer = () => {
   }, [registerShortcuts]);
 
   useEffect(() => {
-    if (chain)
+    if (!mk) {
+      return;
+    }
+    void LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.SHORTCUTS,
+    ).then((shortcutsValue) => {
+      if (!Array.isArray(shortcutsValue)) {
+        return;
+      }
+      shortcutsRef.current = shortcutsValue;
+      registerShortcuts(shortcutsValue);
+    });
+  }, [mk, registerShortcuts]);
+
+  useEffect(() => {
+    if (!shouldPersistActiveChainRef.current) {
+      shouldPersistActiveChainRef.current = true;
+      return;
+    }
+    if (chain?.chainId?.length)
       LocalStorageUtils.saveValueInLocalStorage(
         LocalStorageKeyEnum.ACTIVE_CHAIN,
-        chain,
+        chain.chainId,
       );
   }, [chain]);
 
   useEffect(() => {
-    if (theme)
+    if (theme && hasHydratedSettings) {
+      PopupThemeStartupUtils.cacheTheme(theme);
       LocalStorageUtils.saveValueInLocalStorage(
         LocalStorageKeyEnum.ACTIVE_THEME,
         theme,
       );
-  }, [theme]);
+    }
+  }, [hasHydratedSettings, theme]);
 
-  const toggleTheme = () => {
-    setTheme((oldTheme) => {
-      return oldTheme === Theme.DARK ? Theme.LIGHT : Theme.DARK;
-    });
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
+      <div className={`theme ${theme}`}>
+        {isBootstrapping ? (
+          <SplashscreenComponent />
+        ) : (
+          <ChainComponentWithBoundary theme={theme} chain={chain} />
+        )}
+      </div>
+    </ThemeContext.Provider>
+  );
+};
+
+const mapStateToProps = (state: RootState) => {
+  return {
+    chain: state.chain as Chain,
+    evmActiveAccountReady: state.evm.activeAccount?.isReady,
+    hiveActiveAccountName: state.hive.activeAccount?.name,
+    hiveActiveRpcUri: state.hive.activeRpc?.uri,
+    mk: state.mk,
   };
-
-  return (
-    <>
-      {ready && theme && (
-        <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
-          <ChainContext.Provider value={{ chain, setChain }}>
-            <div className={`theme ${theme}`}>
-              <ChainComponentWithBoundary theme={theme} chain={chain} />
-            </div>
-          </ChainContext.Provider>
-        </ThemeContext.Provider>
-      )}
-    </>
-  );
 };
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type Props = PropsFromRedux & OwnProps;
 
-const ChainComponent = ({ chain }: { theme: Theme; chain?: Chain }) => {
-  return (
-    <Provider store={store}>
-      {<ChainRouter screen={screen} selectedChain={chain} />}
-    </Provider>
-  );
-};
-
-const ChainComponentWithBoundary = withErrorBoundary(ChainComponent, {
-  FallbackComponent: ErrorFallback,
+const connector = connect(mapStateToProps, {
+  setChain,
 });
+
+export const MultichainContainerComponent = connector(MultichainContainer);

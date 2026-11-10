@@ -4,9 +4,10 @@ import {
   AutoCompleteValuesType,
 } from '@interfaces/autocomplete.interface';
 import React, { useEffect, useState } from 'react';
-import AutocompleteItemComponent from 'src/common-ui/autocomplete/autocomplete-item/autocomplete-item.component';
+import { AutocompleteItemComponent } from 'src/common-ui/autocomplete/autocomplete-item/autocomplete-item.component';
 import { AutoCompleteUtils } from 'src/utils/autocomplete.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   autoCompleteValues?: AutoCompleteValuesType;
   translateSimpleAutoCompleteValues?: boolean;
@@ -63,16 +64,18 @@ export const AutocompleteBox = ({
                 <div className="category" key={category.title}>
                   <span className="title">
                     {category.translateTitle
-                      ? chrome.i18n.getMessage(category.title)
+                      ? I18nUtils.getMessage(category.title)
                       : category.title}
                   </span>
                   {category.values.map((autoCompleteItem, index) => (
                     <AutocompleteItemComponent
                       key={`item-${index}`}
                       value={autoCompleteItem.value}
-                      translateValue={autoCompleteItem.translateValue}
+                      label={autoCompleteItem.label}
+                      translateLabel={autoCompleteItem.translateLabel}
                       onItemClick={handleOnChange}
                       subLabel={autoCompleteItem.subLabel}
+                      img={autoCompleteItem.img}
                       translateSublabel={autoCompleteItem.translateSubLabel}
                       prefix={prefix}
                     />
@@ -90,7 +93,8 @@ export const AutocompleteBox = ({
               key={`item-${index}`}
               prefix={prefix}
               value={item}
-              translateValue={translateSimpleAutoCompleteValues}
+              label={item}
+              translateLabel={translateSimpleAutoCompleteValues}
               onItemClick={handleOnChange}
             />
           ))}{' '}
@@ -103,11 +107,13 @@ export const AutocompleteBox = ({
             <AutocompleteItemComponent
               key={`item-${index}`}
               value={item.value}
-              translateValue={item.translateValue}
+              label={item.label}
+              translateLabel={item.translateLabel}
               subLabel={item.subLabel}
               translateSublabel={item.translateSubLabel}
               onItemClick={handleOnChange}
               prefix={prefix}
+              img={item.img}
             />
           ))}
         </div>

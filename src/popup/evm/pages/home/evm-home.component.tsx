@@ -1,0 +1,586 @@
+import ButtonComponent from '@common-ui/button/button.component';
+import { EVMConfirmationPageParams } from '@common-ui/confirmation-page/confirmation-page.interface';
+import { Screen } from '@interfaces/screen.interface';
+import {
+  loadEvmActiveAccount,
+  loadEvmHistory,
+} from '@popup/evm/actions/active-account.actions';
+import { EvmErc721Token } from '@popup/evm/interfaces/active-account.interface';
+import {
+  EvmPendingTransactionsInfo,
+  ProviderTransactionData,
+} from '@popup/evm/interfaces/evm-transactions.interface';
+import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
+import { EvmWallet } from '@popup/evm/interfaces/wallet.interface';
+import { EvmActionButtonList } from '@popup/evm/pages/home/evm-action-section/evm-action-section.list';
+import { EvmDappStatusComponent } from '@popup/evm/pages/home/evm-dapp-status/evm-dapp-status.component';
+import { EvmWalletInfoSectionComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-info-section.component';
+import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
+import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
+import { EvmTransactionDisplayUtils } from '@popup/evm/utils/evm-transaction-display.utils';
+import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
+import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
+import { EvmTransactionsUtils } from '@popup/evm/utils/evm-transactions.utils';
+import { TutorialPopupComponent } from '@popup/hive/pages/app-container/tutorial-popup/tutorial-popup.component';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/multichain/actions/loading.actions';
+import { setErrorMessage } from '@popup/multichain/actions/message.actions';
+import {
+  navigateTo,
+  navigateToWithParams,
+  NavigationParams,
+} from '@popup/multichain/actions/navigation.actions';
+import { resetTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import {
+  EvmChain,
+  MultichainRpc,
+} from '@popup/multichain/interfaces/chains.interface';
+import { RootState } from '@popup/multichain/store';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import {
+  useWalletScrollRelay,
+  WALLET_SCROLL_HANDOFF_PX,
+} from '@popup/multichain/hooks/use-wallet-scroll-relay.hook';
+import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface.utils';
+import { PortfolioRouteUtils } from '@popup/multichain/utils/portfolio-route.utils';
+import { AccountValueType } from '@reference-data/account-value-type.enum';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { ethers } from 'ethers';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { connect, ConnectedProps } from 'react-redux';
+import { HomepageContainer } from 'src/common-ui/_containers/homepage-container/homepage-container.component';
+import { TopBarComponent } from 'src/common-ui/_containers/top-bar/top-bar.component';
+import { AccountSelectorComponent } from 'src/common-ui/account-selector/account-selector.component';
+import { ChainType } from '@popup/multichain/interfaces/chains.interface';
+import { EstimatedAccountValueSectionComponent } from 'src/common-ui/estimated-account-value-section/estimated-account-value-section.component';
+import { loadCurrencyPrices } from 'src/popup/hive/actions/currency-prices.actions';
+import { ActionsSectionComponent } from 'src/popup/hive/pages/app-container/home/actions-section/actions-section.component';
+import { ProposalVotingSectionComponent } from 'src/popup/hive/pages/app-container/home/voting-section/proposal-voting-section/proposal-voting-section.component';
+import { SurveyComponent } from 'src/popup/hive/pages/app-container/survey/survey.component';
+import { Survey } from 'src/popup/hive/pages/app-container/survey/survey.interface';
+import { WhatsNewComponent } from 'src/popup/hive/pages/app-container/whats-new/whats-new.component';
+import { WhatsNewContent } from 'src/popup/hive/pages/app-container/whats-new/whats-new.interface';
+import { SurveyUtils } from 'src/popup/hive/utils/survey.utils';
+import FormatUtils from 'src/utils/format.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
+import { VersionLogUtils } from 'src/utils/version-log.utils';
+import { WhatsNewUtils } from 'src/utils/whats-new.utils';
+
+import { I18nUtils } from 'src/utils/i18n.utils';
+const Home = ({
+  chain,
+  accounts,
+  activeAccount,
+  navigateTo,
+  loadEvmActiveAccount,
+  resetTitleContainerProperties,
+  navigateToWithParams,
+  loadEvmHistory,
+  setErrorMessage,
+  addToLoadingList,
+  removeFromLoadingList,
+  returningFromNftPage,
+  returningFromHistoryDetails,
+}: PropsFromRedux) => {
+  const [displayWhatsNew, setDisplayWhatsNew] = useState(false);
+  const [whatsNewContent, setWhatsNewContent] = useState<WhatsNewContent>();
+  const [surveyToDisplay, setSurveyToDisplay] = useState<Survey>();
+
+  const [showBottomBar, setShowBottomBar] = useState(true);
+
+  const [pendingTransactionsInfo, setPendingTransactionsInfo] =
+    useState<EvmPendingTransactionsInfo>();
+
+  const [accountValues, setAccountValues] = useState<{
+    usdValue: string;
+    mainTokenValue: string;
+  }>();
+
+  // RPC related
+  const [displayChangeRpcPopup, setDisplayChangeRpcPopup] = useState(false);
+  const [initialRpc, setInitialRpc] = useState<MultichainRpc>();
+  const [switchToRpc, setSwitchToRpc] = useState<MultichainRpc>();
+  const isMountedRef = useRef(false);
+  const scrollTopRef = useRef(0);
+  const walletScrollHandoffPx = ExtensionSurfaceUtils.isSidePanelPage()
+    ? 0
+    : WALLET_SCROLL_HANDOFF_PX;
+  const handleWalletScrollDirectionChange = useCallback(
+    (isScrollingDown: boolean) => {
+      setShowBottomBar(!isScrollingDown);
+    },
+    [],
+  );
+  const {
+    homeContentRef,
+    walletScrollRef,
+    relayWheelToWallet,
+  } = useWalletScrollRelay({
+    onScrollDirectionChange: handleWalletScrollDirectionChange,
+    scrollHandoffPx: walletScrollHandoffPx,
+  });
+  const pendingTransactionsRequestId = useRef(0);
+  const rpcCheckRequestId = useRef(0);
+  const setStateIfMounted = <
+    TSetter extends React.Dispatch<React.SetStateAction<any>>,
+  >(
+    setter: TSetter,
+    value: Parameters<TSetter>[0],
+  ) => {
+    if (!isMountedRef.current) {
+      return;
+    }
+    setter(value);
+  };
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      pendingTransactionsRequestId.current += 1;
+      rpcCheckRequestId.current += 1;
+    };
+  }, []);
+
+  useEffect(() => {
+    resetTitleContainerProperties();
+    void initWhatsNew();
+    void initSurvey();
+    EvmRpcUtils.getSwitchRpcAuto(chain).then((switchRpcAuto) => {
+      if (!switchRpcAuto) {
+        void checkActiveRpc();
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    if (activeAccount.wallet.address) {
+      ChainUtils.setPreviousChain(chain);
+      ChainUtils.addChainToSetupChains(chain);
+    }
+  }, [activeAccount.address]);
+
+  useEffect(() => {
+    if (activeAccount.wallet.address) {
+      void loadPendingTransactions(activeAccount.wallet);
+    }
+  }, [activeAccount.wallet.address, chain.chainId]);
+
+  useEffect(() => {
+    const onResolvedEvmTransaction = (message: {
+      command?: BackgroundCommand;
+      value?: { chainId?: string; from?: string };
+    }) => {
+      if (message.command !== BackgroundCommand.EVM_TRANSACTION_RESOLVED) {
+        return;
+      }
+
+      const resolvedChainId = Number(message.value?.chainId);
+      const currentChainId = Number(chain.chainId);
+      const resolvedWallet = message.value?.from?.toLowerCase();
+      const currentWallet = activeAccount.wallet.address?.toLowerCase();
+
+      if (
+        resolvedChainId !== currentChainId ||
+        !resolvedWallet ||
+        resolvedWallet !== currentWallet
+      ) {
+        return;
+      }
+
+      void loadPendingTransactions(activeAccount.wallet);
+    };
+
+    chrome.runtime.onMessage.addListener(onResolvedEvmTransaction);
+
+    return () => {
+      chrome.runtime.onMessage.removeListener(onResolvedEvmTransaction);
+    };
+  }, [activeAccount.wallet, chain.chainId]);
+
+  useEffect(() => {
+    const usdValue = `$${FormatUtils.withCommas(
+      EvmTokensUtils.getTotalBalanceInUsd(
+        activeAccount.nativeAndErc20Tokens.value,
+      ),
+    )}`;
+    const mainTokenValue = `${FormatUtils.withCommas(
+      EvmTokensUtils.getTotalBalanceInMainToken(
+        activeAccount.nativeAndErc20Tokens.value,
+        chain,
+      ),
+    )} ${chain.mainToken}`;
+    setAccountValues({ usdValue, mainTokenValue });
+  }, [activeAccount.nativeAndErc20Tokens, chain]);
+
+  const checkActiveRpc = async () => {
+    const currentRequestId = ++rpcCheckRequestId.current;
+    const rpc = await EvmRpcUtils.getActiveRpc(chain);
+    if (rpcCheckRequestId.current !== currentRequestId) {
+      return;
+    }
+    setStateIfMounted(setInitialRpc, rpc);
+    const rpcStatusOk = await EvmRpcUtils.checkRpcStatus(rpc.url);
+    if (rpcCheckRequestId.current !== currentRequestId) {
+      return;
+    }
+
+    const switchAuto = await EvmRpcUtils.getSwitchRpcAuto(chain);
+    if (rpcCheckRequestId.current !== currentRequestId) {
+      return;
+    }
+
+    if (!rpcStatusOk) {
+      if (switchAuto) {
+        const switchResult =
+          await EvmRpcUtils.automaticallySwitchToWorkingRpc(chain);
+        if (!switchResult) {
+          setErrorMessage('evm_rpcs_not_responding_error');
+        } else {
+          void refresh();
+        }
+      } else {
+        const rpcToSwitch = await EvmRpcUtils.switchToWorkingRpc(chain);
+        if (rpcCheckRequestId.current !== currentRequestId) {
+          return;
+        }
+        if (rpcToSwitch) {
+          setStateIfMounted(setDisplayChangeRpcPopup, true);
+          setStateIfMounted(setSwitchToRpc, rpcToSwitch);
+        } else {
+          setErrorMessage('evm_rpcs_not_responding_error');
+        }
+      }
+    }
+  };
+
+  const switchRpc = async () => {
+    await EvmRpcUtils.setActiveRpc(switchToRpc!, chain);
+    setStateIfMounted(setDisplayChangeRpcPopup, false);
+    void refresh();
+  };
+
+  const loadActiveAccount = async () => {
+    if (chain) {
+      const wallet =
+        await EvmActiveAccountUtils.getSavedActiveAccountWallet(accounts);
+      loadEvmActiveAccount(chain, wallet);
+      // getPendingTransactions();
+    }
+  };
+
+  const loadPendingTransactions = async (wallet: EvmWallet) => {
+    const currentRequestId = ++pendingTransactionsRequestId.current;
+    const pendingTransactionsInfo =
+      await EvmTransactionsUtils.hasPendingTransaction(wallet.address, chain);
+    if (pendingTransactionsRequestId.current !== currentRequestId) {
+      return;
+    }
+
+    setStateIfMounted(setPendingTransactionsInfo, pendingTransactionsInfo);
+  };
+
+  //TODO : move survey and whatsnew logic in a hook since its called on both evm and hive
+  const initSurvey = async () => {
+    const survey = await SurveyUtils.getSurvey();
+    setStateIfMounted(setSurveyToDisplay, survey);
+  };
+
+  const initWhatsNew = async () => {
+    const lastVersionSeen = await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.LAST_VERSION_UPDATE,
+    );
+
+    if (!lastVersionSeen) {
+      WhatsNewUtils.saveLastSeen();
+      return;
+    }
+
+    const versionLog = await VersionLogUtils.getLastVersion();
+    const extensionVersion = chrome.runtime
+      .getManifest()
+      .version.split('.')
+      .splice(0, 2)
+      .join('.');
+
+    if (
+      extensionVersion !== lastVersionSeen &&
+      versionLog?.version === extensionVersion
+    ) {
+      setStateIfMounted(setWhatsNewContent, versionLog);
+      setStateIfMounted(setDisplayWhatsNew, true);
+    }
+  };
+
+  const refresh = async () => {
+    await loadActiveAccount();
+    void loadPendingTransactions(activeAccount.wallet);
+  };
+
+  const handleCloseWhatsNew = () => {
+    setStateIfMounted(setDisplayWhatsNew, false);
+  };
+
+  const renderPopup = (
+    displayWhatsNew: boolean,
+    surveyToDisplay: Survey | undefined,
+    displayChangeRpcPopup: boolean,
+  ) => {
+    if (displayWhatsNew) {
+      return (
+        <WhatsNewComponent
+          onOverlayClick={handleCloseWhatsNew}
+          content={whatsNewContent!}
+        />
+      );
+    } else if (displayChangeRpcPopup) {
+      return (
+        <div className="change-rpc-popup">
+          <div className="message">
+            {I18nUtils.getMessage('popup_html_rpc_not_responding_error', [
+              initialRpc?.url!,
+              switchToRpc?.url!,
+            ])}
+          </div>
+          <ButtonComponent
+            label="popup_html_switch_rpc"
+            onClick={switchRpc}></ButtonComponent>
+        </div>
+      );
+    } else if (surveyToDisplay) {
+      return <SurveyComponent survey={surveyToDisplay} />;
+    }
+  };
+
+  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
+    const clampedScrollTop = Math.min(
+      event.currentTarget.scrollTop,
+      walletScrollHandoffPx,
+    );
+    if (event.currentTarget.scrollTop !== clampedScrollTop) {
+      event.currentTarget.scrollTop = clampedScrollTop;
+    }
+    const scrolled = clampedScrollTop;
+    if (scrolled > scrollTopRef.current) {
+      setShowBottomBar(false);
+    } else {
+      setShowBottomBar(true);
+    }
+    scrollTopRef.current = scrolled;
+  };
+
+  const handleClickOnNftCollection = (
+    params: EvmErc721Token | EvmErc721Token[],
+    screen: EvmScreen,
+  ) => {
+    switch (screen) {
+      case EvmScreen.EVM_NFT_COLLECTION_PAGE: {
+        navigateToWithParams(EvmScreen.EVM_NFT_COLLECTION_PAGE, {
+          collection: params,
+        } as NavigationParams);
+        break;
+      }
+      case EvmScreen.EVM_NFT_ALL_NFTS_PAGE: {
+        navigateToWithParams(EvmScreen.EVM_NFT_ALL_NFTS_PAGE, {
+          collections: params,
+        } as NavigationParams);
+        break;
+      }
+    }
+  };
+
+  const handleClickOnPendingTransactions = async () => {
+    if (
+      pendingTransactionsInfo?.pendingTransactionDetails.transactionResponse
+    ) {
+      const transactionResponse =
+        pendingTransactionsInfo.pendingTransactionDetails.transactionResponse;
+      navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
+        ...EvmTransactionDisplayUtils.buildResultNavigationParams({
+          transactionResponse,
+          displayItem:
+            pendingTransactionsInfo.pendingTransactionDetails.displayItem,
+          transactionData:
+            EvmTransactionsUtils.providerTransactionDataFromResponse(
+              transactionResponse,
+            ),
+          context: {
+            pageTitle: 'evm_pending_transaction',
+          },
+        }),
+      } as NavigationParams);
+    } else {
+      const transactionData: ProviderTransactionData = {
+        from: activeAccount.address,
+        type: chain.defaultTransactionType,
+        to: activeAccount.address,
+        data: ethers.ZeroHash,
+        value: '0x0',
+        nonce: pendingTransactionsInfo?.pendingTransactionDetails.nonce,
+      };
+
+      navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+        method: null,
+        message: I18nUtils.getMessage(
+          'evm_cancel_transaction_confirm_message',
+        ),
+        fields: [
+          {
+            label: 'evm_nonce',
+            value: (
+              <div>
+                {pendingTransactionsInfo?.pendingTransactionDetails.nonce}
+              </div>
+            ),
+            warnings: [],
+          },
+        ],
+        title: 'evm_cancel_transaction',
+        tokenInfo: activeAccount.nativeAndErc20Tokens.value.find(
+          (t) => t.tokenInfo.symbol === chain.mainToken,
+        )!,
+        formParams: {},
+        hasGasFee: true,
+        wallet: activeAccount.wallet,
+        transactionData: transactionData,
+        afterConfirmAction: async (gasFee: GasFeeEstimationBase) => {
+          addToLoadingList('html_popup_cancel_transaction_operation');
+          try {
+            const transactionResponse = await EvmTransactionsUtils.send(
+              activeAccount.wallet,
+              {
+                value: transactionData.value,
+                to: transactionData.to,
+                type: Number(transactionData.type),
+                data: transactionData.data,
+                nonce: transactionData.nonce,
+              },
+              gasFee,
+              chain.chainId,
+              transactionData.nonce,
+            );
+
+            navigateToWithParams(EvmScreen.EVM_TRANSFER_RESULT_PAGE, {
+              pageTitle: 'evm_canceled_transaction',
+              transactionResponse: transactionResponse,
+              detailFields: [],
+              gasFee: gasFee,
+              transactionData: transactionData,
+            });
+          } catch (err) {
+            Logger.error('Error during cancel transaction', err);
+            setErrorMessage('evm_cancel_transaction_error');
+          } finally {
+            removeFromLoadingList('html_popup_cancel_transaction_operation');
+          }
+        },
+      } as EVMConfirmationPageParams);
+    }
+  };
+
+  return (
+    <HomepageContainer datatestId={`${Screen.HOME_PAGE}-page`}>
+      <TopBarComponent
+        onMenuButtonClicked={async () => {
+          navigateTo(EvmScreen.EVM_SETTINGS);
+        }}
+        onRefreshButtonClicked={refresh}
+        accountSelector={
+          <AccountSelectorComponent
+            selectedAccountType={ChainType.EVM}
+            background="white"
+            removeBorder
+          />
+        }
+      />
+
+      <div
+        className={'home-page-content'}
+        ref={homeContentRef}
+        onScroll={handleScroll}
+        onWheelCapture={relayWheelToWallet}>
+        <div className="evm-account-value-wrapper">
+          {accountValues && (
+            <EstimatedAccountValueSectionComponent
+              hasPortofolio
+              onPortfolioClick={PortfolioRouteUtils.open}
+              mainTokenSymbol={chain.mainToken}
+              accountValues={{
+                [AccountValueType.DOLLARS]: accountValues.usdValue,
+                [AccountValueType.TOKEN]: accountValues.mainTokenValue,
+              }}
+            />
+          )}
+
+          <EvmDappStatusComponent />
+        </div>
+        {pendingTransactionsInfo && pendingTransactionsInfo.hasPending && (
+          <div
+            className="pending-transactions-info"
+            onClick={handleClickOnPendingTransactions}>
+            <div className="pending-transactions-info-title">
+              {I18nUtils.getMessage(
+                pendingTransactionsInfo.pendingTransactionDetails.title,
+                [pendingTransactionsInfo.queuedTransactionsCount.toString()],
+              )}
+            </div>
+          </div>
+        )}
+        <EvmWalletInfoSectionComponent
+          activeAccount={activeAccount}
+          onClickOnNftPreview={handleClickOnNftCollection}
+          chain={chain}
+          loadEvmHistory={loadEvmHistory}
+          reloadEvmActiveAccount={refresh}
+          initialDisplayNfts={returningFromNftPage}
+          initialDisplayHistory={returningFromHistoryDetails}
+          walletScrollRef={walletScrollRef}
+        />
+      </div>
+      <ActionsSectionComponent
+        additionalClass={showBottomBar ? undefined : 'down'}
+        actionButtonList={EvmActionButtonList(
+          activeAccount.nativeAndErc20Tokens.value[0],
+        )}
+      />
+      <ProposalVotingSectionComponent />
+      {renderPopup(displayWhatsNew, surveyToDisplay, displayChangeRpcPopup)}
+      <TutorialPopupComponent />
+    </HomepageContainer>
+  );
+};
+
+const mapStateToProps = (state: RootState) => {
+  return {
+    chain: state.chain as EvmChain,
+    accounts: state.evm.accounts,
+    activeAccount: state.evm.activeAccount,
+    returningFromNftPage: Boolean(
+      state.navigation.stack[0]?.params?.initialDisplayNfts ||
+      state.navigation.stack[0]?.previousParams?.collection ||
+      state.navigation.stack[0]?.previousParams?.collections,
+    ),
+    returningFromHistoryDetails: Boolean(
+      state.navigation.stack[0]?.params?.initialDisplayHistory,
+    ),
+  };
+};
+
+const connector = connect(mapStateToProps, {
+  loadCurrencyPrices,
+  resetTitleContainerProperties,
+  setErrorMessage,
+  loadEvmActiveAccount,
+  navigateTo,
+  navigateToWithParams,
+  loadEvmHistory,
+  addToLoadingList,
+  removeFromLoadingList,
+});
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+export const EvmHomeComponent = connector(Home);

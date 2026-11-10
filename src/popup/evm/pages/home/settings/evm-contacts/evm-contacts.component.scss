@@ -1,0 +1,39 @@
+@import 'src/common-ui/contacts/contacts-settings-page/contacts-settings-page.scss';
+
+.evm-contacts-page {
+  .category-title {
+    @include poppins500(14px);
+  }
+
+  .empty-address-item {
+    @include poppins400(14px);
+    color: var(--main-font-color);
+    display: flex;
+    align-items: center;
+    padding: 8px 0 8px 8px;
+  }
+
+  .chain-select-panel {
+    margin: 0;
+
+    .custom-select-container {
+      .custom-select {
+        width: 100%;
+
+        .react-dropdown-select-dropdown {
+          box-sizing: border-box;
+          min-width: 100%;
+          width: 100%;
+
+          .custom-select-dropdown,
+          .option,
+          .custom-select-item {
+            box-sizing: border-box;
+            max-width: unset;
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+}

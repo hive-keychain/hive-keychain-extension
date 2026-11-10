@@ -1,0 +1,105 @@
+.nft-collection-preview-card {
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+  align-items: stretch;
+  color: var(--main-font-color);
+  cursor: pointer;
+  width: calc(100% - 60px);
+  min-width: 0;
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--card-border);
+
+  &.is-last {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .nft-collection-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 12px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .nft-collection-heading {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .nft-collection-name {
+    @include poppins600(15px);
+    color: var(--main-font-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .nft-collection-address {
+    @include poppins300(12px);
+    opacity: 0.65;
+    font-style: italic;
+  }
+
+  .nft-collection-count {
+    display: inline-flex;
+    align-items: center;
+    column-gap: 4px;
+    flex-shrink: 0;
+    height: 26px;
+    padding: 0 8px 0 10px;
+    border-radius: 66px;
+    border: 1px solid var(--card-border);
+    background: var(--form-panel-background);
+    color: var(--main-font-color);
+    @include poppins500(12px);
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .nft-collection-count-icon {
+    display: flex;
+    align-items: center;
+    opacity: 0.72;
+    @include icon-size(14px);
+  }
+
+  .nft-preview-container {
+    display: flex;
+    column-gap: 8px;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .nft-preview-thumb {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .nft-media {
+    height: 64px;
+    width: 64px;
+    object-fit: contain;
+    border-radius: 10px;
+    display: block;
+  }
+
+  .nft-balance {
+    position: absolute;
+    right: 4px;
+    bottom: 4px;
+    background: rgba(33, 40, 56, 0.72);
+    color: white;
+    border-radius: 6px;
+    padding: 3px 5px;
+    font-size: 10px;
+    line-height: 1;
+    font-weight: 500;
+  }
+}

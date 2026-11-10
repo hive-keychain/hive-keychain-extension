@@ -15,6 +15,7 @@ import Config from 'src/config';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('proposal-voting-section.component tests:\n', () => {
   let toHpSpy: jest.SpiedFunction<typeof FormatUtils.toHP>;
 
@@ -51,7 +52,7 @@ describe('proposal-voting-section.component tests:\n', () => {
       ).toBeInTheDocument();
       expect(
         screen.getByText(
-          chrome.i18n.getMessage('popup_html_proposal_vote'),
+          I18nUtils.getMessage('popup_html_proposal_vote'),
         ),
       ).toBeInTheDocument();
     });
@@ -69,7 +70,7 @@ describe('proposal-voting-section.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_kc_proposal_vote_successful'),
+          I18nUtils.getMessage('popup_html_kc_proposal_vote_successful'),
         ),
       ).toBeInTheDocument();
       expect(
@@ -86,7 +87,7 @@ describe('proposal-voting-section.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_proposal_vote_fail'),
+          I18nUtils.getMessage('popup_html_proposal_vote_fail'),
         ),
       ).toBeInTheDocument();
     });
@@ -151,7 +152,7 @@ describe('proposal-voting-section.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_missing_key', ['active']),
+          I18nUtils.getMessage('popup_missing_key', ['active']),
         ),
       ).toBeInTheDocument();
     });

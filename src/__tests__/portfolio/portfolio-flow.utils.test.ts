@@ -1,0 +1,2321 @@
+import { ChainType } from '@popup/multichain/interfaces/chains.interface';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { PortfolioCanonicalAsset } from 'src/portfolio/portfolio-api.interface';
+import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
+
+const createTestCanonicalAsset = (
+  asset: Pick<
+    PortfolioCanonicalAsset,
+    'assetId' | 'ecosystem' | 'symbol' | 'name'
+  > &
+    Partial<PortfolioCanonicalAsset>,
+): PortfolioCanonicalAsset => ({
+  chainId: null,
+  address: null,
+  decimals: null,
+  isNative: false,
+    familyId: asset.symbol.toLowerCase(),
+  logoUrl: null,
+  priceUsd: 0,
+  rankScore: 0,
+  ...asset,
+});
+
+const hiveAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
+  assetId: 'hive-hive',
+  ecosystem: 'hive',
+  symbol: 'HIVE',
+  name: 'Hive',
+});
+
+const hbdAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
+  assetId: 'hive-hbd',
+  ecosystem: 'hive',
+  symbol: 'HBD',
+  name: 'Hive Backed Dollar',
+});
+
+const hpAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
+  assetId: 'hive-hp',
+  ecosystem: 'hive',
+  symbol: 'HP',
+  name: 'Hive Power',
+});
+
+const hiveEngineAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
+  assetId: 'he-dec',
+  ecosystem: 'hive_engine',
+  symbol: 'DEC',
+  name: 'Dark Energy Crystals',
+});
+
+const ethAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
+  assetId: 'evm-eth-1',
+  ecosystem: 'evm',
+  symbol: 'ETH',
+  name: 'Ether',
+  chainId: '0x1',
+  isNative: true,
+  familyId: 'eth',
+});
+
+const sepoliaEthAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
+  assetId: 'evm-eth-sepolia',
+  ecosystem: 'evm',
+  symbol: 'ETH',
+  name: 'Sepolia Ether',
+  chainId: '0xaa36a7',
+  isNative: true,
+  familyId: 'eth',
+});
+
+const btcAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
+  assetId: 'utxo:native:bitcoin',
+  ecosystem: 'utxo',
+  symbol: 'BTC',
+  name: 'Bitcoin',
+  chainId: 'bitcoin',
+  isNative: true,
+  familyId: 'utxo:native:btc',
+});
+
+const xrpAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
+  assetId: 'external:native:ripple',
+  ecosystem: 'external',
+  symbol: 'XRP',
+  name: 'XRP',
+  chainId: 'ripple',
+  isNative: true,
+  familyId: 'external:native:xrp',
+});
+
+describe('PortfolioFlowUtils', () => {
+  it('filters destination-only assets out of actionable swap source assets', () => {
+    expect(
+      PortfolioFlowUtils.filterActionableSwapSourceAssets([
+        ethAsset,
+        btcAsset,
+        xrpAsset,
+      ]),
+    ).toEqual([ethAsset]);
+  });
+
+  it('builds from asset options from positive portfolio balances and excludes testnets', () => {
+    const options = PortfolioFlowUtils.buildPortfolioFromSelectOptions([
+      {
+        key: 'hive:HIVE',
+        symbol: 'HIVE',
+        network: 'Hive',
+        balance: '10',
+        isHive: true,
+      },
+      {
+        key: 'hive:HP',
+        symbol: 'HP',
+        network: 'Hive',
+        balance: '5',
+        isHive: true,
+      },
+      {
+        key: '0xaa36a7:ETH:native',
+        symbol: 'ETH',
+        network: 'Sepolia',
+        balance: '1',
+        chainId: '0xaa36a7',
+        isTestnet: true,
+      },
+      {
+        key: '0x1:ETH:native',
+        symbol: 'ETH',
+        network: 'Ethereum',
+        balance: '2',
+        chainId: '0x1',
+        isTestnet: false,
+      },
+      {
+        key: 'hive:DEC',
+        symbol: 'DEC',
+        network: 'Hive',
+        balance: '0',
+      },
+    ]);
+
+    expect(options).toEqual([
+      {
+        value: 'hive:HIVE',
+        label: 'HIVE - Hive (10)',
+      },
+      {
+        value: '0x1:ETH:native',
+        label: 'ETH - Ethereum (2)',
+      },
+    ]);
+  });
+
+  it('formats from balances to token decimals and leaves Hive savings out of the available amount', () => {
+    const options = PortfolioFlowUtils.buildPortfolioFromSelectOptions([
+      {
+        key: 'hive:HIVE',
+        symbol: 'HIVE',
+        network: 'Hive',
+        balance: '12.000000000000002',
+        spendableBalance: '11.0019',
+        decimals: 3,
+        isHive: true,
+      },
+      {
+        key: 'hive:HBD',
+        symbol: 'HBD',
+        network: 'Hive',
+        balance: '3',
+        spendableBalance: '0',
+        decimals: 3,
+        isHive: true,
+      },
+      {
+        key: '0x1:USDC:0xabc',
+        symbol: 'USDC',
+        network: 'Ethereum',
+        balance: '1.23456789',
+        decimals: 6,
+        chainId: '0x1',
+      },
+    ]);
+
+    expect(options).toEqual([
+      {
+        value: 'hive:HIVE',
+        label: 'HIVE - Hive (11.001)',
+      },
+      {
+        value: '0x1:USDC:0xabc',
+        label: 'USDC - Ethereum (1.234567)',
+      },
+    ]);
+  });
+
+  it('defaults to the first available asset option value', () => {
+    expect(
+      PortfolioFlowUtils.getDefaultSelectOptionValue([
+        { label: 'A', value: 'a' },
+        { label: 'B', value: 'b' },
+      ]),
+    ).toBe('a');
+    expect(PortfolioFlowUtils.getDefaultSelectOptionValue([])).toBe('');
+  });
+
+  it('prefers a matching preferred option value when defaulting', () => {
+    expect(
+      PortfolioFlowUtils.getDefaultSelectOptionValue(
+        [
+          { label: 'A', value: 'a' },
+          { label: 'B', value: 'b' },
+        ],
+        'b',
+      ),
+    ).toBe('b');
+    expect(
+      PortfolioFlowUtils.getDefaultSelectOptionValue(
+        [
+          { label: 'A', value: 'a' },
+          { label: 'B', value: 'b' },
+        ],
+        'missing',
+      ),
+    ).toBe('a');
+  });
+
+  describe('resolveRequestedSwapToAssetId', () => {
+    const portfolioChains = {
+      ethereum: {
+        id: 'ethereum',
+        name: 'Ethereum',
+        logoUrl: null,
+        numericChainId: 1,
+        rankScore: 0,
+      },
+      polygon: {
+        id: 'polygon',
+        name: 'Polygon',
+        logoUrl: null,
+        numericChainId: 137,
+        rankScore: 0,
+      },
+    };
+    const hiveSwapAsset = createTestCanonicalAsset({
+      assetId: 'hive-hive',
+      ecosystem: 'hive',
+      symbol: 'HIVE',
+      name: 'Hive',
+    });
+    const decSwapAsset = createTestCanonicalAsset({
+      assetId: 'hive_engine:DEC',
+      ecosystem: 'hive_engine',
+      symbol: 'DEC',
+      name: 'Dark Energy Crystals',
+    });
+    const ethSwapAsset = createTestCanonicalAsset({
+      assetId: 'evm:native:ethereum',
+      ecosystem: 'evm',
+      symbol: 'ETH',
+      name: 'Ether',
+      chainId: 'ethereum',
+      isNative: true,
+    });
+    const usdcSwapAsset = createTestCanonicalAsset({
+      assetId: 'evm:token:ethereum:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+      ecosystem: 'evm',
+      symbol: 'USDC',
+      name: 'USD Coin',
+      chainId: 'ethereum',
+      address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+    });
+    const polygonUsdcSwapAsset = createTestCanonicalAsset({
+      assetId: 'evm:token:polygon:0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+      ecosystem: 'evm',
+      symbol: 'USDC',
+      name: 'USD Coin',
+      chainId: 'polygon',
+      address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+    });
+    const assets = [
+      hiveSwapAsset,
+      decSwapAsset,
+      ethSwapAsset,
+      usdcSwapAsset,
+      polygonUsdcSwapAsset,
+    ];
+
+    it('selects Hive and Hive Engine assets by symbol', () => {
+      expect(
+        PortfolioFlowUtils.resolveRequestedSwapToAssetId(
+          { symbol: 'dec', ecosystem: 'hive' },
+          assets,
+        ),
+      ).toBe('hive_engine:DEC');
+      expect(
+        PortfolioFlowUtils.resolveRequestedSwapToAssetId(
+          { symbol: 'HIVE', ecosystem: 'hive' },
+          assets,
+        ),
+      ).toBe('hive-hive');
+    });
+
+    it('selects the EVM token on the requested chain and contract', () => {
+      expect(
+        PortfolioFlowUtils.resolveRequestedSwapToAssetId(
+          {
+            symbol: 'USDC',
+            ecosystem: 'evm',
+            chainId: '0x1',
+            contractAddress: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+          },
+          assets,
+          [],
+          portfolioChains,
+        ),
+      ).toBe(usdcSwapAsset.assetId);
+      expect(
+        PortfolioFlowUtils.resolveRequestedSwapToAssetId(
+          { symbol: 'ETH', ecosystem: 'evm', chainId: '1' },
+          assets,
+          [],
+          portfolioChains,
+        ),
+      ).toBe(ethSwapAsset.assetId);
+    });
+
+    it('does not match a different chain for the same symbol', () => {
+      expect(
+        PortfolioFlowUtils.resolveRequestedSwapToAssetId(
+          {
+            symbol: 'USDC',
+            ecosystem: 'evm',
+            chainId: '0x89',
+            contractAddress: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+          },
+          assets,
+          [],
+          portfolioChains,
+        ),
+      ).toBeUndefined();
+    });
+  });
+
+  describe('resolveDefaultSwapFromSelectOptionValue', () => {
+    const ethereumChain = {
+      type: ChainType.EVM,
+      chainId: '0x1',
+    };
+    const polygonChain = {
+      type: ChainType.EVM,
+      chainId: '0x89',
+    };
+    const hiveChain = {
+      type: ChainType.HIVE,
+      chainId: 'hive',
+    };
+
+    const ethRow = {
+      key: '0x1:ETH:native',
+      symbol: 'ETH',
+      network: 'Ethereum',
+      balance: '0.5',
+      usdValue: 50,
+      chainId: '0x1',
+    };
+    const usdcRow = {
+      key: '0x1:USDC:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+      symbol: 'USDC',
+      network: 'Ethereum',
+      balance: '200',
+      usdValue: 200,
+      chainId: '0x1',
+    };
+    const maticRow = {
+      key: '0x89:MATIC:native',
+      symbol: 'MATIC',
+      network: 'Polygon',
+      balance: '100',
+      usdValue: 80,
+      chainId: '0x89',
+    };
+    const hiveRow = {
+      key: 'hive:HIVE',
+      symbol: 'HIVE',
+      network: 'Hive',
+      balance: '20',
+      usdValue: 10,
+      isHive: true,
+    };
+    const decRow = {
+      key: 'hive:DEC',
+      symbol: 'DEC',
+      network: 'Hive',
+      balance: '1000',
+      usdValue: 40,
+      isHive: true,
+    };
+
+    const toOptions = (
+      rows: Array<{ key: string; symbol: string }>,
+    ) =>
+      rows.map((row) => ({
+        label: row.symbol,
+        value: row.key,
+      }));
+
+    it('selects the highest USD token on the active EVM chain when native gas is available', () => {
+      expect(
+        PortfolioFlowUtils.resolveDefaultSwapFromSelectOptionValue(
+          toOptions([ethRow, usdcRow, maticRow]),
+          [ethRow, usdcRow, maticRow],
+          ethereumChain,
+        ),
+      ).toBe(usdcRow.key);
+    });
+
+    it('prefers the active chain over a higher-USD token on another chain', () => {
+      expect(
+        PortfolioFlowUtils.resolveDefaultSwapFromSelectOptionValue(
+          toOptions([usdcRow, maticRow]),
+          [ethRow, usdcRow, maticRow],
+          polygonChain,
+        ),
+      ).toBe(maticRow.key);
+    });
+
+    it('skips the active chain when it has no native gas and uses the highest USD token that can pay gas', () => {
+      const ethWithoutGas = { ...ethRow, balance: '0', usdValue: 0 };
+
+      expect(
+        PortfolioFlowUtils.resolveDefaultSwapFromSelectOptionValue(
+          toOptions([usdcRow, maticRow]),
+          [ethWithoutGas, usdcRow, maticRow],
+          ethereumChain,
+        ),
+      ).toBe(maticRow.key);
+    });
+
+    it('falls back to the highest USD gas-capable token when the active chain has no USD value', () => {
+      const dustEth = { ...ethRow, usdValue: 0 };
+
+      expect(
+        PortfolioFlowUtils.resolveDefaultSwapFromSelectOptionValue(
+          toOptions([dustEth, maticRow]),
+          [dustEth, maticRow],
+          ethereumChain,
+        ),
+      ).toBe(maticRow.key);
+    });
+
+    it('selects the highest USD token in the wallet when no active chain is provided', () => {
+      expect(
+        PortfolioFlowUtils.resolveDefaultSwapFromSelectOptionValue(
+          toOptions([ethRow, usdcRow, maticRow]),
+          [ethRow, usdcRow, maticRow],
+        ),
+      ).toBe(usdcRow.key);
+    });
+
+    it('prefers Hive holdings when Hive is the active chain even if an EVM token is worth more', () => {
+      expect(
+        PortfolioFlowUtils.resolveDefaultSwapFromSelectOptionValue(
+          toOptions([usdcRow, hiveRow, decRow]),
+          [ethRow, usdcRow, hiveRow, decRow],
+          hiveChain,
+        ),
+      ).toBe(decRow.key);
+    });
+
+    it('skips Hive tokens when HIVE gas balance is 0', () => {
+      const hiveWithoutGas = { ...hiveRow, balance: '0', usdValue: 0 };
+
+      expect(
+        PortfolioFlowUtils.resolveDefaultSwapFromSelectOptionValue(
+          toOptions([usdcRow, decRow]),
+          [ethRow, usdcRow, hiveWithoutGas, decRow],
+          hiveChain,
+        ),
+      ).toBe(usdcRow.key);
+    });
+
+    it('keeps the earlier token when USD values are tied on the same chain', () => {
+      const daiRow = {
+        key: '0x1:DAI:0x6b175474e89094c44da98b954eedeac495271d0f',
+        symbol: 'DAI',
+        network: 'Ethereum',
+        balance: '200',
+        usdValue: 200,
+        chainId: '0x1',
+      };
+
+      expect(
+        PortfolioFlowUtils.resolveDefaultSwapFromSelectOptionValue(
+          toOptions([usdcRow, daiRow]),
+          [ethRow, usdcRow, daiRow],
+          ethereumChain,
+        ),
+      ).toBe(usdcRow.key);
+    });
+
+    it('can select the native gas token when it has the highest USD value', () => {
+      const cheapUsdc = { ...usdcRow, usdValue: 10 };
+
+      expect(
+        PortfolioFlowUtils.resolveDefaultSwapFromSelectOptionValue(
+          toOptions([ethRow, cheapUsdc]),
+          [ethRow, cheapUsdc],
+          ethereumChain,
+        ),
+      ).toBe(ethRow.key);
+    });
+
+    it('returns undefined when no option has native gas', () => {
+      const ethWithoutGas = { ...ethRow, balance: '0', usdValue: 0 };
+
+      expect(
+        PortfolioFlowUtils.resolveDefaultSwapFromSelectOptionValue(
+          toOptions([usdcRow]),
+          [ethWithoutGas, usdcRow],
+          ethereumChain,
+        ),
+      ).toBeUndefined();
+    });
+  });
+
+  describe('isSwapFromTokenReadyToSelect', () => {
+    const ethereumChain = {
+      type: ChainType.EVM,
+      chainId: '0x1',
+    };
+    const polygonChain = {
+      type: ChainType.EVM,
+      chainId: '0x89',
+    };
+    const ethRow = {
+      key: '0x1:ETH:native',
+      symbol: 'ETH',
+      network: 'Ethereum',
+      balance: '0.5',
+      usdValue: 50,
+      chainId: '0x1',
+    };
+    const maticRow = {
+      key: '0x89:MATIC:native',
+      symbol: 'MATIC',
+      network: 'Polygon',
+      balance: '100',
+      usdValue: 80,
+      chainId: '0x89',
+    };
+    const toOptions = (rows: Array<{ key: string; symbol: string }>) =>
+      rows.map((row) => ({
+        label: row.symbol,
+        value: row.key,
+      }));
+
+    it('waits until last-used assets have been read', () => {
+      expect(
+        PortfolioFlowUtils.isSwapFromTokenReadyToSelect({
+          hasLoadedLastUsedSwapAssets: false,
+          lastUsedFromOptionValue: ethRow.key,
+          fromAssetOptions: toOptions([ethRow]),
+          rows: [ethRow],
+          activeChain: ethereumChain,
+          finishedEvmChainIds: ['0x1'],
+          hasLoadedAllPortfolioBalances: true,
+        }),
+      ).toBe(false);
+    });
+
+    it('is ready when the last-used from token is already in the list', () => {
+      expect(
+        PortfolioFlowUtils.isSwapFromTokenReadyToSelect({
+          hasLoadedLastUsedSwapAssets: true,
+          lastUsedFromOptionValue: ethRow.key,
+          fromAssetOptions: toOptions([ethRow]),
+          rows: [ethRow],
+          activeChain: polygonChain,
+          finishedEvmChainIds: ['0x1'],
+          hasLoadedAllPortfolioBalances: false,
+        }),
+      ).toBe(true);
+    });
+
+    it('is ready when the active chain has finished with a from token', () => {
+      expect(
+        PortfolioFlowUtils.isSwapFromTokenReadyToSelect({
+          hasLoadedLastUsedSwapAssets: true,
+          lastUsedFromOptionValue: undefined,
+          fromAssetOptions: toOptions([ethRow, maticRow]),
+          rows: [ethRow, maticRow],
+          activeChain: polygonChain,
+          finishedEvmChainIds: ['0x89'],
+          hasLoadedAllPortfolioBalances: false,
+        }),
+      ).toBe(true);
+    });
+
+    it('waits when the active chain has not finished even if another chain has', () => {
+      expect(
+        PortfolioFlowUtils.isSwapFromTokenReadyToSelect({
+          hasLoadedLastUsedSwapAssets: true,
+          lastUsedFromOptionValue: undefined,
+          fromAssetOptions: toOptions([ethRow]),
+          rows: [ethRow],
+          activeChain: polygonChain,
+          finishedEvmChainIds: ['0x1'],
+          hasLoadedAllPortfolioBalances: false,
+        }),
+      ).toBe(false);
+    });
+
+    it('is ready after all balances load even with no last-used or active-chain token', () => {
+      expect(
+        PortfolioFlowUtils.isSwapFromTokenReadyToSelect({
+          hasLoadedLastUsedSwapAssets: true,
+          lastUsedFromOptionValue: undefined,
+          fromAssetOptions: [],
+          rows: [],
+          activeChain: polygonChain,
+          finishedEvmChainIds: ['0x1', '0x89'],
+          hasLoadedAllPortfolioBalances: true,
+        }),
+      ).toBe(true);
+    });
+  });
+
+  it('resolves a from-select option value from a preferred canonical asset id', () => {
+    const rows = [
+      {
+        key: 'hive:HIVE',
+        symbol: 'HIVE',
+        network: 'Hive',
+        balance: '10',
+      },
+      {
+        key: 'hive:HBD',
+        symbol: 'HBD',
+        network: 'Hive',
+        balance: '5',
+      },
+    ];
+    const options = [
+      { label: 'HIVE', value: 'hive:HIVE' },
+      { label: 'HBD', value: 'hive:HBD' },
+    ];
+
+    expect(
+      PortfolioFlowUtils.resolveFromSelectOptionValueForAssetId(
+        'hive-hbd',
+        options,
+        rows,
+        [hiveAsset, hbdAsset],
+      ),
+    ).toBe('hive:HBD');
+    expect(
+      PortfolioFlowUtils.resolveFromSelectOptionValueForAssetId(
+        'missing',
+        options,
+        rows,
+        [hiveAsset, hbdAsset],
+      ),
+    ).toBeUndefined();
+    expect(
+      PortfolioFlowUtils.resolveFromSelectOptionValueForAssetId(
+        'hive-hive',
+        [{ label: 'HIVE', value: 'hive-hive' }],
+        [],
+        [hiveAsset],
+      ),
+    ).toBe('hive-hive');
+  });
+
+  describe('getLastUsedSwapAssets and saveLastUsedSwapAssets', () => {
+    it('returns null when nothing valid is stored', async () => {
+      const getSpy = jest
+        .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+        .mockResolvedValue(null);
+
+      await expect(
+        PortfolioFlowUtils.getLastUsedSwapAssets(),
+      ).resolves.toBeNull();
+
+      getSpy.mockResolvedValue({ fromAssetId: 'hive-hive' });
+      await expect(
+        PortfolioFlowUtils.getLastUsedSwapAssets(),
+      ).resolves.toBeNull();
+
+      getSpy.mockRestore();
+    });
+
+    it('returns stored from/to asset ids', async () => {
+      const getSpy = jest
+        .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+        .mockResolvedValue({
+          fromAssetId: 'hive-hive',
+          toAssetId: 'hive-hbd',
+        });
+
+      await expect(
+        PortfolioFlowUtils.getLastUsedSwapAssets(),
+      ).resolves.toEqual({
+        fromAssetId: 'hive-hive',
+        toAssetId: 'hive-hbd',
+      });
+
+      getSpy.mockRestore();
+    });
+
+    it('persists last used swap assets via local storage', async () => {
+      const saveSpy = jest
+        .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+        .mockResolvedValue(undefined);
+
+      await PortfolioFlowUtils.saveLastUsedSwapAssets('hive-hive', 'hive-hbd');
+      expect(saveSpy).toHaveBeenCalledWith(
+        LocalStorageKeyEnum.PORTFOLIO_SWAP_LAST_USED_ASSETS,
+        { fromAssetId: 'hive-hive', toAssetId: 'hive-hbd' },
+      );
+
+      await PortfolioFlowUtils.saveLastUsedSwapAssets('', 'hive-hbd');
+      expect(saveSpy).toHaveBeenCalledTimes(1);
+
+      saveSpy.mockRestore();
+    });
+  });
+
+  it('resolves evm erc20 rows by contract address and slug chain id', () => {
+    const usdcAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
+      assetId:
+        'evm:token:ethereum:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+      ecosystem: 'evm',
+      symbol: 'USDC',
+      name: 'USD Coin',
+      chainId: 'ethereum',
+      familyId: 'usdc',
+    });
+    const chains = [
+      {
+        name: 'Ethereum',
+        chainId: '0x1',
+        logo: 'ethereum.svg',
+      } as never,
+    ];
+
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
+        {
+          key: '0x1:USDC:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+          symbol: 'USDC',
+          network: 'Ethereum',
+          balance: '1',
+          chainId: '0x1',
+        },
+        [usdcAsset],
+        chains,
+      ),
+    ).toBe(
+      'evm:token:ethereum:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+    );
+  });
+
+  it('resolves native evm rows when canonical chain id uses a slug', () => {
+    const nativeEthAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
+      assetId: 'evm:coin:ethereum:eth',
+      ecosystem: 'evm',
+      symbol: 'ETH',
+      name: 'Ether',
+      chainId: 'ethereum',
+      isNative: true,
+      familyId: 'eth',
+    });
+    const chains = [
+      {
+        name: 'Ethereum',
+        chainId: '0x1',
+        logo: 'ethereum.svg',
+      } as never,
+    ];
+
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
+        {
+          key: '0x1:ETH:native',
+          symbol: 'ETH',
+          network: 'Ethereum',
+          balance: '1',
+          chainId: '0x1',
+        },
+        [nativeEthAsset],
+        chains,
+      ),
+    ).toBe('evm:coin:ethereum:eth');
+  });
+
+  it('resolves evm:native:ethereum rows when other chains share the same nativeCoinId', () => {
+    const nativeEthAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
+      assetId: 'evm:native:ethereum',
+      ecosystem: 'evm',
+      symbol: 'ETH',
+      name: 'ETH',
+      chainId: 'ethereum',
+      isNative: true,
+      familyId: 'eth',
+    });
+    const chains = [
+      {
+        name: 'Optimism',
+        chainId: '0xa',
+        nativeCoinId: 'ethereum',
+      } as never,
+      {
+        name: 'Ethereum',
+        chainId: '0x1',
+        nativeCoinId: 'ethereum',
+      } as never,
+    ];
+
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
+        {
+          key: '0x1:ETH:native',
+          symbol: 'ETH',
+          network: 'Ethereum',
+          balance: '0.00596414',
+          chainId: '0x1',
+        },
+        [nativeEthAsset],
+        chains,
+      ),
+    ).toBe('evm:native:ethereum');
+  });
+
+  it('resolves native evm rows using portfolio chain metadata when setup chains are unavailable', () => {
+    const nativeEthAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
+      assetId: 'evm:native:ethereum',
+      ecosystem: 'evm',
+      symbol: 'ETH',
+      name: 'ETH',
+      chainId: 'ethereum',
+      isNative: true,
+      familyId: 'evm-native:eth',
+    });
+    const portfolioChains = {
+      ethereum: {
+        id: 'ethereum',
+        name: 'Ethereum',
+        logoUrl: null,
+        numericChainId: 1,
+        rankScore: 0,
+      },
+    };
+
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRowToSwapFromAssetId(
+        {
+          key: '0x1:ETH:native',
+          symbol: 'ETH',
+          network: 'Ethereum',
+          balance: '0.00596414',
+          chainId: '0x1',
+        },
+        [nativeEthAsset],
+        [],
+        portfolioChains,
+      ),
+    ).toBe('evm:native:ethereum');
+  });
+
+  it('does not match native rows to non-native assets with the same symbol', () => {
+    const wrappedEthAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
+      assetId: 'evm:token:base:baseeth',
+      ecosystem: 'evm',
+      symbol: 'ETH',
+      name: 'Base ETH',
+      chainId: 'base',
+      isNative: false,
+      familyId: 'baseeth',
+    });
+
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
+        {
+          key: '0x1:ETH:native',
+          symbol: 'ETH',
+          network: 'Ethereum',
+          balance: '1',
+          chainId: '0x1',
+        },
+        [wrappedEthAsset],
+        [
+          {
+            name: 'Ethereum',
+            chainId: '0x1',
+          } as never,
+        ],
+      ),
+    ).toBeUndefined();
+  });
+
+  it('does not match evm rows to hive engine assets with the same symbol', () => {
+    const hiveEngineKingAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
+      assetId: 'hive-engine:king',
+      ecosystem: 'hive_engine',
+      symbol: 'KING',
+      name: 'KING',
+      familyId: 'king',
+    });
+    const evmKingAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
+      assetId: 'evm:token:ethereum:0xeb1a81845234f75b412b654415b0f1ae5e8f4339',
+      ecosystem: 'evm',
+      symbol: 'KING',
+      name: 'KING',
+      chainId: 'ethereum',
+      familyId: 'king',
+    });
+    const chains = [
+      {
+        name: 'Ethereum',
+        chainId: '0x1',
+        logo: 'ethereum.svg',
+      } as never,
+    ];
+
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
+        {
+          key: '0x1:KING:0xeb1a81845234f75b412b654415b0f1ae5e8f4339',
+          symbol: 'KING',
+          network: 'Ethereum',
+          balance: '1',
+          chainId: '0x1',
+        },
+        [hiveEngineKingAsset, evmKingAsset],
+        chains,
+      ),
+    ).toBe('evm:token:ethereum:0xeb1a81845234f75b412b654415b0f1ae5e8f4339');
+  });
+
+  it('resolves hive, hive engine, and evm rows to canonical assets', () => {
+    const assets = [hiveAsset, hiveEngineAsset, ethAsset, sepoliaEthAsset];
+
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
+        {
+          key: 'hive:HIVE',
+          symbol: 'HIVE',
+          network: 'Hive',
+          balance: '1',
+        },
+        assets,
+      ),
+    ).toBe('hive-hive');
+
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
+        {
+          key: 'hive:DEC',
+          symbol: 'DEC',
+          network: 'Hive',
+          balance: '1',
+        },
+        assets,
+      ),
+    ).toBe('he-dec');
+
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
+        {
+          key: '0x1:ETH:native',
+          symbol: 'ETH',
+          network: 'Ethereum',
+          balance: '1',
+          chainId: '0x1',
+        },
+        assets,
+      ),
+    ).toBe('evm-eth-1');
+  });
+
+  it('resolves duplicate symbols to the first catalog entry', () => {
+    const firstHiveAsset = createTestCanonicalAsset({
+      assetId: 'hive-hive-first',
+      ecosystem: 'hive',
+      symbol: 'HIVE',
+      name: 'First Hive',
+    });
+    const secondHiveAsset = createTestCanonicalAsset({
+      assetId: 'hive-hive-second',
+      ecosystem: 'hive',
+      symbol: 'hive',
+      name: 'Second Hive',
+    });
+    const hiveRow = {
+      key: 'hive:HIVE',
+      symbol: 'HIVE',
+      network: 'Hive',
+      balance: '1',
+    };
+    const hiveAssets = [firstHiveAsset, secondHiveAsset];
+
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(hiveRow, hiveAssets),
+    ).toBe('hive-hive-first');
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(hiveRow, hiveAssets),
+    ).toBe('hive-hive-first');
+
+    const contractAddress = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
+    const firstUsdcAsset = createTestCanonicalAsset({
+      assetId: `evm:token:ethereum:${contractAddress}`,
+      ecosystem: 'evm',
+      symbol: 'USDC',
+      name: 'First USD Coin',
+      chainId: 'ethereum',
+    });
+    const secondUsdcAsset = createTestCanonicalAsset({
+      assetId: `evm:token:1:${contractAddress}`,
+      ecosystem: 'evm',
+      symbol: 'USDC',
+      name: 'Second USD Coin',
+      chainId: '1',
+    });
+    const chains = [
+      {
+        name: 'Ethereum',
+        chainId: '0x1',
+        logo: 'ethereum.svg',
+      } as never,
+    ];
+    const usdcRow = {
+      key: `0x1:USDC:${contractAddress}`,
+      symbol: 'USDC',
+      network: 'Ethereum',
+      balance: '1',
+      chainId: '0x1',
+    };
+    const usdcAssets = [ethAsset, firstUsdcAsset, secondUsdcAsset];
+
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRowToCanonicalAssetId(
+        usdcRow,
+        usdcAssets,
+        chains,
+      ),
+    ).toBe(firstUsdcAsset.assetId);
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRowToSwapFromAssetId(
+        usdcRow,
+        usdcAssets,
+        chains,
+      ),
+    ).toBe(firstUsdcAsset.assetId);
+  });
+
+  it('resolves a selected row key to a canonical asset id for quotes', () => {
+    const rows = [
+      {
+        key: '0x1:ETH:native',
+        symbol: 'ETH',
+        network: 'Ethereum',
+        balance: '1',
+        chainId: '0x1',
+      },
+    ];
+
+    expect(
+      PortfolioFlowUtils.resolveFromRowKeyToCanonicalAssetId(
+        '0x1:ETH:native',
+        rows,
+        [ethAsset],
+      ),
+    ).toBe('evm-eth-1');
+  });
+
+  it('abbreviates chain filter chip labels to three characters', () => {
+    expect(
+      PortfolioFlowUtils.abbreviatePortfolioChainFilterChipLabel('Ethereum'),
+    ).toBe('ETH');
+    expect(
+      PortfolioFlowUtils.abbreviatePortfolioChainFilterChipLabel('Arbitrum One'),
+    ).toBe('ARB');
+    expect(
+      PortfolioFlowUtils.abbreviatePortfolioChainFilterChipLabel('Hive Engine'),
+    ).toBe('HIV');
+  });
+
+  it('builds chain filter options from canonical assets', () => {
+    const assets = [hiveAsset, hiveEngineAsset, ethAsset, sepoliaEthAsset];
+
+    expect(
+      PortfolioFlowUtils.buildCanonicalAssetChainFilterOptions(assets, [
+        {
+          name: 'Ethereum',
+          chainId: '0x1',
+          logo: 'ethereum.svg',
+        } as never,
+      ]),
+    ).toEqual([
+      {
+        value: 'evm:11155111',
+        label: '0xaa36a7',
+        chipLabel: '0XA',
+        key: 'evm:11155111',
+        img: undefined,
+        imgChip: undefined,
+      },
+      {
+        value: 'evm:1',
+        label: 'Ethereum',
+        chipLabel: 'ETH',
+        key: 'evm:1',
+        img: 'ethereum.svg',
+        imgChip: undefined,
+      },
+      {
+        value: 'hive',
+        label: 'Hive',
+        chipLabel: 'HIV',
+        key: 'hive',
+        img: '/assets/images/wallet/hive-logo.svg',
+        imgChip: undefined,
+      },
+      {
+        value: 'hive_engine',
+        label: 'Hive Engine',
+        chipLabel: 'HE',
+        key: 'hive_engine',
+        img: '/assets/images/wallet/hive-engine.svg',
+        imgChip: undefined,
+      },
+    ]);
+  });
+
+  it('dedupes chain filter options that share a chain id across ecosystems', () => {
+    const solSvm = createTestCanonicalAsset({
+      assetId: 'svm:native:solana',
+      ecosystem: 'svm',
+      symbol: 'SOL',
+      name: 'Solana',
+      chainId: 'solana',
+      isNative: true,
+    });
+    const solMisTaggedAsEvm = createTestCanonicalAsset({
+      assetId: 'evm:token:solana:abc',
+      ecosystem: 'evm',
+      symbol: 'MEME',
+      name: 'Meme',
+      chainId: 'solana',
+    });
+    const tronTvm = createTestCanonicalAsset({
+      assetId: 'tvm:native:tron',
+      ecosystem: 'tvm',
+      symbol: 'TRX',
+      name: 'TRON',
+      chainId: 'tron',
+      isNative: true,
+    });
+    const tronMisTaggedAsEvm = createTestCanonicalAsset({
+      assetId: 'evm:token:tron:xyz',
+      ecosystem: 'evm',
+      symbol: 'USDT',
+      name: 'Tether',
+      chainId: 'tron',
+    });
+    const portfolioChains = {
+      solana: {
+        id: 'solana',
+        name: 'Solana',
+        logoUrl: 'solana.svg',
+        numericChainId: null,
+        rankScore: 9000,
+      },
+      tron: {
+        id: 'tron',
+        name: 'Tron',
+        logoUrl: 'tron.svg',
+        numericChainId: null,
+        rankScore: 9500,
+      },
+    };
+
+    expect(
+      PortfolioFlowUtils.buildCanonicalAssetChainFilterOptions(
+        [solMisTaggedAsEvm, solSvm, tronMisTaggedAsEvm, tronTvm],
+        [],
+        portfolioChains,
+      ),
+    ).toEqual([
+      {
+        value: 'tvm:tron',
+        label: 'Tron',
+        chipLabel: 'TRO',
+        key: 'tvm:tron',
+        img: 'tron.svg',
+      },
+      {
+        value: 'svm:solana',
+        label: 'Solana',
+        chipLabel: 'SOL',
+        key: 'svm:solana',
+        img: 'solana.svg',
+      },
+    ]);
+
+    expect(
+      PortfolioFlowUtils.filterCanonicalAssets(
+        [solMisTaggedAsEvm, solSvm, tronMisTaggedAsEvm, tronTvm],
+        { chainFilter: 'svm:solana' },
+      ).assets.map((asset) => asset.assetId),
+    ).toEqual(['evm:token:solana:abc', 'svm:native:solana']);
+  });
+
+  it('sorts chain filter options by API chain rankScore descending', () => {
+    const assets = [hiveAsset, ethAsset, sepoliaEthAsset];
+    const portfolioChains = {
+      '1': {
+        id: '1',
+        name: 'Ethereum',
+        logoUrl: 'ethereum.svg',
+        numericChainId: 1,
+        rankScore: 9200,
+      },
+      '11155111': {
+        id: '11155111',
+        name: 'Sepolia',
+        logoUrl: null,
+        numericChainId: 11155111,
+        rankScore: 10,
+      },
+      hive: {
+        id: 'hive',
+        name: 'Hive',
+        logoUrl: null,
+        numericChainId: null,
+        rankScore: 500,
+      },
+    };
+
+    expect(
+      PortfolioFlowUtils.buildCanonicalAssetChainFilterOptions(
+        assets,
+        [],
+        portfolioChains,
+      ).map((option) => option.value),
+    ).toEqual(['evm:1', 'hive', 'evm:11155111']);
+  });
+
+  it('pins supported chains ahead of API-ranked chains in quick chip options', () => {
+    const catalogEthAsset = createTestCanonicalAsset({
+      assetId: 'evm:native:ethereum',
+      ecosystem: 'evm',
+      symbol: 'ETH',
+      name: 'Ether',
+      chainId: 'ethereum',
+      isNative: true,
+      familyId: 'eth',
+    });
+    const supportedEthereum = {
+      name: 'Ethereum',
+      chainId: '0x1',
+      logo: 'ethereum.svg',
+      openSeaChainId: 'ethereum',
+    } as never;
+    const chainOptions =
+      PortfolioFlowUtils.buildCanonicalAssetChainFilterOptions(
+        [
+          catalogEthAsset,
+          hiveAsset,
+          hiveEngineAsset,
+          createTestCanonicalAsset({
+            assetId: 'evm:native:146',
+            ecosystem: 'evm',
+            symbol: 'S',
+            name: 'Sonic',
+            chainId: '146',
+            isNative: true,
+            familyId: 'sonic',
+          }),
+          createTestCanonicalAsset({
+            assetId: 'evm:native:274',
+            ecosystem: 'evm',
+            symbol: 'X',
+            name: 'Chain274',
+            chainId: '274',
+            isNative: true,
+            familyId: 'chain274',
+          }),
+        ],
+        [supportedEthereum],
+        {
+          '146': {
+            id: '146',
+            name: '146',
+            logoUrl: null,
+            numericChainId: 146,
+            rankScore: 9900,
+          },
+          '274': {
+            id: '274',
+            name: '274',
+            logoUrl: null,
+            numericChainId: 274,
+            rankScore: 9800,
+          },
+          ethereum: {
+            id: 'ethereum',
+            name: 'Ethereum',
+            logoUrl: 'ethereum.svg',
+            numericChainId: 1,
+            rankScore: 100,
+          },
+        },
+      );
+
+    expect(chainOptions.map((option) => option.value)).toEqual([
+      'evm:146',
+      'evm:274',
+      'evm:ethereum',
+      'hive',
+      'hive_engine',
+    ]);
+
+    expect(
+      PortfolioFlowUtils.buildQuickPortfolioChainFilterOptions(
+        chainOptions,
+        [supportedEthereum],
+        3,
+      ).map((option) => option.value),
+    ).toEqual(['hive', 'hive_engine', 'evm:ethereum']);
+  });
+
+  it('filters canonical assets by text and chain', () => {
+    const assets = [hiveAsset, hiveEngineAsset, ethAsset, sepoliaEthAsset];
+
+    expect(
+      PortfolioFlowUtils.filterCanonicalAssets(assets, {
+        textFilter: 'eth',
+        chainFilter: 'evm:1',
+      }),
+    ).toEqual({
+      assets: [ethAsset],
+      totalMatches: 1,
+    });
+
+    expect(
+      PortfolioFlowUtils.filterCanonicalAssets(assets, {
+        textFilter: 'dec',
+        chainFilter: 'hive_engine',
+      }),
+    ).toEqual({
+      assets: [hiveEngineAsset],
+      totalMatches: 1,
+    });
+
+    expect(
+      PortfolioFlowUtils.filterCanonicalAssets(assets, {
+        textFilter: 'dark',
+      }).assets,
+    ).toEqual([hiveEngineAsset]);
+
+    expect(
+      PortfolioFlowUtils.filterCanonicalAssets([hiveAsset, hbdAsset], {
+        textFilter: 'backed',
+      }).assets,
+    ).toEqual([hbdAsset]);
+
+    expect(
+      PortfolioFlowUtils.filterCanonicalAssets([hiveAsset, hbdAsset], {
+        textFilter: 'hive',
+      }).assets,
+    ).toEqual([hiveAsset, hbdAsset]);
+
+    const wethAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
+      assetId: 'evm-weth-1',
+      ecosystem: 'evm',
+      symbol: 'WETH',
+      name: 'Wrapped Ether',
+      chainId: '0x1',
+      familyId: 'eth',
+    });
+
+    expect(
+      PortfolioFlowUtils.filterCanonicalAssets([wethAsset, ethAsset], {
+        textFilter: 'eth',
+      }).assets,
+    ).toEqual([ethAsset, wethAsset]);
+  });
+
+  it('filters canonical assets by network label in text search', () => {
+    const portfolioChains = {
+      '1': {
+        id: '1',
+        name: 'Ethereum',
+        logoUrl: 'ethereum.svg',
+        numericChainId: 1,
+        rankScore: 9200,
+      },
+      '11155111': {
+        id: '11155111',
+        name: 'Sepolia',
+        logoUrl: null,
+        numericChainId: 11155111,
+        rankScore: 10,
+      },
+    };
+
+    expect(
+      PortfolioFlowUtils.filterCanonicalAssets([ethAsset, sepoliaEthAsset], {
+        textFilter: 'ethereum',
+        portfolioChains,
+        chains: [
+          {
+            name: 'Ethereum',
+            chainId: '0x1',
+            logo: 'ethereum.svg',
+          } as never,
+        ],
+      }).assets,
+    ).toEqual([ethAsset]);
+
+    expect(
+      PortfolioFlowUtils.filterCanonicalAssets(
+        [hiveAsset, hiveEngineAsset, ethAsset],
+        {
+          textFilter: 'engine',
+          portfolioChains,
+        },
+      ).assets,
+    ).toEqual([hiveEngineAsset]);
+  });
+
+  it('limits filtered canonical assets to maxResults', () => {
+    const assets = [hiveAsset, hiveEngineAsset, ethAsset, sepoliaEthAsset];
+
+    expect(
+      PortfolioFlowUtils.filterCanonicalAssets(assets, {
+        maxResults: 2,
+      }).totalMatches,
+    ).toBe(4);
+  });
+
+  it('sorts to assets by usd price descending by default', () => {
+    const cheapAsset = createTestCanonicalAsset({
+      assetId: 'evm-matic',
+      ecosystem: 'evm',
+      symbol: 'MATIC',
+      name: 'Polygon',
+      chainId: '0x89',
+      priceUsd: 1,
+      rankScore: 0,
+    });
+    const expensiveAsset = createTestCanonicalAsset({
+      assetId: 'evm-eth',
+      ecosystem: 'evm',
+      symbol: 'ETH',
+      name: 'Ether',
+      chainId: '0x1',
+      priceUsd: 3000,
+      rankScore: 0,
+    });
+    const unknownPriceAsset = createTestCanonicalAsset({
+      assetId: 'evm-unknown',
+      ecosystem: 'evm',
+      symbol: 'UNKNOWN',
+      name: 'Unknown',
+      chainId: '0x1',
+      priceUsd: 0,
+      rankScore: 0,
+    });
+
+    expect(
+      PortfolioFlowUtils.sortCanonicalAssetsByPriceUsd([
+        cheapAsset,
+        unknownPriceAsset,
+        expensiveAsset,
+      ]),
+    ).toEqual([expensiveAsset, cheapAsset, unknownPriceAsset]);
+  });
+
+  it('sorts to assets by API rankScore descending by default', () => {
+    const vaultAsset = createTestCanonicalAsset({
+      assetId: 'evm-stata-wbtc',
+      ecosystem: 'evm',
+      symbol: 'stataPolWBTC',
+      name: 'Static Aave Polygon WBTC',
+      chainId: 'polygon',
+      priceUsd: 79515,
+      rankScore: 100,
+    });
+    const ethNative = createTestCanonicalAsset({
+      assetId: 'evm-eth',
+      ecosystem: 'evm',
+      symbol: 'ETH',
+      name: 'Ether',
+      chainId: 'ethereum',
+      isNative: true,
+      priceUsd: 1873,
+      rankScore: 2900,
+    });
+    const usdcAsset = createTestCanonicalAsset({
+      assetId: 'evm-usdc',
+      ecosystem: 'evm',
+      symbol: 'USDC',
+      name: 'USD Coin',
+      chainId: 'ethereum',
+      priceUsd: 1,
+      rankScore: 950,
+    });
+    const lpAsset = createTestCanonicalAsset({
+      assetId: 'evm-lp',
+      ecosystem: 'evm',
+      symbol: 'sAMMV2-USDC/MAI',
+      name: 'StableV2 AMM - USDC/MAI',
+      chainId: 'optimism',
+      priceUsd: 77574,
+      rankScore: 50,
+    });
+
+    expect(
+      PortfolioFlowUtils.sortCanonicalAssetsByRank([
+        vaultAsset,
+        lpAsset,
+        usdcAsset,
+        ethNative,
+      ]),
+    ).toEqual([ethNative, usdcAsset, vaultAsset, lpAsset]);
+
+    expect(
+      PortfolioFlowUtils.filterCanonicalAssets(
+        [vaultAsset, lpAsset, usdcAsset, ethNative],
+        { maxResults: 2 },
+      ).assets,
+    ).toEqual([ethNative, usdcAsset]);
+  });
+
+  it('uses chain rankScore as a tiebreaker when asset rankScores match', () => {
+    const polygonUsdc = createTestCanonicalAsset({
+      assetId: 'evm-usdc-polygon',
+      ecosystem: 'evm',
+      symbol: 'USDC',
+      name: 'USD Coin',
+      chainId: 'polygon',
+      priceUsd: 1,
+      rankScore: 100,
+    });
+    const ethereumUsdc = createTestCanonicalAsset({
+      assetId: 'evm-usdc-ethereum',
+      ecosystem: 'evm',
+      symbol: 'USDC',
+      name: 'USD Coin',
+      chainId: 'ethereum',
+      priceUsd: 1,
+      rankScore: 100,
+    });
+    const portfolioChains = {
+      ethereum: {
+        id: 'ethereum',
+        name: 'Ethereum',
+        logoUrl: null,
+        numericChainId: 1,
+        rankScore: 9200,
+      },
+      polygon: {
+        id: 'polygon',
+        name: 'Polygon',
+        logoUrl: null,
+        numericChainId: 137,
+        rankScore: 800,
+      },
+    };
+
+    expect(
+      PortfolioFlowUtils.sortCanonicalAssetsByRank(
+        [polygonUsdc, ethereumUsdc],
+        portfolioChains,
+      ),
+    ).toEqual([ethereumUsdc, polygonUsdc]);
+  });
+
+  it('resolves chain rank from chain.id when the record key differs, keeping the first id', () => {
+    const polygonUsdc = createTestCanonicalAsset({
+      assetId: 'evm-usdc-polygon',
+      ecosystem: 'evm',
+      symbol: 'USDC',
+      name: 'USD Coin',
+      chainId: 'polygon',
+      priceUsd: 1,
+      rankScore: 100,
+    });
+    const ethereumUsdc = createTestCanonicalAsset({
+      assetId: 'evm-usdc-ethereum',
+      ecosystem: 'evm',
+      symbol: 'USDC',
+      name: 'USD Coin',
+      chainId: 'Ethereum',
+      priceUsd: 1,
+      rankScore: 100,
+    });
+    const portfolioChains = {
+      eth: {
+        id: 'ethereum',
+        name: 'Ethereum',
+        logoUrl: null,
+        numericChainId: 1,
+        rankScore: 9200,
+      },
+      ethDuplicate: {
+        id: 'Ethereum',
+        name: 'Ethereum duplicate',
+        logoUrl: null,
+        numericChainId: 1,
+        rankScore: 1,
+      },
+      pol: {
+        id: 'polygon',
+        name: 'Polygon',
+        logoUrl: null,
+        numericChainId: 137,
+        rankScore: 800,
+      },
+    };
+
+    expect(
+      PortfolioFlowUtils.sortCanonicalAssetsByRank(
+        [polygonUsdc, ethereumUsdc],
+        portfolioChains,
+      ),
+    ).toEqual([ethereumUsdc, polygonUsdc]);
+    expect(
+      PortfolioFlowUtils.sortCanonicalAssetsByRank(
+        [polygonUsdc, ethereumUsdc],
+        portfolioChains,
+      ),
+    ).toEqual([ethereumUsdc, polygonUsdc]);
+  });
+
+  it('builds to asset select options with network labels', () => {
+    const chains = [
+      {
+        name: 'Ethereum',
+        chainId: '0x1',
+        logo: 'ethereum.svg',
+      } as never,
+    ];
+
+    expect(
+      PortfolioFlowUtils.buildCanonicalAssetSelectOptions(
+        [hiveAsset, hiveEngineAsset, ethAsset],
+        chains,
+      ),
+    ).toEqual([
+      { value: 'hive-hive', label: 'HIVE - Hive' },
+      { value: 'he-dec', label: 'DEC - Hive Engine' },
+      { value: 'evm-eth-1', label: 'ETH - Ethereum' },
+    ]);
+  });
+
+  it('resolves canonical asset network labels and logos', () => {
+    const chains = [
+      {
+        name: 'Ethereum',
+        chainId: '0x1',
+        logo: 'ethereum.svg',
+      } as never,
+    ];
+
+    expect(
+      PortfolioFlowUtils.resolveCanonicalAssetNetworkLabel(hiveAsset, chains),
+    ).toBe('Hive');
+    expect(
+      PortfolioFlowUtils.resolveCanonicalAssetNetworkLabel(
+        hiveEngineAsset,
+        chains,
+      ),
+    ).toBe('Hive Engine');
+    expect(
+      PortfolioFlowUtils.resolveCanonicalAssetNetworkLabel(ethAsset, chains),
+    ).toBe('Ethereum');
+
+    expect(
+      PortfolioFlowUtils.resolveCanonicalAssetNetworkLogoUrl(hiveAsset, chains),
+    ).toBe('/assets/images/wallet/hive-logo.svg');
+    expect(
+      PortfolioFlowUtils.resolveCanonicalAssetNetworkLogoUrl(
+        hiveEngineAsset,
+        chains,
+      ),
+    ).toBe('/assets/images/wallet/hive-engine.svg');
+    expect(
+      PortfolioFlowUtils.resolveCanonicalAssetNetworkLogoUrl(ethAsset, chains),
+    ).toBe('ethereum.svg');
+  });
+
+  it('resolves hive portfolio row network logos from token symbol', () => {
+    expect(
+      PortfolioFlowUtils.resolveHivePortfolioRowNetworkLogoUrl('HIVE'),
+    ).toBe('/assets/images/wallet/hive-logo.svg');
+    expect(
+      PortfolioFlowUtils.resolveHivePortfolioRowNetworkLogoUrl('HBD'),
+    ).toBe('/assets/images/wallet/hive-logo.svg');
+    expect(
+      PortfolioFlowUtils.resolveHivePortfolioRowNetworkLogoUrl('DEC'),
+    ).toBe('/assets/images/wallet/hive-engine.svg');
+  });
+
+  it('resolves canonical assets by slug-style chain references', () => {
+    const slugEthAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
+      assetId: 'evm-0g-ethereum',
+      ecosystem: 'evm',
+      symbol: '0G',
+      name: '0G',
+      chainId: 'ethereum',
+      logoUrl: 'https://example.com/0g.png',
+      familyId: '0g',
+    });
+    const chains = [
+      {
+        name: 'Ethereum',
+        chainId: '0x1',
+        logo: 'ethereum.svg',
+      } as never,
+    ];
+
+    expect(
+      PortfolioFlowUtils.resolveCanonicalAssetNetworkLabel(slugEthAsset, chains),
+    ).toBe('Ethereum');
+    expect(
+      PortfolioFlowUtils.resolveCanonicalAssetNetworkLogoUrl(slugEthAsset, chains),
+    ).toBe('ethereum.svg');
+    expect(
+      PortfolioFlowUtils.resolveEvmChainForChainReference('ethereum', chains)?.name,
+    ).toBe('Ethereum');
+  });
+
+  it('prefers portfolio chain display metadata over local evm chains', () => {
+    const arbitrumAsset: PortfolioCanonicalAsset = createTestCanonicalAsset({
+      assetId: 'evm:native:arbitrum',
+      ecosystem: 'evm',
+      symbol: 'ETH',
+      name: 'Ether',
+      chainId: 'arbitrum',
+      logoUrl: null,
+      familyId: 'eth',
+    });
+    const portfolioChains = {
+      arbitrum: {
+        id: 'arbitrum',
+        name: 'Arbitrum One',
+        logoUrl: 'https://example.com/arbitrum.svg',
+        numericChainId: 42161,
+        rankScore: 0,
+      },
+    };
+
+    expect(
+      PortfolioFlowUtils.resolveCanonicalAssetNetworkLabel(
+        arbitrumAsset,
+        [],
+        portfolioChains,
+      ),
+    ).toBe('Arbitrum One');
+    expect(
+      PortfolioFlowUtils.resolveCanonicalAssetNetworkLogoUrl(
+        arbitrumAsset,
+        [],
+        portfolioChains,
+      ),
+    ).toBe('https://example.com/arbitrum.svg');
+    expect(
+      PortfolioFlowUtils.buildCanonicalAssetChainFilterOptions(
+        [arbitrumAsset],
+        [],
+        portfolioChains,
+      ),
+    ).toEqual([
+      expect.objectContaining({
+        label: 'Arbitrum One',
+        img: 'https://example.com/arbitrum.svg',
+      }),
+    ]);
+  });
+
+  it('formats displayed token balances with grouping and without trailing zeros', () => {
+    expect(PortfolioFlowUtils.formatPortfolioTokenBalance('1234.5000')).toBe(
+      '1,234.5',
+    );
+    expect(PortfolioFlowUtils.formatPortfolioTokenBalance('3200')).toBe(
+      '3,200',
+    );
+    expect(PortfolioFlowUtils.formatPortfolioTokenBalance('0.0005')).toBe(
+      '0.0005',
+    );
+    expect(PortfolioFlowUtils.formatPortfolioTokenBalance('~0')).toBe('~0');
+    expect(PortfolioFlowUtils.formatPortfolioTokenBalance('n/a')).toBe('n/a');
+  });
+
+  it('rounds displayed token amounts to the destination token precision', () => {
+    expect(
+      PortfolioFlowUtils.formatPortfolioTokenBalance(
+        '0.29999999999999993',
+        3,
+      ),
+    ).toBe('0.3');
+    expect(
+      PortfolioFlowUtils.formatPortfolioTokenBalance('1.2349999', 3),
+    ).toBe('1.235');
+  });
+
+  it('formats USD values to 2 decimals and marks non-zero dust as ~$0.00', () => {
+    expect(PortfolioFlowUtils.formatPortfolioUsdValue(0.056965)).toBe('$0.06');
+    expect(PortfolioFlowUtils.formatPortfolioUsdValue(0.011284)).toBe('$0.01');
+    expect(PortfolioFlowUtils.formatPortfolioUsdValue(0.031187)).toBe('$0.03');
+    expect(PortfolioFlowUtils.formatPortfolioUsdValue(0.005)).toBe('$0.01');
+    expect(PortfolioFlowUtils.formatPortfolioUsdValue(0.000484)).toBe('~$0.00');
+    expect(PortfolioFlowUtils.formatPortfolioUsdValue(0.000003)).toBe('~$0.00');
+    expect(PortfolioFlowUtils.formatPortfolioUsdValue(0)).toBe('$0.00');
+    expect(PortfolioFlowUtils.formatPortfolioUsdValue(1234.5)).toBe(
+      '$1,234.50',
+    );
+  });
+
+  it('formats swap amount USD hints from a positive token price', () => {
+    expect(PortfolioFlowUtils.formatPortfolioAmountUsdHint('0.1', 100)).toBe(
+      '$10.00',
+    );
+    expect(
+      PortfolioFlowUtils.formatPortfolioAmountUsdHint('1,234.5', 2),
+    ).toBe('$2,469.00');
+    expect(
+      PortfolioFlowUtils.formatPortfolioAmountUsdHint('50', 0, 2),
+    ).toBe('$100.00');
+    expect(
+      PortfolioFlowUtils.formatPortfolioAmountUsdHint('0.00002', 1),
+    ).toBe('~$0.00');
+    expect(
+      PortfolioFlowUtils.formatPortfolioAmountUsdHint('0.0000000001', 1),
+    ).toBe('~$0.00');
+    expect(PortfolioFlowUtils.formatPortfolioAmountUsdHint('', 100)).toBeNull();
+    expect(PortfolioFlowUtils.formatPortfolioAmountUsdHint('0', 100)).toBeNull();
+    expect(PortfolioFlowUtils.formatPortfolioAmountUsdHint('1', 0)).toBeNull();
+    expect(
+      PortfolioFlowUtils.formatPortfolioAmountUsdHint('1', null, undefined),
+    ).toBeNull();
+    expect(PortfolioFlowUtils.formatPortfolioAmountUsdHint('abc', 2)).toBeNull();
+  });
+
+  it('formats quote amounts using token decimals before API submission', () => {
+    expect(
+      PortfolioFlowUtils.formatPortfolioQuoteFromAmount('1.23456789', 6),
+    ).toBe('1.234567');
+    expect(
+      PortfolioFlowUtils.formatPortfolioQuoteFromAmount('1.5000', 3),
+    ).toBe('1.5');
+    expect(
+      PortfolioFlowUtils.formatPortfolioQuoteFromAmount('1,234.567891', 3),
+    ).toBe('1234.567');
+  });
+
+  it('filters to assets based on the selected from asset ecosystem', () => {
+    const assets = [
+      hiveAsset,
+      hbdAsset,
+      hpAsset,
+      hiveEngineAsset,
+      ethAsset,
+      sepoliaEthAsset,
+      btcAsset,
+    ];
+
+    expect(
+      PortfolioFlowUtils.filterToAssetsByFromAsset(assets, hiveEngineAsset),
+    ).toEqual([hiveAsset, hbdAsset]);
+
+    expect(
+      PortfolioFlowUtils.filterToAssetsByFromAsset(assets, hiveAsset),
+    ).toEqual(
+      assets.filter(
+        (asset) =>
+          asset.assetId !== 'hive-hive' && asset.assetId !== 'hive-hp',
+      ),
+    );
+
+    expect(
+      PortfolioFlowUtils.filterToAssetsByFromAsset(assets, hbdAsset),
+    ).toEqual([hiveAsset, hiveEngineAsset]);
+
+    expect(
+      PortfolioFlowUtils.filterToAssetsByFromAsset(assets, ethAsset),
+    ).toEqual([hiveAsset, sepoliaEthAsset, btcAsset]);
+
+    expect(
+      PortfolioFlowUtils.isEligibleToAssetForFromAsset(ethAsset, btcAsset),
+    ).toBe(true);
+    expect(
+      PortfolioFlowUtils.isEligibleToAssetForFromAsset(hiveEngineAsset, ethAsset),
+    ).toBe(false);
+    expect(
+      PortfolioFlowUtils.isEligibleToAssetForFromAsset(ethAsset, hbdAsset),
+    ).toBe(false);
+    expect(
+      PortfolioFlowUtils.isEligibleToAssetForFromAsset(ethAsset, hiveAsset),
+    ).toBe(true);
+    expect(
+      PortfolioFlowUtils.isEligibleToAssetForFromAsset(hbdAsset, ethAsset),
+    ).toBe(false);
+    expect(
+      PortfolioFlowUtils.isEligibleToAssetForFromAsset(hiveAsset, hpAsset),
+    ).toBe(false);
+    expect(
+      PortfolioFlowUtils.isEligibleToAssetForFromAsset(
+        hiveEngineAsset,
+        hiveEngineAsset,
+      ),
+    ).toBe(false);
+    expect(
+      PortfolioFlowUtils.filterToAssetsByFromAsset(assets, undefined),
+    ).toEqual(assets.filter((asset) => asset.assetId !== 'hive-hp'));
+  });
+
+  it('resolves quote amount decimals by mode and from asset', () => {
+    expect(
+      PortfolioFlowUtils.resolvePortfolioQuoteFromAmountDecimals({
+        mode: 'buy',
+        fromAssetId: '',
+        rows: [],
+        assets: [],
+      }),
+    ).toBe(2);
+
+    expect(
+      PortfolioFlowUtils.resolvePortfolioQuoteFromAmountDecimals({
+        mode: 'swap',
+        fromAssetId: '0x1:USDC:0xbb0d083fb1be0a9f6157ec484b6c79e0a4e31c2e',
+        rows: [
+          {
+            key: '0x1:USDC:0xbb0d083fb1be0a9f6157ec484b6c79e0a4e31c2e',
+            symbol: 'USDC',
+            network: 'Ethereum',
+            balance: '10',
+            decimals: 6,
+          },
+        ],
+        assets: [],
+      }),
+    ).toBe(6);
+
+    expect(PortfolioFlowUtils.resolveHiveTokenDecimals('HIVE', [])).toBe(3);
+    expect(
+      PortfolioFlowUtils.resolveHiveTokenDecimals('DEC', [
+        { symbol: 'DEC', precision: 3 },
+      ]),
+    ).toBe(3);
+  });
+
+  it('requires a destination address for external to-only assets', () => {
+    expect(
+      PortfolioFlowUtils.requiresPortfolioRecipientAddress(ethAsset, xrpAsset),
+    ).toBe(true);
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRecipientAddressLabelKey(xrpAsset),
+    ).toBe('portfolio_recipient_destination_address');
+    expect(
+      PortfolioFlowUtils.isEligibleToAssetForFromAsset(ethAsset, xrpAsset),
+    ).toBe(true);
+    expect(
+      PortfolioFlowUtils.resolvePortfolioToAddress({
+        fromAddress: '0x0000000000000000000000000000000000000001',
+        recipientAddress: 'rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH',
+        fromAsset: ethAsset,
+        toAsset: xrpAsset,
+      }),
+    ).toBe('rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH');
+  });
+
+  it('requires a destination address for bitcoin to-only assets', () => {
+    expect(
+      PortfolioFlowUtils.requiresPortfolioRecipientAddress(ethAsset, btcAsset),
+    ).toBe(true);
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRecipientAddressLabelKey(btcAsset),
+    ).toBe('portfolio_recipient_bitcoin_address');
+  });
+
+  it('accepts valid external destination addresses', () => {
+    expect(
+      PortfolioFlowUtils.resolvePortfolioToAddress({
+        fromAddress: '0x0000000000000000000000000000000000000001',
+        recipientAddress: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
+        fromAsset: ethAsset,
+        toAsset: btcAsset,
+      }),
+    ).toBe('bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh');
+    expect(
+      PortfolioFlowUtils.resolvePortfolioToAddress({
+        fromAddress: '0x0000000000000000000000000000000000000001',
+        recipientAddress: 'not-a-bitcoin-address',
+        fromAsset: ethAsset,
+        toAsset: btcAsset,
+      }),
+    ).toBeUndefined();
+  });
+
+  it('maps buy/sell destination assets to hive or evm account kinds', () => {
+    expect(
+      PortfolioFlowUtils.resolvePortfolioFlowAccountKindForAsset(hiveAsset),
+    ).toBe('hive');
+    expect(
+      PortfolioFlowUtils.resolvePortfolioFlowAccountKindForAsset(hbdAsset),
+    ).toBe('hive');
+    expect(
+      PortfolioFlowUtils.resolvePortfolioFlowAccountKindForAsset(
+        hiveEngineAsset,
+      ),
+    ).toBe('hive');
+    expect(
+      PortfolioFlowUtils.resolvePortfolioFlowAccountKindForAsset(ethAsset),
+    ).toBe('evm');
+    expect(
+      PortfolioFlowUtils.resolvePortfolioFlowAccountKindForAsset(btcAsset),
+    ).toBe('evm');
+    expect(
+      PortfolioFlowUtils.resolvePortfolioFlowAccountKindForAsset(undefined),
+    ).toBeUndefined();
+  });
+
+  it('maps hive and evm destinations to Keychain recipient account kinds', () => {
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRecipientAccountKind(hiveAsset),
+    ).toBe('hive');
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRecipientAccountKind(hiveEngineAsset),
+    ).toBe('hive');
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRecipientAccountKind(ethAsset),
+    ).toBe('evm');
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRecipientAccountKind(btcAsset),
+    ).toBeUndefined();
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRecipientAccountKind(xrpAsset),
+    ).toBeUndefined();
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRecipientAccountKind(undefined),
+    ).toBeUndefined();
+  });
+
+  it('requires a separate recipient address for hive to evm and evm to hive swaps', () => {
+    expect(
+      PortfolioFlowUtils.requiresPortfolioRecipientAddress(hiveAsset, ethAsset),
+    ).toBe(true);
+    expect(
+      PortfolioFlowUtils.requiresPortfolioRecipientAddress(ethAsset, hiveAsset),
+    ).toBe(true);
+    expect(
+      PortfolioFlowUtils.requiresPortfolioRecipientAddress(
+        hiveEngineAsset,
+        ethAsset,
+      ),
+    ).toBe(true);
+    expect(
+      PortfolioFlowUtils.requiresPortfolioRecipientAddress(ethAsset, ethAsset),
+    ).toBe(false);
+    expect(
+      PortfolioFlowUtils.requiresPortfolioRecipientAddress(hiveAsset, hbdAsset),
+    ).toBe(false);
+  });
+
+  it('ignores swap source assets when deciding buy recipient requirements', () => {
+    expect(
+      PortfolioFlowUtils.requiresPortfolioRecipientAddressForMode(
+        'buy',
+        hiveAsset,
+        ethAsset,
+      ),
+    ).toBe(false);
+    expect(
+      PortfolioFlowUtils.requiresPortfolioRecipientAddressForMode(
+        'buy',
+        ethAsset,
+        btcAsset,
+      ),
+    ).toBe(true);
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRecipientFromAsset('buy', hiveAsset),
+    ).toBeUndefined();
+    expect(
+      PortfolioFlowUtils.resolvePortfolioRecipientFromAsset('swap', hiveAsset),
+    ).toBe(hiveAsset);
+  });
+
+  it('defaults toAddress to fromAddress for same-ecosystem swaps', () => {
+    const evmAddress = '0x0000000000000000000000000000000000000001';
+    expect(
+      PortfolioFlowUtils.resolvePortfolioToAddress({
+        fromAddress: evmAddress,
+        recipientAddress: '',
+        fromAsset: ethAsset,
+        toAsset: sepoliaEthAsset,
+      }),
+    ).toBe(evmAddress);
+  });
+
+  it('uses a custom destination when buy requires an explicit recipient', () => {
+    const fromAddress = '0x0000000000000000000000000000000000000001';
+    const otherAddress = '0x0000000000000000000000000000000000000002';
+    expect(
+      PortfolioFlowUtils.resolvePortfolioToAddress({
+        fromAddress,
+        recipientAddress: otherAddress,
+        fromAsset: undefined,
+        toAsset: ethAsset,
+        requireRecipientAddress: true,
+      }),
+    ).toBe(otherAddress);
+    expect(
+      PortfolioFlowUtils.resolvePortfolioQuoteToAddress({
+        fromAddress,
+        recipientAddress: '',
+        fromAsset: undefined,
+        toAsset: ethAsset,
+        requireRecipientAddress: true,
+      }),
+    ).toBe(
+      PortfolioFlowUtils.resolvePortfolioQuotePlaceholderAddress(ethAsset),
+    );
+  });
+
+  it('uses the recipient address for cross-ecosystem swaps', () => {
+    const evmAddress = '0x0000000000000000000000000000000000000001';
+    expect(
+      PortfolioFlowUtils.resolvePortfolioToAddress({
+        fromAddress: 'alice',
+        recipientAddress: evmAddress,
+        fromAsset: hiveAsset,
+        toAsset: ethAsset,
+      }),
+    ).toBe(evmAddress);
+    expect(
+      PortfolioFlowUtils.resolvePortfolioToAddress({
+        fromAddress: evmAddress,
+        recipientAddress: '@bob',
+        fromAsset: ethAsset,
+        toAsset: hiveAsset,
+      }),
+    ).toBe('bob');
+  });
+
+  it('rejects invalid cross-ecosystem recipient addresses', () => {
+    expect(
+      PortfolioFlowUtils.resolvePortfolioToAddress({
+        fromAddress: 'alice',
+        recipientAddress: 'not-an-evm-address',
+        fromAsset: hiveAsset,
+        toAsset: ethAsset,
+      }),
+    ).toBeUndefined();
+    expect(
+      PortfolioFlowUtils.resolvePortfolioToAddress({
+        fromAddress: '0x0000000000000000000000000000000000000001',
+        recipientAddress: '',
+        fromAsset: ethAsset,
+        toAsset: hiveAsset,
+      }),
+    ).toBeUndefined();
+  });
+
+  it('uses a placeholder toAddress for quote requests when recipient is missing', () => {
+    expect(
+      PortfolioFlowUtils.resolvePortfolioQuoteToAddress({
+        fromAddress: 'alice',
+        recipientAddress: '',
+        fromAsset: hiveAsset,
+        toAsset: ethAsset,
+      }),
+    ).toBe('0x0000000000000000000000000000000000000001');
+    expect(
+      PortfolioFlowUtils.resolvePortfolioQuoteToAddress({
+        fromAddress: '0x0000000000000000000000000000000000000001',
+        recipientAddress: '',
+        fromAsset: ethAsset,
+        toAsset: hiveAsset,
+      }),
+    ).toBe('portfolio');
+    expect(
+      PortfolioFlowUtils.resolvePortfolioQuoteToAddress({
+        fromAddress: '0x0000000000000000000000000000000000000001',
+        recipientAddress: '',
+        fromAsset: ethAsset,
+        toAsset: btcAsset,
+      }),
+    ).toBe('bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh');
+    expect(
+      PortfolioFlowUtils.resolvePortfolioQuoteToAddress({
+        fromAddress: '0x0000000000000000000000000000000000000001',
+        recipientAddress: '',
+        fromAsset: ethAsset,
+        toAsset: xrpAsset,
+      }),
+    ).toBe('rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh');
+  });
+
+  it('prefers a valid recipient over the quote placeholder', () => {
+    const evmAddress = '0x00000000000000000000000000000000000000aa';
+    expect(
+      PortfolioFlowUtils.resolvePortfolioQuoteToAddress({
+        fromAddress: 'alice',
+        recipientAddress: evmAddress,
+        fromAsset: hiveAsset,
+        toAsset: ethAsset,
+      }),
+    ).toBe(evmAddress);
+  });
+
+  it('keeps same-ecosystem quote toAddress as fromAddress without a placeholder', () => {
+    const evmAddress = '0x0000000000000000000000000000000000000001';
+    expect(
+      PortfolioFlowUtils.resolvePortfolioQuoteToAddress({
+        fromAddress: evmAddress,
+        recipientAddress: '',
+        fromAsset: ethAsset,
+        toAsset: sepoliaEthAsset,
+      }),
+    ).toBe(evmAddress);
+  });
+
+  it('builds format-valid quote placeholder addresses per destination ecosystem', () => {
+    expect(
+      PortfolioFlowUtils.isValidPortfolioRecipientAddress(
+        PortfolioFlowUtils.resolvePortfolioQuotePlaceholderAddress(ethAsset),
+        'evm',
+      ),
+    ).toBe(true);
+    expect(
+      PortfolioFlowUtils.isValidPortfolioRecipientAddress(
+        PortfolioFlowUtils.resolvePortfolioQuotePlaceholderAddress(hiveAsset),
+        'hive',
+      ),
+    ).toBe(true);
+    expect(
+      PortfolioFlowUtils.isValidPortfolioRecipientAddress(
+        PortfolioFlowUtils.resolvePortfolioQuotePlaceholderAddress(btcAsset),
+        'utxo',
+        'bitcoin',
+      ),
+    ).toBe(true);
+    expect(
+      PortfolioFlowUtils.isValidPortfolioRecipientAddress(
+        PortfolioFlowUtils.resolvePortfolioQuotePlaceholderAddress(xrpAsset),
+        'external',
+        'ripple',
+      ),
+    ).toBe(true);
+  });
+
+  describe('Hive Engine balance breakdown', () => {
+    const labels = {
+      liquid: 'liquid',
+      staked: 'staked',
+      delegatedIn: 'incoming',
+      delegatedOut: 'delegated',
+      unstaking: 'unstaking',
+      undelegating: 'undelegating',
+    };
+
+    it('returns null when only liquid balance is present', () => {
+      expect(
+        PortfolioFlowUtils.formatPortfolioHiveEngineBalanceBreakdown(
+          {
+            liquid: 10,
+            stake: 0,
+            delegationsIn: 0,
+            delegationsOut: 0,
+            pendingUnstake: 0,
+            pendingUndelegations: 0,
+          },
+          labels,
+        ),
+      ).toBeNull();
+    });
+
+    it('formats liquid plus non-liquid ownership parts', () => {
+      expect(
+        PortfolioFlowUtils.formatPortfolioHiveEngineBalanceBreakdown(
+          {
+            liquid: 10,
+            stake: 3,
+            delegationsIn: 0,
+            delegationsOut: 2,
+            pendingUnstake: 1,
+            pendingUndelegations: 0,
+          },
+          labels,
+        ),
+      ).toBe('10 liquid · 3 staked · 1 unstaking · 2 delegated');
+    });
+
+    it('builds vertical breakdown items matching wallet order', () => {
+      expect(
+        PortfolioFlowUtils.getPortfolioHiveEngineBalanceBreakdownItems(
+          {
+            liquid: 0,
+            stake: 96153.846,
+            delegationsIn: 1,
+            delegationsOut: 0,
+            pendingUnstake: 100000,
+            pendingUndelegations: 0,
+          },
+          labels,
+        ),
+      ).toEqual([
+        { key: 'liquid', label: 'liquid', amount: 0 },
+        { key: 'stake', label: 'staked', amount: 96153.846 },
+        { key: 'pendingUnstake', label: 'unstaking', amount: 100000 },
+        { key: 'delegationsIn', label: 'incoming', amount: 1 },
+      ]);
+    });
+  });
+});

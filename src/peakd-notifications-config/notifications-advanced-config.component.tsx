@@ -8,15 +8,17 @@ import {
   NotificationConfigFormCondition,
   NotificationConfigItem,
 } from '@interfaces/notifications.interface';
+import { Screen } from '@interfaces/screen.interface';
 import { NotificationConfigItemComponent } from '@popup/hive/pages/app-container/settings/user-preferences/notifications/notification-config-item/notification-config-item.component';
 import AccountUtils from '@popup/hive/utils/account.utils';
+import { HiveNotificationOperationLabelUtils } from '@popup/hive/utils/notifications/hive-notification-operation-label.utils';
 import { PeakDNotificationsUtils } from '@popup/hive/utils/notifications/peakd-notifications.utils';
 import { Theme } from '@popup/theme.context';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { MessageType } from '@reference-data/message-type.enum';
-import { Screen } from '@reference-data/screen.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import { BackToTopButton } from 'src/common-ui/back-to-top-button/back-to-top-button.component';
 import ButtonComponent, {
   ButtonType,
@@ -29,7 +31,6 @@ import {
   ComplexeCustomSelect,
   OptionItem,
 } from 'src/common-ui/custom-select/custom-select.component';
-import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -39,6 +40,8 @@ import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import VaultUtils from 'src/utils/vault.utils';
+
+import { I18nUtils } from 'src/utils/i18n.utils';
 
 const NotificationsAdvancedConfigPage = () => {
   const [isActive, setActive] = useState(false);
@@ -57,9 +60,24 @@ const NotificationsAdvancedConfigPage = () => {
   const [ready, setReady] = useState(false);
 
   const [message, setMessage] = useState<Message>();
+  const [expandedCriteriaIndex, setExpandedCriteriaIndex] = useState<
+    number | null
+  >(null);
 
   const bottomFormFields = useRef<HTMLDivElement>(null);
   const topFormFields = useRef<HTMLDivElement>(null);
+
+  const operationAutocompleteValues = useMemo(
+    () =>
+      PeakDNotificationsUtils.operationFieldList.map((field) => ({
+        value: field.name,
+        label:
+          HiveNotificationOperationLabelUtils.formatNotificationOperationLabel(
+            field.name,
+          ),
+      })),
+    [],
+  );
 
   useEffect(() => {
     init();
@@ -69,6 +87,16 @@ const NotificationsAdvancedConfigPage = () => {
     if (selectedAccount && selectedAccount.name)
       initConfig(selectedAccount?.name);
   }, [selectedAccount]);
+
+  useEffect(() => {
+    if (expandedCriteriaIndex === null) {
+      return;
+    }
+    bottomFormFields.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'end',
+    });
+  }, [expandedCriteriaIndex, configForm]);
 
   const init = async () => {
     const { ACTIVE_THEME, active_account_name } =
@@ -165,15 +193,17 @@ const NotificationsAdvancedConfigPage = () => {
       newConfig.push({
         conditions: [{ field: '', operand: '', value: '' }],
         operation: newCriteria as OperationName | VirtualOperationName,
+        pushNotification: true,
       });
+      const newIndex = newConfig.length - 1;
       setConfigForm(newConfig);
       setNewCriteria('');
-      bottomFormFields.current?.scrollIntoView({ behavior: 'smooth' });
+      setExpandedCriteriaIndex(newIndex);
     }
   };
 
   const saveConfig = async () => {
-    if (window.confirm(chrome.i18n.getMessage('notification_confirm_save')))
+    if (window.confirm(I18nUtils.getMessage('notification_confirm_save')))
       if (selectedAccount?.keys.posting) {
         setReady(false);
         const response = await PeakDNotificationsUtils.saveConfiguration(
@@ -196,7 +226,7 @@ const NotificationsAdvancedConfigPage = () => {
       } else {
         setMessage({
           key: 'popup_missing_key',
-          params: [chrome.i18n.getMessage('posting')],
+          params: [I18nUtils.getMessage('posting')],
           type: MessageType.ERROR,
         } as Message);
       }
@@ -220,10 +250,26 @@ const NotificationsAdvancedConfigPage = () => {
         newConfig.push({
           conditions: [{ field: '', operand: '', value: '' }],
           operation: criteria as OperationName | VirtualOperationName,
+          pushNotification: true,
         });
       }
       setConfigForm(newConfig);
     }
+  };
+
+  const handlePushNotificationChange = (
+    itemIndex: number,
+    value: boolean,
+  ) => {
+    if (!configForm) {
+      return;
+    }
+    const newForm = [...configForm];
+    newForm[itemIndex] = {
+      ...newForm[itemIndex],
+      pushNotification: value,
+    };
+    setConfigForm(newForm);
   };
 
   return (
@@ -235,11 +281,11 @@ const NotificationsAdvancedConfigPage = () => {
           <div className="title-panel">
             <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
             <div className="title">
-              {chrome.i18n.getMessage('html_popup_settings_notifications')}
+              {I18nUtils.getMessage('html_popup_settings_notifications')}
             </div>
           </div>
           <div className="caption">
-            {chrome.i18n.getMessage(
+            {I18nUtils.getMessage(
               'html_popup_settings_notifications_caption',
             )}
           </div>
@@ -298,14 +344,19 @@ const NotificationsAdvancedConfigPage = () => {
                   onChange={setNewCriteria}
                   value={newCriteria}
                   type={InputType.TEXT}
-                  autocompleteValues={PeakDNotificationsUtils.operationFieldList.map(
-                    (field) => field.name,
-                  )}
+                  autocompleteValues={operationAutocompleteValues}
                   autocompletePrefix=""
+                  placeholder="html_popup_settings_notifications_operation_placeholder"
                 />
-                <div className="add-button" onClick={addNewCriteria}>
+                <button
+                  type="button"
+                  className="add-button"
+                  aria-label={I18nUtils.getMessage(
+                    'html_popup_add_new_criteria',
+                  )}
+                  onClick={addNewCriteria}>
                   <SVGIcon icon={SVGIcons.NOTIFICATIONS_ADD} />
-                </div>
+                </button>
               </div>
               <div className="form-fields" ref={topFormFields}>
                 {configForm?.map((configFormItem, configFormItemIndex) => {
@@ -316,6 +367,16 @@ const NotificationsAdvancedConfigPage = () => {
                         configFormItem={configFormItem}
                         updateConfig={updateConfigForm}
                         configFormItemIndex={configFormItemIndex}
+                        pushNotification={configFormItem.pushNotification}
+                        onPushNotificationChange={(value) =>
+                          handlePushNotificationChange(
+                            configFormItemIndex,
+                            value,
+                          )
+                        }
+                        forceOpen={
+                          configFormItemIndex === expandedCriteriaIndex
+                        }
                       />
                       {configFormItemIndex !== configForm.length - 1 && (
                         <Separator type={'horizontal'} fullSize />
@@ -328,6 +389,7 @@ const NotificationsAdvancedConfigPage = () => {
               </div>
             </FormContainer>
           )}
+
           {!isActive && <div className="fill-space"></div>}
           <div className="buttons-panel">
             <ButtonComponent

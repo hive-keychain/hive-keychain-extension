@@ -58,10 +58,8 @@
       }
     }
     .qr-code-disclaimer {
-      @include caption;
+      @include settings-page-note();
       font-weight: 500;
-      font-size: 14px;
-      padding: 0;
       max-width: 256px;
       margin-bottom: -20px;
       text-align: justify;

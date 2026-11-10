@@ -1,6 +1,4 @@
-import { MultichainActionType } from '@popup/multichain/actions/action-type.enum';
 import { ActionPayload, AppThunk } from '@popup/multichain/actions/interfaces';
-import { MessageType } from '@reference-data/message-type.enum';
 import {
   OperationsHiveEngine,
   PendingUnstaking,
@@ -18,13 +16,7 @@ export const loadTokens = (): AppThunk => async (dispatch) => {
   let tokens;
   try {
     tokens = await TokensUtils.getAllTokens();
-  } catch (err: any) {
-    if (err.message.includes('timeout')) {
-      dispatch({
-        type: MultichainActionType.SET_MESSAGE,
-        payload: { key: 'html_popup_tokens_timeout', type: MessageType.ERROR },
-      });
-    }
+  } catch (err) {
     throw err;
   }
 

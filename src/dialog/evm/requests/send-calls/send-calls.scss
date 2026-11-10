@@ -1,0 +1,20 @@
+.evm-call-batch {
+  display: flex;
+  flex-direction: column;
+  row-gap: 16px;
+  width: 100%;
+  color: var(--main-font-color);
+  overflow-wrap: anywhere;
+
+  .evm-batch-call {
+    display: flex;
+    flex-direction: column;
+    row-gap: 12px;
+
+    h3 {
+      margin: 0;
+      padding: 0 16px;
+      font-size: 16px;
+    }
+  }
+}

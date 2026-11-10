@@ -1,0 +1,188 @@
+import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
+import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
+import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
+import { EvmRequest } from '@interfaces/evm-provider.interface';
+import { TransactionConfirmationFields } from '@popup/evm/interfaces/evm-transactions.interface';
+import { EvmAccountPublic } from '@popup/evm/interfaces/wallet.interface';
+import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
+import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import React, { useEffect, useState } from 'react';
+import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
+import { DappStatusEnum } from 'src/common-ui/evm/dapp-status/dapp-status.component';
+import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-display/evm-account-display.component';
+import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
+import { reorderEvmConfirmationFields } from 'src/dialog/evm/requests/transaction-warnings/transaction-field-order.utils';
+import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
+import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
+import { CommunicationUtils } from 'src/utils/communication.utils';
+import { normalizeEvmAccounts } from 'src/utils/evm-provider-value.utils';
+
+import { I18nUtils } from 'src/utils/i18n.utils';
+interface Props {
+  request: EvmRequest;
+  accounts: EvmAccountPublic[];
+  data: EvmRequestMessage;
+  afterCancel: (requestId: number, tab: number) => void;
+}
+
+export const ConnectAccounts = (props: Props) => {
+  const { accounts, data, request, afterCancel } = props;
+  const [accountsToConnect, setAccountsToConnect] = useState<any>();
+  const [connectedAccounts, setConnectedAccounts] = useState<any>();
+
+  const transactionHook = useTransactionHook(data, request);
+
+  useEffect(() => {
+    init();
+  }, [request]);
+
+  const init = async () => {
+    transactionHook.setLoading(true);
+    transactionHook.setReady(false);
+    let transactionConfirmationFields = {
+      otherFields: [transactionHook.buildInitialDomainField()],
+    } as TransactionConfirmationFields;
+    transactionConfirmationFields.otherFields = reorderEvmConfirmationFields(
+      transactionConfirmationFields.otherFields,
+    );
+    transactionHook.setFields(transactionConfirmationFields);
+
+    const connected = await EvmWalletUtils.getConnectedWallets(
+      data.dappInfo.origin,
+    );
+    setConnectedAccounts(connected);
+
+    const accs: any = {};
+    for (const account of accounts) {
+      accs[account.address.toLowerCase()] = connected.includes(
+        account.address.toLowerCase(),
+      );
+    }
+    setAccountsToConnect(accs);
+
+    const chain = await EvmChainUtils.getLastEvmChain();
+
+    const transactionInfo =
+      await EvmTransactionParserUtils.verifyTransactionInformation({
+        domain: data.dappInfo.domain,
+        origin: data.dappInfo.origin,
+        chainId: chain.chainId,
+      });
+    transactionHook.setUnableToReachBackend(
+      !!(transactionInfo && transactionInfo.unableToReach),
+    );
+    void transactionHook.hydrateDomainFieldWarnings(transactionInfo);
+    setTimeout(() => {
+      transactionHook.setReady(true);
+      transactionHook.setLoading(false);
+    }, 250);
+  };
+
+  const toggleAccount = (address: string) => {
+    address = address.toLowerCase();
+    const oldState = { ...accountsToConnect };
+    oldState[address] = !oldState[address];
+    setAccountsToConnect(oldState);
+  };
+
+  const saveInStorage = async () => {
+    if (transactionHook.hasWarning()) {
+      transactionHook.openWarningsPopup();
+    } else {
+      const addresses: string[] = [];
+      for (const address of Object.keys(accountsToConnect)) {
+        if (accountsToConnect[address]) addresses.push(address);
+      }
+      await EvmAddressesUtils.saveDomainAddress(data.dappInfo.origin);
+      const normalizedAddresses = normalizeEvmAccounts(addresses);
+
+      let result;
+
+      if (request.method === EvmRequestMethod.REQUEST_ACCOUNTS) {
+        result = normalizedAddresses;
+      } else if (
+        request.method === EvmRequestMethod.WALLET_REQUEST_PERMISSIONS
+      ) {
+        result = [{ parentCapability: EvmRequestPermission.ETH_ACCOUNTS }];
+      }
+
+      CommunicationUtils.runtimeSendMessage({
+        command: BackgroundCommand.SEND_EVM_RESPONSE_TO_SW,
+        value: {
+          requestId: request.request_id,
+          tab: data.tab,
+          origin: data.dappInfo.origin,
+          requestSource: data.dappInfo.requestSource,
+          result: result,
+          providerState: {
+            accounts: normalizedAddresses,
+          },
+        },
+      });
+    }
+  };
+
+  const getStatus = (account: EvmAccountPublic): DappStatusEnum => {
+    if (connectedAccounts[0] === account.address)
+      return DappStatusEnum.SELECTED;
+    else if (
+      connectedAccounts
+        .map((account: string) => account.toLowerCase())
+        .includes(account.address.toLowerCase())
+    )
+      return DappStatusEnum.CONNECTED;
+    else return DappStatusEnum.DISCONNECTED;
+  };
+
+  const handleCancel = () => {
+    afterCancel(request.request_id, data.tab);
+  };
+
+  const isChecked = (address: string) => {
+    address = address.toLowerCase();
+    if (!accountsToConnect) return false;
+    return accountsToConnect[address];
+  };
+
+  return (
+    <>
+      <EvmOperation
+        afterCancel={handleCancel}
+        request={request}
+        domain={data.dappInfo.domain}
+        origin={data.dappInfo.origin}
+        requestSource={data.dappInfo.requestSource}
+        tab={data.tab}
+        title={I18nUtils.getMessage('evm_connect_wallet')}
+        onConfirm={saveInStorage}
+        caption={I18nUtils.getMessage('dialog_evm_dapp_status_caption', [
+          data.dappInfo.domain,
+        ])}
+        fields={
+          <EvmTransactionWarningsComponent warningHook={transactionHook} />
+        }
+        bottomPanel={
+          connectedAccounts &&
+          accounts &&
+          accountsToConnect &&
+          accounts.map((account) => (
+            <CheckboxPanelComponent
+              key={`account-${account.address}`}
+              onChange={() => toggleAccount(account.address)}
+              checked={isChecked(account.address)}
+              ariaLabel={account.address}>
+              <EvmAccountDisplayComponent
+                account={account}
+                status={getStatus(account)}
+                fullName
+              />
+            </CheckboxPanelComponent>
+          ))
+        }
+        transactionHook={transactionHook}></EvmOperation>
+    </>
+  );
+};

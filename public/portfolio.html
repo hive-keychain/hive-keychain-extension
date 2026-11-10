@@ -1,20 +1,25 @@
-<!-- sourced from https://raw.githubusercontent.com/reactjs/reactjs.org/master/static/html/single-file-example.html -->
 <!DOCTYPE html>
-<html>
+<html class="portfolio-page">
   <head>
     <meta charset="UTF-8" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <link rel="preconnect" href="https://fonts.gstatic.com" />
+
     <link href="assets/fonts/googleFonts.css" rel="stylesheet" />
-    <title>Hive Keychain</title>
+
+    <link rel="stylesheet" href="assets/pretty-checkbox.min.css" />
+    <link rel="stylesheet" href="assets/extra-styles/portfolio.css" />
+    <title>Portfolio | Hive Keychain</title>
+    <script src="popup-preload.js"></script>
   </head>
 
   <body>
     <div id="root"></div>
     <noscript> You need to enable JavaScript to run this app. </noscript>
-    <script src="/portfolioBundle.js"></script>
+    <script src="hiveTxBundle.js"></script>
+    <script src="extensionAppBundle.js"></script>
+    <script src="portfolioBundle.js"></script>
   </body>
 </html>

@@ -41,6 +41,15 @@ describe('autocomplete.utils', () => {
       ).toEqual([{ value: 'x', subLabel: 'Delegation' }]);
     });
 
+    it('matches on label when value does not match', () => {
+      expect(
+        AutoCompleteUtils.filterValuesList(
+          [{ value: 'account_update', label: 'Account Update' }, { value: 'vote' }],
+          'account up',
+        ),
+      ).toEqual([{ value: 'account_update', label: 'Account Update' }]);
+    });
+
     it('drops entries with non-string value', () => {
       expect(
         AutoCompleteUtils.filterValuesList(

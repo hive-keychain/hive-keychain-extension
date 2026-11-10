@@ -1,5 +1,5 @@
 import AccountUtils from '@hiveapp/utils/account.utils';
-import { Screen } from '@reference-data/screen.enum';
+import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -8,7 +8,7 @@ import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-t
 import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { Icons, SVGIcons } from 'src/common-ui/icons.enum';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import AccountSubMenuItems from 'src/popup/hive/pages/app-container/settings/accounts/account-sub-menu-items';
 
@@ -22,13 +22,8 @@ describe('account-sub-menu.component tests:\n', () => {
     await reactTestingLibrary.renderWithConfiguration(
       <HiveAppComponent />,
       initialStates.iniStateAs.defaultExistent,
+      { navigateToAfterMount: Screen.SETTINGS_ACCOUNTS },
     );
-    await act(async () => {
-      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
-      await userEvent.click(
-        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
-      );
-    });
   });
 
   it('Must show sub account menu page', async () => {

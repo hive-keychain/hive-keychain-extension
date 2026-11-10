@@ -21,6 +21,7 @@ import mocksImplementation from 'src/__tests__/utils-for-testing/implementations
 import { mockHiveTxCreateTransactionForLedger } from 'src/__tests__/utils-for-testing/mocks/hive-tx-ledger.helpers';
 import { KeychainError } from 'src/keychain-error';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('transfer tests:\n', () => {
   const data = {
     domain: 'domain',
@@ -41,7 +42,7 @@ describe('transfer tests:\n', () => {
   });
   beforeEach(() => {
     jest.spyOn(chrome.i18n, 'getUILanguage').mockReturnValue('em-US');
-    chrome.i18n.getMessage = jest
+    I18nUtils.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom);
     AccountUtils.getExtendedAccount = jest
@@ -70,14 +71,15 @@ describe('transfer tests:\n', () => {
             command: DialogCommand.ANSWER_REQUEST,
             msg: {
               success: false,
-              error: new Error('html_popup_error_while_signing_transaction'),
+              error: new KeychainError('html_popup_error_while_signing_transaction'),
               result: undefined,
               data: datas,
-              message: chrome.i18n.getMessage(
-                'html_popup_error_while_signing_transaction',
-              ),
+              message: I18nUtils.getMessage('html_popup_error_while_signing_transaction'),
+          messageKey: 'html_popup_error_while_signing_transaction',
+          messageParams: undefined,
               request_id: request_id,
               publicKey: undefined,
+          tab: undefined,
             },
           });
         });
@@ -101,9 +103,12 @@ describe('transfer tests:\n', () => {
               error: new KeychainError(localeMessageKey),
               result: undefined,
               data: datas,
-              message: chrome.i18n.getMessage(localeMessageKey, [cloneData.to]),
+              message: I18nUtils.getMessage(localeMessageKey, [cloneData.to]),
+          messageKey: localeMessageKey,
+          messageParams: [cloneData.to],
               request_id: request_id,
               publicKey: undefined,
+          tab: undefined,
             },
           });
         });
@@ -133,14 +138,36 @@ describe('transfer tests:\n', () => {
                 tx_id: 'tx_id',
               },
               data: datas,
-              message: chrome.i18n.getMessage('bgd_ops_transfer_success', [
+              message: I18nUtils.getMessage('bgd_ops_transfer_success', [
                 data.amount,
                 data.currency,
                 data.username!,
                 data.to,
               ]),
+          messageKey: 'bgd_ops_transfer_success',
+          messageParams: [
+                data.amount,
+                data.currency,
+                data.username!,
+                data.to,
+              ],
+          messageKey: 'bgd_ops_transfer_success',
+          messageParams: [
+                data.amount,
+                data.currency,
+                data.username!,
+                data.to,
+              ],
+          messageKey: 'bgd_ops_transfer_success',
+          messageParams: [
+                data.amount,
+                data.currency,
+                data.username!,
+                data.to,
+              ],
               request_id: request_id,
               publicKey: undefined,
+          tab: undefined,
             },
           });
         });
@@ -173,9 +200,12 @@ describe('transfer tests:\n', () => {
               error: new KeychainError(localeMessageKey),
               result: undefined,
               data: datas,
-              message: chrome.i18n.getMessage(localeMessageKey),
+              message: I18nUtils.getMessage(localeMessageKey),
+          messageKey: localeMessageKey,
+          messageParams: undefined,
               request_id: request_id,
               publicKey: undefined,
+          tab: undefined,
             },
           });
         });
@@ -198,9 +228,12 @@ describe('transfer tests:\n', () => {
               error: new KeychainError(localeMessageKey),
               result: undefined,
               data: datas,
-              message: chrome.i18n.getMessage(localeMessageKey, [cloneData.to]),
+              message: I18nUtils.getMessage(localeMessageKey, [cloneData.to]),
+          messageKey: localeMessageKey,
+          messageParams: [cloneData.to],
               request_id: request_id,
               publicKey: undefined,
+          tab: undefined,
             },
           });
         });
@@ -233,14 +266,36 @@ describe('transfer tests:\n', () => {
                 tx_id: 'tx_id',
               },
               data: datas,
-              message: chrome.i18n.getMessage('bgd_ops_transfer_success', [
+              message: I18nUtils.getMessage('bgd_ops_transfer_success', [
                 cloneData.amount,
                 cloneData.currency,
                 cloneData.username!,
                 cloneData.to,
               ]),
+          messageKey: 'bgd_ops_transfer_success',
+          messageParams: [
+                cloneData.amount,
+                cloneData.currency,
+                cloneData.username!,
+                cloneData.to,
+              ],
+          messageKey: 'bgd_ops_transfer_success',
+          messageParams: [
+                cloneData.amount,
+                cloneData.currency,
+                cloneData.username!,
+                cloneData.to,
+              ],
+          messageKey: 'bgd_ops_transfer_success',
+          messageParams: [
+                cloneData.amount,
+                cloneData.currency,
+                cloneData.username!,
+                cloneData.to,
+              ],
               request_id: request_id,
               publicKey: undefined,
+          tab: undefined,
             },
           });
         });
@@ -290,14 +345,36 @@ describe('transfer tests:\n', () => {
               tx_id: 'tx_id',
             },
             data: datas,
-            message: chrome.i18n.getMessage('bgd_ops_transfer_success', [
+            message: I18nUtils.getMessage('bgd_ops_transfer_success', [
               cloneData.amount,
               cloneData.currency,
               cloneData.username!,
               cloneData.to,
             ]),
+          messageKey: 'bgd_ops_transfer_success',
+          messageParams: [
+              cloneData.amount,
+              cloneData.currency,
+              cloneData.username!,
+              cloneData.to,
+            ],
+          messageKey: 'bgd_ops_transfer_success',
+          messageParams: [
+              cloneData.amount,
+              cloneData.currency,
+              cloneData.username!,
+              cloneData.to,
+            ],
+          messageKey: 'bgd_ops_transfer_success',
+          messageParams: [
+              cloneData.amount,
+              cloneData.currency,
+              cloneData.username!,
+              cloneData.to,
+            ],
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });

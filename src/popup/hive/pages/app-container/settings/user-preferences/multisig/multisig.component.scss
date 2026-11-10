@@ -5,7 +5,23 @@
   row-gap: 10px;
   padding: 0px 24px;
   padding-bottom: 16px;
+
   .intro {
-    @include caption();
+    @include settings-page-note();
+  }
+
+  .checkbox-panel {
+    border-radius: 18px;
+  }
+  .settings-hive-account-select-panel {
+    width: 100%;
+
+    .custom-select-container {
+      width: 100%;
+    }
+
+    .custom-select {
+      width: 100%;
+    }
   }
 }

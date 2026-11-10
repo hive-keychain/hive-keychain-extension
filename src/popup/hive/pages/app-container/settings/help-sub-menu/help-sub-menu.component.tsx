@@ -1,6 +1,6 @@
+import { Screen } from '@interfaces/screen.interface';
 import HelpSubMenuItems from '@popup/hive/pages/app-container/settings/help-sub-menu/help-sub-menu-items';
 import { RootState } from '@popup/multichain/store';
-import { Screen } from '@reference-data/screen.enum';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { MenuComponent } from 'src/common-ui/menu/menu.component';

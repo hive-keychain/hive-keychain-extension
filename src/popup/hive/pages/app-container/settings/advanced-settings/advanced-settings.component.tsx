@@ -1,9 +1,9 @@
+import { Screen } from '@interfaces/screen.interface';
 import { RootState } from '@popup/multichain/store';
-import { Screen } from '@reference-data/screen.enum';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { MenuComponent } from 'src/common-ui/menu/menu.component';
-import getAdvancedSettingsMenuItems from './advanced-settings-menu-items';
+import { getAdvancedSettingsMenuItems } from './advanced-settings-menu-items';
 
 const AdvancedSettingsPage = ({ isLedgerSupported }: PropsFromRedux) => {
   return (

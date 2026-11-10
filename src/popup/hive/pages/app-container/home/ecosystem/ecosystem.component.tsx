@@ -1,24 +1,27 @@
+import { ComingSoonPanel } from '@common-ui/coming-soon-panel/coming-soon-panel.component';
+import { Screen } from '@interfaces/screen.interface';
 import {
   DAppCategory,
   EcosystemCategory,
 } from '@popup/hive/pages/app-container/home/ecosystem/ecosystem-category/ecosystem-category.component';
 import { EcosystemUtils } from '@popup/hive/utils/ecosystem.utils';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
-import { Chain, useChainContext } from '@popup/multichain/multichain.context';
+import { Chain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
-import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { FormContainer } from 'src/common-ui/form-container/form-container.component';
+import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { PageTitleProps } from 'src/common-ui/page-title/page-title.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { Tab, TabsComponent } from 'src/common-ui/tabs/tabs.component';
 
-export const Ecosystem = ({ setTitleContainerProperties }: PropsFromRedux) => {
-  const { chain } = useChainContext();
-
+import { I18nUtils } from 'src/utils/i18n.utils';
+export const Ecosystem = ({
+  setTitleContainerProperties,
+  chain,
+}: PropsFromRedux) => {
   const [tabs, setTabs] = useState<Tab[]>();
   const [loading, setLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -33,8 +36,8 @@ export const Ecosystem = ({ setTitleContainerProperties }: PropsFromRedux) => {
 
   const init = async () => {
     setLoading(true);
-    const categories: DAppCategory[] = await EcosystemUtils.getDappList(
-      chain ?? Chain.HIVE,
+    const categories: DAppCategory[] | null = await EcosystemUtils.getDappList(
+      chain?.chainId,
     );
     if (categories) {
       const tempTabs: any = [];
@@ -53,18 +56,21 @@ export const Ecosystem = ({ setTitleContainerProperties }: PropsFromRedux) => {
     } else {
       setHasError(true);
     }
-    setTimeout(() => setLoading(false), 1000);
+    setLoading(false);
   };
 
   return (
-    <div className="ecosystem-page" data-testid={`${Screen.CHAINS}-page`}>
+    <div
+      className="ecosystem-page"
+      data-testid={`${Screen.ECOSYSTEM_PAGE}-page`}>
       {!hasError && (
         <>
-          {tabs && (
+          {tabs && tabs.length > 0 && (
             <FormContainer>
               <TabsComponent tabs={tabs}></TabsComponent>
             </FormContainer>
           )}
+          {tabs && tabs.length === 0 && <ComingSoonPanel />}
           {loading && <LoadingComponent />}
         </>
       )}
@@ -73,7 +79,7 @@ export const Ecosystem = ({ setTitleContainerProperties }: PropsFromRedux) => {
           <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
           <div className="text">
             <div>
-              {chrome.i18n.getMessage('html_popup_ecosystem_retrieving_error')}
+              {I18nUtils.getMessage('html_popup_ecosystem_retrieving_error')}
             </div>
           </div>
         </div>
@@ -82,9 +88,9 @@ export const Ecosystem = ({ setTitleContainerProperties }: PropsFromRedux) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => {
-  return {};
-};
+const mapStateToProps = (state: RootState) => ({
+  chain: state.chain as Chain,
+});
 
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,

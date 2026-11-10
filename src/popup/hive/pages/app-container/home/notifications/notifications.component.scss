@@ -2,6 +2,7 @@
   display: block;
   position: absolute;
   top: calc(100% + 16px);
+  left: 0;
   width: calc(100% - 32px);
   height: 0px;
   transition: height 0.25s ease-out;
@@ -99,37 +100,40 @@
 
 .notifications-button-container {
   position: relative;
-  --notification-color: #{$red};
-  --notification-background-color: white;
-  --notification-border-color: #{$light-grey-border};
 
   .notification-button {
+    height: 28px;
+    width: 28px;
+    svg {
+      height: 28px;
+      width: 28px;
+    }
     &:hover {
-      --notification-background-color: #{$red};
-      --notification-color: white;
-      --notification-border-color: #{$red};
+      --action-button-background-color: #{$red};
+      --action-button-color: white;
+      --action-button-border-color: #{$red};
     }
   }
 
   .notifications-count {
     position: absolute;
-    top: -8px;
-    right: -8px;
-    height: 24px;
-    width: 24px;
-    font-size: 10px;
+    top: -6px;
+    right: -6px;
+    height: 14px;
+    width: 14px;
+    font-size: 8px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--notification-background-color);
-    background-color: var(--notification-color);
+    color: var(--action-button-background-color);
+    background-color: $red;
   }
 
   &:hover {
     .notifications-count {
-      background-color: var(--notification-background-color);
-      color: var(--notification-color);
+      background-color: var(--action-button-background-color);
+      color: $red;
     }
   }
 }

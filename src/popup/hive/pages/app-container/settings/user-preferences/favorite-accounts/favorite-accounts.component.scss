@@ -1,11 +1,23 @@
-.favorite-accounts-page {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  row-gap: 16px;
-  overflow: hidden;
+@import 'src/common-ui/contacts/contacts-settings-page/contacts-settings-page.scss';
 
-  .intro {
-    @include caption();
+.favorite-accounts-page {
+  .settings-hive-account-select-panel {
+    width: 100%;
+
+    .custom-select-container {
+      width: 100%;
+    }
+
+    .custom-select {
+      width: 100%;
+    }
+  }
+
+  .empty-address-item {
+    @include poppins400(14px);
+    color: var(--main-font-color);
+    display: flex;
+    align-items: center;
+    padding: 8px 0 8px 8px;
   }
 }

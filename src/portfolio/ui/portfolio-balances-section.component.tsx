@@ -1,0 +1,406 @@
+import { OptionItem } from '@common-ui/custom-select/custom-select.component';
+import React, { useMemo, useState } from 'react';
+import { SVGIcons } from 'src/common-ui/icons.enum';
+import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { PortfolioMode } from 'src/portfolio/portfolio-api.interface';
+import { PortfolioAllocationUtils } from 'src/portfolio/portfolio-allocation.utils';
+import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
+import { PortfolioHiveEngineBalanceBreakdown } from 'src/portfolio/portfolio.interface';
+import { PortfolioAllocationDonut } from 'src/portfolio/ui/portfolio-allocation-donut.component';
+import { PortfolioOverlayListSelect } from 'src/portfolio/ui/portfolio-overlay-list-select.component';
+import { WalletTokenPriceChartUtils } from 'src/common-ui/wallet-token-price-chart/wallet-token-price-chart.utils';
+import { PortfolioTokenPriceChart } from 'src/portfolio/ui/portfolio-token-price-chart.component';
+import {
+  portfolioRowToTokenIdentityProps,
+  PortfolioTokenIdentity,
+} from 'src/portfolio/ui/portfolio-token-identity.component';
+import FormatUtils from 'src/utils/format.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
+import { PortfolioUtils } from 'src/utils/porfolio.utils';
+
+export type PortfolioBalancesRow = {
+  key: string;
+  symbol: string;
+  network: string;
+  balance: string;
+  usdValue: number | null;
+  priceUsd: number | null;
+  decimals?: number;
+  logoUrl?: string | null;
+  networkLogoUrl?: string | null;
+  chainId?: string | null;
+  contractAddress?: string | null;
+  isHive?: boolean;
+  isTestnet?: boolean;
+  breakdown?: PortfolioHiveEngineBalanceBreakdown;
+};
+
+export type PortfolioBalancesSectionProps = {
+  hasAccounts: boolean;
+  selectedAccountKey: string;
+  isHiveAccount: boolean;
+  showNetworkFilter: boolean;
+  accountOptions: OptionItem[];
+  networkOptions: OptionItem[];
+  selectedNetwork: string;
+  tokenFilter: string;
+  rows: PortfolioBalancesRow[];
+  expandedRowKeys: string[];
+  rowActions: Array<Exclude<PortfolioMode, 'bridge'>>;
+  isLoadingMoreChains: boolean;
+  hiveUsd?: number;
+  onSelectedAccountChange: (accountKey: string) => void;
+  onSelectedNetworkChange: (network: string) => void;
+  onTokenFilterChange: (value: string) => void;
+  onToggleRowExpanded: (rowKey: string) => void;
+  onOpenFlowForRow: (
+    row: PortfolioBalancesRow,
+    mode: Exclude<PortfolioMode, 'bridge'>,
+  ) => void;
+  renderAccountOption: (accountKey: string) => React.ReactNode;
+  renderNetworkOption: (networkValue: string) => React.ReactNode;
+};
+
+const SECTION_ACTION_ICONS: Record<
+  Exclude<PortfolioMode, 'bridge'>,
+  SVGIcons
+> = {
+  buy: SVGIcons.PORTFOLIO_BUY,
+  sell: SVGIcons.PORTFOLIO_SELL,
+  swap: SVGIcons.PORTFOLIO_SWAP,
+};
+
+const formatUsd = (value: number | null): string =>
+  value === null ? '—' : PortfolioFlowUtils.formatPortfolioUsdValue(value);
+
+const formatTokenAmount = (value: string): string =>
+  PortfolioFlowUtils.formatPortfolioTokenBalance(value);
+
+const formatHiveEngineTokenAmount = (
+  value: string | number,
+  decimals?: number,
+): string => {
+  const amount =
+    typeof value === 'number' ? value : Number(value.replace(/,/g, ''));
+  if (!Number.isFinite(amount)) {
+    return String(value);
+  }
+
+  if (typeof decimals === 'number' && Number.isFinite(decimals)) {
+    return FormatUtils.trimUselessZero(amount, decimals);
+  }
+
+  return formatTokenAmount(String(amount));
+};
+
+const formatDisplayedTokenAmount = (row: PortfolioBalancesRow): string => {
+  if (row.network === 'Hive' || row.breakdown) {
+    return formatHiveEngineTokenAmount(row.balance, row.decimals);
+  }
+
+  return formatTokenAmount(row.balance);
+};
+
+const getHiveEngineBalanceBreakdownLabels = () => ({
+  liquid: I18nUtils.getMessage('liquid_balance'),
+  staked: I18nUtils.getMessage('popup_html_token_staking'),
+  delegatedIn: I18nUtils.getMessage('popup_html_token_delegation_in'),
+  delegatedOut: I18nUtils.getMessage('popup_html_token_delegation_out'),
+  unstaking: I18nUtils.getMessage('popup_html_token_pending_unstake'),
+  undelegating: I18nUtils.getMessage('popup_html_token_pending_undelegation'),
+});
+
+const getHiveEngineBalanceBreakdownItems = (
+  breakdown?: PortfolioHiveEngineBalanceBreakdown,
+) => {
+  if (!breakdown) {
+    return [];
+  }
+
+  return PortfolioFlowUtils.getPortfolioHiveEngineBalanceBreakdownItems(
+    breakdown,
+    getHiveEngineBalanceBreakdownLabels(),
+  );
+};
+
+const PortfolioBalancesSectionComponent = ({
+  hasAccounts,
+  selectedAccountKey,
+  isHiveAccount,
+  showNetworkFilter,
+  accountOptions,
+  networkOptions,
+  selectedNetwork,
+  tokenFilter,
+  rows,
+  expandedRowKeys,
+  rowActions,
+  isLoadingMoreChains,
+  hiveUsd,
+  onSelectedAccountChange,
+  onSelectedNetworkChange,
+  onTokenFilterChange,
+  onToggleRowExpanded,
+  onOpenFlowForRow,
+  renderAccountOption,
+  renderNetworkOption,
+}: PortfolioBalancesSectionProps) => {
+  const visibleRows = useMemo(() => {
+    const filter = tokenFilter.trim().toLowerCase();
+    const filteredRows = [...rows]
+      .filter((row) => !selectedNetwork || row.network === selectedNetwork)
+      .filter(
+        (row) =>
+          !filter ||
+          row.symbol.toLowerCase().includes(filter) ||
+          row.network.toLowerCase().includes(filter),
+      );
+
+    return PortfolioUtils.sortPortfolioDisplayItems(filteredRows, isHiveAccount);
+  }, [isHiveAccount, rows, selectedNetwork, tokenFilter]);
+
+  const allocation = useMemo(
+    () => PortfolioAllocationUtils.buildPortfolioAllocation(visibleRows),
+    [visibleRows],
+  );
+  const [priceChartRowKey, setPriceChartRowKey] = useState<string | null>(
+    null,
+  );
+
+  const togglePriceChart = (rowKey: string) => {
+    setPriceChartRowKey((currentKey) =>
+      currentKey === rowKey ? null : rowKey,
+    );
+  };
+
+  const handleRowClick = (
+    event: React.MouseEvent<HTMLDivElement>,
+    row: PortfolioBalancesRow,
+  ) => {
+    if (!WalletTokenPriceChartUtils.hasKnownTokenPrice(row.priceUsd)) {
+      return;
+    }
+
+    const target = event.target;
+    if (target instanceof Element && target.closest('button')) {
+      return;
+    }
+
+    togglePriceChart(row.key);
+  };
+
+  return (
+    <div className="portfolio-card-body">
+      {hasAccounts && visibleRows.length > 0 ? (
+        <div className="portfolio-summary" data-testid="portfolio-summary">
+          <div className="portfolio-summary__value">
+            <span>{I18nUtils.getMessage('portfolio_total_value_usd')}</span>
+            <strong data-testid="portfolio-total-value">
+              {allocation.hasKnownValue ? formatUsd(allocation.totalUsd) : '—'}
+            </strong>
+          </div>
+          {allocation.slices.length > 0 ? (
+            <PortfolioAllocationDonut
+              showNetworkInTooltip={!selectedNetwork}
+              slices={allocation.slices}
+            />
+          ) : null}
+        </div>
+      ) : null}
+      {hasAccounts ? (
+        <div className="portfolio-sticky-menu-bar">
+          <div className="portfolio-controls">
+            <PortfolioOverlayListSelect
+              id="portfolio-account"
+              className="portfolio-controls__account"
+              label={I18nUtils.getMessage('portfolio_account')}
+              value={selectedAccountKey}
+              onChange={onSelectedAccountChange}
+              options={accountOptions}
+              renderDisplay={renderAccountOption}
+              renderOption={renderAccountOption}
+            />
+            {showNetworkFilter && (
+              <PortfolioOverlayListSelect
+                id="portfolio-network"
+                className="portfolio-controls__network"
+                label={I18nUtils.getMessage('portfolio_network')}
+                value={selectedNetwork}
+                onChange={onSelectedNetworkChange}
+                options={networkOptions}
+                renderDisplay={renderNetworkOption}
+                renderOption={renderNetworkOption}
+              />
+            )}
+            <div className="portfolio-token-filter">
+              <label htmlFor="portfolio-token-filter">
+                {I18nUtils.getMessage('portfolio_assets')}
+              </label>
+              <input
+                id="portfolio-token-filter"
+                type="text"
+                placeholder={I18nUtils.getMessage('portfolio_token_filter')}
+                value={tokenFilter}
+                onChange={(event) => onTokenFilterChange(event.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="portfolio-empty">
+          {I18nUtils.getMessage('portfolio_no_assets')}
+        </div>
+      )}
+
+      <div className="portfolio-table-wrap">
+        <div className="portfolio-table-head">
+          <span>{I18nUtils.getMessage('portfolio_token')}</span>
+          <span>{I18nUtils.getMessage('portfolio_actions')}</span>
+          <span>{I18nUtils.getMessage('popup_html_transfer_amount')}</span>
+          <span>{I18nUtils.getMessage('portfolio_price')}</span>
+          <span>{I18nUtils.getMessage('portfolio_value')}</span>
+        </div>
+        {visibleRows.length === 0 ? (
+          <div className="portfolio-empty">
+            {I18nUtils.getMessage('portfolio_no_assets')}
+          </div>
+        ) : (
+          visibleRows.map((row) => {
+            const breakdownItems = getHiveEngineBalanceBreakdownItems(
+              row.breakdown,
+            );
+            const canExpandBreakdown = breakdownItems.length > 0;
+            const isExpanded =
+              canExpandBreakdown && expandedRowKeys.includes(row.key);
+            const canShowPriceChart =
+              WalletTokenPriceChartUtils.hasKnownTokenPrice(row.priceUsd);
+            const isPriceChartOpen =
+              canShowPriceChart && priceChartRowKey === row.key;
+
+            return (
+              <div
+                className={`portfolio-table-row-group${
+                  isExpanded ? ' is-expanded' : ''
+                }${isPriceChartOpen ? ' is-price-chart-open' : ''}`}
+                key={row.key}>
+                <div
+                  aria-expanded={isPriceChartOpen}
+                  className={`portfolio-table-row${
+                    isExpanded ? ' is-expanded' : ''
+                  }${isPriceChartOpen ? ' is-price-chart-open' : ''}`}
+                  data-testid={`portfolio-balance-row-${row.key}`}
+                  onClick={(event) => handleRowClick(event, row)}>
+                  <PortfolioTokenIdentity
+                    {...portfolioRowToTokenIdentityProps({
+                      ...row,
+                      isHive: isHiveAccount,
+                    })}
+                  />
+                  <div className="portfolio-row-actions">
+                    {rowActions.map((action) => (
+                      <button
+                        aria-label={I18nUtils.getMessage(
+                          `portfolio_section_${action}`,
+                        )}
+                        key={`${row.key}:${action}`}
+                        onClick={() => onOpenFlowForRow(row, action)}
+                        title={I18nUtils.getMessage(
+                          `portfolio_section_${action}`,
+                        )}
+                        type="button">
+                        <SVGIcon
+                          icon={SECTION_ACTION_ICONS[action]}
+                          className="portfolio-row-action-icon"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                  <span className="portfolio-number amount">
+                    {canExpandBreakdown ? (
+                      <button
+                        type="button"
+                        className="portfolio-amount-expand"
+                        aria-expanded={isExpanded}
+                        aria-label={I18nUtils.getMessage(
+                          isExpanded
+                            ? 'portfolio_he_breakdown_collapse'
+                            : 'portfolio_he_breakdown_expand',
+                        )}
+                        onClick={() => onToggleRowExpanded(row.key)}>
+                        <SVGIcon
+                          icon={SVGIcons.WALLET_HISTORY_EXPAND_COLLAPSE}
+                          className={`portfolio-row-expand-icon ${
+                            isExpanded ? 'open' : 'closed'
+                          }`}
+                        />
+                        <span className="portfolio-amount-total">
+                          {formatDisplayedTokenAmount(row)}
+                        </span>
+                      </button>
+                    ) : (
+                      <span className="portfolio-amount-total">
+                        {formatDisplayedTokenAmount(row)}
+                      </span>
+                    )}
+                  </span>
+                  <span className="portfolio-number">
+                    {formatUsd(row.priceUsd)}
+                  </span>
+                  <strong className="portfolio-number">
+                    {formatUsd(row.usdValue)}
+                  </strong>
+                </div>
+                {isExpanded ? (
+                  <div className="portfolio-row-breakdown">
+                    {breakdownItems.map((item) => (
+                      <div
+                        className="portfolio-row-breakdown__item"
+                        key={`${row.key}:${item.key}`}>
+                        <span className="portfolio-row-breakdown__label">
+                          {item.label}
+                        </span>
+                        <span className="portfolio-row-breakdown__value">
+                          {formatHiveEngineTokenAmount(
+                            item.amount,
+                            row.decimals,
+                          )}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+                {isPriceChartOpen ? (
+                  <div
+                    className="portfolio-row-price-chart"
+                    data-testid={`portfolio-row-price-chart-${row.key}`}>
+                    <PortfolioTokenPriceChart
+                      chainId={row.chainId}
+                      contractAddress={row.contractAddress}
+                      hiveUsd={hiveUsd}
+                      isHive={row.isHive}
+                      priceUsd={row.priceUsd}
+                      symbol={row.symbol}
+                    />
+                  </div>
+                ) : null}
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {isLoadingMoreChains ? (
+        <div className="portfolio-loading-more">
+          <RotatingLogoComponent />
+        </div>
+      ) : null}
+    </div>
+  );
+};
+
+export const PortfolioBalancesSection = React.memo(
+  PortfolioBalancesSectionComponent,
+);
+
+PortfolioBalancesSection.displayName = 'PortfolioBalancesSection';

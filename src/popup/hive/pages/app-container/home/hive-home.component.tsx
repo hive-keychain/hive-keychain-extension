@@ -1,0 +1,598 @@
+import { HiveInternalMarketLockedInOrders } from '@interfaces/hive-market.interface';
+import {
+  TransactionOptions,
+  TransactionOptionsMetadata,
+} from '@interfaces/keys.interface';
+import { Screen } from '@interfaces/screen.interface';
+import { AccountVestingRoutesDifferences } from '@interfaces/vesting-routes.interface';
+import { loadGlobalProperties } from '@popup/hive/actions/global-properties.actions';
+import { loadUserTokens } from '@popup/hive/actions/token.actions';
+import { ActionButtonList } from '@popup/hive/pages/app-container/home/actions-section/action-button.list';
+import { HiveWalletInfoSectionComponent } from '@popup/hive/pages/app-container/home/hive-wallet-info-section/hive-wallet-info-section.component';
+import { NotificationsComponent } from '@popup/hive/pages/app-container/home/notifications/notifications.component';
+import { TutorialPopupComponent } from '@popup/hive/pages/app-container/tutorial-popup/tutorial-popup.component';
+import { VestingRoutesPopupComponent } from '@popup/hive/pages/app-container/vesting-routes-popup/vesting-routes-popup.component';
+import { HiveEngineUtils } from '@popup/hive/utils/hive-engine.utils';
+import { HiveInternalMarketUtils } from '@popup/hive/utils/hive-internal-market.utils';
+import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
+import { RewardsUtils } from '@popup/hive/utils/rewards.utils';
+import { VestingRoutesUtils } from '@popup/hive/utils/vesting-routes.utils';
+import {
+  addCaptionToLoading,
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/multichain/actions/loading.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/multichain/actions/message.actions';
+import { closeModal, openModal } from '@popup/multichain/actions/modal.actions';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import { resetTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { HiveChain } from '@popup/multichain/interfaces/chains.interface';
+import { RootState } from '@popup/multichain/store';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import {
+  useWalletScrollRelay,
+  WALLET_SCROLL_HANDOFF_PX,
+} from '@popup/multichain/hooks/use-wallet-scroll-relay.hook';
+import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface.utils';
+import { PortfolioRouteUtils } from '@popup/multichain/utils/portfolio-route.utils';
+import { AccountValueType } from '@reference-data/account-value-type.enum';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { KeychainKeyTypes } from 'hive-keychain-commons';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { ConnectedProps, connect } from 'react-redux';
+import { HomepageContainer } from 'src/common-ui/_containers/homepage-container/homepage-container.component';
+import { TopBarComponent } from 'src/common-ui/_containers/top-bar/top-bar.component';
+import { AccountSelectorComponent } from 'src/common-ui/account-selector/account-selector.component';
+import { ChainType } from '@popup/multichain/interfaces/chains.interface';
+import { EstimatedAccountValueSectionComponent } from 'src/common-ui/estimated-account-value-section/estimated-account-value-section.component';
+import { SVGIcons } from 'src/common-ui/icons.enum';
+import { MetadataPopup } from 'src/common-ui/metadata-popup/metadata-popup.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { LocalAccount } from 'src/interfaces/local-account.interface';
+import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
+import { loadCurrencyPrices } from 'src/popup/hive/actions/currency-prices.actions';
+import { ActionsSectionComponent } from 'src/popup/hive/pages/app-container/home/actions-section/actions-section.component';
+import { GovernanceRenewalComponent } from 'src/popup/hive/pages/app-container/home/governance-renewal/governance-renewal.component';
+import { ResourcesSectionComponent } from 'src/popup/hive/pages/app-container/home/resources-section/resources-section.component';
+import { ProposalVotingSectionComponent } from 'src/popup/hive/pages/app-container/home/voting-section/proposal-voting-section/proposal-voting-section.component';
+import { SurveyComponent } from 'src/popup/hive/pages/app-container/survey/survey.component';
+import { Survey } from 'src/popup/hive/pages/app-container/survey/survey.interface';
+import { WhatsNewComponent } from 'src/popup/hive/pages/app-container/whats-new/whats-new.component';
+import { WhatsNewContent } from 'src/popup/hive/pages/app-container/whats-new/whats-new.interface';
+import {
+  WrongKeyPopupComponent,
+  WrongKeysOnUser,
+} from 'src/popup/hive/pages/app-container/wrong-key-popup/wrong-key-popup.component';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
+import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
+import { GovernanceUtils } from 'src/popup/hive/utils/governance.utils';
+import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
+import { SurveyUtils } from 'src/popup/hive/utils/survey.utils';
+import { AsyncUtils } from 'src/utils/async.utils';
+import FormatUtils from 'src/utils/format.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
+import { VersionLogUtils } from 'src/utils/version-log.utils';
+import { WhatsNewUtils } from 'src/utils/whats-new.utils';
+
+const Home = ({
+  activeAccount,
+  accounts,
+  activeRpc,
+  globalProperties,
+  chain,
+  tokens,
+  tokensBalance,
+  tokensMarket,
+  currencyPrices,
+  refreshActiveAccount,
+  resetTitleContainerProperties,
+  setSuccessMessage,
+  navigateTo,
+  loadGlobalProperties,
+  loadUserTokens,
+  removeFromLoadingList,
+  setErrorMessage,
+  addCaptionToLoading,
+  openModal,
+  closeModal,
+}: PropsFromRedux) => {
+  const [displayWhatsNew, setDisplayWhatsNew] = useState(false);
+  const [governanceAccountsToExpire, setGovernanceAccountsToExpire] = useState<
+    string[]
+  >([]);
+  const [whatsNewContent, setWhatsNewContent] = useState<WhatsNewContent>();
+  const [surveyToDisplay, setSurveyToDisplay] = useState<Survey>();
+  const [displayWrongKeyPopup, setDisplayWrongKeyPopup] = useState<
+    WrongKeysOnUser | undefined
+  >();
+  const [vestingRoutesDifferences, setVestingRoutesDifferences] = useState<
+    AccountVestingRoutesDifferences[] | undefined
+  >();
+  const [showBottomBar, setShowBottomBar] = useState(true);
+  const [hiddenTokensList, setHiddenTokensList] = useState<string[]>([]);
+  const [
+    hiveMarketLockedOpenOrdersValues,
+    setHiveMarketLockedOpenOrdersValues,
+  ] = useState<HiveInternalMarketLockedInOrders>({ hive: 0, hbd: 0 });
+  const isMountedRef = useRef(false);
+  const scrollTopRef = useRef(0);
+  const walletScrollHandoffPx = ExtensionSurfaceUtils.isSidePanelPage()
+    ? 0
+    : WALLET_SCROLL_HANDOFF_PX;
+  const handleWalletScrollDirectionChange = useCallback(
+    (isScrollingDown: boolean) => {
+      setShowBottomBar(!isScrollingDown);
+    },
+    [],
+  );
+  const {
+    homeContentRef,
+    walletScrollRef,
+    relayWheelToWallet,
+  } = useWalletScrollRelay({
+    onScrollDirectionChange: handleWalletScrollDirectionChange,
+    scrollHandoffPx: walletScrollHandoffPx,
+  });
+  const setStateIfMounted = <
+    TSetter extends React.Dispatch<React.SetStateAction<any>>,
+  >(
+    setter: TSetter,
+    value: Parameters<TSetter>[0],
+  ) => {
+    if (!isMountedRef.current) {
+      return;
+    }
+    setter(value);
+  };
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    resetTitleContainerProperties();
+    if (!ActiveAccountUtils.isEmpty(activeAccount)) {
+      refreshActiveAccount();
+    }
+    void initWhatsNew();
+    void initSurvey();
+    void initCheckKeysOnAccounts(accounts);
+    void initCheckVestingRoutes();
+    void loadHiddenTokensList();
+    ChainUtils.addChainToSetupChains(chain);
+    ChainUtils.setPreviousChain(chain);
+  }, []);
+
+  const loadHiddenTokensList = async () => {
+    const hiddenTokens = await HiveEngineUtils.loadHiddenTokensList();
+    setStateIfMounted(setHiddenTokensList, hiddenTokens);
+  };
+
+  const loadHiveInternalMarketOrders = async (username: string) => {
+    const openOrders =
+      await HiveInternalMarketUtils.getHiveInternalMarketOrders(username);
+    setStateIfMounted(setHiveMarketLockedOpenOrdersValues, openOrders);
+  };
+  useEffect(() => {
+    if (activeRpc && activeRpc.uri !== 'NULL')
+      void initGovernanceExpirationReminder(
+        accounts
+          .filter((localAccount: LocalAccount) => localAccount.keys.active)
+          .map((localAccount: LocalAccount) => localAccount.name),
+      );
+  }, [activeRpc]);
+
+  const hasRewardToClaim =
+    !ActiveAccountUtils.isEmpty(activeAccount) &&
+    !!globalProperties.globals &&
+    RewardsUtils.hasReward(
+      activeAccount.account.reward_hbd_balance as string,
+      FormatUtils.toHP(
+        activeAccount.account.reward_vesting_balance
+          .toString()
+          .replace('VESTS', ''),
+        globalProperties.globals,
+      ).toString(),
+      activeAccount.account.reward_hive_balance as string,
+    );
+
+  useEffect(() => {
+    if (!ActiveAccountUtils.isEmpty(activeAccount)) {
+      void loadHiveInternalMarketOrders(activeAccount.name!);
+    }
+  }, [activeAccount]);
+
+  const initGovernanceExpirationReminder = async (accountNames: string[]) => {
+    const accountsToRemind =
+      await GovernanceUtils.getGovernanceReminderList(accountNames);
+    setStateIfMounted(setGovernanceAccountsToExpire, accountsToRemind);
+  };
+
+  const initSurvey = async () => {
+    const survey = await SurveyUtils.getSurvey();
+    setStateIfMounted(setSurveyToDisplay, survey);
+  };
+
+  const initWhatsNew = async () => {
+    const lastVersionSeen = await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.LAST_VERSION_UPDATE,
+    );
+
+    if (!lastVersionSeen) {
+      WhatsNewUtils.saveLastSeen();
+      return;
+    }
+
+    const versionLog = await VersionLogUtils.getLastVersion();
+    const extensionVersion = chrome.runtime
+      .getManifest()
+      .version.split('.')
+      .splice(0, 2)
+      .join('.');
+
+    if (
+      extensionVersion !== lastVersionSeen &&
+      versionLog?.version === extensionVersion
+    ) {
+      setStateIfMounted(setWhatsNewContent, versionLog);
+      setStateIfMounted(setDisplayWhatsNew, true);
+    }
+  };
+
+  const initCheckKeysOnAccounts = async (localAccounts: LocalAccount[]) => {
+    const extendedAccountsList = await AccountUtils.getExtendedAccounts(
+      localAccounts.map((acc) => acc.name!),
+    );
+    let foundWrongKey: WrongKeysOnUser;
+    try {
+      let noKeyCheck: WrongKeysOnUser =
+        await LocalStorageUtils.getValueFromLocalStorage(
+          LocalStorageKeyEnum.NO_KEY_CHECK,
+        );
+      if (!noKeyCheck) noKeyCheck = { [localAccounts[0].name!]: [] };
+
+      const extendedAccountsByName = new Map(
+        extendedAccountsList.map((extendedAccount) => [
+          extendedAccount.name,
+          extendedAccount,
+        ]),
+      );
+
+      for (const localAccount of localAccounts) {
+        const accountName = localAccount.name!;
+        const extendedAccount = extendedAccountsByName.get(accountName);
+        if (!extendedAccount) {
+          continue;
+        }
+
+        const keys = localAccount.keys;
+        foundWrongKey = { [accountName]: [] };
+        if (!noKeyCheck.hasOwnProperty(accountName)) {
+          noKeyCheck = { ...noKeyCheck, [accountName]: [] };
+        }
+        for (const [key, value] of Object.entries(keys)) {
+          if (!value.length) continue;
+          foundWrongKey = KeysUtils.checkWrongKeyOnAccount(
+            key,
+            value,
+            accountName,
+            extendedAccount,
+            foundWrongKey,
+            !!noKeyCheck[accountName].find(
+              (keyName: string) => keyName === key.split('Pubkey')[0],
+            ),
+          );
+        }
+        if (foundWrongKey[accountName].length > 0) {
+          setStateIfMounted(setDisplayWrongKeyPopup, foundWrongKey);
+          break;
+        }
+      }
+    } catch (error) {
+      Logger.error(error);
+    }
+  };
+
+  const initCheckVestingRoutes = async () => {
+    const differences = await VestingRoutesUtils.getWrongVestingRoutes(accounts);
+    setStateIfMounted(setVestingRoutesDifferences, differences);
+  };
+
+  const handleCloseWhatsNew = () => {
+    setStateIfMounted(setDisplayWhatsNew, false);
+  };
+
+  const handleSetDisplayWrongKeyPopup: React.Dispatch<
+    React.SetStateAction<WrongKeysOnUser | undefined>
+  > = (value) => {
+    setStateIfMounted(setDisplayWrongKeyPopup, value);
+  };
+
+  const handleCloseVestingRoutesPopup = () => {
+    setStateIfMounted(setVestingRoutesDifferences, undefined);
+  };
+
+  const renderPopup = (
+    displayWhatsNew: boolean,
+    governanceAccountsToExpire: string[],
+    surveyToDisplay: Survey | undefined,
+    displayWrongKeyPopup: WrongKeysOnUser | undefined,
+    vestingRoutesDifferences: AccountVestingRoutesDifferences[] | undefined,
+  ) => {
+    if (displayWhatsNew) {
+      return (
+        <WhatsNewComponent
+          onOverlayClick={handleCloseWhatsNew}
+          content={whatsNewContent!}
+        />
+      );
+    } else if (governanceAccountsToExpire.length > 0) {
+      return (
+        <GovernanceRenewalComponent accountNames={governanceAccountsToExpire} />
+      );
+    } else if (surveyToDisplay) {
+      return <SurveyComponent survey={surveyToDisplay} />;
+    } else if (displayWrongKeyPopup) {
+      return (
+        <WrongKeyPopupComponent
+          displayWrongKeyPopup={displayWrongKeyPopup}
+          setDisplayWrongKeyPopup={handleSetDisplayWrongKeyPopup}
+        />
+      );
+    } else if (
+      vestingRoutesDifferences &&
+      vestingRoutesDifferences.length > 0
+    ) {
+      return (
+        <VestingRoutesPopupComponent
+          vestingRoutesDifferences={vestingRoutesDifferences}
+          closePopup={handleCloseVestingRoutesPopup}
+        />
+      );
+    } else {
+      return <ProposalVotingSectionComponent />;
+    }
+  };
+
+  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
+    const clampedScrollTop = Math.min(
+      event.currentTarget.scrollTop,
+      walletScrollHandoffPx,
+    );
+    if (event.currentTarget.scrollTop !== clampedScrollTop) {
+      event.currentTarget.scrollTop = clampedScrollTop;
+    }
+    const scrolled = clampedScrollTop;
+    if (scrolled > scrollTopRef.current) {
+      setShowBottomBar(false);
+    } else {
+      setShowBottomBar(true);
+    }
+    scrollTopRef.current = scrolled;
+  };
+
+  const refresh = async () => {
+    refreshActiveAccount();
+    loadGlobalProperties();
+    loadUserTokens(activeAccount.name!);
+  };
+
+  const claim = async (options?: TransactionOptions) => {
+    try {
+      addToLoadingList('popup_html_claiming_rewards');
+      const claimResult = await RewardsUtils.claimRewards(
+        activeAccount.name!,
+        activeAccount.account.reward_hive_balance,
+        activeAccount.account.reward_hbd_balance,
+        activeAccount.account.reward_vesting_balance,
+        activeAccount.keys.posting!,
+        options,
+      );
+      await AsyncUtils.sleep(3000);
+      refreshActiveAccount();
+      if (claimResult) {
+        if (claimResult.isUsingMultisig) {
+          setSuccessMessage('multisig_transaction_sent_to_signers');
+        } else {
+          const rewardHp =
+            FormatUtils.withCommas(
+              FormatUtils.toHP(
+                activeAccount.account.reward_vesting_balance
+                  .toString()
+                  .replace('VESTS', ''),
+                globalProperties.globals,
+              ).toString(),
+            ) + ' HP';
+          let claimedResources = [
+            activeAccount.account.reward_hive_balance,
+            activeAccount.account.reward_hbd_balance,
+            rewardHp,
+          ].filter(
+            (resource) => parseFloat(resource.toString().split(' ')[0]) !== 0,
+          );
+          setSuccessMessage('popup_html_claim_success', [
+            claimedResources.join(', '),
+          ]);
+        }
+        refresh();
+      } else {
+        setErrorMessage('popup_html_claim_error');
+      }
+    } catch (err: any) {
+      setErrorMessage(err.message);
+    } finally {
+      removeFromLoadingList('popup_html_claiming_rewards');
+    }
+  };
+
+  const handleClickOnClaim = async (): Promise<void> => {
+    if (!activeAccount.keys.posting) {
+      setErrorMessage('popup_accounts_err_claim');
+      return;
+    } else {
+      const twoFaAccounts = await MultisigUtils.get2FAAccounts(
+        activeAccount.account,
+        KeychainKeyTypes.active,
+      );
+
+      let initialMetadata = {} as TransactionOptionsMetadata;
+      for (const account of twoFaAccounts) {
+        if (!initialMetadata.twoFACodes) initialMetadata.twoFACodes = {};
+        initialMetadata.twoFACodes[account] = '';
+      }
+
+      if (twoFaAccounts.length > 0) {
+        openModal({
+          title: 'popup_html_transaction_metadata',
+          children: (
+            <MetadataPopup
+              initialMetadata={initialMetadata}
+              onSubmit={(metadata: TransactionOptionsMetadata) => {
+                addCaptionToLoading('multisig_transmitting_to_2fa');
+                claim({ metaData: metadata });
+                closeModal();
+              }}
+              onCancel={() => closeModal()}
+            />
+          ),
+        });
+      } else {
+        claim();
+      }
+    }
+  };
+
+  return (
+    <HomepageContainer datatestId={`${Screen.HOME_PAGE}-page`}>
+      {activeAccount &&
+        activeAccount.name &&
+        activeRpc &&
+        activeRpc.uri !== 'NULL' && (
+          <>
+            <TopBarComponent
+              onMenuButtonClicked={async () => {
+                navigateTo(Screen.SETTINGS_MAIN_PAGE);
+                return;
+              }}
+              onRefreshButtonClicked={refresh}
+              actions={
+                <>
+                  {activeAccount.name && globalProperties.globals && (
+                    <NotificationsComponent />
+                  )}
+                  {hasRewardToClaim && (
+                    <SVGIcon
+                      icon={SVGIcons.TOP_BAR_CLAIM_REWARDS_BTN}
+                      dataTestId="reward-claim-icon"
+                      className="claim-button"
+                      onClick={() => handleClickOnClaim()}
+                      hoverable
+                    />
+                  )}
+                </>
+              }
+              accountSelector={
+                <AccountSelectorComponent
+                  selectedAccountType={ChainType.HIVE}
+                  background="white"
+                  removeBorder
+                />
+              }
+            />
+
+            <div
+              className={'home-page-content'}
+              ref={homeContentRef}
+              onScroll={handleScroll}
+              onWheelCapture={relayWheelToWallet}>
+              <ResourcesSectionComponent />
+              <EstimatedAccountValueSectionComponent
+                onPortfolioClick={PortfolioRouteUtils.open}
+                mainTokenSymbol={chain.mainTokens?.hive ?? 'HIVE'}
+                accountValues={{
+                  [AccountValueType.DOLLARS]: `$ ${AccountUtils.getAccountValue(
+                    activeAccount.account,
+                    currencyPrices,
+                    globalProperties.globals!,
+                    tokensBalance.list,
+                    tokensMarket,
+                    AccountValueType.DOLLARS,
+                    tokens,
+                    hiveMarketLockedOpenOrdersValues,
+                    hiddenTokensList,
+                  )}`,
+                  [AccountValueType.TOKEN]: `${AccountUtils.getAccountValue(
+                    activeAccount.account,
+                    currencyPrices,
+                    globalProperties.globals!,
+                    tokensBalance.list,
+                    tokensMarket,
+                    AccountValueType.TOKEN,
+                    tokens,
+                    hiveMarketLockedOpenOrdersValues,
+                    hiddenTokensList,
+                  )} ${chain.mainTokens?.hive ?? 'HIVE'}`,
+                }}
+                hasPortofolio
+              />
+              <HiveWalletInfoSectionComponent
+                walletScrollRef={walletScrollRef}
+              />
+            </div>
+            <ActionsSectionComponent
+              additionalClass={showBottomBar ? undefined : 'down'}
+              actionButtonList={ActionButtonList}
+            />
+          </>
+        )}
+
+      {renderPopup(
+        displayWhatsNew,
+        governanceAccountsToExpire,
+        surveyToDisplay,
+        displayWrongKeyPopup,
+        vestingRoutesDifferences,
+      )}
+      <TutorialPopupComponent />
+    </HomepageContainer>
+  );
+};
+
+const mapStateToProps = (state: RootState) => {
+  return {
+    activeAccount: state.hive.activeAccount,
+    accounts: state.hive.accounts,
+    activeRpc: state.hive.activeRpc,
+    globalProperties: state.hive.globalProperties,
+    chain: state.chain as HiveChain,
+    currencyPrices: state.hive.currencyPrices,
+    tokensBalance: state.hive.userTokens,
+    tokensMarket: state.hive.tokenMarket,
+    tokens: state.hive.tokens,
+  };
+};
+
+const connector = connect(mapStateToProps, {
+  loadCurrencyPrices,
+  refreshActiveAccount,
+  resetTitleContainerProperties,
+  setSuccessMessage,
+  navigateTo,
+  loadGlobalProperties,
+  loadUserTokens,
+  setErrorMessage,
+  removeFromLoadingList,
+  addCaptionToLoading,
+  openModal,
+  closeModal,
+});
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+export const HiveHomeComponent = connector(Home);

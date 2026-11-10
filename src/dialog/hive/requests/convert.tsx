@@ -1,0 +1,75 @@
+import { RequestConvert, RequestId } from '@interfaces/keychain.interface';
+import { Rpc } from '@interfaces/rpc.interface';
+import React from 'react';
+import AmountWithLogo from 'src/common-ui/amount-with-logo/amount-with-logo';
+import { SVGIcons } from 'src/common-ui/icons.enum';
+import { Separator } from 'src/common-ui/separator/separator.component';
+import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with-avatar';
+import Operation from 'src/dialog/hive/operation/operation';
+import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
+import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
+import FormatUtils from 'src/utils/format.utils';
+
+import { I18nUtils } from 'src/utils/i18n.utils';
+type Props = {
+  data: RequestConvert & RequestId;
+  domain: string;
+  tab: number;
+  rpc: Rpc;
+  afterCancel: (requestId: number, tab: number) => void;
+  accounts?: string[];
+};
+
+const Convert = (props: Props) => {
+  const { data, rpc, accounts } = props;
+  const anonymousProps = useAnonymousRequest(data, accounts);
+  const currencyLabel = CurrencyUtils.getCurrencyLabel(
+    data.collaterized ? 'HIVE' : 'HBD',
+    rpc.testnet,
+  );
+  const unit = CurrencyUtils.getCurrencyLabel(
+    data.collaterized ? 'HIVE' : 'HBD',
+    rpc.testnet,
+  );
+  return (
+    <Operation
+      title={I18nUtils.getMessage(
+        data.collaterized
+          ? 'popup_html_proposal_funded_option_hive'
+          : 'popup_html_proposal_funded_option_hbd',
+      )}
+      header={
+        data.collaterized
+          ? I18nUtils.getMessage(`popup_html_convert_hive_intro`, [
+              data.amount,
+            ])
+          : I18nUtils.getMessage(`popup_html_convert_hbd_intro`)
+      }
+      {...anonymousProps}
+      {...props}>
+      {!accounts && data.username ? (
+        <>
+          <UsernameWithAvatar
+            title="dialog_account"
+            username={anonymousProps.username}
+          />
+          <Separator type={'horizontal'} fullSize />
+        </>
+      ) : (
+        <></>
+      )}
+      <AmountWithLogo
+        title="dialog_amount"
+        amount={FormatUtils.formatCurrencyValue(data.amount)}
+        symbol={currencyLabel}
+        icon={
+          currencyLabel === 'HIVE'
+            ? SVGIcons.WALLET_HIVE_LOGO
+            : SVGIcons.WALLET_HBD_LOGO
+        }
+      />
+    </Operation>
+  );
+};
+
+export default Convert;

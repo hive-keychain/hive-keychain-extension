@@ -1,37 +1,36 @@
+import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
 import { KeylessKeychainModule } from '@background/keyless-keychain.module';
-import { RequestsHandler } from '@background/requests/request-handler';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
 import React, { useState } from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import DialogHeader from 'src/dialog/components/dialog-header/dialog-header.component';
+import { DialogHeader } from 'src/dialog/components/dialog-header/dialog-header.component';
 
-interface KeylessUsernameProps {
+import { I18nUtils } from 'src/utils/i18n.utils';
+export interface KeylessUsernameMessage {
   command: DialogCommand;
-  requestHandler: RequestsHandler;
+  requestHandler: HiveRequestsHandler;
   data: KeychainRequest;
   tab: number;
   domain: string;
+  requestSource?: PendingRequestSource;
 }
 
 interface Props {
-  data: KeylessUsernameProps;
+  data: KeylessUsernameMessage;
 }
 
 const KeylessUsername = (props: Props) => {
-  const { requestHandler, data, domain, tab } = props.data;
+  const { requestHandler, data, domain, tab, requestSource } = props.data;
   const [username, setUsername] = useState('');
 
   const handleSubmit = async () => {
     data.username = username;
-    requestHandler.data.request = {
-      ...requestHandler.data.request!,
-      domain: domain,
-      username: username,
-    };
+
     const keylessAuthData =
       await KeylessKeychainModule.getKeylessRegistrationInfo(data, domain, tab);
     if (!keylessAuthData) {
@@ -49,6 +48,7 @@ const KeylessUsername = (props: Props) => {
         data,
         domain,
         tab,
+        requestSource,
       },
     });
   };
@@ -60,6 +60,7 @@ const KeylessUsername = (props: Props) => {
         data,
         domain,
         tab,
+        requestSource,
       },
     });
   };
@@ -67,11 +68,11 @@ const KeylessUsername = (props: Props) => {
   return (
     <div className="keyless-username-page">
       <DialogHeader
-        title={chrome.i18n.getMessage('dialog_header_keyless_username')}
+        title={I18nUtils.getMessage('dialog_header_keyless_username')}
       />
       <div className="content">
         <div className="caption">
-          {chrome.i18n.getMessage('dialog_anonymous_keyless_content')}
+          {I18nUtils.getMessage('dialog_anonymous_keyless_content')}
         </div>
       </div>
       <div className="inputs-panel">

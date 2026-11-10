@@ -1,15 +1,17 @@
+import { Screen } from '@interfaces/screen.interface';
 import {
   goBack,
-  navigateTo,
+  navigateToWithParams,
   resetNav,
 } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { DetachedExtensionTabUtils } from '@popup/multichain/utils/detached-extension-tab.utils';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import { Screen } from 'src/reference-data/screen.enum';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export interface PageTitleProps {
   title: string;
   titleParams?: string[];
@@ -21,9 +23,12 @@ export interface PageTitleProps {
     icon: SVGIcons;
     callback: () => void;
     className?: string;
+    dataTestId?: string;
+    tooltipMessage?: string;
   };
-  onCloseAdditional?: () => void;
-  onBackAdditional?: () => void;
+  closeNavigationParams?: any;
+  onCloseAdditional?: () => void | Promise<void>;
+  onBackAdditional?: () => void | boolean | Promise<void | boolean>;
 }
 
 const PageTitle = ({
@@ -33,27 +38,32 @@ const PageTitle = ({
   isBackButtonEnabled,
   isCloseButtonDisabled,
   rightAction,
+  closeNavigationParams,
   onBackAdditional,
   onCloseAdditional,
   goBack,
-  navigateTo,
+  navigateToWithParams,
   canGoBack,
   resetNav,
   showDetachWindowOption,
 }: PropsType) => {
-  const handleBackButtonClick = (): void => {
-    if (onBackAdditional) onBackAdditional();
-    if (isBackButtonEnabled) {
+  const handleBackButtonClick = async (): Promise<void> => {
+    let skipGoBack = false;
+    if (onBackAdditional) {
+      const result = await onBackAdditional();
+      skipGoBack = result === true;
+    }
+    if (!skipGoBack && canGoBack && isBackButtonEnabled) {
       goBack();
     }
   };
-  const handleCloseButtonClick = (): void => {
+  const handleCloseButtonClick = async (): Promise<void> => {
     if (onCloseAdditional) {
-      onCloseAdditional();
+      await onCloseAdditional();
     }
 
     resetNav();
-    navigateTo(Screen.HOME_PAGE, true);
+    navigateToWithParams(Screen.HOME_PAGE, closeNavigationParams, true);
   };
 
   const handleRightActionButtonClick = () => {
@@ -63,26 +73,32 @@ const PageTitle = ({
   };
 
   const handleDetachWindow = () => {
-    chrome.tabs.create({
-      url: `detached_window.html`,
-    });
+    void DetachedExtensionTabUtils.openDetachedExtension();
   };
 
   return (
-    <div className="title-section">
-      {isBackButtonEnabled && canGoBack && (
+    <div
+      className={`title-section ${
+        showDetachWindowOption ? 'with-detach-option' : ''
+      }`}>
+      {isBackButtonEnabled && (canGoBack || onBackAdditional) ? (
         <SVGIcon
           dataTestId="arrow-back-icon"
           onClick={handleBackButtonClick}
           icon={SVGIcons.TOP_BAR_BACK_BTN}
           className="icon-button"
+          ariaLabel={I18nUtils.getMessage('accessibility_back')}
         />
+      ) : (
+        <div></div>
       )}
+      <div className="fill-space"></div>
       <div className="title">
         {skipTitleTranslation
           ? title
-          : chrome.i18n.getMessage(title, titleParams)}
+          : I18nUtils.getMessage(title, titleParams)}
       </div>
+      {/* <div className="right-section"> */}
       {showDetachWindowOption && (
         <SVGIcon
           onClick={handleDetachWindow}
@@ -91,20 +107,26 @@ const PageTitle = ({
           hoverable
           tooltipMessage="popup_html_detach_window_tooltip_text"
           tooltipPosition="bottom"
+          ariaLabel={I18nUtils.getMessage('popup_html_detach_window')}
         />
       )}
       {rightAction && (
         <SVGIcon
+          dataTestId={rightAction.dataTestId}
           onClick={handleRightActionButtonClick}
           icon={rightAction.icon}
-          className={`icon-button ${rightAction.className}`}
+          className={`icon-button ${rightAction.className ?? ''}`}
+          hoverable={!!rightAction.tooltipMessage}
+          tooltipMessage={rightAction.tooltipMessage}
+          tooltipPosition="bottom"
         />
       )}
       {!rightAction && !isCloseButtonDisabled && (
         <SVGIcon
           dataTestId="icon-close-page"
-          onClick={handleCloseButtonClick}
+          onClick={() => void handleCloseButtonClick()}
           icon={SVGIcons.TOP_BAR_CLOSE_BTN}
+          ariaLabel={I18nUtils.getMessage('popup_html_close')}
         />
       )}
     </div>
@@ -117,7 +139,11 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const connector = connect(mapStateToProps, { goBack, navigateTo, resetNav });
+const connector = connect(mapStateToProps, {
+  goBack,
+  navigateToWithParams,
+  resetNav,
+});
 type PropsType = ConnectedProps<typeof connector> & PageTitleProps;
 
 export const PageTitleComponent = connector(PageTitle);

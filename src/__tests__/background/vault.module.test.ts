@@ -39,10 +39,29 @@ describe('vault.module', () => {
   });
 
   it('init creates document and resolves when VAULT_LOADED is received', async () => {
-    let capturedListener: ((msg: { command: string }) => void) | undefined;
-    const addListener = jest.fn((fn: (msg: { command: string }) => void) => {
-      capturedListener = fn;
+    Object.defineProperty(chrome.runtime, 'id', {
+      configurable: true,
+      value: 'keychain-test-extension',
     });
+    (chrome.runtime.getURL as jest.Mock).mockImplementation(
+      (path: string) => `chrome-extension://keychain-test-extension/${path}`,
+    );
+    let capturedListener:
+      | ((
+          msg: { command: string },
+          sender: chrome.runtime.MessageSender,
+        ) => void)
+      | undefined;
+    const addListener = jest.fn(
+      (
+        fn: (
+          msg: { command: string },
+          sender: chrome.runtime.MessageSender,
+        ) => void,
+      ) => {
+        capturedListener = fn;
+      },
+    );
     const removeListener = jest.fn();
 
     jest.spyOn(chrome.runtime.onMessage, 'addListener').mockImplementation(addListener as any);
@@ -57,7 +76,13 @@ describe('vault.module', () => {
     const promise = VaultModule.init();
 
     expect(capturedListener).toBeDefined();
-    capturedListener!({ command: BackgroundCommand.VAULT_LOADED });
+    capturedListener!(
+      { command: BackgroundCommand.VAULT_LOADED },
+      {
+        id: chrome.runtime.id,
+        url: chrome.runtime.getURL('vault.html'),
+      },
+    );
 
     await promise;
 

@@ -1,0 +1,477 @@
+import '@testing-library/jest-dom';
+import React from 'react';
+import userEvent from '@testing-library/user-event';
+import { customRender, screen, waitFor } from 'src/__tests__/utils-for-testing/setups/render';
+import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
+import { copyTextWithToast } from 'src/common-ui/toast/copy-toast.utils';
+import { EvmAccountSource } from 'src/popup/evm/interfaces/wallet.interface';
+import { EvmAccountsComponent } from 'src/popup/evm/pages/home/settings/evm-accounts/evm-accounts.component';
+import { EvmWalletUtils } from 'src/popup/evm/utils/wallet.utils';
+import { ChainType } from 'src/popup/multichain/interfaces/chains.interface';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
+import VaultUtils from 'src/utils/vault.utils';
+
+jest.mock('src/common-ui/svg-icon/svg-icon.component', () => ({
+  SVGIcon: ({ dataTestId, className, onClick }: any) => (
+    <div
+      data-testid={dataTestId}
+      className={`svg-icon ${className ?? ''}`}
+      onClick={onClick}
+    />
+  ),
+}));
+
+jest.mock('src/common-ui/evm/evm-account-display/evm-account-display.component', () => ({
+  EvmAccountDisplayComponent: ({
+    account,
+    hideable,
+    deletable,
+    onDelete,
+  }: any) => (
+    <div
+      data-testid={`evm-account-display-${account.id}`}
+      data-hideable={hideable ? 'true' : 'false'}
+      data-deletable={deletable ? 'true' : 'false'}>
+      {deletable && (
+        <button
+          type="button"
+          data-testid={`delete-evm-account-${account.id}`}
+          onClick={() => onDelete(account)}>
+          delete
+        </button>
+      )}
+    </div>
+  ),
+}));
+
+jest.mock('src/common-ui/toast/copy-toast.utils', () => ({
+  COPY_GENERIC_MESSAGE_KEY: 'swap_copied_to_clipboard',
+  copyTextWithToast: jest.fn().mockResolvedValue(true),
+}));
+
+describe('EvmAccountsComponent', () => {
+  const mk = 'my-password';
+  const mnemonic = 'test test test test test test test test test test test junk';
+  const wallet = {
+    address: '0x1234567890123456789012345678901234567890',
+    mnemonic: { phrase: mnemonic },
+  } as any;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.spyOn(chrome.i18n, 'getMessage').mockImplementation((key: string) => key);
+  });
+
+  it('asks for the password before copying the seed phrase', async () => {
+    const user = userEvent.setup();
+    jest.spyOn(EvmWalletUtils, 'getAccountsFromLocalStorage').mockResolvedValue([
+      {
+        id: 1,
+        seed: mnemonic,
+        nickname: 'Main seed',
+        accounts: [
+          {
+            id: 0,
+            path: "m/44'/60'/0'/0/0",
+            nickname: 'Account 1',
+          },
+        ],
+      },
+    ]);
+    const { container } = customRender(<EvmAccountsComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk,
+        chain: {
+          ...initialEmptyStateStore.chain,
+          type: ChainType.EVM,
+          chainId: '1',
+          name: 'Ethereum',
+        },
+        evm: {
+          ...initialEmptyStateStore.evm,
+          appStatus: {
+            ...initialEmptyStateStore.evm.appStatus,
+            isLedgerSupported: true,
+          },
+          accounts: [
+            {
+              id: 0,
+              path: "m/44'/60'/0'/0/0",
+              seedId: 1,
+              seedNickname: 'Main seed',
+              nickname: 'Account 1',
+              source: EvmAccountSource.SEED,
+              wallet,
+            },
+          ],
+        },
+      },
+    });
+
+    const menuButton = container.querySelector(
+      '.contextual-menu > .svg-icon.clickable',
+    ) as HTMLElement;
+
+    await user.click(menuButton);
+    await user.click(screen.getByText('Copy seed'));
+
+    expect(
+      screen.getByText(
+        'You are about to copy your seed phrase. For security reasons, please enter your password to continue.',
+      ),
+    ).toBeInTheDocument();
+
+    await user.type(
+      screen.getByPlaceholderText('Master password'),
+      'wrong-password',
+    );
+    await user.click(screen.getByText('Submit'));
+
+    expect(await screen.findByText('Wrong password!')).toBeInTheDocument();
+
+    await user.clear(screen.getByPlaceholderText('Master password'));
+    await user.type(screen.getByPlaceholderText('Master password'), mk);
+    await user.click(screen.getByText('Submit'));
+
+    await waitFor(() => {
+      expect(copyTextWithToast).toHaveBeenCalledWith(
+        mnemonic,
+        'html_popup_evm_create_wallet_copied_mnemonic',
+      );
+    });
+    await waitFor(() => {
+      expect(screen.queryByText('wrong_password')).not.toBeInTheDocument();
+    });
+  });
+
+  it('hides the EVM Ledger import flow from the seed menu when unsupported', async () => {
+    const user = userEvent.setup();
+    const { container } = customRender(<EvmAccountsComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk,
+        chain: {
+          ...initialEmptyStateStore.chain,
+          type: ChainType.EVM,
+          chainId: '0x1',
+          name: 'Ethereum',
+        },
+        evm: {
+          ...initialEmptyStateStore.evm,
+          appStatus: {
+            ...initialEmptyStateStore.evm.appStatus,
+            isLedgerSupported: false,
+          },
+          accounts: [
+            {
+              id: 0,
+              path: "m/44'/60'/0'/0/0",
+              seedId: 1,
+              seedNickname: 'Main seed',
+              nickname: 'Account 1',
+              source: EvmAccountSource.SEED,
+              wallet,
+            },
+          ],
+        },
+      },
+    });
+
+    const menuButton = container.querySelector(
+      '.contextual-menu > .svg-icon.clickable',
+    ) as HTMLElement;
+
+    await user.click(menuButton);
+
+    expect(
+      screen.queryByText('evm_connect_ledger_wallet'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('does not allow derived addresses from Imported sources', () => {
+    customRender(<EvmAccountsComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk,
+        chain: {
+          ...initialEmptyStateStore.chain,
+          type: ChainType.EVM,
+          chainId: '0x1',
+          name: 'Ethereum',
+        },
+        evm: {
+          ...initialEmptyStateStore.evm,
+          accounts: [
+            {
+              id: 0,
+              path: '',
+              seedId: 3,
+              nickname: 'Imported account',
+              source: EvmAccountSource.IMPORTED,
+              wallet,
+            },
+          ],
+        },
+      },
+    });
+
+    expect(
+      screen.queryByText('evm_add_wallet_address_button'),
+    ).not.toBeInTheDocument();
+    expect(screen.getAllByText('Imported').length).toBeGreaterThan(0);
+    expect(screen.getByTestId('evm-account-display-0')).toHaveAttribute(
+      'data-hideable',
+      'false',
+    );
+    expect(screen.getByTestId('evm-account-display-0')).toHaveAttribute(
+      'data-deletable',
+      'true',
+    );
+  });
+
+  it('makes Ledger accounts deletable instead of hideable', () => {
+    customRender(<EvmAccountsComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk,
+        chain: {
+          ...initialEmptyStateStore.chain,
+          type: ChainType.EVM,
+          chainId: '0x1',
+          name: 'Ethereum',
+        },
+        evm: {
+          ...initialEmptyStateStore.evm,
+          accounts: [
+            {
+              id: 0,
+              path: "m/44'/60'/0'/0/0",
+              seedId: 3,
+              seedNickname: 'Ledger',
+              nickname: 'Ledger account',
+              source: EvmAccountSource.LEDGER,
+              wallet,
+            },
+          ],
+        },
+      },
+    });
+
+    expect(
+      screen.queryByText('evm_add_wallet_address_button'),
+    ).not.toBeInTheDocument();
+    expect(screen.getByTestId('evm-account-display-0')).toHaveAttribute(
+      'data-hideable',
+      'false',
+    );
+    expect(screen.getByTestId('evm-account-display-0')).toHaveAttribute(
+      'data-deletable',
+      'true',
+    );
+  });
+
+  it('asks for confirmation before deleting a Ledger account', async () => {
+    const user = userEvent.setup();
+    customRender(<EvmAccountsComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk,
+        chain: {
+          ...initialEmptyStateStore.chain,
+          type: ChainType.EVM,
+          chainId: '0x1',
+          name: 'Ethereum',
+        },
+        evm: {
+          ...initialEmptyStateStore.evm,
+          accounts: [
+            {
+              id: 0,
+              path: "m/44'/60'/0'/0/0",
+              seedId: 3,
+              seedNickname: 'Ledger',
+              nickname: 'Ledger account',
+              source: EvmAccountSource.LEDGER,
+              wallet,
+            },
+          ],
+        },
+      },
+    });
+
+    await user.click(screen.getByTestId('delete-evm-account-0'));
+
+    expect(
+      screen.getByText('Are you sure you want to delete this account ?'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Deleting the last account on Keychain will completely reset Keychain.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Confirm')).toBeInTheDocument();
+  });
+
+  it('resets Keychain when confirming deletion of the last account', async () => {
+    const user = userEvent.setup();
+    jest.spyOn(VaultUtils, 'removeFromVault').mockResolvedValue(undefined);
+    jest
+      .spyOn(LocalStorageUtils, 'clearLocalStorage')
+      .mockResolvedValue(undefined);
+    const { store } = customRender(<EvmAccountsComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk,
+        hasFinishedSignup: true,
+        chain: {
+          ...initialEmptyStateStore.chain,
+          type: ChainType.EVM,
+          chainId: '0x1',
+          name: 'Ethereum',
+        },
+        evm: {
+          ...initialEmptyStateStore.evm,
+          accounts: [
+            {
+              id: 0,
+              path: "m/44'/60'/0'/0/0",
+              seedId: 3,
+              seedNickname: 'Ledger',
+              nickname: 'Ledger account',
+              source: EvmAccountSource.LEDGER,
+              wallet,
+            },
+          ],
+        },
+      },
+    });
+
+    await user.click(screen.getByTestId('delete-evm-account-0'));
+    await user.click(screen.getByText('Confirm'));
+
+    await waitFor(() => {
+      expect(LocalStorageUtils.clearLocalStorage).toHaveBeenCalled();
+      expect(store.getState().mk).toBe('');
+      expect(store.getState().hasFinishedSignup).toBe(false);
+    });
+  });
+
+  it('keeps the normal delete confirmation when a Hive account remains', async () => {
+    const user = userEvent.setup();
+    customRender(<EvmAccountsComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk,
+        chain: {
+          ...initialEmptyStateStore.chain,
+          type: ChainType.EVM,
+          chainId: '0x1',
+          name: 'Ethereum',
+        },
+        hive: {
+          ...initialEmptyStateStore.hive,
+          accounts: [{ name: 'alice', keys: {} }],
+        },
+        evm: {
+          ...initialEmptyStateStore.evm,
+          accounts: [
+            {
+              id: 0,
+              path: "m/44'/60'/0'/0/0",
+              seedId: 3,
+              seedNickname: 'Ledger',
+              nickname: 'Ledger account',
+              source: EvmAccountSource.LEDGER,
+              wallet,
+            },
+          ],
+        },
+      },
+    });
+
+    await user.click(screen.getByTestId('delete-evm-account-0'));
+
+    expect(
+      screen.getByText('Are you sure you want to delete this account ?'),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        'Deleting the last account on Keychain will completely reset Keychain.',
+      ),
+    ).not.toBeInTheDocument();
+  });
+
+  it('syncs renamed seed nicknames to redux immediately', async () => {
+    const user = userEvent.setup();
+    const updatedAccounts = [
+      {
+        id: 0,
+        path: "m/44'/60'/0'/0/0",
+        seedId: 1,
+        seedNickname: 'Renamed seed',
+        nickname: 'Account 1',
+        source: EvmAccountSource.SEED,
+        wallet,
+      },
+    ];
+
+    jest.spyOn(EvmWalletUtils, 'updateSeedNickname').mockResolvedValue([]);
+    jest
+      .spyOn(EvmWalletUtils, 'rebuildAccountsFromLocalStorage')
+      .mockResolvedValue(updatedAccounts as any);
+
+    const { container, store } = customRender(<EvmAccountsComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk,
+        chain: {
+          ...initialEmptyStateStore.chain,
+          type: ChainType.EVM,
+          chainId: '0x1',
+          name: 'Ethereum',
+        },
+        evm: {
+          ...initialEmptyStateStore.evm,
+          appStatus: {
+            ...initialEmptyStateStore.evm.appStatus,
+            isLedgerSupported: true,
+          },
+          accounts: [
+            {
+              id: 0,
+              path: "m/44'/60'/0'/0/0",
+              seedId: 1,
+              seedNickname: 'Main seed',
+              nickname: 'Account 1',
+              source: EvmAccountSource.SEED,
+              wallet,
+            },
+          ],
+        },
+      },
+    });
+
+    const menuButton = container.querySelector(
+      '.contextual-menu > .svg-icon.clickable',
+    ) as HTMLElement;
+
+    await user.click(menuButton);
+    await user.click(screen.getByText('Edit name'));
+
+    const nicknameInput = screen.getByPlaceholderText('Nickname');
+    await user.clear(nicknameInput);
+    await user.type(nicknameInput, 'Renamed seed');
+    await user.click(screen.getByText('Confirm'));
+
+    await waitFor(() => {
+      expect(EvmWalletUtils.updateSeedNickname).toHaveBeenCalledWith(
+        1,
+        'Renamed seed',
+        mk,
+      );
+      expect(store.getState().evm.accounts).toEqual(updatedAccounts);
+      expect(screen.getByText('Renamed seed')).toBeInTheDocument();
+    });
+  });
+});

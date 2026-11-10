@@ -1,46 +1,89 @@
 .automated-tasks-page {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  row-gap: 10px;
+  row-gap: 12px;
   padding: 0px 24px;
-  padding-bottom: 16px;
+  padding-bottom: 24px;
+
+  .settings-hive-account-select-panel {
+    width: 100%;
+
+    .custom-select-container {
+      width: 100%;
+    }
+
+    .custom-select {
+      width: 100%;
+    }
+  }
 
   .intro {
-    @include caption();
+    @include settings-page-note();
+
+    &.title-list {
+      background: unset;
+      border: unset;
+      border-radius: unset;
+      padding: 0 0 0 8px;
+      @include poppins500(14px);
+    }
   }
+
+  .hive-select-account-section.fullsize {
+    margin: 0;
+  }
+
   .section {
-    padding: 0 20px;
-    .section-expander {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px 16px;
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    background: var(--card-background);
+
+    .section-header {
       display: flex;
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
-      min-height: 48px;
-      cursor: pointer;
+      min-height: 28px;
+      padding: 0;
+
       .section-title-logo {
         display: flex;
         flex-direction: row;
         align-items: center;
+
         .section-title {
           color: var(--main-font-color);
-          @include poppins500(14px);
+          @include poppins600(15px);
           padding: 0;
-          margin-left: 8px;
         }
+
+        .rotating-logo-container {
+          margin-left: 10px;
+        }
+
         .rotating-logo-container,
         .rotating-logo,
         svg {
-          width: 30px;
-          height: 30px;
+          width: 24px;
+          height: 24px;
         }
       }
     }
+
     .tasks {
       display: flex;
       flex-direction: column;
       row-gap: 8px;
-      margin-bottom: 12px;
+      margin-top: 12px;
+      margin-bottom: 0;
+
+      .checkbox-panel {
+        border-radius: 14px;
+        padding: 14px;
+      }
 
       .custom-select-container {
         .label {
@@ -79,60 +122,50 @@
       }
 
       .title-list {
-        @include poppins500(14px);
         padding: 0px;
         padding-left: 8px;
       }
 
       .auto-stake-token-list {
-        max-height: 200px;
-        overflow-y: scroll;
-        border: unset;
-        border-radius: 12px;
-        background: var(--input-background);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        min-width: 0;
 
-        .option {
-          &:has(~ .option > .custom-select-item:hover) {
-            .separator {
-              background: var(--separator-color) !important;
-            }
+        .auto-stake-token-tag {
+          @include poppins400(12px);
+          align-items: center;
+          background: var(--card-background);
+          border: 1px solid var(--card-border);
+          border-radius: 14px;
+          color: var(--main-font-color);
+          column-gap: 6px;
+          cursor: pointer;
+          display: flex;
+          min-width: 0;
+          padding: 6px 8px;
+
+          .token-img {
+            border-radius: 50%;
+            flex-shrink: 0;
+            height: 20px;
+            width: 20px;
           }
-          .custom-select-item {
-            display: flex;
-            align-items: center;
-            column-gap: 12px;
-            padding: 10px 6px;
-            box-sizing: border-box;
 
-            .left-image {
-              height: 32px;
-              width: 32px;
-              border-radius: 50%;
-              margin-left: 10px;
-              &.shimmer {
-                @include icon-size(32px);
-              }
-            }
+          .token-label {
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
 
-            .item-label {
-              @include poppins500(14px);
-              flex: 1;
-              color: var(--main-font-color) !important;
-            }
-            .right-action-icon {
-              display: none;
-              svg {
-                color: var(--main-font-color) !important;
-              }
-            }
-            &:hover {
-              .right-action-icon {
-                display: block;
-                margin-right: 10px;
-              }
-              .separator {
-                background: var(--separator-color) !important;
-              }
+          .svg-icon {
+            @include icon-size(12px);
+            color: $red;
+            opacity: 0;
+          }
+
+          &:hover {
+            .svg-icon {
+              opacity: 1;
             }
           }
         }

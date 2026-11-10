@@ -1,26 +1,33 @@
-import { BackgroundMessage } from '@background/background-message.interface';
+import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import { ImportCallbackPayload } from '@interfaces/import-callback.interface';
 import { Theme } from '@popup/theme.context';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useRef, useState } from 'react';
-import ButtonComponent, { ButtonType } from 'src/common-ui/button/button.component';
+import ButtonComponent, {
+  ButtonType,
+} from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { ResultMessagePageComponent } from 'src/common-ui/result-message-page/result-message-page.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
-import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
+import {
+  BackgroundCommand,
+  SendBackImportCommand,
+} from 'src/reference-data/background-message-key.enum';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import FileUtils from 'src/utils/file.utils';
-import { HtmlUtils } from 'src/utils/html.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './import-file.scss';
 
+import { HtmlUtils } from 'src/utils/html.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface PropsType {
   title: string;
   text: string;
   command: BackgroundCommand;
   accept: string;
-  callBackCommand?: BackgroundCommand;
+  callBackCommand?: SendBackImportCommand;
 }
 
 const ImportFile = ({
@@ -60,7 +67,7 @@ const ImportFile = ({
       if (callBackCommand) {
         chrome.runtime.onMessage.addListener(onCallBackCommandeMessageListener);
       }
-      chrome.runtime.sendMessage({
+      CommunicationUtils.runtimeSendMessage({
         command: command,
         value: fileData,
       });
@@ -106,7 +113,10 @@ const ImportFile = ({
 
     return {
       success: false,
-      message: value?.warning?.message ?? value?.feedback?.message ?? 'import_html_error',
+      message:
+        value?.warning?.message ??
+        value?.feedback?.message ??
+        'import_html_error',
     };
   };
 
@@ -135,7 +145,7 @@ const ImportFile = ({
         <>
           <div className="title-panel">
             <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} />
-            <div className="title">{chrome.i18n.getMessage(title)}</div>
+            <div className="title">{I18nUtils.getMessage(title)}</div>
           </div>
           <div
             className="caption"
@@ -163,7 +173,9 @@ const ImportFile = ({
 
           <div className="button-panel">
             <ButtonComponent
-              type={!selectedFile ? ButtonType.IMPORTANT : ButtonType.ALTERNATIVE}
+              type={
+                !selectedFile ? ButtonType.IMPORTANT : ButtonType.ALTERNATIVE
+              }
               label={
                 !selectedFile
                   ? 'dialog_import_file_chose_file'

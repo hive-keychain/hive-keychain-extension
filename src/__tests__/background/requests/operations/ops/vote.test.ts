@@ -1,4 +1,5 @@
 import { broadcastVote } from '@background/requests/operations/ops/vote';
+import { KeychainError } from 'src/keychain-error';
 import { RequestsHandler } from '@background/requests/request-handler';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
@@ -12,6 +13,7 @@ import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('vote tests:\n', () => {
   const data = {
     domain: 'domain',
@@ -30,7 +32,7 @@ describe('vote tests:\n', () => {
   });
   beforeEach(() => {
     chrome.i18n.getUILanguage = jest.fn().mockReturnValue('en-US');
-    chrome.i18n.getMessage = jest
+    I18nUtils.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom);
   });
@@ -43,14 +45,15 @@ describe('vote tests:\n', () => {
       command: DialogCommand.ANSWER_REQUEST,
       msg: {
         success: false,
-        error: new Error('html_popup_error_while_signing_transaction'),
+        error: new KeychainError('html_popup_error_while_signing_transaction'),
         result: undefined,
         data: datas,
-        message: chrome.i18n.getMessage(
-          'html_popup_error_while_signing_transaction',
-        ),
+        message: I18nUtils.getMessage('html_popup_error_while_signing_transaction'),
+          messageKey: 'html_popup_error_while_signing_transaction',
+          messageParams: undefined,
         request_id: request_id,
         publicKey: undefined,
+          tab: undefined,
       },
     });
   });
@@ -76,13 +79,32 @@ describe('vote tests:\n', () => {
           tx_id: 'tx_id',
         },
         data: datas,
-        message: chrome.i18n.getMessage('bgd_ops_vote', [
+        message: I18nUtils.getMessage('bgd_ops_vote', [
           data.author,
           data.permlink,
           +data.weight / 100 + '',
         ]),
+          messageKey: 'bgd_ops_vote',
+          messageParams: [
+          data.author,
+          data.permlink,
+          +data.weight / 100 + '',
+        ],
+          messageKey: 'bgd_ops_vote',
+          messageParams: [
+          data.author,
+          data.permlink,
+          +data.weight / 100 + '',
+        ],
+          messageKey: 'bgd_ops_vote',
+          messageParams: [
+          data.author,
+          data.permlink,
+          +data.weight / 100 + '',
+        ],
         request_id: request_id,
         publicKey: undefined,
+          tab: undefined,
       },
     });
   });

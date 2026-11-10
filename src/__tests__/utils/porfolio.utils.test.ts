@@ -6,7 +6,6 @@ import { DynamicGlobalPropertiesUtils } from '@popup/hive/utils/dynamic-global-p
 import { HiveEngineConfigUtils } from '@popup/hive/utils/hive-engine-config.utils';
 import { HiveInternalMarketUtils } from '@popup/hive/utils/hive-internal-market.utils';
 import { HiveTxUtils } from '@popup/hive/utils/hive-tx.utils';
-import HiveUtils from '@popup/hive/utils/hive.utils';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Config from 'src/config';
@@ -20,6 +19,7 @@ jest.mock('@popup/hive/utils/tokens.utils', () => ({
   __esModule: true,
   default: {
     getHiveEngineTokenValue: jest.fn().mockReturnValue(42.5),
+    getHiveEngineTokenPrice: jest.fn().mockReturnValue(0.85),
     getUserBalance: jest.fn().mockResolvedValue([]),
     getTokensMarket: jest.fn().mockResolvedValue([]),
     getAllTokens: jest.fn().mockResolvedValue([]),
@@ -68,6 +68,69 @@ describe('porfolio.utils', () => {
       expect(PortfolioUtils.getOrderedTokenFullList(['X', 'Y'], portfolio)).toEqual(
         ['X', 'Y'],
       );
+    });
+  });
+
+  describe('sortHivePortfolioBalancesByDisplayOrder', () => {
+    it('orders HIVE, HBD, and HP before Hive Engine tokens', () => {
+      const balances = [
+        { symbol: 'BEE', balance: 100, usdValue: 500 },
+        { symbol: 'HP', balance: 50, usdValue: 200 },
+        { symbol: 'HBD', balance: 10, usdValue: 10 },
+        { symbol: 'DEC', balance: 1, usdValue: 1000 },
+        { symbol: 'HIVE', balance: 5, usdValue: 5 },
+      ];
+
+      expect(
+        PortfolioUtils.sortHivePortfolioBalancesByDisplayOrder(balances).map(
+          (balance) => balance.symbol,
+        ),
+      ).toEqual(['HIVE', 'HBD', 'HP', 'DEC', 'BEE']);
+    });
+
+    it('sorts Hive Engine tokens by total value descending', () => {
+      const balances = [
+        { symbol: 'AAA', balance: 1, usdValue: 10 },
+        { symbol: 'HIVE', balance: 1, usdValue: 1 },
+        { symbol: 'BBB', balance: 1, usdValue: 50 },
+        { symbol: 'CCC', balance: 1, usdValue: 25 },
+      ];
+
+      expect(
+        PortfolioUtils.sortHivePortfolioBalancesByDisplayOrder(balances).map(
+          (balance) => balance.symbol,
+        ),
+      ).toEqual(['HIVE', 'BBB', 'CCC', 'AAA']);
+    });
+  });
+
+  describe('sortPortfolioDisplayItems', () => {
+    it('sorts EVM portfolio rows by usd value descending', () => {
+      const rows = [
+        { symbol: 'MATIC', usdValue: 10 },
+        { symbol: 'ETH', usdValue: 100 },
+        { symbol: 'USDC', usdValue: 25 },
+      ];
+
+      expect(
+        PortfolioUtils.sortPortfolioDisplayItems(rows, false).map(
+          (row) => row.symbol,
+        ),
+      ).toEqual(['ETH', 'USDC', 'MATIC']);
+    });
+
+    it('uses Hive core token order when requested', () => {
+      const rows = [
+        { symbol: 'DEC', usdValue: 1000 },
+        { symbol: 'HIVE', usdValue: 5 },
+        { symbol: 'BEE', usdValue: 500 },
+      ];
+
+      expect(
+        PortfolioUtils.sortPortfolioDisplayItems(rows, true).map(
+          (row) => row.symbol,
+        ),
+      ).toEqual(['HIVE', 'DEC', 'BEE']);
     });
   });
 
@@ -139,7 +202,64 @@ describe('porfolio.utils', () => {
       );
 
       expect(result).toEqual([
-        { symbol: 'KEEP', balance: 15, usdValue: 42.5 },
+        {
+          symbol: 'KEEP',
+          balance: 10,
+          usdValue: 42.5,
+          priceUsd: 0.425,
+          breakdown: {
+            liquid: 10,
+            stake: 3,
+            delegationsIn: 0,
+            delegationsOut: 2,
+            pendingUnstake: 0,
+            pendingUndelegations: 0,
+          },
+        },
+      ]);
+    });
+
+    it('uses liquid as main amount and rounds breakdown like the wallet', () => {
+      const tokensBalance: TokenBalance[] = [
+        {
+          _id: 1,
+          account: 'alice',
+          symbol: 'LASSECASH',
+          balance: '0.00002287',
+          delegationsIn: '1.00000001',
+          delegationsOut: '0',
+          stake: '96153.84635176',
+          pendingUndelegations: '0',
+          pendingUnstake: '100000.00020583',
+        },
+      ];
+
+      const result = PortfolioUtils.generateUserLayerTwoPortolio(
+        { username: 'alice', tokensBalance },
+        {
+          hive: { usd: 0.5 },
+          hive_dollar: { usd: 1 },
+        } as unknown as CurrencyPrices,
+        [] as TokenMarket[],
+        [{ symbol: 'LASSECASH', precision: 3 } as Token],
+        [],
+      );
+
+      expect(result).toEqual([
+        {
+          symbol: 'LASSECASH',
+          balance: 0,
+          usdValue: 42.5,
+          priceUsd: 0.425,
+          breakdown: {
+            liquid: 0,
+            stake: 96153.846,
+            delegationsIn: 1,
+            delegationsOut: 0,
+            pendingUnstake: 100000,
+            pendingUndelegations: 0,
+          },
+        },
       ]);
     });
   });
@@ -194,15 +314,14 @@ describe('porfolio.utils', () => {
           total_vesting_fund_hive: '1000000',
           total_vesting_shares: '1000000000000',
         } as any);
-      jest.spyOn(HiveUtils, 'getCurrentMedianHistoryPrice').mockResolvedValue({} as any);
-      jest.spyOn(HiveUtils, 'getRewardFund').mockResolvedValue({} as any);
       jest.spyOn(CurrencyPricesUtils, 'getPrices').mockResolvedValue({
         hive: { usd: 2 },
         hive_dollar: { usd: 1 },
       } as CurrencyPrices);
       (TokensUtils.getUserBalance as jest.Mock).mockResolvedValue([]);
       (TokensUtils.getTokensMarket as jest.Mock).mockResolvedValue([]);
-      (TokensUtils.getAllTokens as jest.Mock).mockResolvedValue([]);
+      (TokensUtils.getAllTokens as jest.Mock).mockClear();
+      const loadTokens = jest.fn().mockResolvedValue([]);
       jest.spyOn(LocalStorageUtils, 'getValueFromLocalStorage').mockImplementation(
         async (key) => {
           if (key === LocalStorageKeyEnum.HIDDEN_TOKENS) return [];
@@ -224,9 +343,8 @@ describe('porfolio.utils', () => {
         vesting_shares: '1000000.000000 VESTS',
       } as ExtendedAccount;
 
-      const [portfolio, orderedTokenList] = await PortfolioUtils.getPortfolio([
-        extended,
-      ]);
+      const { portfolio, orderedTokenList, tokens } =
+        await PortfolioUtils.getPortfolio([extended], { loadTokens });
 
       expect(orderedTokenList.slice(0, 3)).toEqual(['HIVE', 'HBD', 'HP']);
       expect(portfolio).toHaveLength(1);
@@ -235,8 +353,118 @@ describe('porfolio.utils', () => {
       expect(symbols).toContain('HIVE');
       expect(symbols).toContain('HBD');
       expect(symbols).toContain('HP');
+      const hiveBalance = portfolio[0].balances.find(
+        (balance) => balance.symbol === 'HIVE',
+      );
+      const hbdBalance = portfolio[0].balances.find(
+        (balance) => balance.symbol === 'HBD',
+      );
+      expect(hiveBalance?.balance).toBe(12);
+      expect(hiveBalance?.spendableBalance).toBe(11);
+      expect(hbdBalance?.balance).toBe(3);
+      expect(hbdBalance?.spendableBalance).toBe(2.5);
       expect(portfolio[0].totalUSD).toBeGreaterThan(0);
       expect(portfolio[0].totalHive).toBeGreaterThan(0);
+      expect(tokens).toEqual([]);
+      expect(loadTokens).toHaveBeenCalledTimes(1);
+      expect(TokensUtils.getAllTokens).not.toHaveBeenCalled();
+      expect(AsyncUtils.sleep).not.toHaveBeenCalled();
+    });
+
+    it('starts independent Hive requests concurrently after RPC initialization', async () => {
+      (TokensUtils.getUserBalance as jest.Mock).mockClear();
+      (TokensUtils.getTokensMarket as jest.Mock).mockClear();
+      jest
+        .spyOn(PortfolioUtils, 'loadAndSetRPCsAndApis')
+        .mockResolvedValue(undefined);
+      let resolveGlobals: (value: any) => void = () => undefined;
+      let resolvePrices: (value: CurrencyPrices) => void = () => undefined;
+      let resolveBalances: (value: TokenBalance[]) => void = () => undefined;
+      let resolveMarkets: (value: TokenMarket[]) => void = () => undefined;
+      let resolveTokens: (value: Token[]) => void = () => undefined;
+      let resolveHidden: (value: string[]) => void = () => undefined;
+      let resolveOrders: (value: { hive: number; hbd: number }) => void =
+        () => undefined;
+      jest
+        .spyOn(
+          DynamicGlobalPropertiesUtils,
+          'getDynamicGlobalProperties',
+        )
+        .mockImplementation(
+          () => new Promise((resolve) => (resolveGlobals = resolve)),
+        );
+      jest
+        .spyOn(CurrencyPricesUtils, 'getPrices')
+        .mockImplementation(
+          () => new Promise((resolve) => (resolvePrices = resolve)),
+        );
+      (TokensUtils.getUserBalance as jest.Mock).mockImplementation(
+        () => new Promise((resolve) => (resolveBalances = resolve)),
+      );
+      (TokensUtils.getTokensMarket as jest.Mock).mockImplementation(
+        () => new Promise((resolve) => (resolveMarkets = resolve)),
+      );
+      const loadTokens = jest.fn(
+        () => new Promise<Token[]>((resolve) => (resolveTokens = resolve)),
+      );
+      jest
+        .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+        .mockImplementation(
+          () => new Promise((resolve) => (resolveHidden = resolve)),
+        );
+      jest
+        .spyOn(HiveInternalMarketUtils, 'getHiveInternalMarketOrders')
+        .mockImplementation(
+          () => new Promise((resolve) => (resolveOrders = resolve)),
+        );
+      jest.spyOn(FormatUtils, 'toHP').mockReturnValue(0);
+
+      const portfolioPromise = PortfolioUtils.getPortfolio(
+        [
+          {
+            name: 'alice',
+            balance: '0.000 HIVE',
+            savings_balance: '0.000 HIVE',
+            hbd_balance: '0.000 HBD',
+            savings_hbd_balance: '0.000 HBD',
+            vesting_shares: '0.000000 VESTS',
+          } as ExtendedAccount,
+        ],
+        { loadTokens },
+      );
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(
+        DynamicGlobalPropertiesUtils.getDynamicGlobalProperties,
+      ).toHaveBeenCalledTimes(1);
+      expect(CurrencyPricesUtils.getPrices).toHaveBeenCalledTimes(1);
+      expect(TokensUtils.getUserBalance).toHaveBeenCalledTimes(1);
+      expect(TokensUtils.getTokensMarket).toHaveBeenCalledTimes(1);
+      expect(loadTokens).toHaveBeenCalledTimes(1);
+      expect(LocalStorageUtils.getValueFromLocalStorage).toHaveBeenCalledTimes(1);
+      expect(
+        HiveInternalMarketUtils.getHiveInternalMarketOrders,
+      ).toHaveBeenCalledTimes(1);
+
+      resolveGlobals({
+        total_vesting_fund_hive: '1',
+        total_vesting_shares: '1',
+      });
+      resolvePrices({
+        hive: { usd: 1 },
+        hive_dollar: { usd: 1 },
+      } as CurrencyPrices);
+      resolveBalances([]);
+      resolveMarkets([]);
+      resolveTokens([]);
+      resolveHidden([]);
+      resolveOrders({ hive: 0, hbd: 0 });
+
+      await expect(portfolioPromise).resolves.toMatchObject({
+        orderedTokenList: ['HIVE', 'HBD', 'HP'],
+        tokens: [],
+      });
     });
   });
 });

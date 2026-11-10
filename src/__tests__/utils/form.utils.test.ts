@@ -3,6 +3,7 @@ import { FieldError } from 'react-hook-form';
 import Logger from 'src/utils/logger.utils';
 import { FormUtils } from 'src/utils/form.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('form.utils', () => {
   afterEach(() => {
     jest.restoreAllMocks();
@@ -21,7 +22,7 @@ describe('form.utils', () => {
     });
 
     it('maps known Joi types to i18n messages', () => {
-      jest.spyOn(chrome.i18n, 'getMessage').mockReturnValue('translated');
+      jest.spyOn(I18nUtils, 'getMessage').mockReturnValue('translated');
       jest.spyOn(Logger, 'error').mockImplementation(() => {});
 
       const err = {
@@ -30,14 +31,27 @@ describe('form.utils', () => {
       } as FieldError;
 
       expect(FormUtils.parseJoiError(err)).toBe('translated');
-      expect(chrome.i18n.getMessage).toHaveBeenCalledWith(
+      expect(I18nUtils.getMessage).toHaveBeenCalledWith(
         'validation_error_mandatory',
         [],
       );
     });
 
+    it('maps portfolio recipient invalid errors to i18n messages', () => {
+      jest.spyOn(Logger, 'error').mockImplementation(() => {});
+
+      const err = {
+        type: 'portfolio.recipient.invalid',
+        ref: { name: 'recipient' },
+      } as FieldError;
+
+      expect(FormUtils.parseJoiError(err)).toBe(
+        'Enter a valid recipient address for this swap.',
+      );
+    });
+
     it('passes ref value into i18n when present', () => {
-      jest.spyOn(chrome.i18n, 'getMessage').mockReturnValue('with ref');
+      jest.spyOn(I18nUtils, 'getMessage').mockReturnValue('with ref');
       jest.spyOn(Logger, 'error').mockImplementation(() => {});
 
       const err = {
@@ -46,7 +60,7 @@ describe('form.utils', () => {
       } as FieldError;
 
       FormUtils.parseJoiError(err);
-      expect(chrome.i18n.getMessage).toHaveBeenCalledWith(
+      expect(I18nUtils.getMessage).toHaveBeenCalledWith(
         'validation_error_less_or_equal_value',
         [100],
       );

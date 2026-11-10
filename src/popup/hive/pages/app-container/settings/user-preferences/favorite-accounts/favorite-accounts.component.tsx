@@ -1,195 +1,235 @@
-import { AutoCompleteValue } from '@interfaces/autocomplete.interface';
+import { EditContactPopupComponent } from '@common-ui/contacts/edit-contact-popup/edit-contact-popup.component';
+import { AddContactButton } from '@common-ui/contacts/add-contact-button/add-contact-button.component';
+import { EditContactComponent } from '@common-ui/contacts/edit-contact/edit-contact.component';
 import {
-  FavoriteUserItems,
-  FavoriteUserList,
-  FavoriteUserListName,
-} from '@interfaces/favorite-user.interface';
-import { LocalAccountListItem } from '@interfaces/list-item.interface';
-import { LocalAccount } from '@interfaces/local-account.interface';
+  ComplexeCustomSelect,
+  OptionItem,
+} from '@common-ui/custom-select/custom-select.component';
+import { LabelComponent } from '@common-ui/label/label.component';
+import { ActiveAccount } from '@interfaces/active-account.interface';
+import { FavoriteAddress } from '@interfaces/contacts.interface';
+import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
+import { Screen } from '@interfaces/screen.interface';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { ChainType } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { SelectAccountSectionComponent } from 'src/common-ui/select-account-section/select-account-section.component';
-import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
-import { FavoriteAccountsListComponent } from 'src/popup/hive/pages/app-container/settings/user-preferences/favorite-accounts/favorite-accounts-list/favorite-accounts-list.component';
 import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import { v4 } from 'uuid';
+
+import { I18nUtils } from 'src/utils/i18n.utils';
+type HiveAccountOption = OptionItem & {
+  value: string;
+};
 
 const FavoriteAccounts = ({
   accounts,
-  activeAccount,
-  localAccounts,
-  loadActiveAccount,
+  activeAccountName,
   setTitleContainerProperties,
-}: PropsFromRedux) => {
-  const defaultOptions: LocalAccountListItem[] = [];
-  const [options, setOptions] = useState(defaultOptions);
-  const [selectedLocalAccount, setSelectedLocalAccount] = useState(
-    accounts[0].name,
+  titleMessageKey = 'popup_html_favorite_accounts',
+}: Props) => {
+  const [selectedAccountName, setSelectedAccountName] = useState(
+    activeAccountName ?? accounts[0]?.name,
   );
   const [favoriteAccountsList, setFavoriteAccountsList] = useState<
-    FavoriteUserList[]
-  >([{ name: FavoriteUserListName.USERS, list: [] }]);
+    FavoriteAddress[]
+  >([]);
+
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [newFavoriteAddress, setNewFavoriteAddress] = useState<FavoriteAddress>(
+    {
+      address: '',
+      label: '',
+      id: v4(),
+    },
+  );
+
+  const accountOptions: HiveAccountOption[] = accounts.map((account) => ({
+    label: account.name,
+    value: account.name,
+    img: `https://images.hive.blog/u/${account.name}/avatar`,
+  }));
+  const selectedAccountOption = accountOptions.find(
+    (accountOption) => accountOption.value === selectedAccountName,
+  );
 
   useEffect(() => {
     setTitleContainerProperties({
-      title: 'popup_html_favorite_accounts',
+      title: titleMessageKey,
       isBackButtonEnabled: true,
     });
   }, []);
 
   useEffect(() => {
-    init();
-    setOptions(
-      accounts.map((account: LocalAccount) => {
-        return { label: account.name, value: account.name };
-      }),
-    );
+    if (!selectedAccountName && activeAccountName) {
+      setSelectedAccountName(activeAccountName);
+    }
+  }, [activeAccountName, selectedAccountName]);
 
-    setSelectedLocalAccount(activeAccount.name!);
-  }, [accounts, activeAccount]);
+  useEffect(() => {
+    if (
+      selectedAccountName &&
+      accountOptions.some(
+        (accountOption) => accountOption.value === selectedAccountName,
+      )
+    ) {
+      return;
+    }
 
-  const init = async () => {
-    const favoriteUsers = await LocalStorageUtils.getValueFromLocalStorage(
+    setSelectedAccountName(activeAccountName ?? accounts[0]?.name);
+  }, [accounts, activeAccountName, selectedAccountName]);
+
+  useEffect(() => {
+    if (selectedAccountName) {
+      loadFavoriteAccounts(selectedAccountName);
+    }
+  }, [selectedAccountName]);
+
+  const loadFavoriteAccounts = async (accountName: string) => {
+    let favoriteUsers = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.FAVORITE_USERS,
     );
 
-    await FavoriteUserUtils.fixFavoriteList(favoriteUsers);
+    favoriteUsers = await FavoriteUserUtils.fixFavoriteList(favoriteUsers ?? {});
 
-    setFavoriteAccountsList([
-      {
-        name: FavoriteUserListName.USERS,
-        list: favoriteUsers[activeAccount.name!],
-      },
-    ]);
+    const favorites = (favoriteUsers[accountName] ?? []).map((favorite: any) => ({
+      address: favorite.label,
+      label: favorite.subLabel ?? '',
+      id: v4(),
+    }));
+
+    setFavoriteAccountsList(favorites);
   };
 
-  // const handleItemClicked = (accountName: string) => {
-  //   const itemClicked = accounts.find(
-  //     (account: LocalAccount) => account.name === accountName,
-  //   );
-  //   loadActiveAccount(itemClicked!);
-  // };
-
-  // const customLabelRender = (
-  //   selectProps: SelectRenderer<LocalAccountListItem>,
-  // ) => {
-  //   return (
-  //     <div
-  //       className="selected-account-panel"
-  //       onClick={() => {
-  //         selectProps.methods.dropDown('close');
-  //       }}>
-  //       <img
-  //         src={`https://images.hive.blog/u/${selectedLocalAccount}/avatar`}
-  //         onError={(e: any) => {
-  //           e.target.onError = null;
-  //           e.target.src = '/assets/images/accounts.png';
-  //         }}
-  //       />
-  //       <div className="selected-account-name">{selectedLocalAccount}</div>
-  //     </div>
-  //   );
-  // };
-  // const customItemRender = (
-  //   selectProps: SelectItemRenderer<LocalAccountListItem>,
-  // ) => {
-  //   return (
-  //     <div
-  //       data-testid={`select-account-item-${selectProps.item.label}`}
-  //       className={`select-account-item ${
-  //         selectedLocalAccount === selectProps.item.value ? 'selected' : ''
-  //       }`}
-  //       onClick={() => {
-  //         handleItemClicked(selectProps.item.value);
-  //         selectProps.methods.dropDown('close');
-  //       }}>
-  //       <img
-  //         src={`https://images.hive.blog/u/${selectProps.item.label}/avatar`}
-  //         onError={(e: any) => {
-  //           e.target.onError = null;
-  //           e.target.src = '/assets/images/accounts.png';
-  //         }}
-  //       />
-  //       <div className="account-name">{selectProps.item.label}</div>
-  //     </div>
-  //   );
-  // };
-
-  const handleDeleteFavorite = (
-    listName: FavoriteUserListName,
-    favoriteItem: AutoCompleteValue,
-  ) => {
-    const favoriteAccountsListCopy = [...favoriteAccountsList];
-    const selectedList = favoriteAccountsListCopy.filter(
-      (favoriteList) => favoriteList.name === listName,
-    )[0];
-    const filteredSelectedList = selectedList.list.filter(
-      (favorite) => favorite !== favoriteItem,
+  const handleDeleteFavorite = (favoriteItem: FavoriteAddress) => {
+    const newList = favoriteAccountsList.filter(
+      (item) => item.id !== favoriteItem.id,
     );
-    selectedList.list = filteredSelectedList;
-    setFavoriteAccountsList([...favoriteAccountsListCopy]);
-    saveFavoriteList(selectedList);
+    saveFavoriteList(newList);
   };
 
-  const saveFavoriteList = async (list: FavoriteUserList) => {
+  const saveFavoriteList = async (list: FavoriteAddress[]) => {
     const actualFavoriteUsersLists: FavoriteUserItems[] =
       await LocalStorageUtils.getValueFromLocalStorage(
         LocalStorageKeyEnum.FAVORITE_USERS,
       );
     const updatedFavoriteUserLists = {
       ...actualFavoriteUsersLists,
-      [activeAccount.name!]: list.list,
+      [selectedAccountName!]: list.map((item) => {
+        return {
+          label: item.address,
+          subLabel: item.label,
+        };
+      }),
     };
-    LocalStorageUtils.saveValueInLocalStorage(
+    await LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.FAVORITE_USERS,
       updatedFavoriteUserLists,
     );
+    loadFavoriteAccounts(selectedAccountName!);
   };
 
-  const handleEditFavoriteLabel = (
-    listName: FavoriteUserListName,
-    favoriteItem: AutoCompleteValue,
-    newLabel: string,
-  ) => {
-    const favoriteAccountsListCopy = [...favoriteAccountsList];
-    const selectedList = favoriteAccountsListCopy.filter(
-      (favoriteList) => favoriteList.name === listName,
-    )[0];
-    const favoriteItemIndexToEdit = selectedList.list.findIndex(
-      (favorite) => favorite === favoriteItem,
+  const handleEditFavoriteLabel = (favoriteItem: FavoriteAddress) => {
+    const newList = [...favoriteAccountsList];
+    for (const item of newList) {
+      if (item.id === favoriteItem.id) {
+        item.label = favoriteItem.label;
+        item.address = favoriteItem.address;
+      }
+    }
+    saveFavoriteList(newList);
+  };
+
+  const resetNewFavoriteAddress = () => {
+    setNewFavoriteAddress({
+      address: '',
+      label: '',
+      id: v4(),
+    });
+    setIsPopupOpen(false);
+  };
+
+  const createNewFavoriteAddress = async (item: FavoriteAddress) => {
+    await FavoriteUserUtils.saveFavoriteUser(
+      { name: selectedAccountName } as ActiveAccount,
+      item.address,
+      item.label,
     );
-    selectedList.list[favoriteItemIndexToEdit] = {
-      ...selectedList.list[favoriteItemIndexToEdit],
-      subLabel: newLabel,
-    };
-    setFavoriteAccountsList([...favoriteAccountsListCopy]);
-    saveFavoriteList(selectedList);
+    resetNewFavoriteAddress();
+    loadFavoriteAccounts(selectedAccountName!);
+  };
+
+  const openAddContactPopup = () => {
+    setNewFavoriteAddress({
+      address: '',
+      label: '',
+      id: v4(),
+    });
+    setIsPopupOpen(true);
   };
 
   return (
     <div
       data-testid={`${Screen.SETTINGS_FAVORITE_ACCOUNTS}-page`}
-      className="favorite-accounts-page">
-      <div className="intro">
-        {chrome.i18n.getMessage('popup_html_favorite_accounts_intro')}
+      className="favorite-accounts-page contacts-settings-page">
+      {selectedAccountOption && (
+        <div className="settings-hive-account-select-panel">
+          <ComplexeCustomSelect
+            options={accountOptions}
+            selectedItem={selectedAccountOption}
+            setSelectedItem={(option) => setSelectedAccountName(option.value)}
+            background="white"
+          />
+        </div>
+      )}
+
+      <div className="addresses-list">
+        <div className="contact-category section-card">
+          <div className="category-header">
+            <LabelComponent
+              value="evm_contacts_section"
+              className="category-title"
+            />
+            <AddContactButton onClick={openAddContactPopup} />
+          </div>
+          {favoriteAccountsList.length > 0 ? (
+            <div className="addresses-list-items">
+              {favoriteAccountsList.map((favorite) => (
+                <EditContactComponent
+                  key={`${favorite.address}-${favorite.id}`}
+                  shortAddress={false}
+                  favoriteAddress={favorite}
+                  maxLabelLength={12}
+                  onSaveClicked={(item) => handleEditFavoriteLabel(item)}
+                  onDeleteClicked={(item) => handleDeleteFavorite(item)}
+                  chainType={ChainType.HIVE}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="addresses-list-items">
+              <div className="empty-address-item">
+                {I18nUtils.getMessage(
+                  'popup_html_favorite_accounts_no_favorites',
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-      <SelectAccountSectionComponent background="white" fullSize />
-      <FavoriteAccountsListComponent
-        key={`${Math.random().toFixed(6).toString()}-${
-          FavoriteUserListName.USERS
-        }`}
-        favoriteList={
-          favoriteAccountsList.filter(
-            (favoriteList) => favoriteList.name === FavoriteUserListName.USERS,
-          )[0]
-        }
-        handleDeleteFavorite={handleDeleteFavorite}
-        handleEditFavoriteLabel={handleEditFavoriteLabel}
-      />
+
+      {isPopupOpen && (
+        <EditContactPopupComponent
+          isNew={true}
+          favoriteAddress={newFavoriteAddress}
+          onSaveClicked={(item) => createNewFavoriteAddress(item)}
+          closePopup={() => resetNewFavoriteAddress()}
+          chainType={ChainType.HIVE}
+        />
+      )}
     </div>
   );
 };
@@ -197,15 +237,17 @@ const FavoriteAccounts = ({
 const mapStateToProps = (state: RootState) => {
   return {
     accounts: state.hive.accounts,
-    activeAccount: state.hive.activeAccount,
-    localAccounts: state.hive.accounts,
+    activeAccountName: state.hive.activeAccount.name,
   };
 };
 
 const connector = connect(mapStateToProps, {
-  loadActiveAccount,
   setTitleContainerProperties,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
+interface OwnProps {
+  titleMessageKey?: string;
+}
+type Props = PropsFromRedux & OwnProps;
 
 export const FavoriteAccountsComponent = connector(FavoriteAccounts);

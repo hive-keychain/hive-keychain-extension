@@ -3,7 +3,7 @@ import { SlidingBarComponent } from 'src/common-ui/switch-bar/sliding-bar.compon
 
 export interface Tab {
   title: string;
-  skipTranslation?: string;
+  skipTranslation?: boolean;
   content: any;
 }
 

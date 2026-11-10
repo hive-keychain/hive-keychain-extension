@@ -1,0 +1,80 @@
+import { Separator } from '@common-ui/separator/separator.component';
+import { EvmSmartContractInfo } from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmAccountOrPublic } from '@popup/evm/interfaces/wallet.interface';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import React, { Fragment } from 'react';
+import { ChainLogo } from 'src/common-ui/chain-logo/chain-logo.component';
+import { EvmAccountDisplayComponent } from 'src/common-ui/evm/evm-account-display/evm-account-display.component';
+import { EvmRequestItem } from 'src/dialog/evm/components/evm-request-item/evm-request-item';
+import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
+
+interface Props {
+  warningHook: useTransactionHook;
+  selectedAccount?: EvmAccountOrPublic;
+  chain?: EvmChain;
+  tokenInfo?: EvmSmartContractInfo;
+  onWarningClick?: () => void;
+}
+
+export const EvmTransactionWarningsComponent = ({
+  warningHook,
+  selectedAccount,
+  chain,
+  tokenInfo,
+  onWarningClick,
+}: Props) => {
+  return (
+    <Fragment key={warningHook.fields?.operationName}>
+      {warningHook.fields?.operationName && (
+        <div className="transaction-operation-name">
+          {warningHook.fields.operationName}
+        </div>
+      )}
+
+      {selectedAccount && chain && (
+        <div className="account-chain-panel">
+          <EvmAccountDisplayComponent account={selectedAccount} />
+
+          <div className="chain-info">
+            <div className="chain-name">{chain.name}</div>
+            <ChainLogo
+              className="chain-logo"
+              chainName={chain.name}
+              logoUri={chain.logo}
+            />
+          </div>
+        </div>
+      )}
+
+      {warningHook.fields?.mainTokenAmount !== undefined &&
+        warningHook.fields?.mainTokenAmount !== null && (
+          <>
+            <EvmRequestItem field={warningHook.fields.mainTokenAmount} />
+            <Separator type="horizontal" fullSize />
+          </>
+        )}
+
+      {warningHook.fields &&
+        warningHook.fields.otherFields?.map((f, index) => {
+          return (
+            <Fragment key={`${f.name}-${index}`}>
+              <EvmRequestItem
+                field={f}
+                onWarningClicked={
+                  onWarningClick ??
+                  (() =>
+                    warningHook.openWarningsPopup({
+                      type: 'dialog-other',
+                      index,
+                    }))
+                }
+              />
+              {index !== warningHook.fields!.otherFields.length - 1 && (
+                <Separator type="horizontal" fullSize />
+              )}
+            </Fragment>
+          );
+        })}
+    </Fragment>
+  );
+};

@@ -1,20 +1,25 @@
 import React from 'react';
-import { UsernameAvatar } from 'src/common-ui/username-with-avatar/username-with-avatar';
+import { SafeImage } from 'src/common-ui/safe-image/safe-image.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface AutocompleteProps {
   value: string;
-  translateValue?: boolean;
+  label: string;
+  translateLabel?: boolean;
   subLabel?: string;
+  img?: string;
   translateSublabel?: boolean;
   onItemClick: (value: string) => void;
   prefix?: string;
 }
 
-const AutocompleteItemComponent = ({
+export const AutocompleteItemComponent = ({
+  label,
+  translateLabel,
   value,
-  translateValue,
   subLabel,
   translateSublabel,
+  img,
   onItemClick,
   prefix,
 }: AutocompleteProps) => {
@@ -23,13 +28,16 @@ const AutocompleteItemComponent = ({
       className="autocomplete-item"
       key={value}
       onMouseDown={() => onItemClick(value)}>
-      {prefix === '@' && <UsernameAvatar username={value} />}
-      {prefix + (translateValue ? chrome.i18n.getMessage(value) : value)}
-      {subLabel && subLabel.trim().length > 0
-        ? `(${translateSublabel ? chrome.i18n.getMessage(subLabel) : subLabel})`
-        : ''}
+      {img && <SafeImage src={img} className="user-avatar" />}
+      <span>
+        {prefix ?? ''}
+        {translateLabel ? I18nUtils.getMessage(label) : label}{' '}
+      </span>
+      <div className="autocomplete-item-subvalue">
+        {subLabel && subLabel.trim().length > 0
+          ? `${translateSublabel ? I18nUtils.getMessage(subLabel) : subLabel}`
+          : ''}
+      </div>
     </div>
   );
 };
-
-export default AutocompleteItemComponent;

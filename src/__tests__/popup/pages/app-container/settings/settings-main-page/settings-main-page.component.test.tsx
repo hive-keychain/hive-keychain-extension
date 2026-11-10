@@ -7,11 +7,16 @@ import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-tes
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
+import { Screen } from '@interfaces/screen.interface';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
-import SettingsMenuItems from 'src/popup/hive/pages/app-container/settings/settings-main-page/settings-main-page-menu-items';
+import { getSettingsMainPageMenuItems } from 'src/popup/multichain/pages/settings/settings-main-page-menu-items';
+import { SVGIcons } from 'src/common-ui/icons.enum';
 
 describe('settings-main-page.component tests:\n', () => {
-  const menuItems = SettingsMenuItems(() => {});
+  const menuItems = getSettingsMainPageMenuItems({
+    hasEvmAccounts: false,
+    hasHiveAccounts: true,
+  });
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -37,13 +42,21 @@ describe('settings-main-page.component tests:\n', () => {
     });
   });
   it('Must show all menu items', () => {
-    for (let i = 0; i < menuItems.length; i++) {
+    const navigableMenuItems = menuItems.filter((item) => item.nextScreen);
+
+    for (let i = 0; i < navigableMenuItems.length; i++) {
       expect(
         screen.getByTestId(
-          dataTestIdButton.menuPreFix + menuItems[i].icon,
+          dataTestIdButton.menuPreFix + navigableMenuItems[i].icon,
         ),
       ).toBeInTheDocument();
     }
+
+    expect(
+      screen.getByTestId(
+        dataTestIdButton.menuPreFix + SVGIcons.MENU_USER_PREFERENCES_THEME,
+      ),
+    ).toBeInTheDocument();
   });
   it('Must open each menu item', async () => {
     const pageItems = menuItems.filter((item) => item.nextScreen);
@@ -55,9 +68,11 @@ describe('settings-main-page.component tests:\n', () => {
           ),
         );
       });
-      expect(
-        screen.getByTestId(pageItems[i].nextScreen + '-page'),
-      ).toBeInTheDocument();
+      const pageTestId =
+        pageItems[i].nextScreen === Screen.SETTINGS_PREFERENCES_AND_DISPLAY
+          ? 'settings-preferences-display-content-page'
+          : `${pageItems[i].nextScreen}-page`;
+      expect(screen.getByTestId(pageTestId)).toBeInTheDocument();
       await act(async () => {
         await userEvent.click(screen.getByTestId(dataTestIdIcon.arrowBack));
       });

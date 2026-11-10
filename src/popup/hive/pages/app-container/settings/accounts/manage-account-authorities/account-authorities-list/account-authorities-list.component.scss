@@ -1,11 +1,20 @@
 .account-authorities-list {
   @include pageLayoutRowGap;
-  padding-top: 12px;
+  padding-top: 4px;
+
+  &.settings-hive-dapps-page {
+    padding: 4px 0 0;
+    row-gap: 0;
+  }
 
   .authorities-panel {
     display: flex;
     flex-direction: column;
-    row-gap: 24px;
+    row-gap: 16px;
+
+    &.settings-hive-dapps-list {
+      row-gap: 0;
+    }
 
     .key-field {
       font-size: 12px;
@@ -21,15 +30,15 @@
       font-size: 16px;
     }
 
-    .no-authorities-found {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 16px;
-      text-align: center;
-      margin-top: 16px;
-      color: var(--main-font-color);
-    }
+  }
+
+  .no-authorities-found {
+    align-items: center;
+    color: var(--main-font-color);
+    display: flex;
+    font-size: 16px;
+    justify-content: center;
+    text-align: center;
   }
 
   scroll-behavior: smooth;

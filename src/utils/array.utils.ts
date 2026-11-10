@@ -9,7 +9,6 @@ const mergeWithoutDuplicate = (a: any[], b: any[], key?: string) => {
       }
     }
   }
-
   return list;
 };
 
@@ -41,11 +40,54 @@ const findCommons = (listA: any[], listB: any[]) => {
   return commons;
 };
 
-const ArrayUtils = {
+const findUnique = (listA: any[], listB: any[]) => {
+  const uniques = [];
+  for (const item of listA) {
+    if (!listB.includes(item)) uniques.push(item);
+  }
+  return uniques;
+};
+
+const inAButNotB = (listA: any[], listB: any[]) => {
+  const result = [];
+  for (const item of listA) {
+    if (!listB.includes(item)) result.push(item);
+  }
+  return result;
+};
+
+const includesAll = (arr: any[], values: any[], key?: string) => {
+  if (key) {
+    return values.every((v) => arr.map((a: any) => a[key]).includes(v.key));
+  } else return values.every((v) => arr.includes(v));
+};
+
+const getSetDescendantProp = (obj: any, path: string, value: any) => {
+  var way = path.replace(/\[/g, '.').replace(/\]/g, '').split('.'),
+    last = way.pop();
+  way.reduce(function (o, k, i, kk) {
+    return (o[k] =
+      //@ts-ignore
+      o[k] || (isFinite(i + 1 in kk ? kk[i + 1] : last) ? [] : {}));
+    //@ts-ignore
+  }, obj)[last] = value;
+  return obj;
+};
+
+const removeDuplicates = (list: string[]) => {
+  return [...new Set(list)];
+};
+
+export const ArrayUtils = {
   mergeWithoutDuplicate,
   getMaxValue,
   getMinValue,
   findCommons,
+  includesAll,
+  getSetDescendantProp,
+  removeDuplicates,
+  findUnique,
+  inAButNotB,
 };
 
 export default ArrayUtils;

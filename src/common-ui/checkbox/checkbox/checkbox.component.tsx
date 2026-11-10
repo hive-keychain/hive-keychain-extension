@@ -3,9 +3,12 @@ import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.compo
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export interface CheckboxProps {
   onChange: (value: boolean) => void;
   title?: string;
+  ariaLabel?: string;
+  ariaLabelledBy?: string;
   checked: boolean;
   skipTranslation?: boolean;
   dataTestId?: string;
@@ -15,30 +18,38 @@ export interface CheckboxProps {
   skipTooltipTranslation?: boolean;
 }
 
-const handleClick = (props: CheckboxProps) => {
-  if (!props.disabled) {
-    props.onChange(!props.checked);
-  }
+const handleClick = (event: React.MouseEvent<HTMLLabelElement>) => {
+  event.stopPropagation();
 };
 
 const getCheckbox = (props: CheckboxProps) => {
   return (
-    <div
+    <label
       id={`${props.dataTestId}-inner-input`}
       className={`custom-checkbox-container ${
         props.disabled ? 'disabled' : ''
       }`}
-      data-testid={props.extraDataTestIdOnInput ?? props.dataTestId}
-      onClick={() => handleClick(props)}>
-      <div className="custom-checkbox">
+      data-testid={props.dataTestId}
+      onClick={handleClick}>
+      <input
+        className="native-checkbox"
+        type="checkbox"
+        checked={props.checked}
+        disabled={props.disabled}
+        aria-label={props.ariaLabel}
+        aria-labelledby={props.ariaLabelledBy}
+        data-testid={props.extraDataTestIdOnInput}
+        onChange={(event) => props.onChange(event.target.checked)}
+      />
+      <span className="custom-checkbox" aria-hidden="true">
         {props.checked && <SVGIcon icon={SVGIcons.CHECKBOX_CHECKED} />}
-      </div>
-      <div className="label">
+      </span>
+      <span className="label">
         {props.skipTranslation
           ? props.title
-          : chrome.i18n.getMessage(props.title ?? '')}
-      </div>
-    </div>
+          : I18nUtils.getMessage(props.title ?? '')}
+      </span>
+    </label>
   );
 };
 

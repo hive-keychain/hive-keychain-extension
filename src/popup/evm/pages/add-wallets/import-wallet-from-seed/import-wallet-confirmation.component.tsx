@@ -1,0 +1,199 @@
+import { Screen } from '@interfaces/screen.interface';
+import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
+import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
+import {
+  EvmAccount,
+  EvmAccountSource,
+  WalletWithBalance,
+} from '@popup/evm/interfaces/wallet.interface';
+import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
+import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
+import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
+import { setErrorMessage } from '@popup/multichain/actions/message.actions';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import {
+  ChainType,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
+import { RootState } from '@popup/multichain/store';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { HDNodeWallet } from 'ethers';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
+import { ConnectedProps, connect } from 'react-redux';
+import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
+import ButtonComponent from 'src/common-ui/button/button.component';
+import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
+import { InputType } from 'src/common-ui/input/input-type.enum';
+import InputComponent from 'src/common-ui/input/input.component';
+import { Separator } from 'src/common-ui/separator/separator.component';
+import { HtmlUtils } from 'src/utils/html.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
+const ImportWalletConfirmation = ({
+  setTitleContainerProperties,
+  walletsWithBalance,
+  setErrorMessage,
+  wallet,
+  mk,
+  setEvmAccounts,
+  chain,
+  activeAccount,
+  loadEvmActiveAccount,
+  navigateTo,
+  setActiveAccountType,
+  accounts,
+  hasImportParams,
+}: PropsType) => {
+  const [wallets, setWallets] = useState<WalletWithBalance[]>([]);
+
+  const [nickname, setNickname] = useState<string>(() =>
+    EvmAccountUtils.getDefaultSeedName(accounts),
+  );
+
+  useEffect(() => {
+    setTitleContainerProperties({
+      title: 'html_popup_evm_choose_account',
+      isBackButtonEnabled: true,
+      isCloseButtonDisabled: true,
+    });
+  }, []);
+
+  /** Mount-only: do not subscribe to param changes — they can flicker mid-submit and wrongly
+   * send users back to the seed phrase screen. */
+  useLayoutEffect(() => {
+    if (!hasImportParams) {
+      navigateTo(Screen.IMPORT_EVM_WALLET, true);
+    }
+    // Runs once on landing; subscribing to param changes causes import-seed flicker mid-submit.
+  }, []);
+
+  useEffect(() => {
+    setWallets(walletsWithBalance);
+  }, [walletsWithBalance]);
+
+  const onChangeSelected = (i: number) => {
+    const walletsCopy = [...wallets];
+    walletsCopy[i].selected = !walletsCopy[i].selected;
+    setWallets(walletsCopy);
+  };
+  const submitForm = async (): Promise<void> => {
+    const checkedWallets = wallets.filter((e) => e.selected);
+    if (!checkedWallets.length) {
+      setErrorMessage('html_popup_evm_error_select_account');
+    } else {
+      if (!wallet) {
+        navigateTo(Screen.IMPORT_EVM_WALLET, true);
+        return;
+      }
+
+      const evmAccounts: EvmAccount[] = checkedWallets.map((derivedWallet) => ({
+        id: derivedWallet.wallet.index,
+        path: derivedWallet.wallet.path!,
+        wallet: derivedWallet.wallet,
+        seedId: 0,
+        source: EvmAccountSource.SEED,
+      }));
+      await EvmWalletUtils.addSeedAndAccounts(
+        wallet,
+        evmAccounts,
+        mk,
+        nickname,
+      );
+
+      await ChainUtils.addChainToSetupChains(chain);
+      const accounts = await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+      if (!(chain as EvmChain).isCustom) {
+        for (const acc of accounts) {
+          await EvmLightNodeUtils.registerAddress(
+            (chain as EvmChain).chainId,
+            acc.wallet.address,
+            false,
+          );
+        }
+      }
+      setEvmAccounts(accounts);
+      setActiveAccountType(ChainType.EVM);
+      navigateTo(Screen.HOME_PAGE, true);
+      await loadEvmActiveAccount(chain as EvmChain, accounts[0].wallet);
+    }
+  };
+
+  return (
+    <div
+      data-testid={`${Screen.IMPORT_EVM_WALLET_CONFIRMATION}-page`}
+      className="import-evm-wallet-confirmation-page">
+      <FormContainer>
+        <div
+          className="caption"
+          dangerouslySetInnerHTML={{
+            __html: HtmlUtils.getSafeI18nHtml(
+              'html_popup_evm_choose_account_text',
+            ),
+          }}></div>
+        <Separator type="horizontal" />
+        <InputComponent
+          value={nickname}
+          onChange={setNickname}
+          type={InputType.TEXT}
+          label="evm_address_nickname"
+          placeholder="evm_address_nickname"
+        />
+        {wallets.map((e, i) => {
+          return (
+            <CheckboxPanelComponent
+              checked={e.selected}
+              onChange={() => {
+                onChangeSelected(i);
+              }}
+              key={e.wallet.address}
+              skipTranslation
+              title={`${I18nUtils.getMessage('dialog_account')} ${
+                i + 1
+              }: ${EvmFormatUtils.formatAddress(e.wallet.address)}`}
+              hint={`${I18nUtils.getMessage('popup_html_balance')}: ${
+                e.balance
+              } ETH`}
+              skipHintTranslation
+            />
+          );
+        })}
+        <div className="fill-space"></div>
+        <ButtonComponent
+          dataTestId="submit-button"
+          label={'html_popup_evm_create_new_wallet_import'}
+          onClick={submitForm}
+        />
+      </FormContainer>
+    </div>
+  );
+};
+
+const mapStateToProps = (state: RootState) => {
+  const params = state.navigation.stack[0]?.params;
+
+  return {
+    walletsWithBalance: (params?.derivedWallets ?? []) as WalletWithBalance[],
+    wallet: params?.wallet as HDNodeWallet | undefined,
+    hasImportParams: !!params?.wallet && Array.isArray(params?.derivedWallets),
+    mk: state.mk,
+    chain: state.chain,
+    activeAccount: state.evm.activeAccount,
+    accounts: state.evm.accounts,
+  };
+};
+
+const connector = connect(mapStateToProps, {
+  setTitleContainerProperties,
+  setErrorMessage,
+  setEvmAccounts,
+  setActiveAccountType,
+  loadEvmActiveAccount,
+  navigateTo,
+});
+type PropsType = ConnectedProps<typeof connector>;
+
+export const ImportWalletConfirmationComponent = connector(
+  ImportWalletConfirmation,
+);

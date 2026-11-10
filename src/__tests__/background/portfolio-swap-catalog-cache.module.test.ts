@@ -1,0 +1,116 @@
+import { PortfolioSwapCatalogCacheModule } from '@background/portfolio-swap-catalog-cache.module';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { PortfolioSwapCatalogCacheUtils } from 'src/portfolio/portfolio-swap-catalog-cache.utils';
+import VaultUtils from 'src/utils/vault.utils';
+
+jest.mock('src/portfolio/portfolio-swap-catalog-cache.utils', () => ({
+  PortfolioSwapCatalogCacheUtils: {
+    ensureSwapCatalogCached: jest.fn().mockResolvedValue(undefined),
+  },
+}));
+
+jest.mock('src/utils/vault.utils', () => ({
+  __esModule: true,
+  default: {
+    addWalletLockStateListener: jest.fn(),
+    getValueFromVault: jest.fn(),
+  },
+}));
+
+describe('PortfolioSwapCatalogCacheModule', () => {
+  it('warms on startup and unlock without creating an hourly alarm', async () => {
+    Object.defineProperty(chrome.runtime, 'id', {
+      configurable: true,
+      value: 'keychain-test-extension',
+    });
+    (chrome.runtime.getURL as jest.Mock).mockImplementation(
+      (path: string) => `chrome-extension://keychain-test-extension/${path}`,
+    );
+    let walletLockStateListener: (() => void) | undefined;
+    let runtimeMessageListener:
+      | ((
+          message: { command: BackgroundCommand },
+          sender: chrome.runtime.MessageSender,
+        ) => void)
+      | undefined;
+    (
+      VaultUtils.addWalletLockStateListener as jest.Mock
+    ).mockImplementation((listener) => {
+      walletLockStateListener = listener;
+    });
+    jest
+      .spyOn(chrome.runtime.onMessage, 'addListener')
+      .mockImplementation((listener) => {
+        runtimeMessageListener = listener as typeof runtimeMessageListener;
+      });
+
+    PortfolioSwapCatalogCacheModule.start();
+    await Promise.resolve();
+
+    expect(
+      PortfolioSwapCatalogCacheUtils.ensureSwapCatalogCached,
+    ).toHaveBeenCalledTimes(1);
+    expect(chrome.alarms.create).not.toHaveBeenCalled();
+
+    (VaultUtils.getValueFromVault as jest.Mock).mockResolvedValueOnce(undefined);
+    walletLockStateListener?.();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(
+      PortfolioSwapCatalogCacheUtils.ensureSwapCatalogCached,
+    ).toHaveBeenCalledTimes(1);
+
+    (VaultUtils.getValueFromVault as jest.Mock).mockResolvedValueOnce('mk');
+    walletLockStateListener?.();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(
+      PortfolioSwapCatalogCacheUtils.ensureSwapCatalogCached,
+    ).toHaveBeenCalledTimes(2);
+
+    (VaultUtils.getValueFromVault as jest.Mock).mockResolvedValueOnce('mk');
+    runtimeMessageListener?.(
+      { command: BackgroundCommand.VAULT_LOADED },
+      {
+        id: chrome.runtime.id,
+        url: chrome.runtime.getURL('vault.html'),
+      },
+    );
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(
+      PortfolioSwapCatalogCacheUtils.ensureSwapCatalogCached,
+    ).toHaveBeenCalledTimes(3);
+  });
+
+  it('logs a catalog warm failure without the upstream error body', async () => {
+    jest.resetModules();
+    const error = jest.fn();
+    jest.doMock('src/utils/logger.utils', () => ({
+      __esModule: true,
+      default: { error },
+    }));
+
+    const { PortfolioSwapCatalogCacheModule: cacheModule } = await import(
+      '@background/portfolio-swap-catalog-cache.module'
+    );
+    const { PortfolioSwapCatalogCacheUtils: cacheUtils } = await import(
+      'src/portfolio/portfolio-swap-catalog-cache.utils'
+    );
+    const upstreamError = new Error(
+      'Invalid prisma.canonicalAsset.findMany() invocation',
+    );
+    (cacheUtils.ensureSwapCatalogCached as jest.Mock).mockRejectedValueOnce(
+      upstreamError,
+    );
+
+    cacheModule.start();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(error).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledWith(
+      'Unable to warm portfolio swap catalog cache',
+    );
+  });
+});

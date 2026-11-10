@@ -3,7 +3,7 @@ import {
   DefaultAccountHistoryApis,
   DefaultHiveEngineRpcs,
 } from '@interfaces/hive-engine-rpc.interface';
-import { Screen } from '@reference-data/screen.enum';
+import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
 import { act, cleanup, fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -11,10 +11,11 @@ import React from 'react';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
 import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import { openNetworkSettings } from 'src/__tests__/utils-for-testing/helpers/settings-navigation';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 /** Hive Engine RPC + account-history settings (Settings → RPC nodes). */
 describe('rpc-nodes.component Hive Engine settings tests:\n', () => {
   afterEach(() => {
@@ -29,23 +30,33 @@ describe('rpc-nodes.component Hive Engine settings tests:\n', () => {
 
   const openRpcSettingsPage = async () => {
     await act(async () => {
-      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
-      await userEvent.click(
-        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.SETTINGS),
-      );
-      await userEvent.click(
-        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.RPC),
-      );
+      await openNetworkSettings();
     });
     expect(screen.getByTestId(`${Screen.SETTINGS_RPC_NODES}-page`)).toBeInTheDocument();
   };
 
   const openHiveEngineDropdown = () => {
-    fireEvent.click(screen.getByTestId('hive-engine-rpc-select-handle'));
+    fireEvent.click(
+      screen
+        .getByTestId('hive-engine-rpc-select-handle')
+        .closest('[role="combobox"]') as HTMLElement,
+    );
+  };
+
+  const disableHiveEngineAutomaticMode = async () => {
+    if (!screen.queryByTestId('hive-engine-rpc-select-handle')) {
+      await userEvent.click(
+        screen.getByTestId('checkbox-hive-engine-rpc-nodes-automatic-mode'),
+      );
+    }
   };
 
   const openAccountHistoryDropdown = () => {
-    fireEvent.click(screen.getByTestId('hive-account-history-api-select-handle'));
+    fireEvent.click(
+      screen
+        .getByTestId('hive-account-history-api-select-handle')
+        .closest('[role="combobox"]') as HTMLElement,
+    );
   };
 
   describe('Hive-Engine RPC selector:\n', () => {
@@ -65,6 +76,7 @@ describe('rpc-nodes.component Hive Engine settings tests:\n', () => {
           },
         );
         await openRpcSettingsPage();
+        await disableHiveEngineAutomaticMode();
       });
 
       it('Must display total of rpc items & find custom rpc', async () => {
@@ -108,6 +120,7 @@ describe('rpc-nodes.component Hive Engine settings tests:\n', () => {
           initialStates.iniStateAs.defaultExistent,
         );
         await openRpcSettingsPage();
+        await disableHiveEngineAutomaticMode();
       });
 
       it('Must display total of default rpc items & not find custom rpc', async () => {
@@ -137,7 +150,7 @@ describe('rpc-nodes.component Hive Engine settings tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('html_popup_rpc_already_exist'),
+            I18nUtils.getMessage('html_popup_rpc_already_exist'),
           ),
         ).toBeInTheDocument();
       });
@@ -157,7 +170,7 @@ describe('rpc-nodes.component Hive Engine settings tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('html_popup_url_not_valid'),
+            I18nUtils.getMessage('html_popup_url_not_valid'),
           ),
         ).toBeInTheDocument();
       });
@@ -177,7 +190,7 @@ describe('rpc-nodes.component Hive Engine settings tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('html_popup_url_not_valid'),
+            I18nUtils.getMessage('html_popup_url_not_valid'),
           ),
         ).toBeInTheDocument();
       });
@@ -278,7 +291,7 @@ describe('rpc-nodes.component Hive Engine settings tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('html_popup_rpc_already_exist'),
+            I18nUtils.getMessage('html_popup_rpc_already_exist'),
           ),
         ).toBeInTheDocument();
       });
@@ -298,7 +311,7 @@ describe('rpc-nodes.component Hive Engine settings tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('html_popup_url_not_valid'),
+            I18nUtils.getMessage('html_popup_url_not_valid'),
           ),
         ).toBeInTheDocument();
       });
@@ -318,7 +331,7 @@ describe('rpc-nodes.component Hive Engine settings tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('html_popup_url_not_valid'),
+            I18nUtils.getMessage('html_popup_url_not_valid'),
           ),
         ).toBeInTheDocument();
       });

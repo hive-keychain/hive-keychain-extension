@@ -17,6 +17,7 @@ import ButtonComponent, {
 } from 'src/common-ui/button/button.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   account: string;
   differences: VestingRouteDifference[];
@@ -45,25 +46,25 @@ const VestingRouteItem = ({
         key={`vesting-item-details-${vestingRoute.toAccount}-${vestingRouteType}-${vestingRoute.percent}`}
         className={`vesting-item-details-container ${vestingRouteType}`}>
         <div className="title">
-          {chrome.i18n.getMessage(
+          {I18nUtils.getMessage(
             'popup_html_vesting_route_item_details_from_title',
           )}
           {`@${vestingRoute.fromAccount}`}
         </div>
         <div className="title">
-          {chrome.i18n.getMessage(
+          {I18nUtils.getMessage(
             'popup_html_vesting_route_item_details_to_title',
           )}
           {`@${vestingRoute.toAccount}`}
         </div>
         <div className="title">
-          {chrome.i18n.getMessage(
+          {I18nUtils.getMessage(
             'popup_html_vesting_route_item_details_percent_title',
           )}
           {vestingRoute.percent / 100}
         </div>
         <div className="title">
-          {chrome.i18n.getMessage(
+          {I18nUtils.getMessage(
             'popup_html_vesting_route_item_details_autovest_title',
           )}
           {vestingRoute.autoVest.toString()}
@@ -78,7 +79,7 @@ const VestingRouteItem = ({
         key={`vesting-item-details-none`}
         className={`vesting-item-details-container `}>
         <div className="title">
-          {chrome.i18n.getMessage(
+          {I18nUtils.getMessage(
             'popup_html_vesting_route_item_details_non_existent_label',
           )}
         </div>
@@ -117,19 +118,19 @@ const VestingRouteItem = ({
     <div className={`carousel-item`} key={`${account}-vesting-routes`}>
       <div className="carousel-item-container">
         <div className="account-title">
-          {chrome.i18n.getMessage(
+          {I18nUtils.getMessage(
             'popup_html_vesting_route_account_item_label',
           ) + ': @'}
           {account}
         </div>
         <div className="vesting-routes-titles-container">
           <div className="vesting-route-title old-route">
-            {chrome.i18n.getMessage(
+            {I18nUtils.getMessage(
               'popup_html_vesting_route_account_item_old_route_title',
             )}
           </div>
           <div className="vesting-route-title new-route">
-            {chrome.i18n.getMessage(
+            {I18nUtils.getMessage(
               'popup_html_vesting_route_account_item_new_route_title',
             )}
           </div>

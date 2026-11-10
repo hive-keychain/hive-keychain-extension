@@ -3,6 +3,15 @@ import { render, screen } from '@testing-library/react';
 import React from 'react';
 import { ResultMessagePageComponent } from 'src/common-ui/result-message-page/result-message-page.component';
 import { HtmlUtils } from 'src/utils/html.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
+
+const env = process.env;
+
+const clearLegalLinksEnv = () => {
+  delete process.env.KEYCHAIN_FEES_URL;
+  delete process.env.KEYCHAIN_PRIVACY_URL;
+  delete process.env.KEYCHAIN_TERMS_URL;
+};
 
 jest.mock('react-svg', () => ({
   ReactSVG: ({ src }: { src: string }) => (
@@ -12,7 +21,9 @@ jest.mock('react-svg', () => ({
 
 describe('HTML rendering safety', () => {
   beforeEach(() => {
-    chrome.i18n.getMessage = jest.fn((message: string, params?: string[]) => {
+    process.env = { ...env };
+    clearLegalLinksEnv();
+    jest.spyOn(I18nUtils, 'getMessage').mockImplementation((message, params) => {
       if (message === 'message_container_close_button') {
         return 'Close';
       }
@@ -29,8 +40,40 @@ describe('HTML rendering safety', () => {
         return `Open <a href="${params?.[0]}" target="_blank" onclick="alert(1)">Ledger</a>`;
       }
 
+      if (message === 'accept_terms_and_condition') {
+        return "I agree to <a href='https://hive-keychain.com/#/terms'>Terms</a>, <a href='https://hive-keychain.com/#/privacy'>Privacy</a>, and <a href='https://hive-keychain.com/#/fees'>Fees</a>";
+      }
+
       return message;
     });
+  });
+
+  afterEach(() => {
+    process.env = env;
+    jest.restoreAllMocks();
+  });
+
+  it('renders dialog feedback locale keys with allowed tags only', () => {
+    jest.spyOn(I18nUtils, 'getMessage').mockImplementation((message) => {
+      if (message === 'bgd_ops_sign_success') {
+        return 'Message signed successfully.<br>Done.';
+      }
+      return message;
+    });
+
+    const { container } = render(
+      <ResultMessagePageComponent
+        type="success"
+        title="message_container_title_success"
+        message="ignored"
+        messageI18nKey="bgd_ops_sign_success"
+        onClose={jest.fn()}
+      />,
+    );
+
+    expect(container.querySelector('br')).toBeInTheDocument();
+    expect(container).toHaveTextContent('Message signed successfully.');
+    expect(container).toHaveTextContent('Done.');
   });
 
   it('renders skipped translation result messages as text', () => {
@@ -98,5 +141,58 @@ describe('HTML rendering safety', () => {
     expect(link).not.toBeNull();
     expect(link).not.toHaveAttribute('href');
     expect(link).not.toHaveAttribute('onclick');
+  });
+
+  it('keeps default legal links without env overrides', () => {
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = HtmlUtils.getSafeI18nHtml('accept_terms_and_condition');
+    const links = wrapper.querySelectorAll('a');
+
+    expect(links[0]).toHaveAttribute(
+      'href',
+      'https://hive-keychain.com/#/terms',
+    );
+    expect(links[1]).toHaveAttribute(
+      'href',
+      'https://hive-keychain.com/#/privacy',
+    );
+    expect(links[2]).toHaveAttribute(
+      'href',
+      'https://hive-keychain.com/#/fees',
+    );
+  });
+
+  it('uses env overrides for legal links', () => {
+    process.env = {
+      ...env,
+      KEYCHAIN_FEES_URL: 'https://example.com/fees',
+      KEYCHAIN_PRIVACY_URL: 'https://example.com/privacy',
+      KEYCHAIN_TERMS_URL: 'https://example.com/terms',
+    };
+
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = HtmlUtils.getSafeI18nHtml('accept_terms_and_condition');
+    const links = wrapper.querySelectorAll('a');
+
+    expect(links[0]).toHaveAttribute('href', 'https://example.com/terms');
+    expect(links[1]).toHaveAttribute('href', 'https://example.com/privacy');
+    expect(links[2]).toHaveAttribute('href', 'https://example.com/fees');
+  });
+
+  it('sanitizes env overrides for legal links', () => {
+    process.env = {
+      ...env,
+      KEYCHAIN_FEES_URL: 'javascript:alert(1)',
+      KEYCHAIN_PRIVACY_URL: 'javascript:alert(1)',
+      KEYCHAIN_TERMS_URL: 'javascript:alert(1)',
+    };
+
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = HtmlUtils.getSafeI18nHtml('accept_terms_and_condition');
+    const links = wrapper.querySelectorAll('a');
+
+    expect(links[0]).not.toHaveAttribute('href');
+    expect(links[1]).not.toHaveAttribute('href');
+    expect(links[2]).not.toHaveAttribute('href');
   });
 });

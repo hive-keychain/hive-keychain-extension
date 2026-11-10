@@ -16,7 +16,7 @@
     "description": "tutorial popup"
   },
   "popup_html_tutorial_popup_description": {
-    "message": "Baru di Keychain, atau Hive? Cek tutorial onboarding kami. <br/> Bisa diakses kapan saja di pengaturan> Bantuan> Tutorial",
+    "message": "Baru di Keychain, atau Hive? Cek tutorial onboarding kami. <br/> Bisa diakses kapan saja di pengaturan> Bantuan> Tutorial Hive",
     "description": "tutorial popup"
   },
   "popup_html_tutorial_popup_show_label": {
@@ -26,6 +26,62 @@
   "popup_html_tutorial_popup_skip_label": {
     "message": "Lewati",
     "description": "tutorial popup"
+  },
+  "popup_html_guided_tour_add_evm_step1_title": {
+    "message": "Keychain sekarang multi-chain!",
+    "description": "guided tour add evm account step 1 title"
+  },
+  "popup_html_guided_tour_add_evm_step1_description": {
+    "message": "Kelola Hive dan EVM (Ethereum, Polygon, dll.) di satu tempat. Klik menu akun untuk melanjutkan.",
+    "description": "guided tour add evm account step 1 description"
+  },
+  "popup_html_guided_tour_add_evm_step2_title": {
+    "message": "Kelola akun",
+    "description": "guided tour add evm account step 2 title"
+  },
+  "popup_html_guided_tour_add_evm_step2_description": {
+    "message": "Sekarang kamu bisa mengelola akun langsung dari daftar akun",
+    "description": "guided tour add evm account step 2 description"
+  },
+  "popup_html_guided_tour_add_evm_step3_title": {
+    "message": "Tambah akun",
+    "description": "guided tour add evm account step 3 title"
+  },
+  "popup_html_guided_tour_add_evm_step3_description": {
+    "message": "Dan tambahkan akun baru dari sini",
+    "description": "guided tour add evm account step 3 description"
+  },
+  "popup_html_guided_tour_add_evm_step4_title": {
+    "message": "Tambah akun EVM",
+    "description": "guided tour add evm account step 4 title"
+  },
+  "popup_html_guided_tour_add_evm_step4_description": {
+    "message": "Mari coba menambahkan akun EVM baru",
+    "description": "guided tour add evm account step 4 description"
+  },
+  "popup_html_guided_tour_got_it": {
+    "message": "Mengerti",
+    "description": "guided tour last-step dismiss button"
+  },
+  "popup_html_guided_tour_add_evm_chains_step1_title": {
+    "message": "Selamat, akun EVM pertamamu sudah ditambahkan",
+    "description": "guided tour add evm chains step 1 title"
+  },
+  "popup_html_guided_tour_add_evm_chains_step1_description": {
+    "message": "Kamu bisa menambahkan chain di sini!",
+    "description": "guided tour add evm chains step 1 description"
+  },
+  "popup_html_guided_tour_add_evm_chains_step2_title": {
+    "message": "Klik Kelola chain untuk menambah",
+    "description": "guided tour add evm chains step 2 title"
+  },
+  "popup_html_guided_tour_add_evm_chains_step3_title": {
+    "message": "Pilih chain atau tambahkan secara manual",
+    "description": "guided tour add evm chains step 3 title"
+  },
+  "popup_html_guided_tour_add_evm_chains_step3_description": {
+    "message": "Token dan NFT terdeteksi otomatis di chain preset",
+    "description": "guided tour add evm chains step 3 description"
   },
   "popup_html_wrong_key_active": {
     "message": "Kunci tidak valid. Silahkan masukkan active key",
@@ -39,12 +95,32 @@
     "message": "Kunci tidak valid.Silahkan masukkan memo key.",
     "description": "while using wrong private key"
   },
+  "common_pending": {
+    "message": "Tertunda",
+    "description": "EVM transaction pending status"
+  },
+  "common_testnet": {
+    "message": "jaringan uji",
+    "description": "EVM blockchain testnet"
+  },
+  "common_mainnet": {
+    "message": "Jaringan utama",
+    "description": "EVM blockchain mainnet"
+  },
+  "common_seed": {
+    "message": "Seed",
+    "description": "EVM blockchain seed"
+  },
+  "common_seeds": {
+    "message": "Seeds",
+    "description": "EVM blockchain seeds"
+  },
   "common_experimental": {
     "message": "Uji Coba",
     "description": "experimental"
   },
   "common_yes": {
-    "message": "Konfirmasi",
+    "message": "Ya",
     "description": "Generic"
   },
   "common_and": {
@@ -52,7 +128,7 @@
     "description": "Generic"
   },
   "common_no": {
-    "message": "Batalkan",
+    "message": "Tidak",
     "description": "Generic"
   },
   "memo": {
@@ -108,15 +184,15 @@
     "description": "Text on registration page"
   },
   "popup_html_unlock1": {
-    "message": "Solusi Dompet Hive Terbaik",
+    "message": "Dompet HIVE terbaik",
     "description": "Text on unlock page"
   },
   "popup_html_unlock2": {
-    "message": "Kelola aset HIVE dan terhubung dengan berbagai aplikasi HIVE",
+    "message": "Kelola aset HIVE dan terhubung ke aplikasi HIVE",
     "description": "Text on unlock page"
   },
   "popup_html_unlock3": {
-    "message": "Mudah.Ringan. Aman",
+    "message": "Sederhana. Ringan. Aman.",
     "description": "Text on unlock page"
   },
   "popup_html_new_password": {
@@ -171,7 +247,7 @@
     "description": "on Keychain popup main page"
   },
   "popup_html_send": {
-    "message": "Kirimkan 1$",
+    "message": "Kirim $1",
     "description": "ex: Send HIVE"
   },
   "popup_html_pu": {
@@ -212,7 +288,7 @@
     "description": "on popup main page"
   },
   "popup_html_estimation_info_text": {
-    "message": "Perkiraan nilai akun memberi gambaran kasar tentang total dana Anda.<br><br>Klik nilai yang ditampilkan untuk mengganti tampilan antara USD, HIVE, atau klik nilai yang ditampilkan untuk mengaktifkan mode tersembunyi.",
+    "message": "Perkiraan nilai akun memberi gambaran kasar tentang total dana Anda.<br><br>Klik nilai yang ditampilkan untuk mengganti tampilan antara USD, $1, atau klik nilai yang ditampilkan untuk mengaktifkan mode tersembunyi.",
     "description": "on popup main page, click info near estimated value"
   },
   "popup_html_wallet_history": {
@@ -248,7 +324,7 @@
     "description": "when keyless keychain is enabled"
   },
   "popup_html_setup": {
-    "message": "Pengaturan",
+    "message": "Tambah akun",
     "description": "when adding new account"
   },
   "popup_html_private_key": {
@@ -268,11 +344,11 @@
     "description": "placeholder for entering a ending date"
   },
   "popup_html_import_keys": {
-    "message": "Impor keys ",
+    "message": "Impor key dari file .kc",
     "description": "Import all keys"
   },
   "popup_html_import_permissions": {
-    "message": "Pengaturan impor",
+    "message": "Impor",
     "description": "Import permissions"
   },
   "popup_html_import_key": {
@@ -328,7 +404,7 @@
     "description": "while confirming remove account authority: $2 is account, $1 is posting or active"
   },
   "popup_html_remove_account_authority": {
-    "message": "Hapus akses? Tindakan ini tidak dapat dibatalkan.",
+    "message": "Hapus otoritas",
     "description": "while confirming remove account authority"
   },
   "html_popup_remove_authorized_account_operation": {
@@ -367,6 +443,30 @@
     "message": "Menu",
     "description": "on settings page"
   },
+  "popup_html_contacts": {
+    "message": "Kontak",
+    "description": "Unified settings menu item"
+  },
+  "popup_html_contacts_intro": {
+    "message": "Simpan kontak yang sering Anda gunakan agar transfer dan operasi lainnya lebih cepat.",
+    "description": "Intro on unified contacts settings page"
+  },
+  "popup_html_network": {
+    "message": "Jaringan",
+    "description": "Unified settings menu item for RPC settings"
+  },
+  "popup_html_connected_dapps": {
+    "message": "Terhubung dApps",
+    "description": "Unified settings menu item"
+  },
+  "evm_settings": {
+    "message": "EVM Pengaturan",
+    "description": "Unified settings menu item"
+  },
+  "hive_settings": {
+    "message": "Hive Pengaturan",
+    "description": "Unified settings menu item"
+  },
   "popup_html_add_account": {
     "message": "Tambah akun",
     "description": "on settings page"
@@ -392,7 +492,7 @@
     "description": "on settings page"
   },
   "popup_html_import_export_settings": {
-    "message": "Pengaturan impor/ekspor ",
+    "message": "Impor / Ekspor",
     "description": "on settings page"
   },
   "popup_html_automated_tasks": {
@@ -480,7 +580,7 @@
     "description": "on account / export settings"
   },
   "popup_html_export_permissions": {
-    "message": "Ekspor pengaturan",
+    "message": "Ekspor",
     "description": "on import / export settings"
   },
   "popup_html_about_text": {
@@ -532,7 +632,7 @@
     "description": "on settings accounts / export / qr"
   },
   "popup_html_qr_check2": {
-    "message": "Saya mengerti dan menyetujui bahwa membagikan Kode QR ini kepada pihak mana pun dapat menyebabkan kehilangan dana, dan saya bertanggung jawab penuh atas risikonya.",
+    "message": "Saya paham membagikan Kode QR ini dapat menyebabkan kehilangan dana",
     "description": "on settings accounts / export / qr"
   },
   "popup_html_qr_exported_set_disclaimer1": {
@@ -544,7 +644,7 @@
     "description": "on settings accounts / export / qr"
   },
   "popup_html_qr_exported_check2": {
-    "message": "Saya mengerti dan menyetujui bahwa membagikan Kode QR ini kepada pihak mana pun dapat menyebabkan kehilangan dana, dan saya bertanggung jawab penuh atas risikonya.",
+    "message": "Saya paham membagikan Kode QR ini dapat menyebabkan kehilangan dana",
     "description": "on settings accounts / export / qr"
   },
   "popup_html_qr_exported_show_button": {
@@ -595,6 +695,10 @@
     "message": "Tidak ada informasi yang diizinkan",
     "description": "on preferences"
   },
+  "hive_dapps_connections_remove_all": {
+    "message": "Hapus semua izin",
+    "description": "Button label to remove every Hive permission for a dapp"
+  },
   "popup_html_nothing_found_using_filter": {
     "message": "Tidak ditemukan apa pun, coba bersihkan filter Anda",
     "description": "on multiple pages where filter is used"
@@ -638,6 +742,82 @@
   "popup_html_detach_window_tooltip_text": {
     "message": "Lepaskan jendela\nPintasan: Ctrl + D",
     "description": "after clicking on copy username to clipboard button on home page"
+  },
+  "popup_html_detach_window": {
+    "message": "Buka di tab",
+    "description": "Settings preferences menu: open Keychain outside the popup"
+  },
+  "popup_html_preferences_and_display": {
+    "message": "Preferensi dan tampilan",
+    "description": "Settings menu section for theme and window display options"
+  },
+  "popup_html_customize_keychain_appearance": {
+    "message": "Sesuaikan tampilan Keychain Anda",
+    "description": "Setup preferences: display and appearance description"
+  },
+  "popup_html_preferences_appearance_section": {
+    "message": "Tampilan",
+    "description": "Preferences and display: theme section title"
+  },
+  "popup_html_light_mode": {
+    "message": "Terang",
+    "description": "Preferences and display: light theme label"
+  },
+  "popup_html_dark_mode": {
+    "message": "Gelap",
+    "description": "Preferences and display: dark theme label"
+  },
+  "popup_html_preferences_language": {
+    "message": "Bahasa",
+    "description": "Preferences and display: language selector label"
+  },
+  "popup_html_preferences_browser_language": {
+    "message": "Bahasa browser",
+    "description": "Browser language option in preferences language selector"
+  },
+  "popup_html_preferences_display_section": {
+    "message": "Tampilan jendela",
+    "description": "Preferences and display: window and side panel section title"
+  },
+  "popup_html_display_popup": {
+    "message": "Popup",
+    "description": "Preferences and display: popup display mode option"
+  },
+  "popup_html_display_side_panel": {
+    "message": "Panel samping",
+    "description": "Preferences and display: side panel display mode option"
+  },
+  "popup_html_display_mode_reopen_wallet_notice": {
+    "message": "Keychain akan terbuka dalam mode tampilan yang dipilih setelah dompet dibuka kembali.",
+    "description": "Preferences and display: selected display mode applies after reopening the wallet"
+  },
+  "popup_html_open_in_side_panel": {
+    "message": "Buka di panel samping",
+    "description": "Preferences and display: open Keychain in the browser side panel"
+  },
+  "popup_html_try_side_panel": {
+    "message": "Coba panel samping",
+    "description": "Preferences and display: try Keychain in the browser side panel"
+  },
+  "popup_html_open_in_side_panel_hint": {
+    "message": "Buka Keychain di panel samping browser untuk tampilan yang lebih besar dan persisten.",
+    "description": "Preferences and display: side panel action hint"
+  },
+  "popup_html_open_side_panel_by_default": {
+    "message": "Buka panel samping secara default",
+    "description": "Preferences and display: default to side panel on extension icon click"
+  },
+  "popup_html_open_side_panel_by_default_hint": {
+    "message": "Jika diaktifkan, mengklik ikon ekstensi membuka Keychain di panel samping, bukan popup.",
+    "description": "Preferences and display: default side panel checkbox hint"
+  },
+  "popup_html_chain_settings": {
+    "message": "Pengaturan rantai",
+    "description": "Settings menu section for Hive and EVM chain-specific options"
+  },
+  "popup_html_help_and_about": {
+    "message": "Bantuan & informasi",
+    "description": "Settings menu section for support, tutorial, and Keychain information"
   },
   "popup_html_wrong_key_tooltip_text": {
     "message": "Kunci ini tidak sesuai dengan akun Anda, sehingga transaksi tidak dapat dilakukan. Jika Anda telah memperbarui kunci, harap hapus yang lama dan masukkan kunci yang baru",
@@ -875,6 +1055,10 @@
     "message": "Kelola otoritas\n",
     "description": "on settings page"
   },
+  "popup_html_account_authorities": {
+    "message": "Otoritas akun",
+    "description": "Hive settings menu item"
+  },
   "popup_html_export_accounts": {
     "message": "Ekspor akun\n",
     "description": "on settings page accounts > export acc sub menu"
@@ -1004,7 +1188,7 @@
     "description": "On preferences, list of rights that were given to some websites."
   },
   "popup_token_issued_by": {
-    "message": "Diterbitkan oleh",
+    "message": "oleh @$1",
     "description": "tokens > setting wheel"
   },
   "popup_token_supply": {
@@ -1152,7 +1336,7 @@
     "description": "When website request a custom json"
   },
   "dialog_to": {
-    "message": "Ditujukan pada ",
+    "message": "Ke",
     "description": "When website request a transfer"
   },
   "dialog_tx": {
@@ -1180,7 +1364,7 @@
     "description": "When website request a post"
   },
   "dialog_body": {
-    "message": " Isi utama halaman",
+    "message": "Isi",
     "description": "When website request a post"
   },
   "dialog_period": {
@@ -1300,7 +1484,7 @@
     "description": "Website request title"
   },
   "dialog_title_remove_auth": {
-    "message": "Hapus akses? Tindakan ini tidak dapat dibatalkan.",
+    "message": "Hapus otoritas",
     "description": "Website request title"
   },
   "dialog_title_broadcast": {
@@ -1379,6 +1563,10 @@
     "message": "Frekuensi Transfer",
     "description": "When requesting recurrent transfers"
   },
+  "dialog_pair_id": {
+    "message": "ID pasangan",
+    "description": "When requesting recurrent transfers"
+  },
   "dialog_executions": {
     "message": "Pelaksanaan",
     "description": "When requesting recurrent transfers"
@@ -1400,7 +1588,7 @@
     "description": "When requesting recurrent transfers"
   },
   "bgd_keyless_keychain_error": {
-    "message": "Keychain dalam mode tanpa kunci mengalami kesalahan.",
+    "message": "Error Keyless Keychain",
     "description": "Keyless Keychain Error"
   },
   "bgd_init_no_wallet": {
@@ -1424,7 +1612,7 @@
     "description": "Context menu (when right click on a username on steemit)"
   },
   "bgd_context_memo_user": {
-    "message": "Kirim pesan MEMO ke @%",
+    "message": "Kirim pesan MEMO ke @%s",
     "description": "Context menu (when right click on a username on steemit)"
   },
   "bgd_context_tip_user": {
@@ -1598,6 +1786,12 @@
   "popup_html_send_transfer": {
     "message": "Kirim"
   },
+  "popup_html_receive": {
+    "message": "Terima"
+  },
+  "popup_html_evm_receive_view_explorer": {
+    "message": "Lihat alamat di block explorer"
+  },
   "dialog_title_add_key_auth": {
     "message": "Tambahkan Kunci"
   },
@@ -1632,7 +1826,7 @@
     "description": "When adding new account. In a button, must keep short."
   },
   "popup_html_chose_add_method": {
-    "message": "Anda dapat menambahkan kunci Anda dengan memasukkan private key atau master password.<br/>Atau, tetapkan akun terotorisasi atau impor kunci Anda.",
+    "message": "Impor atau buat akun Hive.",
     "description": "Text when adding new method."
   },
   "popup_html_auth_text": {
@@ -1872,10 +2066,6 @@
     "message": "Token ditetapkan untuk staking otomatis",
     "description": "When on automated tasks page"
   },
-  "popup_html_favorite_accounts_intro": {
-    "message": "Silahkan mengatur akun yang sering Anda gunakan untuk transfer, menggunakan hive engine, jual beli di bursa kripto dan lainnnya.",
-    "description": "When on favorite accounts page"
-  },
   "popup_html_enable_autoclaim_rewards": {
     "message": "Klaim Rewards",
     "description": "When on automated tasks page"
@@ -1937,27 +2127,27 @@
     "description": "Advanced settings sub menu"
   },
   "popup_html_shortcuts": {
-    "message": "Shortcuts",
+    "message": "Pintasan",
     "description": "Shortcuts settings menu"
   },
   "popup_html_shortcuts_intro": {
-    "message": "Create keyboard shortcuts to navigate or change account. Be aware that some shortcuts may be intercepted by the browser and close the popup.",
+    "message": "Buat pintasan keyboard untuk menavigasi atau mengubah akun. Sadarilah bahwa beberapa pintasan mungkin disadap oleh browser dan tutup popup.",
     "description": "Shortcuts settings intro"
   },
   "popup_html_shortcuts_add_button": {
-    "message": "Add shortcut",
+    "message": "Tambahkan pintasan",
     "description": "Add shortcut button"
   },
   "popup_html_shortcuts_key_combo": {
-    "message": "Shortcut",
+    "message": "Jalan pintas",
     "description": "Shortcut key combo label"
   },
   "popup_html_shortcuts_key_combo_placeholder": {
-    "message": "Press a key combination",
+    "message": "Tekan kombinasi tombol",
     "description": "Shortcut key combo placeholder"
   },
   "popup_html_shortcuts_action": {
-    "message": "Action",
+    "message": "Tindakan",
     "description": "Shortcut action label"
   },
   "popup_html_shortcuts_target": {
@@ -1965,48 +2155,92 @@
     "description": "Shortcut target label"
   },
   "popup_html_shortcuts_delegation_type": {
-    "message": "Delegation type",
+    "message": "Tipe delegasi",
     "description": "Shortcut delegation type label"
   },
   "popup_html_shortcuts_power_type": {
-    "message": "Power type",
+    "message": "Tipe daya",
     "description": "Shortcut power type label"
   },
   "popup_html_shortcuts_save_button": {
-    "message": "Save shortcut",
+    "message": "Simpan pintasan",
     "description": "Save shortcut button"
   },
   "popup_html_shortcuts_cancel_button": {
-    "message": "Cancel",
+    "message": "Membatalkan",
     "description": "Cancel shortcut button"
   },
   "popup_html_shortcuts_no_shortcuts": {
-    "message": "No shortcuts yet.",
+    "message": "Belum ada jalan pintas.",
     "description": "No shortcuts message"
   },
   "popup_html_shortcuts_action_navigate": {
-    "message": "Navigate",
+    "message": "Navigasi",
     "description": "Shortcut action navigate"
   },
   "popup_html_shortcuts_action_change_account": {
-    "message": "Change account",
+    "message": "Ganti akun",
     "description": "Shortcut action change account"
   },
   "popup_html_shortcuts_duplicate": {
-    "message": "This shortcut is already assigned.",
+    "message": "Pintasan ini sudah ditetapkan.",
     "description": "Duplicate shortcut error"
   },
   "popup_html_shortcuts_missing_combo": {
-    "message": "Please enter a shortcut.",
+    "message": "Silakan masukkan pintasan.",
     "description": "Missing shortcut combo error"
   },
   "popup_html_shortcuts_missing_target": {
-    "message": "Please select a target.",
+    "message": "Silakan pilih target.",
     "description": "Missing shortcut target error"
   },
   "popup_html_shortcuts_no_accounts": {
-    "message": "No accounts available.",
+    "message": "Tidak ada akun yang tersedia.",
     "description": "No accounts available for shortcuts"
+  },
+  "popup_html_shortcuts_action_change_chain": {
+    "message": "Ganti rantai",
+    "description": "Shortcut action change chain"
+  },
+  "popup_html_shortcuts_action_toggle_theme": {
+    "message": "Ubah tema",
+    "description": "Shortcut action change theme"
+  },
+  "popup_html_shortcuts_action_open_in_tab": {
+    "message": "Buka di panel samping",
+    "description": "Shortcut action open Keychain outside the popup"
+  },
+  "popup_html_shortcut_transfer_chain_label": {
+    "message": "Rantai",
+    "description": "Shortcuts form: transfer chain selector label"
+  },
+  "popup_html_shortcut_account_type_hive": {
+    "message": "Hive",
+    "description": "Shortcuts: Hive account row subtitle in account picker"
+  },
+  "popup_html_shortcut_no_chains": {
+    "message": "Tidak ada rantai yang tersedia",
+    "description": "Shortcuts: empty chain list"
+  },
+  "popup_html_shortcut_last_used_evm_chain": {
+    "message": "Rantai EVM yang terakhir digunakan",
+    "description": "Shortcuts: switch to last used EVM network"
+  },
+  "popup_html_shortcut_no_tokens": {
+    "message": "Tidak ada token yang tersedia",
+    "description": "Shortcuts: empty token list for transfer"
+  },
+  "popup_html_shortcut_currency_hive": {
+    "message": "HIVE",
+    "description": "Shortcuts: native transfer currency label"
+  },
+  "popup_html_shortcut_currency_hbd": {
+    "message": "HBD",
+    "description": "Shortcuts: HBD transfer currency label"
+  },
+  "popup_html_shortcut_nav_HOME_PAGE": {
+    "message": "Rumah",
+    "description": "Shortcut navigation target: home"
   },
   "popup_html_rpc_node_text": {
     "message": "Pilih node RPC yang akan digunakan untuk mengakses data dan menyiarkan transaksi dari dan ke Hive Blockchain.",
@@ -2082,6 +2316,10 @@
   },
   "popup_html_recurrent_transfer": {
     "message": "Transfer berkala",
+    "description": "In transfer fund page"
+  },
+  "popup_html_recurrent_transfers": {
+    "message": "Transfer berulang",
     "description": "In transfer fund page"
   },
   "popup_html_cancel_recurrent_transfer": {
@@ -2177,7 +2415,7 @@
     "description": "Withdraw savings confirmation message"
   },
   "popup_html_tokens_history": {
-    "message": "1$ riwayat",
+    "message": "Riwayat $1",
     "description": "Tokens history title"
   },
   "popup_html_tokens_no_tokens": {
@@ -2400,6 +2638,10 @@
     "message": "Mentransfer dana",
     "description": "Transfer fund operation"
   },
+  "html_popup_cancel_transaction_operation": {
+    "message": "Membatalkan transaksi",
+    "description": "Cancel transaction operation"
+  },
   "html_popup_stop_recc_transfer_fund_operation": {
     "message": "Menghentikan transfer berkala",
     "description": "Transfer fund operation"
@@ -2512,6 +2754,10 @@
     "message": "Beberapa akun Anda menggunakan @$1 sebagai akun terotorisasi dan tidak dapat melakukan operasi lagi",
     "description": "when deleting account from keychain"
   },
+  "popup_html_delete_last_account_reset_warning": {
+    "message": "Menghapus akun terakhir di Keychain akan mengatur ulang Keychain sepenuhnya.",
+    "description": "warning when removing the last account from Keychain"
+  },
   "popup_html_account_already_existing": {
     "message": "Akun ini sudah terdaftar. ",
     "description": "while trying to add a new account"
@@ -2557,7 +2803,7 @@
     "description": "Contact support"
   },
   "popup_html_tutorial": {
-    "message": "Tutorial",
+    "message": "Tutorial Hive",
     "description": "Contact support"
   },
   "popup_html_wallet_info_transfer_in": {
@@ -3109,7 +3355,7 @@
     "description": "wrong vesting routes popup, item details, non existent label"
   },
   "popup_html_vesting_route_item_details_id_title": {
-    "message": "Id: ",
+    "message": "ID: ",
     "description": "wrong vesting routes popup, item details, id label/title"
   },
   "popup_html_vesting_route_item_details_from_title": {
@@ -3212,9 +3458,65 @@
     "message": "Membuat akun",
     "description": "Creating account message"
   },
+  "html_popup_preparing_account_creation": {
+    "message": "Menyiapkan pembuatan akun",
+    "description": "Loading message while preparing EVM paid Hive account creation"
+  },
   "html_popup_create_account_failed": {
     "message": "Pembuatan akun Anda gagal. Silakan coba lagi nanti.",
     "description": "Create account failed message"
+  },
+  "html_popup_create_account_pending_keep_open": {
+    "message": "Pembuatan akun Anda dapat memakan waktu beberapa menit. Anda dapat menutup jendela ini.",
+    "description": "Reminder on pending account creation page to keep the extension open"
+  },
+  "html_popup_create_account_pay_external_wallet": {
+    "message": "Bayar dengan dompet lain",
+    "description": "Button to open external wallet payment popup on pending account creation page"
+  },
+  "html_popup_create_account_external_wallet_instructions": {
+    "message": "Pindai kode QR atau salin detail pembayaran di bawah. Setelah mengirim pembayaran, tempel hash transaksi Anda.",
+    "description": "Instructions in external wallet payment popup for account creation"
+  },
+  "html_popup_create_account_payment_tx_hash": {
+    "message": "Hash transaksi",
+    "description": "Label for transaction hash input in external wallet payment popup"
+  },
+  "html_popup_create_account_payment_account": {
+    "message": "Akun",
+    "description": "Account field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_chain": {
+    "message": "Chain",
+    "description": "Chain field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_token": {
+    "message": "Token",
+    "description": "Token field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_address": {
+    "message": "Alamat pembayaran",
+    "description": "Payment address field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_status": {
+    "message": "Status",
+    "description": "Status field on pending account creation payment page"
+  },
+  "html_popup_create_account_payment_expiry": {
+    "message": "Kedaluwarsa",
+    "description": "Expiry field on pending account creation payment page"
+  },
+  "html_popup_create_account_submit_payment_tx": {
+    "message": "Kirim pembayaran",
+    "description": "Button to submit external payment transaction hash"
+  },
+  "html_popup_create_account_submitting_payment_tx": {
+    "message": "Mengirim...",
+    "description": "Loading label while submitting external payment transaction hash"
+  },
+  "html_popup_create_account_invalid_payment_tx_hash": {
+    "message": "Hash transaksi tidak valid.",
+    "description": "Validation error for external payment transaction hash input"
   },
   "html_popup_read_more": {
     "message": "Baca lebih lanjut",
@@ -3295,6 +3597,18 @@
   "popup_html_pending": {
     "message": "Tertunda",
     "description": "Global"
+  },
+  "popup_html_active_recurrent_transfer": {
+    "message": "transfer berulang aktif)",
+    "description": "Global"
+  },
+  "popup_html_pending_remaining_executions": {
+    "message": "$1 sisa eksekusi",
+    "description": "Pending recurrent transfer remaining executions"
+  },
+  "popup_html_pending_recurrence": {
+    "message": "Setiap $1 jam",
+    "description": "Pending recurrent transfer recurrence every x hours"
   },
   "popup_html_pending_currency": {
     "message": "Konversi tertunda",
@@ -3396,7 +3710,7 @@
     "description": "On RC delegation confirmation page"
   },
   "popup_html_cancel_rc_delegation_successful": {
-    "message": "Delegasi RC ke $1 gagal",
+    "message": "Delegasi RC ke $1 berhasil dibatalkan",
     "description": "On RC delegation confirmation page"
   },
   "popup_html_cancel_rc_delegation_failed": {
@@ -3590,7 +3904,7 @@
     "description": "Internal error on Ledger"
   },
   "error_ledger_sign_hash": {
-    "message": "Blind signing transaksi gagal",
+    "message": "Terjadi kesalahan saat melakukan blind signing pada transaksi.",
     "description": "transaction blind signing failed on Ledger"
   },
   "error_ledger_app_not_supported": {
@@ -3665,6 +3979,10 @@
     "message": "Tambahkan akun dari Ledger",
     "description": "Title of add accounts from ledger page"
   },
+  "evm_add_accounts_from_ledger": {
+    "message": "Tambahkan akun EVM dari Ledger",
+    "description": "Title of add EVM accounts from ledger page"
+  },
   "add_accounts_from_ledger_finished": {
     "message": "Menambakan akun dari Ledger",
     "description": "Title of add accounts from ledger page"
@@ -3708,6 +4026,58 @@
   "ledger_account_discovery_caption": {
     "message": "Tautkan Ledger Anda untuk memakai akun di Keychain",
     "description": "synchronize ledger caption"
+  },
+  "evm_ledger_account_discovery_caption": {
+    "message": "Hubungkan dan buka kunci Ledger Anda, buka aplikasi Ethereum, lalu temukan akun EVM.",
+    "description": "EVM Ledger account discovery caption"
+  },
+  "evm_ledger_derivation_path_bip44": {
+    "message": "MetaMask / BIP44",
+    "description": "EVM Ledger BIP44 derivation path label"
+  },
+  "evm_ledger_derivation_path_ledger_live": {
+    "message": "Ledger Live",
+    "description": "EVM Ledger Live derivation path label"
+  },
+  "evm_ledger_derivation_path_legacy": {
+    "message": "Legacy / MEW",
+    "description": "EVM Ledger legacy derivation path label"
+  },
+  "evm_ledger_derivation_next_index": {
+    "message": "Dimulai pada indeks $1",
+    "description": "EVM Ledger derivation path next discovery index"
+  },
+  "evm_ledger_account_path_hint": {
+    "message": "$1 #$2 - $3",
+    "description": "EVM Ledger account derivation path hint"
+  },
+  "ledger_source_name": {
+    "message": "Ledger",
+    "description": "Default EVM Ledger wallet source name"
+  },
+  "evm_ledger_connect_device": {
+    "message": "Silakan sambungkan Ledger Anda",
+    "description": "EVM Ledger connection error"
+  },
+  "evm_ledger_unlock_device": {
+    "message": "Silakan buka kunci Ledger Anda",
+    "description": "EVM Ledger locked device error"
+  },
+  "evm_ledger_open_ethereum_app": {
+    "message": "Silakan buka Aplikasi Ethereum di Ledger Anda",
+    "description": "EVM Ledger wrong or closed app error"
+  },
+  "evm_ledger_enable_blind_signing": {
+    "message": "Harap aktifkan penandatanganan buta di pengaturan Aplikasi Ethereum di Ledger Anda",
+    "description": "EVM Ledger blind signing disabled error"
+  },
+  "evm_ledger_clear_signing_fallback_warning": {
+    "message": "Ledger penandatanganan yang jelas akan dilakukan untuk operasi token ini. Jika metadata token tidak tersedia, Ledger Anda mungkin menampilkan konfirmasi penandatanganan buta.",
+    "description": "Warning shown before signing an EVM token transaction with a Ledger"
+  },
+  "evm_ledger_unknown_error": {
+    "message": "Terjadi kesalahan Ledger yang tidak diketahui. Silakan sambungkan kembali Ledger Anda, pastikan Anda berada di Aplikasi Ethereum dan coba lagi.",
+    "description": "EVM Ledger unknown error"
   },
   "no_account_found_on_ledger_error": {
     "message": "Akun tidak ditemukan. Pastikan Anda sudah menambahkannya atau coba lagi. ",
@@ -3774,19 +4144,35 @@
     "description": "Error while trying to decode a memo with memo key in ledger"
   },
   "ledger_signing_hash": {
-    "message": "Ledger diminta menandatangani hash. Pastikan hash cocok dengan tampilan yang ada di layar Ledger Anda. ",
+    "message": "Keychain meminta Ledger menandatangani hash berikut. Pastikan sesuai dengan yang tampil di Ledger Anda. <br /> $1",
     "description": "Ledger signing hash confirmation"
   },
   "token_value": {
     "message": "Nilai total",
     "description": "Value of token in USD"
   },
+  "wallet_token_price_current": {
+    "message": "Harga saat ini",
+    "description": "Label above the token price in the wallet token detail panel"
+  },
+  "wallet_token_price_change_24h": {
+    "message": "24j",
+    "description": "Period label next to the token price change percentage"
+  },
+  "wallet_token_price_data_provided_by": {
+    "message": "Data disediakan oleh",
+    "description": "Attribution prefix before the CoinGecko link under the token price chart"
+  },
+  "wallet_token_price_unavailable": {
+    "message": "Riwayat harga tidak tersedia",
+    "description": "Shown when the token price chart has no history from the API"
+  },
   "token": {
     "message": "Token",
     "description": "Value of token in USD"
   },
   "tokens": {
-    "message": "Tokens",
+    "message": "Token",
     "description": "common use in extension referring to HE tokes"
   },
   "liquid_balance": {
@@ -3824,6 +4210,351 @@
   "portfolio_total_value_usd": {
     "message": "Nilai total:",
     "description": "portfolio main page"
+  },
+  "portfolio_section_portfolio": {
+    "message": "Portofolio"
+  },
+  "portfolio_section_buy": {
+    "message": "Beli"
+  },
+  "portfolio_section_sell": {
+    "message": "Jual"
+  },
+  "portfolio_section_swap": {
+    "message": "Menukar"
+  },
+  "portfolio_section_bridge": {
+    "message": "Menjembatani"
+  },
+  "portfolio_section_history": {
+    "message": "Riwayat"
+  },
+  "portfolio_from_asset": {
+    "message": "Dari"
+  },
+  "portfolio_to_asset": {
+    "message": "Ke"
+  },
+  "portfolio_select_asset": {
+    "message": "Pilih aset"
+  },
+  "portfolio_get_quotes": {
+    "message": "Lihat penawaran"
+  },
+  "portfolio_continue": {
+    "message": "Lanjut"
+  },
+  "portfolio_load_error": {
+    "message": "Tidak dapat memuat data portfolio."
+  },
+  "portfolio_native_execution_requires_evm": {
+    "message": "Eksekusi native memerlukan akun EVM."
+  },
+  "portfolio_chain_not_setup": {
+    "message": "Tambahkan rantai sumber ke Keychain sebelum menandatangani."
+  },
+  "portfolio_native_confirmation_message": {
+    "message": "Tinjau detail Swap di bawah, lalu tanda tangani."
+  },
+  "portfolio_provider": {
+    "message": "Penyedia"
+  },
+  "portfolio_confirmation_account": {
+    "message": "Akun"
+  },
+  "portfolio_confirmation_from": {
+    "message": "Dari"
+  },
+  "portfolio_confirmation_to": {
+    "message": "Ke"
+  },
+  "portfolio_confirmation_to_account": {
+    "message": "Ke akun"
+  },
+  "portfolio_provider_opened": {
+    "message": "Halaman penyedia dibuka di tab baru."
+  },
+  "portfolio_execution_error": {
+    "message": "Tidak dapat menjalankan penawaran ini."
+  },
+  "portfolio_api_not_configured": {
+    "message": "API Portfolio belum dikonfigurasi."
+  },
+  "portfolio_country_code": {
+    "message": "Negara"
+  },
+  "portfolio_fiat_currency": {
+    "message": "Mata uang fiat"
+  },
+  "portfolio_payment_method": {
+    "message": "Metode pembayaran (opsional)"
+  },
+  "portfolio_payment_method_none": {
+    "message": "Metode pembayaran apa saja"
+  },
+  "portfolio_provider_execution_unavailable": {
+    "message": "Penyedia ini belum bisa dijalankan dari Keychain."
+  },
+  "portfolio_quote_not_executable": {
+    "message": "Tidak dapat dijalankan di Keychain"
+  },
+  "portfolio_quote_payment_method": {
+    "message": "Metode pembayaran"
+  },
+  "portfolio_quote_kyc_never": {
+    "message": "Tanpa KYC"
+  },
+  "portfolio_quote_kyc_possible": {
+    "message": "KYC mungkin"
+  },
+  "portfolio_quote_kyc_possible_tooltip": {
+    "message": "KYC biasanya tidak diperlukan, tetapi penyedia dapat memintanya jika transaksi ini ditandai."
+  },
+  "portfolio_quote_kyc_typically_required": {
+    "message": "KYC diperlukan"
+  },
+  "portfolio_no_assets": {
+    "message": "Tidak ada saldo untuk akun ini."
+  },
+  "portfolio_no_quotes": {
+    "message": "Tidak ada penawaran saat ini."
+  },
+  "portfolio_no_quote_available": {
+    "message": "Tidak ada penawaran saat ini."
+  },
+  "portfolio_no_services_in_country": {
+    "message": "Tidak ada layanan di negara Anda."
+  },
+  "portfolio_no_history": {
+    "message": "Belum ada riwayat portfolio."
+  },
+  "portfolio_history_from": {
+    "message": "Dari"
+  },
+  "portfolio_history_to": {
+    "message": "Ke"
+  },
+  "portfolio_history_status_completed": {
+    "message": "Selesai"
+  },
+  "portfolio_history_status_failed": {
+    "message": "Gagal"
+  },
+  "portfolio_history_status_pending": {
+    "message": "Tertunda"
+  },
+  "portfolio_history_suggested_action": {
+    "message": "Tindakan disarankan"
+  },
+  "portfolio_history_failure_unknown": {
+    "message": "Kegagalan tidak terklasifikasi"
+  },
+  "portfolio_history_failure_transaction_reverted": {
+    "message": "Transaksi on-chain dibatalkan"
+  },
+  "portfolio_history_failure_slippage_exceeded": {
+    "message": "Output di bawah slippage yang diizinkan"
+  },
+  "portfolio_history_failure_insufficient_balance": {
+    "message": "Saldo token atau gas tidak cukup"
+  },
+  "portfolio_history_failure_insufficient_allowance": {
+    "message": "Allowance token terlalu rendah"
+  },
+  "portfolio_history_failure_out_of_gas": {
+    "message": "Transaksi kehabisan gas"
+  },
+  "portfolio_history_failure_expired": {
+    "message": "Penawaran atau jendela deposit kedaluwarsa"
+  },
+  "portfolio_history_failure_refunded": {
+    "message": "Penyedia mengembalikan dana yang disetor"
+  },
+  "portfolio_history_failure_bridge_failed": {
+    "message": "Rute cross-chain gagal"
+  },
+  "portfolio_history_failure_aml_review": {
+    "message": "Exchange ditahan untuk tinjauan compliance"
+  },
+  "portfolio_history_failure_amount_below_minimum": {
+    "message": "Jumlah di bawah minimum penyedia"
+  },
+  "portfolio_history_failure_canceled": {
+    "message": "Swap dibatalkan penyedia"
+  },
+  "portfolio_history_failure_slippage_refund": {
+    "message": "Dikembalikan karena batas slippage"
+  },
+  "portfolio_history_failure_funds_returned": {
+    "message": "Dana dikembalikan ke pengirim"
+  },
+  "portfolio_history_failure_manual_recovery_required": {
+    "message": "Mungkin perlu transaksi recovery manual"
+  },
+  "portfolio_history_failure_exchange_failed": {
+    "message": "Penyedia exchange melaporkan kegagalan"
+  },
+  "portfolio_history_failure_action_contact_support": {
+    "message": "Hubungi penyedia atau dukungan"
+  },
+  "portfolio_history_failure_action_retry_swap": {
+    "message": "Mulai Swap baru dengan penawaran baru"
+  },
+  "portfolio_history_failure_action_check_wallet_balance": {
+    "message": "Periksa saldo dompet dan gas"
+  },
+  "portfolio_history_failure_action_check_token_allowance": {
+    "message": "Setujui pengeluaran token lalu coba lagi"
+  },
+  "portfolio_history_failure_action_increase_slippage": {
+    "message": "Coba lagi dengan slippage lebih tinggi"
+  },
+  "portfolio_history_failure_action_wait_for_refund": {
+    "message": "Tunggu pengembalian dana tiba"
+  },
+  "portfolio_history_failure_action_check_wallet": {
+    "message": "Periksa dompet penerima untuk dana kembali"
+  },
+  "portfolio_history_failure_action_view_explorer": {
+    "message": "Periksa transaksi di block explorer"
+  },
+  "portfolio_history_failure_action_submit_recovery_transaction": {
+    "message": "Kirim transaksi recovery penyedia jika ditawarkan"
+  },
+  "portfolio_history_failure_action_create_new_exchange": {
+    "message": "Buat order exchange baru"
+  },
+  "portfolio_history_from_address": {
+    "message": "Alamat dari"
+  },
+  "portfolio_history_to_address": {
+    "message": "Alamat ke"
+  },
+  "portfolio_history_provider_reference": {
+    "message": "Referensi penyedia"
+  },
+  "portfolio_history_provider_status": {
+    "message": "Status penyedia"
+  },
+  "portfolio_history_block_explorer": {
+    "message": "Blokir penjelajah"
+  },
+  "portfolio_history_view_on_provider": {
+    "message": "Lihat di $1",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "StealthEX"
+      }
+    }
+  },
+  "portfolio_history_view_on_explorer": {
+    "message": "Lihat di block explorer"
+  },
+  "portfolio_history_tx_hash": {
+    "message": "Hash transaksi"
+  },
+  "portfolio_history_submitted_at": {
+    "message": "Dikirim"
+  },
+  "portfolio_history_updated_at": {
+    "message": "Terakhir diperbarui"
+  },
+  "portfolio_history_unknown_date": {
+    "message": "Tanggal tidak diketahui"
+  },
+  "portfolio_history_show_created_expired": {
+    "message": "Tampilkan created/expired"
+  },
+  "portfolio_history_address_filter": {
+    "message": "Alamat"
+  },
+  "portfolio_history_all_addresses": {
+    "message": "Semua alamat"
+  },
+  "portfolio_history_text_filter": {
+    "message": "Filter"
+  },
+  "portfolio_history_text_filter_placeholder": {
+    "message": "Cari riwayat"
+  },
+  "portfolio_history_no_matching_results": {
+    "message": "Tidak ada riwayat yang cocok dengan filter Anda."
+  },
+  "portfolio_page_description": {
+    "message": "Lihat saldo dan layanan portfolio tanpa ganti akun Keychain aktif."
+  },
+  "portfolio_page_description_buy": {
+    "message": "Beli crypto dengan fiat lewat penyedia on-ramp yang didukung."
+  },
+  "portfolio_page_description_sell": {
+    "message": "Jual crypto ke fiat lewat penyedia off-ramp yang didukung."
+  },
+  "portfolio_page_description_swap": {
+    "message": "Tukar token di rantai yang didukung tanpa ganti akun aktif."
+  },
+  "portfolio_page_description_history": {
+    "message": "Lacak aktivitas Beli, Jual, dan Swap akun Keychain Anda."
+  },
+  "portfolio_no_quote_available_short": {
+    "message": "Tidak ada penawaran"
+  },
+  "portfolio_account": {
+    "message": "Akun"
+  },
+  "portfolio_network": {
+    "message": "Jaringan"
+  },
+  "portfolio_all_networks": {
+    "message": "Semua network"
+  },
+  "portfolio_token": {
+    "message": "Token"
+  },
+  "portfolio_he_breakdown_liquid": {
+    "message": "likuid"
+  },
+  "portfolio_he_breakdown_staked": {
+    "message": "dipertaruhkan"
+  },
+  "portfolio_he_breakdown_delegated": {
+    "message": "delegasi"
+  },
+  "portfolio_he_breakdown_unstaking": {
+    "message": "tanpa mempertaruhkan"
+  },
+  "portfolio_he_breakdown_undelegating": {
+    "message": "tidak mendelegasikan"
+  },
+  "portfolio_he_breakdown_expand": {
+    "message": "Tampilkan detail saldo"
+  },
+  "portfolio_he_breakdown_collapse": {
+    "message": "Sembunyikan detail saldo"
+  },
+  "portfolio_actions": {
+    "message": "Aksi"
+  },
+  "portfolio_price": {
+    "message": "Harga"
+  },
+  "portfolio_value": {
+    "message": "Nilai"
+  },
+  "portfolio_mode": {
+    "message": "Mode"
+  },
+  "portfolio_status": {
+    "message": "Status"
+  },
+  "portfolio_date": {
+    "message": "Tanggal"
+  },
+  "portfolio_assets": {
+    "message": "Aset"
+  },
+  "portfolio_token_filter": {
+    "message": "Filter nama atau simbol"
   },
   "portfolio_caption_message_total_value": {
     "message": "Menampilkan total seluruh token Hive dan Hive Engine Anda termasuk(liquid, staked. in savings atau delegasi)",
@@ -3974,7 +4705,7 @@
     "description": "Operation impossible because not enough volume"
   },
   "swap_min_slippage_error": {
-    "message": "Toleransi slippage minimal 1%",
+    "message": "Slippage minimal $1%",
     "description": "Minimum slippage error"
   },
   "swap_caption": {
@@ -4058,8 +4789,8 @@
     "description": "Error message from blockchain: Posting key incorrect"
   },
   "ecosystem": {
-    "message": "Ekosistem",
-    "description": "Ecosystem"
+    "message": "DApps",
+    "description": "DApps"
   },
   "ecosystem_category_social": {
     "message": "Sosial",
@@ -4122,7 +4853,7 @@
     "description": "Message container success title"
   },
   "accept_terms_and_condition": {
-    "message": "Saya telah membaca dan menyetujui <a target='__blank' href='https://hive-keychain.com/#/terms'>Persyaratan Layanan</a> Hive Keychain serta<a target='__blank' href='https://hive-keychain.com/#/privacy'>Kebijakan Privasi</a>",
+    "message": "Saya telah membaca dan menyetujui <a target='__blank' href='https://hive-keychain.com/#/terms'>Persyaratan Layanan</a>, <a target='__blank' href='https://hive-keychain.com/#/privacy'>Kebijakan Privasi</a>, serta <a target='__blank' href='https://hive-keychain.com/#/fees'>Biaya</a> Hive Keychain",
     "description": "Accept terms and conditions text"
   },
   "delete_label": {
@@ -4345,6 +5076,14 @@
     "message": "Tambahkan kondisi baru",
     "description": "Add new condition"
   },
+  "html_popup_add_new_criteria": {
+    "message": "Tambah kriteria baru",
+    "description": "Accessible label for adding notification criteria"
+  },
+  "html_popup_delete_condition": {
+    "message": "Hapus kondisi",
+    "description": "Accessible label for deleting a notification condition"
+  },
   "html_popup_delete_criteria": {
     "message": "Hapus Kriteria",
     "description": "Delete criteria"
@@ -4390,7 +5129,7 @@
     "description": "Notification witness proxy"
   },
   "notification_account_witness_unvote": {
-    "message": "@$1 telah membatalkan pemungutan suara @$2 sebagai witness",
+    "message": "@$1 batal vote @$2 sebagai witness",
     "description": "Notification witness proxy"
   },
   "notification_delegation": {
@@ -4478,7 +5217,7 @@
     "description": "Notification fill order"
   },
   "notification_change_recovery_account": {
-    "message": "@$1 telah memenuhi pesanan dari @$2 di pasar. Membeli $3 seharga $4",
+    "message": "@$1 mengubah akun recovery ke @$2. Perubahan ini berlaku dalam 30 hari",
     "description": "Notification change recovery account"
   },
   "notification_vote": {
@@ -4510,11 +5249,207 @@
     "description": "Select all criterias"
   },
   "portfolio_fetch_progress": {
-    "message": "Mengambil data... $1/$2... Saat ini mengambil @$",
+    "message": "Mengambil data... $1/$2... Saat ini mengambil @$3",
     "description": "Portfolio fetching message"
   },
+  "html_popup_evm_add_wallet_method": {
+    "message": "Impor atau buat dompet EVM untuk menggunakannya di semua chain EVM",
+    "description": "EVM > Add wallet main page"
+  },
+  "html_popup_evm_import_wallet": {
+    "message": "Impor dari seed phrase",
+    "description": "EVM > Add wallet main page"
+  },
+  "html_popup_evm_create_wallet": {
+    "message": "Buat dompet EVM baru",
+    "description": "EVM > Add wallet main page"
+  },
+  "html_popup_evm_setup_import_text": {
+    "message": "Gunakan seed phrase berisi 12 atau 24 kata untuk mengimpor akun Anda ke Keychain<br/>",
+    "description": "EVM > Add wallet main page > Import seed phrase"
+  },
+  "html_popup_evm_seed_phrase": {
+    "message": "Seed phrase",
+    "description": "EVM > Add wallet main page > Import seed phrase"
+  },
+  "html_popup_evm_seed_phrase_placeholder": {
+    "message": "Seed phrase 12 atau 24 kata, dipisahkan dengan spasi",
+    "description": "EVM > Add wallet main page > Import seed phrase"
+  },
+  "popup_html_import_wallet_from_key": {
+    "message": "Impor dari kunci pribadi",
+    "description": "EVM > Add wallet main page > Import private key"
+  },
+  "html_popup_evm_setup_import_key_text": {
+    "message": "Masukkan kunci pribadi akun EVM yang ingin Anda impor.",
+    "description": "EVM > Add wallet main page > Import private key"
+  },
+  "evm_invalid_private_key": {
+    "message": "Kunci pribadi ini tidak valid.",
+    "description": "EVM > Add wallet main page > Import private key"
+  },
+  "html_popup_evm_invalid_mnemonic_length": {
+    "message": "Seed phrase Anda harus terdiri dari 12 atau 24 kata.",
+    "description": "EVM > Add wallet main page > Import seed phrase"
+  },
+  "html_popup_evm_invalid_mnemonic_word": {
+    "message": "Kata $1 pada seed phrase salah.",
+    "description": "EVM > Add wallet main page > Import seed phrase"
+  },
+  "html_popup_evm_invalid_mnemonic_checksum": {
+    "message": "Seed phrase ini tidak valid.",
+    "description": "EVM > Add wallet main page > Import seed phrase"
+  },
+  "html_popup_evm_choose_account": {
+    "message": "Pilih akun",
+    "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
+  },
+  "html_popup_evm_choose_account_text": {
+    "message": "Pilih akun yang ingin Anda impor ke Keychain. Anda dapat menambahkan lebih banyak lagi nanti dari dropdown akun.",
+    "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
+  },
+  "popup_html_import_wallet_from_seed": {
+    "message": "Impor dari seed",
+    "description": "Import wallet from seed phrase title"
+  },
+  "popup_html_create_new_wallet_create_seed": {
+    "message": "Buat seed phrase",
+    "description": "Create seed phrase title"
+  },
+  "html_popup_evm_create_new_wallet_title": {
+    "message": "Simpan seed phrase rahasia Anda",
+    "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
+  },
+  "html_popup_evm_create_new_wallet_import": {
+    "message": "Impor",
+    "description": "import accounts"
+  },
+  "html_popup_evm_error_select_account": {
+    "message": "Silakan pilih setidaknya satu akun",
+    "description": "EVM > Add wallet main page > Import seed phrase > Confirmation page"
+  },
+  "html_popup_chain_selector_page_title": {
+    "message": "Pilih blockchain",
+    "description": "setup blockchain page title"
+  },
+  "html_popup_chain_selector_page_caption": {
+    "message": "Pilih blockchain pertama Anda untuk membuat atau mengimpor akun. Jangan khawatir, Anda dapat menambahkan akun lainnya nanti.",
+    "description": "setup blockchain page caption"
+  },
+  "html_popup_deriving_wallets": {
+    "message": "Mendapatkan dompet",
+    "description": "Deriving wallets"
+  },
+  "html_popup_mnemonic_overlay": {
+    "message": "Pastikan tidak ada yang melihat",
+    "description": "text on overlay while creating evm account"
+  },
+  "html_popup_evm_create_wallet_caption": {
+    "message": "Tuliskan frasa pemulihan rahasia ini dan simpan di tempat yang Anda percayai dan hanya Anda yang dapat mengaksesnya",
+    "description": "evm account creation caption"
+  },
+  "html_popup_evm_12_words": {
+    "message": "12 kata",
+    "description": "12 words"
+  },
+  "html_popup_evm_24_words": {
+    "message": "24 kata",
+    "description": "24 words"
+  },
+  "html_popup_evm_create_wallet_verification_title": {
+    "message": "Verifikasi seed phrase",
+    "description": "evm account creation caption"
+  },
+  "html_popup_evm_create_wallet_verification_caption": {
+    "message": "Masukkan kata-kata Anda satu per satu. Di antara setiap kata, tekan Enter untuk memverifikasinya.",
+    "description": "evm account creation caption"
+  },
+  "html_popup_evm_create_wallet_verification_enter_word": {
+    "message": "Masukkan kata #$1",
+    "description": "label of number to enter in verification page"
+  },
+  "html_popup_evm_create_wallet_verification_verify_word_error": {
+    "message": "Kata yang salah",
+    "description": "Verify word error"
+  },
+  "html_popup_evm_create_wallet_tips": {
+    "message": "Pastikan untuk menyimpan seed phrase Anda di banyak tempat dan offline. Jika seed phrase ini hilang, Anda tidak akan dapat memulihkan akun Anda",
+    "description": "tips"
+  },
+  "html_popup_evm_create_wallet_tips1": {
+    "message": "Simpan di pengelola kata sandi",
+    "description": "tips"
+  },
+  "html_popup_evm_create_wallet_tips2": {
+    "message": "Simpan di brankas",
+    "description": "tips"
+  },
+  "html_popup_evm_create_wallet_tips3": {
+    "message": "Tulis dan simpan di beberapa tempat rahasia",
+    "description": "tips"
+  },
+  "html_popup_evm_create_wallet_display_mnemonic": {
+    "message": "Tampilkan seed phrase",
+    "description": "display seed phrase"
+  },
+  "html_popup_evm_create_wallet_hide_mnemonic": {
+    "message": "Sembunyikan seed phrase",
+    "description": "display seed phrase"
+  },
+  "html_popup_evm_hide_account": {
+    "message": "Sembunyikan akun ini",
+    "description": "hide account in acct settings"
+  },
+  "html_popup_evm_show_account": {
+    "message": "Tunjukkan akun ini",
+    "description": "show account in acct settings"
+  },
+  "html_popup_evm_create_wallet_copy_mnemonic": {
+    "message": "Salin seed phrase",
+    "description": "display seed phrase"
+  },
+  "html_popup_evm_create_wallet_copied_mnemonic": {
+    "message": "Seed phrase disalin ke papan klip",
+    "description": "display seed phrase"
+  },
+  "evm_copy_seed_phrase_password_caption": {
+    "message": "Anda akan menyalin seed phrase Anda. Demi alasan keamanan, silakan masukkan kata sandi Anda untuk melanjutkan.",
+    "description": "Prompt shown before copying an EVM seed phrase"
+  },
+  "html_popup_add_blockchain": {
+    "message": "Tambahkan rantai",
+    "description": "display seed phrase"
+  },
+  "html_popup_evm_create_wallet_copy_seed_phrase_error": {
+    "message": "Anda belum menyalin seed phrase Anda, harap salin sebelum melanjutkan",
+    "description": "Error if seed phrase not copied"
+  },
+  "html_popup_evm_create_wallet_safely_copied_seed": {
+    "message": "Saya telah menyalin seed phrase saya dengan aman dan menyimpannya di luar Keychain",
+    "description": "checkbox content on create account page"
+  },
+  "html_popup_evm_create_wallet_storage_understanding": {
+    "message": "Saya memahami bahwa Keychain tidak boleh dianggap sebagai tempat penyimpanan utama seed phrase saya",
+    "description": "checkbox content on create account page"
+  },
+  "html_popup_evm_create_wallet_condition_missing": {
+    "message": "Anda harus menerima ketentuan sebelum membuat akun.",
+    "description": "checkbox content on create account page"
+  },
+  "html_popup_evm_create_wallet_success_title": {
+    "message": "Dompet dibuat",
+    "description": "Title shown after successfully creating an EVM wallet in a detached tab"
+  },
+  "html_popup_evm_create_wallet_success_message": {
+    "message": "Dompet Anda telah berhasil dibuat dan ditambahkan ke Keychain.",
+    "description": "Message shown after successfully creating an EVM wallet in a detached tab"
+  },
+  "html_popup_evm_creating_wallet": {
+    "message": "Membuat dompet...",
+    "description": "Loading caption while creating an EVM wallet"
+  },
   "multisig_bot_two_fa_code": {
-    "message": "@$1 OTP:",
+    "message": "Kata Sandi Sekali Pakai @$1:",
     "description": "Two fa code label"
   },
   "multisig_bot_two_fa_codes": {
@@ -4537,6 +5472,370 @@
     "message": "$1%",
     "description": "Caption for download data"
   },
+  "popup_html_create_blockchain": {
+    "message": "Membuat",
+    "description": "Create blockchain button"
+  },
+  "popup_html_create_blockchain_chain_type": {
+    "message": "Tipe rantai",
+    "description": "Blockchain chain type"
+  },
+  "popup_html_create_blockchain_name": {
+    "message": "Nama",
+    "description": "Blockchain chain name"
+  },
+  "popup_html_create_blockchain_symbol": {
+    "message": "Simbol",
+    "description": "Blockchain chain symbol"
+  },
+  "popup_html_create_blockchain_logo": {
+    "message": "logo",
+    "description": "Blockchain logo"
+  },
+  "popup_html_create_blockchain_chain_id": {
+    "message": "ID Rantai",
+    "description": "Blockchain chain id"
+  },
+  "popup_html_create_blockchain_block_explorer": {
+    "message": "Blokir penjelajah",
+    "description": "Blockchain chain block explorer"
+  },
+  "popup_html_create_blockchain_main_token": {
+    "message": "Nama token utama",
+    "description": "Blockchain main token"
+  },
+  "popup_html_create_blockchain_token_hive": {
+    "message": "Hive nama token",
+    "description": "Blockchain hive token"
+  },
+  "popup_html_create_blockchain_token_hbd": {
+    "message": "HBD nama token",
+    "description": "Blockchain hbd token"
+  },
+  "popup_html_create_blockchain_token_hp": {
+    "message": "HP nama token",
+    "description": "Blockchain hp token"
+  },
+  "popup_html_evm_gas_fee_estimate_label": {
+    "message": "Memperkirakan",
+    "description": "Evm Gas fee estimate label"
+  },
+  "popup_html_evm_gas_fee_estimate_duration_label": {
+    "message": "Lamanya",
+    "description": "Evm Gas fee estimate label"
+  },
+  "popup_html_evm_gas_fee": {
+    "message": "Biaya jaringan",
+    "description": "Evm Gas fee estimate label"
+  },
+  "popup_html_evm_gas_fee_estimated": {
+    "message": "Perkiraan biaya",
+    "description": "EVM transaction result pending fee label"
+  },
+  "popup_html_evm_gas_fee_estimate_duration": {
+    "message": "~$1 detik",
+    "description": "Evm Gas fee estimate label"
+  },
+  "popup_html_evm_gas_max_fee_label": {
+    "message": "Biaya maksimal",
+    "description": "Evm Gas max fee estimate label"
+  },
+  "popup_html_evm_edit_gas_fee": {
+    "message": "Edit biaya jaringan",
+    "description": "Evm edit Gas fee label"
+  },
+  "popup_html_evm_custom_gas_fee_increased": {
+    "message": "Ditingkatkan",
+    "description": "Increased"
+  },
+  "popup_html_evm_custom_gas_fee_low": {
+    "message": "Hemat",
+    "description": "Economy gas fee tier"
+  },
+  "popup_html_evm_custom_gas_fee_medium": {
+    "message": "Pasar",
+    "description": "Market gas fee tier"
+  },
+  "popup_html_evm_custom_gas_fee_aggressive": {
+    "message": "Cepat",
+    "description": "Fast gas fee tier"
+  },
+  "popup_html_evm_custom_gas_fee_custom": {
+    "message": "Kebiasaan",
+    "description": "Custom"
+  },
+  "popup_html_evm_suggested_by_dapp_gas_fee_custom": {
+    "message": "Disarankan oleh dApp",
+    "description": "Suggest by dapp"
+  },
+  "popup_html_add_custom_blockchain": {
+    "message": "Tambahkan blockchain khusus",
+    "description": "Add custom blockchain page title"
+  },
+  "popup_html_evm_history_transfer_in": {
+    "message": "Anda menerima $1 $2 dari $3",
+    "description": "EVM history item transfer in"
+  },
+  "popup_html_evm_history_transfer_out": {
+    "message": "Anda mengirim $1 $2 ke $3",
+    "description": "EVM history item transfer out"
+  },
+  "popup_html_evm_history_loading_progression": {
+    "message": "$1 dari $2 blok diproses",
+    "description": "EVM history loading progress"
+  },
+  "popup_html_evm_gas_fee_form_base_fee": {
+    "message": "Biaya dasar maksimum per Gas (Gwei)",
+    "description": "Max base fee evm transfer"
+  },
+  "popup_html_evm_gas_fee_form_gas_price": {
+    "message": "Harga Gas (Gwei)",
+    "description": "Gas price evm transfer"
+  },
+  "popup_html_evm_gas_fee_form_priority_fee": {
+    "message": "Biaya prioritas per gas (Gwei)",
+    "description": "Evm priority fee"
+  },
+  "popup_html_evm_gas_fee_form_gas_limit": {
+    "message": "Batas Gas",
+    "description": "Evm gas limit "
+  },
+  "popup_html_evm_transfer_successful": {
+    "message": "Transfer berhasil",
+    "description": "Evm transfer"
+  },
+  "popup_html_evm_gas_fee_not_selected": {
+    "message": "Anda harus memilih biaya jaringan sebelum dapat mengonfirmasi",
+    "description": "Evm transfer"
+  },
+  "popup_html_evm_transfer_speed_up": {
+    "message": "Mempercepat",
+    "description": "Evm transfer"
+  },
+  "popup_html_evm_transfer_cancel": {
+    "message": "Membatalkan",
+    "description": "Evm transfer"
+  },
+  "popup_html_evm_transfer_status_pending": {
+    "message": "Tertunda...",
+    "description": "Evm transfer status"
+  },
+  "popup_html_evm_transfer_status_success": {
+    "message": "Kesuksesan",
+    "description": "Evm transfer status"
+  },
+  "popup_html_evm_transfer_status_failed": {
+    "message": "Gagal",
+    "description": "Evm transfer status"
+  },
+  "evm_history_operation_reverted_status": {
+    "message": "Dikembalikan",
+    "description": "Reverted EVM transaction status"
+  },
+  "popup_html_evm_transfer_status_canceling": {
+    "message": "Membatalkan...",
+    "description": "Evm transfer status"
+  },
+  "popup_html_evm_transfer_status_canceled": {
+    "message": "Dibatalkan",
+    "description": "Evm transfer status"
+  },
+  "popup_html_evm_transfer_status_speeding_up": {
+    "message": "Mempercepat...",
+    "description": "Evm transfer status"
+  },
+  "popup_html_evm_transaction_info_block_number": {
+    "message": "Nomor blok",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_info_gas_limit": {
+    "message": "Batas gas",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_info_total_fee_per_gas": {
+    "message": "Total biaya per gas",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_info_priority_fee": {
+    "message": "Biaya prioritas",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_info_gas_price": {
+    "message": "Harga Gas",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_info_to": {
+    "message": "Ke",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_info_date": {
+    "message": "Tanggal",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_info_tx_hash": {
+    "message": "Hash transaksi",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_info_from": {
+    "message": "Dari",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_info_final_gas_fee": {
+    "message": "Biaya jaringan akhir",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_speed_up_transaction": {
+    "message": "Mempercepat",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_transaction_select_fee": {
+    "message": "Pilih biaya",
+    "description": "Evm transaction info"
+  },
+  "popup_html_evm_gas_fee_loading": {
+    "message": "Memuat biaya jaringan…",
+    "description": "Shown while cancel/speed-up fee options are estimated"
+  },
+  "popup_html_evm_transaction_fee": {
+    "message": "Biaya",
+    "description": "Evm fee"
+  },
+  "popup_html_evm_history_transaction_canceled": {
+    "message": "Transaksi dibatalkan",
+    "description": "Evm history transaction canceled"
+  },
+  "popup_html_evm_history_transaction_canceled_transfer_out_details": {
+    "message": "Pembatalan transfer $1 $2 ke $3",
+    "description": "Evm history transaction canceled"
+  },
+  "popup_html_evm_custom_fee_current": {
+    "message": "Saat ini",
+    "description": "Custom fee current value"
+  },
+  "popup_html_evm_custom_fee_latest": {
+    "message": "Terkini",
+    "description": "Custom fee latest value"
+  },
+  "popup_html_evm_loading_balances": {
+    "message": "Memuat saldo",
+    "description": "Loading balances on main screen"
+  },
+  "evm_connect_wallet": {
+    "message": "Hubungkan dompet EVM",
+    "description": "Connect EVM wallet dialog title"
+  },
+  "popup_html_evm_dapp_status_connected_accounts": {
+    "message": "Akun Terhubung",
+    "description": "Evm dapp status"
+  },
+  "popup_html_evm_dapp_status_other_accounts": {
+    "message": "Akun Tidak Terhubung",
+    "description": "Evm dapp status"
+  },
+  "popup_html_evm_dapp_status_disconnect_all": {
+    "message": "Putuskan sambungan semua akun",
+    "description": "Evm dapp status"
+  },
+  "popup_html_evm_dapp_status_caption": {
+    "message": "Menghubungkan akun ke dApp ini akan memberinya izin untuk melihat alamat, saldo akun, dan aktivitas Anda, serta menyarankan transaksi untuk disetujui.",
+    "description": "Evm dapp status"
+  },
+  "popup_html_evm_dapp_status_show_all_connected": {
+    "message": "Tampilkan semua dApps yang terhubung",
+    "description": "Link from EVM dapp status popup to Connected dApps settings"
+  },
+  "popup_html_evm_dapp_status_open_details": {
+    "message": "Lihat status koneksi $1",
+    "description": "Accessible label for opening the current dApp connection status"
+  },
+  "popup_html_evm_dapp_status_connect_account": {
+    "message": "Hubungkan $1",
+    "description": "Accessible label for connecting an account to the current dApp"
+  },
+  "popup_html_evm_dapp_status_disconnect_account": {
+    "message": "Putuskan $1",
+    "description": "Accessible label for disconnecting an account from the current dApp"
+  },
+  "dialog_evm_dapp_status_caption": {
+    "message": "Pilih akun yang ingin dihubungkan ke $1. DApp dapat melihat alamat, saldo, dan aktivitas, serta menyarankan transaksi.",
+    "description": "Evm dapp status"
+  },
+  "dialog_evm_sign_request": {
+    "message": "Permintaan tanda tangan",
+    "description": "Evm Signature request dialog title"
+  },
+  "dialog_evm_sign_request_message": {
+    "message": "Pesan",
+    "description": "Evm Signature request dialog title"
+  },
+  "dialog_evm_sign_request_interacting_with": {
+    "message": "Berinteraksi dengan",
+    "description": "Evm Signature request interacting with"
+  },
+  "dialog_evm_sign_request_primary_type": {
+    "message": "Tipe utama",
+    "description": "Evm Signature request interacting with"
+  },
+  "dialog_evm_domain": {
+    "message": "Domain",
+    "description": "Evm domain"
+  },
+  "dialog_from": {
+    "message": "Dari",
+    "description": "General message"
+  },
+  "dialog_signature_request_caption": {
+    "message": "<b>$1</b> meminta Anda untuk menandatangani pesan berikut",
+    "description": "Signature request caption message"
+  },
+  "dialog_evm_sign_request_success": {
+    "message": "Pesan berhasil ditandatangani",
+    "description": "Signature request success message"
+  },
+  "dialog_evm_unsupported_method": {
+    "message": "Metode `$1` tidak didukung Keychain",
+    "description": "Evm deprecated/unsupported error message"
+  },
+  "dialog_evm_non_existing_method": {
+    "message": "Metode `$1` tidak ada",
+    "description": "Evm non existing error message"
+  },
+  "dialog_evm_not_authorized_method": {
+    "message": "Metode `$1` tidak memiliki otorisasi",
+    "description": "Evm non existing error message"
+  },
+  "dialog_evm_user_rejected_method": {
+    "message": "Permintaan ditolak oleh pengguna",
+    "description": "Evm deprecated/unsupported error message"
+  },
+  "dialog_evm_get_encryption_key": {
+    "message": "$1 mencoba mengakses kunci enkripsi Anda. Izinkan?",
+    "description": "Evm get encryption key message"
+  },
+  "dialog_evm_get_encryption_key_success": {
+    "message": "Kunci enkripsi berhasil dibagikan",
+    "description": "Evm get encryption key success"
+  },
+  "dialog_evm_decrypt_message_success": {
+    "message": "Pesan berhasil didekripsi",
+    "description": "Evm decrypt message success"
+  },
+  "dialog_evm_decrypt_message_caption": {
+    "message": "$1 mencoba mendekripsi pesan.",
+    "description": "Evm decrypt message caption"
+  },
+  "dialog_evm_decrypt_message_title": {
+    "message": "Dekripsi pesan",
+    "description": "Evm decrypt message title"
+  },
+  "dialog_evm_decrypt_show_message": {
+    "message": "Tampilkan pesan",
+    "description": "Evm decrypt message show button"
+  },
+  "dialog_evm_decrypt_send_transaction_title": {
+    "message": "Kirim transaksi",
+    "description": "Evm send transaction title"
+  },
   "popup_html_transaction_metadata": {
     "message": " Metadata transaksi",
     "description": "Transaction metadata"
@@ -4553,8 +5852,2669 @@
     "message": "OTP Anda sudah pernah digunakan. Silakan gunakan OTP terbaru yang dikirim.",
     "description": "Error message if otp has been used already"
   },
+  "dialog_evm_decrypt_request_permission_title": {
+    "message": "Minta izin",
+    "description": "Request permission dialog title"
+  },
+  "dialog_evm_get_encryption_key_title": {
+    "message": "Minta kunci enkripsi",
+    "description": "Request encryption key dialog title"
+  },
+  "dialog_evm_sign_data_title": {
+    "message": "Minta tanda tangan data",
+    "description": "Request sign typed data dialog title"
+  },
+  "evm_operation_transfer": {
+    "message": "Transfer",
+    "description": "Evm transaction operation : transfer"
+  },
+  "evm_operation_approve": {
+    "message": "Menyetujui",
+    "description": "Evm transaction operation : approve"
+  },
+  "evm_operation_unlimited_approval": {
+    "message": "Persetujuan tak terbatas",
+    "description": "Evm transaction operation : unlimited token approval"
+  },
+  "evm_operation_revoke_operator": {
+    "message": "Cabut operator",
+    "description": "Evm transaction operation : revoke NFT operator"
+  },
+  "evm_operation_approve_nft": {
+    "message": "Setujui NFT",
+    "description": "Evm transaction operation : approve one NFT"
+  },
+  "evm_warning_unlimited_approval": {
+    "message": "Ini mengizinkan $1 membelanjakan jumlah $2 tanpa batas.",
+    "description": "Warning when a token approval is unlimited"
+  },
+  "evm_warning_approve_operator": {
+    "message": "Ini mengizinkan $1 memindahkan semua NFT di $2.",
+    "description": "Warning when an NFT operator approval is granted"
+  },
+  "evm_spending_permission_token": {
+    "message": "Token",
+    "description": "Token field on a spending permission confirmation"
+  },
+  "evm_operation_transferFrom": {
+    "message": "Transfer dari",
+    "description": "Evm transaction operation : transfer from"
+  },
+  "evm_operation_safeTransferFrom": {
+    "message": "Transfer aman dari",
+    "description": "Evm transaction operation : safe transfer from"
+  },
+  "evm_operation_to": {
+    "message": "Ke",
+    "description": "Evm transaction operation field to"
+  },
+  "evm_operation_spender": {
+    "message": "Pemboros",
+    "description": "Evm transaction operation field spender (ERC-20 approve)"
+  },
+  "evm_operation_from": {
+    "message": "Dari",
+    "description": "Evm transaction operation field from"
+  },
+  "evm_operation_amount": {
+    "message": "Jumlah",
+    "description": "Evm transaction operation field amount"
+  },
+  "evm_operation_smart_contract_address": {
+    "message": "Kontrak cerdas",
+    "description": "Evm smart contract address"
+  },
+  "evm_operation_action": {
+    "message": "Tindakan",
+    "description": "Evm smart contract action"
+  },
+  "evm_balance_change_title": {
+    "message": "Keseimbangan",
+    "description": "Confirmation page balance change panel"
+  },
+  "evm_balance_before": {
+    "message": "Sebelum :",
+    "description": "Balance before transaction"
+  },
+  "evm_balance_after": {
+    "message": "Setelah :",
+    "description": "Balance after transaction"
+  },
+  "evm_transaction_transaction_has_warning": {
+    "message": "Transaksi ini masih punya peringatan. Selesaikan semuanya sebelum lanjut",
+    "description": "Potential scam warning message"
+  },
+  "evm_transaction_warning_possible_scam": {
+    "message": "Alamat ini tercatat sebagai potensi penipuan",
+    "description": "Potential scam warning message"
+  },
+  "evm_send_transaction_ignore_warning": {
+    "message": "Lanjutkan saja",
+    "description": "Acknowledge warning and continue"
+  },
+  "evm_risk_banner_message": {
+    "message": "$1 masalah keamanan — risiko tertinggi: $2. Ketuk untuk meninjau.",
+    "description": "Clickable risk banner on EVM confirmation pages"
+  },
+  "evm_risk_severity_high": {
+    "message": "Kritis",
+    "description": "High severity warning label"
+  },
+  "evm_risk_severity_medium": {
+    "message": "Peringatan",
+    "description": "Medium severity warning label"
+  },
+  "evm_risk_severity_low": {
+    "message": "Pemberitahuan",
+    "description": "Low severity warning label"
+  },
+  "evm_risk_banner_review": {
+    "message": "Tinjau peringatan",
+    "description": "CTA on the risk alert banner"
+  },
+  "evm_risk_modal_title_high": {
+    "message": "Masalah keamanan kritis",
+    "description": "Title for high severity warning modal"
+  },
+  "evm_risk_modal_title_medium": {
+    "message": "Peringatan keamanan",
+    "description": "Title for medium severity warning modal"
+  },
+  "evm_risk_modal_title_low": {
+    "message": "Pemberitahuan keamanan",
+    "description": "Title for low severity warning modal"
+  },
+  "evm_risk_warning_reviewed": {
+    "message": "Ditinjau",
+    "description": "Label shown when a warning was acknowledged"
+  },
+  "evm_protocol_not_secured": {
+    "message": "Situs ini tidak memakai koneksi aman",
+    "description": "Connection not secured"
+  },
+  "evm_operation_contract_deployment_transaction": {
+    "message": "Penerapan kontrak pintar",
+    "description": "Smart contract deployment transcation title"
+  },
+  "evm_contract_deployment_transaction_caption": {
+    "message": "Anda menerapkan kontrak pintar",
+    "description": "Smart contract deployment transcation caption"
+  },
+  "evm_smart_contract_data": {
+    "message": "Data",
+    "description": "Smart contract data field"
+  },
+  "evm_transaction_data": {
+    "message": "Data",
+    "description": "Data field"
+  },
+  "evm_send_transaction_success": {
+    "message": "Transaksi berhasil disiarkan",
+    "description": "SuccesFully sent evm transaction"
+  },
+  "evm_send_transaction_failed": {
+    "message": "Transaksi gagal saat disiarkan",
+    "description": "Failed transaction"
+  },
+  "evm_transaction_domain_blacklisted": {
+    "message": "Domain ini ditandai karena perilaku mencurigakan",
+    "description": "Domain is blacklisted"
+  },
+  "evm_transaction_domain_fuzzy": {
+    "message": "Domain ini sangat mirip $1. Pastikan Anda di situs yang benar",
+    "description": "Domain is blacklisted"
+  },
+  "evm_transaction_domain_phishing": {
+    "message": "Situs ini ditandai sebagai potensi phishing",
+    "description": "Domain flagged by light-node security"
+  },
+  "evm_security_reason_blacklist_doubt": {
+    "message": "Alamat ini ditandai karena risiko blacklist",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_blackmail_activities": {
+    "message": "Alamat ini terkait aktivitas pemerasan",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_cybercrime": {
+    "message": "Alamat ini terkait kejahatan siber",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_darkweb_transactions": {
+    "message": "Alamat ini terkait transaksi dark web",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_fake_kyc": {
+    "message": "Alamat ini terkait aktivitas KYC palsu",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_fake_token": {
+    "message": "Alamat ini terkait token palsu",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_financial_crime": {
+    "message": "Alamat ini terkait kejahatan keuangan",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_gas_abuse": {
+    "message": "Alamat ini terkait penyalahgunaan gas",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_honeypot_related_address": {
+    "message": "Alamat ini terkait aktivitas honeypot",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_malicious_mining_activities": {
+    "message": "Alamat ini terkait penambangan berbahaya",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_mixer": {
+    "message": "Alamat ini terkait mixer",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_money_laundering": {
+    "message": "Alamat ini terkait pencucian uang",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_phishing_activities": {
+    "message": "Alamat ini terkait aktivitas phishing",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_grouped_address_risk": {
+    "message": "Alamat ini ditandai karena risiko keamanan",
+    "description": "Grouped light-node address security summary"
+  },
+  "evm_security_reason_grouped_domain_risk": {
+    "message": "Situs ini ditandai karena risiko keamanan",
+    "description": "Grouped light-node domain security summary"
+  },
+  "evm_security_warning_show_details": {
+    "message": "Tampilkan detail",
+    "description": "Expand grouped security warning reasons"
+  },
+  "evm_security_warning_hide_details": {
+    "message": "Sembunyikan detail",
+    "description": "Collapse grouped security warning reasons"
+  },
+  "evm_security_reason_rug_pull": {
+    "message": "Permintaan menipu ke kontrak rug-pull yang dikenal",
+    "description": "Light-node rug-pull summary when isRugPull is true"
+  },
+  "evm_security_reason_rug_pull_privilege_withdraw": {
+    "message": "Kontrak ini dapat menarik dana Anda.",
+    "description": "Light-node GoPlus rug-pull reason"
+  },
+  "evm_security_reason_rug_pull_withdraw_missing": {
+    "message": "Orang lain bisa setor, tapi penarikan bisa diblokir.",
+    "description": "Light-node GoPlus rug-pull reason"
+  },
+  "evm_security_reason_rug_pull_blacklist": {
+    "message": "Kontrak ini dapat mem-blacklist wallet dan memblokir jual/transfer.",
+    "description": "Light-node GoPlus rug-pull reason"
+  },
+  "evm_security_reason_rug_pull_selfdestruct": {
+    "message": "Kontrak ini dapat self-destruct dan merusak fungsi token.",
+    "description": "Light-node GoPlus rug-pull reason"
+  },
+  "evm_security_reason_rug_pull_approval_abuse": {
+    "message": "Kontrak ini dapat menyalahgunakan approval untuk memindahkan dana.",
+    "description": "Light-node GoPlus rug-pull reason"
+  },
+  "evm_security_reason_reinit": {
+    "message": "Alamat ini ditandai karena inisialisasi ulang yang mencurigakan",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_sanctioned": {
+    "message": "Alamat ini ada di daftar sanksi",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_stealing_attack": {
+    "message": "Alamat ini terkait serangan pencurian",
+    "description": "Light-node address security reason"
+  },
+  "evm_security_reason_scamsniffer_blacklist": {
+    "message": "Ini ditandai oleh blacklist ScamSniffer",
+    "description": "Light-node security reason"
+  },
+  "evm_security_reason_phishing_site": {
+    "message": "Situs ini ditandai sebagai situs phishing",
+    "description": "Light-node domain security reason"
+  },
+  "evm_security_reason_address_risk": {
+    "message": "Situs ini ditandai karena risiko alamat: $1",
+    "description": "Light-node domain security reason with dynamic risk value"
+  },
+  "evm_security_reason_nft_risk": {
+    "message": "Situs ini ditandai karena risiko NFT: $1",
+    "description": "Light-node domain security reason with dynamic NFT risk key"
+  },
+  "evm_security_reason_unknown": {
+    "message": "Risiko keamanan terdeteksi: $1",
+    "description": "Fallback light-node security reason"
+  },
+  "evm_transaction_receiver_blacklisted": {
+    "message": "Alamat ini ditandai karena perilaku mencurigakan",
+    "description": "Receiver is blacklisted"
+  },
+  "evm_transaction_receiver_malicious": {
+    "message": "Alamat ini ditandai sebagai berbahaya",
+    "description": "Receiver flagged by light-node address security"
+  },
+  "evm_transaction_warning_high_level_bypass_message": {
+    "message": "Saya tahu risikonya",
+    "description": "Checkbox message to bypass warning"
+  },
+  "evm_transaction_receiver_not_whitelisted": {
+    "message": "Alamat ini belum di-whitelist di Keychain",
+    "description": "Checkbox message to bypass warning"
+  },
+  "evm_transaction_receiver_favorite_label": {
+    "message": "Nama panggilan",
+    "description": "Nickname for address"
+  },
+  "evm_transaction_receiver_potential_spoofing_whitelisted": {
+    "message": "Alamat ini mirip alamat whitelist $1 dan bisa jadi address poisoning. Periksa alamatnya.",
+    "description": "potential spoofing warning"
+  },
+  "evm_transaction_receiver_potential_spoofing_local_accounts": {
+    "message": "Alamat ini mirip alamat Anda $1 dan bisa jadi address poisoning. Periksa alamatnya.",
+    "description": "potential spoofing warning"
+  },
+  "evm_transaction_contract_use_proxy": {
+    "message": "Kontrak ini adalah proxy",
+    "description": "Smart contract uses a proxy"
+  },
+  "evm_transaction_contract_already_used": {
+    "message": "Anda sudah me-whitelist smart contract ini",
+    "description": "Already used"
+  },
+  "evm_transaction_contract_not_used": {
+    "message": "Smart contract ini belum di-whitelist",
+    "description": "Not used yet"
+  },
+  "evm_transaction_contract_honeypot": {
+    "message": "Token ini ditandai sebagai potensi honeypot",
+    "description": "Token honeypot warning from GoPlus"
+  },
+  "evm_transaction_contract_cannot_sell": {
+    "message": "Token ini mungkin tidak dapat dijual",
+    "description": "Token cannot sell all warning from GoPlus"
+  },
+  "evm_transaction_contract_high_tax": {
+    "message": "Token ini punya pajak beli atau jual yang tinggi",
+    "description": "Token high tax warning from GoPlus"
+  },
+  "evm_transaction_contract_rug_pull": {
+    "message": "Kontrak ini ditandai karena risiko rug-pull",
+    "description": "Rug pull warning from GoPlus"
+  },
+  "evm_transaction_nft_restricted_approval": {
+    "message": "Koleksi NFT ini punya risiko approval terbatas",
+    "description": "NFT restricted approval warning from GoPlus"
+  },
+  "evm_transaction_nft_transfer_without_approval": {
+    "message": "Koleksi NFT ini mungkin izinkan transfer tanpa approval",
+    "description": "NFT transfer without approval warning from GoPlus"
+  },
+  "evm_domain_never_visited": {
+    "message": "Ini tampaknya kunjungan pertama Anda ke domain ini",
+    "description": "Domain never visited warning message"
+  },
+  "evm_sign_typed_data_message": {
+    "message": "Pesan",
+    "description": "Sign typed data message"
+  },
+  "evm_sign_typed_data_message_primary_type": {
+    "message": "Tipe primer",
+    "description": "Sign typed data message primary type"
+  },
+  "evm_chain_id": {
+    "message": "Id Rantai",
+    "description": "evm chain id"
+  },
+  "evm_chain": {
+    "message": "Rantai",
+    "description": "evm chain"
+  },
+  "evm_domain_name": {
+    "message": "Nama",
+    "description": "evm domain name"
+  },
+  "evm_domain_version": {
+    "message": "Versi",
+    "description": "evm domain version"
+  },
+  "evm_target_account": {
+    "message": "Akun",
+    "description": "evm targeted account "
+  },
+  "evm_raw_data": {
+    "message": "Data mentah",
+    "description": "evm raw data "
+  },
+  "evm_main_token_amount": {
+    "message": "Jumlah token utama",
+    "description": "Main token amount evm"
+  },
+  "evm_access_list": {
+    "message": "Daftar akses",
+    "description": "Evm access list"
+  },
+  "evm_access_list_caption_message": {
+    "message": "Transaksi ini menggunakan access list. Anda tidak dapat memilih biaya jaringan karena access list akan mencoba mengoptimalkan biaya transaksi",
+    "description": "Evm access list caption message"
+  },
+  "evm_ens_recipient_not_existing": {
+    "message": "ENS ini sepertinya tidak terhubung ke dompet",
+    "description": "Evm ens not matching"
+  },
+  "evm_warning": {
+    "message": "Peringatan",
+    "description": "Evm warning"
+  },
+  "evm_warning_possible_duplicated_transaction_title": {
+    "message": "Kemungkinan duplikat",
+    "description": "Possible duplicated malicious transaction title"
+  },
+  "evm_warning_possible_duplicated_transaction": {
+    "message": "Transaksi ini mirip dengan yang sudah Anda proses. Bisa jadi berbahaya.",
+    "description": "Possible duplicated malicious transaction"
+  },
+  "evm_warning_possible_duplicated_transaction_sent_at": {
+    "message": "Dikirim pada $1",
+    "description": "Possible duplicated malicious transaction sent on"
+  },
+  "evm_warning_eip7702_title": {
+    "message": "Tindakan ini dapat memberi kontrak lain kendali atas wallet Anda",
+    "description": "EIP-7702 warning title"
+  },
+  "evm_warning_eip7702_message": {
+    "message": "Tindakan ini dapat memberi kontrak lain kendali atas wallet Anda. Hati-hati, dana bisa hilang.",
+    "description": "EIP-7702 warning message"
+  },
+  "evm_too_many_transaction_button": {
+    "message": "Blokir aplikasi ini selama $1 menit",
+    "description": "Label for block dapp button"
+  },
+  "evm_all_nft_collections": {
+    "message": "Semua koleksi NFT",
+    "description": "All nft collections"
+  },
+  "evm_nft_token_id": {
+    "message": "ID Token",
+    "description": "NFT token id"
+  },
+  "evm_nft_approve_all": {
+    "message": "Setujui Semua",
+    "description": "NFT approve all value"
+  },
+  "evm_nft_number_of_tokens": {
+    "message": "Jumlah Token",
+    "description": "NFT number of tokens"
+  },
+  "evm_nft_token_type": {
+    "message": "Jenis token",
+    "description": "Token type"
+  },
+  "global_other": {
+    "message": "Lainnya",
+    "description": "Global word"
+  },
+  "evm_tab_tokens": {
+    "message": "Token",
+    "description": "Tokens tab"
+  },
+  "evm_tab_nfts": {
+    "message": "NFTs",
+    "description": "NFTs tab"
+  },
+  "evm_tab_history": {
+    "message": "Sejarah",
+    "description": "History tab"
+  },
+  "evm_menu_contacts": {
+    "message": "Alamat",
+    "description": "Addresses menu item"
+  },
+  "evm_menu_custom_chains": {
+    "message": "Kelola rantai",
+    "description": "EVM settings: chain management"
+  },
+  "evm_menu_dapps_connections": {
+    "message": "Terhubung dApps",
+    "description": "EVM settings: connected dapps"
+  },
+  "evm_dapps_connections_empty": {
+    "message": "Belum ada dApp yang terhubung.",
+    "description": "Empty state for EVM dapps connections page"
+  },
+  "evm_dapps_connections_unknown_account": {
+    "message": "Akun tidak dikenal",
+    "description": "Fallback label for an EVM dapp connection address that is not in the local wallet"
+  },
+  "evm_dapps_connections_addresses_option": {
+    "message": "Alamat",
+    "description": "Option to manage connected addresses for an EVM dapp"
+  },
+  "evm_dapps_connections_chains_option": {
+    "message": "Rantai",
+    "description": "Option to manage allowed chains for an EVM dapp"
+  },
+  "evm_dapps_connections_chains_caption": {
+    "message": "Rantai yang diizinkan mengizinkan aktivitas permintaan dApp ini di jaringan yang dipilih.",
+    "description": "Caption for EVM dapp allowed chains popup"
+  },
+  "evm_dapps_connections_allowed_chains": {
+    "message": "Rantai yang Diizinkan",
+    "description": "Title for EVM dapp allowed chains list"
+  },
+  "evm_dapps_connections_unknown_chain": {
+    "message": "Rantai tidak diketahui",
+    "description": "Fallback label for an EVM dapp allowed chain missing local metadata"
+  },
+  "evm_dapps_connections_no_chains": {
+    "message": "Tidak ada rantai yang diizinkan.",
+    "description": "Empty state for an EVM dapp allowed chains popup"
+  },
+  "evm_dapps_connections_remove_all_chains": {
+    "message": "Hapus semua rantai",
+    "description": "Button label to remove every allowed chain for an EVM dapp"
+  },
+  "evm_custom_chains_caption": {
+    "message": "Rantai khusus memiliki dukungan terbatas. Fitur seperti penemuan token dan pemuatan riwayat otomatis mungkin tidak tersedia.",
+    "description": "Custom chains info caption"
+  },
+  "evm_custom_chains_delete": {
+    "message": "Menghapus",
+    "description": "Remove an added custom EVM chain"
+  },
+  "evm_custom_chains_delete_confirm": {
+    "message": "Hapus \"$1\" dari rantai khusus Anda? Hal ini tidak dapat dibatalkan.",
+    "description": "Confirmation before deleting a custom EVM chain; $1 is the chain name"
+  },
+  "evm_custom_chains_add": {
+    "message": "Tambahkan rantai khusus",
+    "description": "Button to add a custom EVM chain"
+  },
+  "evm_custom_chains_modal_title": {
+    "message": "Tambahkan rantai khusus",
+    "description": "Modal title for adding custom chain"
+  },
+  "evm_custom_chains_modal_title_edit": {
+    "message": "Edit rantai khusus",
+    "description": "Modal title for editing a custom chain"
+  },
+  "evm_custom_chains_modal_title_edit_default": {
+    "message": "Edit rantai yang didukung",
+    "description": "Modal title for editing a supported default EVM chain"
+  },
+  "evm_custom_chains_update_rpc": {
+    "message": "Perbarui RPCs",
+    "description": "Link from the edit-chain popup to the network page for this chain"
+  },
+  "evm_custom_chains_update": {
+    "message": "Simpan perubahan",
+    "description": "Save button when editing custom chain"
+  },
+  "evm_custom_chains_reset_default": {
+    "message": "Atur ulang ke default",
+    "description": "Button label to reset a supported EVM chain override"
+  },
+  "evm_custom_chains_error_not_found": {
+    "message": "Rantai khusus ini tidak dapat ditemukan. Coba segarkan daftarnya.",
+    "description": "When update targets a missing custom chain"
+  },
+  "evm_custom_chains_empty": {
+    "message": "Belum ada rantai khusus. Tambahkan satu untuk menyambung ke rantai yang tidak ada dalam daftar default.",
+    "description": "Empty state for custom chains list"
+  },
+  "evm_custom_chains_field_name": {
+    "message": "Nama rantai",
+    "description": "Custom chain form field"
+  },
+  "evm_custom_chains_field_chain_id": {
+    "message": "ID Rantai",
+    "description": "Custom chain form field"
+  },
+  "evm_custom_chains_field_symbol": {
+    "message": "Simbol mata uang",
+    "description": "Custom chain form field"
+  },
+  "evm_custom_chains_field_default_tx_type": {
+    "message": "Jenis transaksi bawaan",
+    "description": "Custom chain form: EIP-1559 / legacy / etc."
+  },
+  "evm_custom_chains_tx_type_legacy": {
+    "message": "Warisan (tipe 0)",
+    "description": "EvmTransactionType"
+  },
+  "evm_custom_chains_tx_type_eip155": {
+    "message": "EIP-155 (tipe 1)",
+    "description": "EvmTransactionType"
+  },
+  "evm_custom_chains_tx_type_eip1559": {
+    "message": "EIP-1559 (tipe 2)",
+    "description": "EvmTransactionType"
+  },
+  "evm_custom_chains_tx_type_eip4844": {
+    "message": "EIP-4844 (tipe 3)",
+    "description": "EvmTransactionType"
+  },
+  "evm_custom_chains_tx_type_eip7702": {
+    "message": "EIP-7702 (tipe 4)",
+    "description": "EvmTransactionType"
+  },
+  "evm_custom_chains_field_rpc": {
+    "message": "RPC URL",
+    "description": "Custom chain form section (one or more endpoints)"
+  },
+  "evm_custom_chains_field_rpc_placeholder": {
+    "message": "https://…",
+    "description": "Placeholder for RPC URL inputs"
+  },
+  "evm_custom_chains_add_rpc": {
+    "message": "Tambahkan URL RPC lainnya",
+    "description": "Add another RPC row in custom chain form"
+  },
+  "evm_custom_chains_remove_rpc": {
+    "message": "Menghapus",
+    "description": "Remove an RPC row in custom chain form"
+  },
+  "evm_custom_chains_field_explorer": {
+    "message": "Blokir URL penjelajah (opsional)",
+    "description": "Custom chain form field"
+  },
+  "evm_custom_chains_field_logo": {
+    "message": "URL Logo (opsional)",
+    "description": "Custom chain form field"
+  },
+  "evm_custom_chains_field_testnet": {
+    "message": "Ini adalah jaringan pengujian",
+    "description": "Custom chain form checkbox"
+  },
+  "evm_custom_chains_save": {
+    "message": "Simpan rantai",
+    "description": "Save custom chain button"
+  },
+  "evm_custom_chains_error_name": {
+    "message": "Silakan masukkan nama rantai.",
+    "description": "Custom chain validation"
+  },
+  "evm_custom_chains_error_symbol": {
+    "message": "Silakan masukkan simbol mata uang.",
+    "description": "Custom chain validation"
+  },
+  "evm_custom_chains_error_rpc": {
+    "message": "Harap masukkan setidaknya satu URL HTTP atau HTTPS RPC yang valid.",
+    "description": "Custom chain validation"
+  },
+  "evm_custom_chains_error_rpc_duplicate": {
+    "message": "Setiap URL RPC harus unik.",
+    "description": "Custom chain validation duplicate RPC"
+  },
+  "evm_custom_chains_error_rpc_unreachable": {
+    "message": "Kami tidak dapat menjangkau setiap RPC. Setiap URL harus merespons JSON-RPC (misalnya eth_blockNumber) melalui HTTP atau HTTPS. Perbaiki atau hapus titik akhir yang gagal dan coba lagi.",
+    "description": "Custom chain save: an RPC check failed"
+  },
+  "evm_custom_chains_error_chain_id": {
+    "message": "Silakan masukkan ID rantai yang valid (desimal atau 0x hex).",
+    "description": "Custom chain validation"
+  },
+  "evm_custom_chains_error_duplicate": {
+    "message": "Rantai khusus dengan ID ini telah ditambahkan.",
+    "description": "Custom chain validation"
+  },
+  "evm_custom_chains_error_default_exists": {
+    "message": "Rantai ini sudah tersedia sebagai rantai default. Aktifkan dari daftar rantai saja.",
+    "description": "Custom chain validation"
+  },
+  "evm_custom_chains_error_generic": {
+    "message": "Tidak dapat menyimpan rantai ini. Silakan periksa entri Anda dan coba lagi.",
+    "description": "Custom chain generic error"
+  },
+  "evm_custom_chains_chainlist_found": {
+    "message": "Rantai yang cocok ditemukan di daftar rantai publik (ChainList.org).",
+    "description": "When chain ID matches ChainList.org data for add-custom-chain form"
+  },
+  "evm_custom_chains_chainlist_preload_link": {
+    "message": "Muat detail ke dalam formulir",
+    "description": "Button to prefill add-custom-chain form from ChainList.org"
+  },
+  "evm_custom_chains_chainlist_looking_up": {
+    "message": "Mencari data rantai publik…",
+    "description": "While ChainList.org data is being fetched for the chain ID"
+  },
+  "evm_custom_chains_rpc_collapsed_summary": {
+    "message": "$1 RPC URL",
+    "description": "Collapsed RPC panel after ChainList preload; $1 is the number of endpoints"
+  },
+  "evm_menu_advanced": {
+    "message": "Canggih",
+    "description": "Evm Advanced menu"
+  },
+  "evm_menu_rpc_node": {
+    "message": "RPC Simpul",
+    "description": "Evm RPC node menu"
+  },
+  "evm_menu_security": {
+    "message": "Keamanan",
+    "description": "Evm Security menu"
+  },
+  "evm_menu_provider_compatibility": {
+    "message": "Kompatibilitas penyedia",
+    "description": "Evm provider compatibility menu"
+  },
+  "evm_menu_advanced_smart_contracts": {
+    "message": "Kontrak Cerdas",
+    "description": "Evm Advanced smart contracts"
+  },
+  "evm_provider_compatibility_prefer_title": {
+    "message": "Lebih suka Keychain daripada dApps lama",
+    "description": "Evm provider compatibility legacy preference title"
+  },
+  "evm_provider_compatibility_prefer_hint": {
+    "message": "Prioritaskan penggunaan Keychain dibandingkan dompet lain di situs web yang tidak mencantumkan semua dompet yang tersedia.",
+    "description": "Evm provider compatibility legacy preference hint"
+  },
+  "evm_provider_compatibility_warning": {
+    "message": "Hal ini dapat menimbulkan konflik dengan dompet terpasang lainnya yang juga mencoba mengontrol penyedia lama.",
+    "description": "Evm provider compatibility warning"
+  },
+  "evm_provider_compatibility_reload_note": {
+    "message": "Muat ulang tab dApp yang terbuka setelah mengubah pengaturan ini sehingga situs web mengambil pesanan penyedia baru.",
+    "description": "Evm provider compatibility reload note"
+  },
+  "evm_menu_advanced_smart_contracts_display_spam_title": {
+    "message": "Tampilkan kemungkinan spam",
+    "description": "Evm Advanced smart contract display possible spam option title"
+  },
+  "evm_menu_advanced_smart_contracts_display_spam_hint": {
+    "message": "Keychain akan menampilkan kontrak pintar yang mungkin ditandai sebagai spam",
+    "description": "Evm Advanced smart contract display possible spam option hint"
+  },
+  "evm_menu_advanced_smart_contracts_display_non_verified_title": {
+    "message": "Tampilan tidak terverifikasi",
+    "description": "Evm Advanced smart contract display non verified option hint"
+  },
+  "evm_menu_advanced_smart_contracts_display_non_verified_hint": {
+    "message": "Keychain akan menampilkan semua kontrak pintar yang belum diverifikasi",
+    "description": "Evm Advanced smart contract display non verified option title"
+  },
+  "evm_nft_transfer": {
+    "message": "NFT Pemindahan",
+    "description": "Nft transfer page title"
+  },
+  "evm_nft_transfer_address": {
+    "message": "Alamat",
+    "description": "NFT Address"
+  },
+  "evm_history_op_native_send": {
+    "message": "Transfer",
+    "description": "EVM light-node history: page title for NATIVE_SEND (native token)"
+  },
+  "evm_history_op_native_receive": {
+    "message": "Transfer",
+    "description": "EVM light-node history: page title for NATIVE_RECEIVE (native token)"
+  },
+  "evm_history_op_erc20_send": {
+    "message": "Transfer",
+    "description": "EVM light-node history: page title for ERC20_SEND (ERC-20)"
+  },
+  "evm_history_op_erc20_receive": {
+    "message": "Transfer",
+    "description": "EVM light-node history: page title for ERC20_RECEIVE (ERC-20)"
+  },
+  "evm_history_op_erc20_approve": {
+    "message": "Menyetujui",
+    "description": "EVM light-node history: page title for ERC20_APPROVE (ERC-20)"
+  },
+  "evm_history_op_erc20_mint": {
+    "message": "daun mint",
+    "description": "EVM light-node history: page title for ERC20_MINT (ERC-20)"
+  },
+  "evm_history_op_erc20_burn": {
+    "message": "Membakar",
+    "description": "EVM light-node history: page title for ERC20_BURN (ERC-20)"
+  },
+  "evm_history_op_erc721_send": {
+    "message": "Transfer",
+    "description": "EVM light-node history: page title for ERC721_SEND (ERC-721)"
+  },
+  "evm_history_op_erc721_receive": {
+    "message": "Transfer",
+    "description": "EVM light-node history: page title for ERC721_RECEIVE (ERC-721)"
+  },
+  "evm_history_op_erc721_approve": {
+    "message": "Menyetujui",
+    "description": "EVM light-node history: page title for ERC721_APPROVE (ERC-721)"
+  },
+  "evm_history_op_erc721_approve_for_all": {
+    "message": "Setujui untuk semua",
+    "description": "EVM light-node history: page title for ERC721_APPROVE_FOR_ALL (ERC-721)"
+  },
+  "evm_history_op_erc721_mint": {
+    "message": "daun mint",
+    "description": "EVM light-node history: page title for ERC721_MINT (ERC-721)"
+  },
+  "evm_history_op_erc721_burn": {
+    "message": "Membakar",
+    "description": "EVM light-node history: page title for ERC721_BURN (ERC-721)"
+  },
+  "evm_history_op_erc1155_send": {
+    "message": "Transfer",
+    "description": "EVM light-node history: page title for ERC1155_SEND (ERC-1155)"
+  },
+  "evm_history_op_erc1155_receive": {
+    "message": "Transfer",
+    "description": "EVM light-node history: page title for ERC1155_RECEIVE (ERC-1155)"
+  },
+  "evm_history_op_erc1155_approve_for_all": {
+    "message": "Setujui untuk semua",
+    "description": "EVM light-node history: page title for ERC1155_APPROVE_FOR_ALL (ERC-1155)"
+  },
+  "evm_history_op_erc1155_mint": {
+    "message": "daun mint",
+    "description": "EVM light-node history: page title for ERC1155_MINT (ERC-1155)"
+  },
+  "evm_history_op_erc1155_burn": {
+    "message": "Membakar",
+    "description": "EVM light-node history: page title for ERC1155_BURN (ERC-1155)"
+  },
+  "evm_history_op_swap": {
+    "message": "Menukar",
+    "description": "EVM light-node history: page title for SWAP"
+  },
+  "evm_history_op_airdrop_receive": {
+    "message": "tetesan udara",
+    "description": "EVM light-node history: page title for AIRDROP_RECEIVE (airdrop / incoming tokens)"
+  },
+  "evm_history_op_contract_call": {
+    "message": "Panggilan kontrak",
+    "description": "EVM light-node history: page title for CONTRACT_CALL"
+  },
+  "evm_history_op_contract_deploy": {
+    "message": "Penyebaran kontrak",
+    "description": "EVM light-node history: page title for CONTRACT_DEPLOY"
+  },
+  "evm_history_op_add_liquidity": {
+    "message": "Tambahkan likuiditas",
+    "description": "EVM light-node history: page title for ADD_LIQUIDITY"
+  },
+  "evm_history_op_remove_liquidity": {
+    "message": "Hapus likuiditas",
+    "description": "EVM light-node history: page title for REMOVE_LIQUIDITY"
+  },
+  "evm_history_op_wrap": {
+    "message": "Membungkus",
+    "description": "EVM light-node history: page title for WRAP"
+  },
+  "evm_history_op_unwrap": {
+    "message": "Membuka",
+    "description": "EVM light-node history: page title for UNWRAP"
+  },
+  "evm_history_op_canceled_op": {
+    "message": "Transaksi dibatalkan",
+    "description": "EVM light-node history: page title for CANCELED_OP"
+  },
+  "evm_history_op_unknown": {
+    "message": "Transaksi",
+    "description": "EVM light-node history: page title for unknown or unrecognized op types"
+  },
+  "evm_history_generic_message": {
+    "message": "Transaksi terkirim",
+    "description": "Evm history generic message in case there in not enough information"
+  },
+  "evm_history_smart_contract_creation_message": {
+    "message": "Anda membuat kontrak pintar $1",
+    "description": "Evm smart contract creation"
+  },
+  "evm_history_smart_contract_creation_message_no_address": {
+    "message": "Anda membuat kontrak pintar",
+    "description": "Evm smart contract creation when created address is unknown"
+  },
+  "evm_history_smart_contract_creation_message_pending": {
+    "message": "Membuat kontrak pintar",
+    "description": "Evm smart contract creation"
+  },
+  "evm_history_smart_contract": {
+    "message": "Kontrak Cerdas",
+    "description": "Evm smart contract"
+  },
+  "evm_history_smart_contract_creation": {
+    "message": "Pembuatan Kontrak Cerdas",
+    "description": "Evm smart contract creation"
+  },
+  "evm_history_operation_safe_transfer_from_erc721_in": {
+    "message": "Anda menerima $1#$2 dari $3",
+    "description": ""
+  },
+  "evm_history_operation_safe_transfer_from_erc721_in_no_sender": {
+    "message": "Anda menerima $1#$2",
+    "description": ""
+  },
+  "evm_history_operation_safe_transfer_from_erc721_out": {
+    "message": "Anda mengirim $1#$2 ke $3",
+    "description": ""
+  },
+  "evm_history_operation_safe_transfer_from_erc721_out_pending": {
+    "message": "Mengirim $1#$2 ke $3",
+    "description": ""
+  },
+  "evm_history_operation_safe_transfer_from_erc1155_in": {
+    "message": "Anda menerima $1 $2#$3 dari $4",
+    "description": ""
+  },
+  "evm_history_operation_safe_transfer_from_erc1155_in_no_sender": {
+    "message": "Anda menerima $1 $2#$3",
+    "description": ""
+  },
+  "evm_history_operation_safe_transfer_from_erc1155_out": {
+    "message": "Anda mengirim $1 $2#$3 ke $4",
+    "description": ""
+  },
+  "evm_history_operation_safe_transfer_from_erc1155_out_pending": {
+    "message": "Mengirim $1 $2#$3 ke $4",
+    "description": ""
+  },
+  "evm_history_operation_transfer_in": {
+    "message": "Anda menerima $1 $2 dari $3",
+    "description": ""
+  },
+  "evm_history_operation_transfer_out": {
+    "message": "Anda mengirim $1 $2 ke $3",
+    "description": ""
+  },
+  "evm_history_operation_transfer_out_pending": {
+    "message": "Mengirim $1 $2 ke $3",
+    "description": ""
+  },
+  "evm_history_operation_transfer_in_no_sender": {
+    "message": "Anda menerima $1 $2",
+    "description": ""
+  },
+  "evm_history_operation_mint_batch": {
+    "message": "Anda mencetak token $1 dari koleksi $2",
+    "description": "Batch mint operation"
+  },
+  "evm_history_operation_mint_batch_pending": {
+    "message": "Mencetak token $1 dari koleksi $2",
+    "description": "Batch mint operation"
+  },
+  "evm_history_native_amount_paid": {
+    "message": "Jumlah yang dibayarkan",
+    "description": "Native token amount paid for a mint"
+  },
+  "evm_history_native_amount_received": {
+    "message": "Jumlah yang diterima",
+    "description": "Native token amount received during a smart contract operation"
+  },
+  "evm_history_operation_approve_out_erc20": {
+    "message": "Anda menyetujui $1 untuk menggunakan hingga $2 $3",
+    "description": "Approve history item"
+  },
+  "evm_history_operation_approve_out_erc20_pending": {
+    "message": "Menyetujui $1 untuk menggunakan hingga $2 $3",
+    "description": "Approve history item"
+  },
+  "evm_history_operation_approve_out_erc20_unlimited": {
+    "message": "Anda menyetujui $1 untuk menggunakan $2 tanpa batas",
+    "description": "Approve unlimited history item"
+  },
+  "evm_history_operation_approve_out_erc721": {
+    "message": "Anda menyetujui $1 untuk menggunakan $2#$3",
+    "description": "Approve history item"
+  },
+  "evm_history_operation_approve_out_erc721_pending": {
+    "message": "Menyetujui $1 untuk menggunakan $2#$3",
+    "description": "Approve history item"
+  },
+  "evm_history_operation_approve_out_for_all": {
+    "message": "Anda menyetujui $1 untuk mengelola semua token $2 Anda",
+    "description": "Approve for all history item"
+  },
+  "evm_history_operation_swap": {
+    "message": "Anda menukar $1 dengan $2",
+    "description": "Swap history item"
+  },
+  "evm_history_operation_add_liquidity": {
+    "message": "Anda menambahkan likuiditas ($1 untuk $2)",
+    "description": "Add liquidity history item"
+  },
+  "evm_history_operation_remove_liquidity": {
+    "message": "Anda menghapus likuiditas ($1 untuk $2)",
+    "description": "Remove liquidity history item"
+  },
+  "evm_history_operation_wrap": {
+    "message": "Anda membungkus $1 menjadi $2",
+    "description": "Wrap history item"
+  },
+  "evm_history_operation_unwrap": {
+    "message": "Anda membuka bungkus $1 menjadi $2",
+    "description": "Unwrap history item"
+  },
+  "evm_history_operation_airdrop_receive": {
+    "message": "Anda menerima tetesan udara",
+    "description": "Airdrop history item"
+  },
+  "evm_history_operation_reverted": {
+    "message": "$1 telah dibatalkan",
+    "description": "Reverted operation message"
+  },
+  "evm_history_unlimited_approval_value": {
+    "message": "$1 tidak terbatas",
+    "description": "Unlimited approval value"
+  },
+  "evm_history_operation_mint_erc20": {
+    "message": "Anda mencetak $1 $2",
+    "description": "ERC20 mint history item"
+  },
+  "evm_history_operation_burn_erc20": {
+    "message": "Anda membakar $1 $2",
+    "description": "ERC20 burn history item"
+  },
+  "evm_history_operation_burn_erc721": {
+    "message": "Anda membakar $1#$2",
+    "description": "ERC721 burn history item"
+  },
+  "evm_history_operation_burn_erc1155": {
+    "message": "Anda membakar $1 $2#$3",
+    "description": "ERC1155 burn history item"
+  },
+  "evm_history_operation_mintNFTs": {
+    "message": "Anda mencetak $1#$2",
+    "description": "Mint single nft history item"
+  },
+  "evm_history_operation_mintNFTs_pending": {
+    "message": "Mencetak $1#$2",
+    "description": "Mint single nft history item"
+  },
+  "evm_history_operation_generic_smart_contract_messages_in": {
+    "message": "Termasuk dalam panggilan '$1'",
+    "description": "Generic smart contract operation history label"
+  },
+  "evm_history_operation_generic_smart_contract_messages_out": {
+    "message": "Disebut $1",
+    "description": "Generic smart contract operation history label"
+  },
+  "evm_history_operation_generic_smart_contract_messages_pending": {
+    "message": "Disebut '$1'",
+    "description": "Generic smart contract operation history label"
+  },
+  "evm_history_default_out_smart_contract_operation": {
+    "message": "Disebut kontrak pintar",
+    "description": "Generic smart contract operation history label"
+  },
+  "evm_history_default_out_smart_contract_operation_pending": {
+    "message": "Memanggil kontrak pintar",
+    "description": "Generic smart contract operation history label"
+  },
+  "evm_history_default_in_smart_contract_operation": {
+    "message": "Termasuk dalam panggilan kontrak pintar",
+    "description": "Generic smart contract operation history label"
+  },
+  "evm_add_wallet_address_button": {
+    "message": "Tambahkan alamat dompet",
+    "description": "Add wallet address button"
+  },
+  "evm_delete_seed_button": {
+    "message": "Menghapus",
+    "description": "Delete seed button"
+  },
+  "evm_delete_seed_confirmation_message": {
+    "message": "Apakah Anda yakin ingin menghapus seed ini?",
+    "description": "Delete seed button"
+  },
+  "evm_delete_all_ledger_accounts_confirmation_message": {
+    "message": "Apakah Anda yakin ingin menghapus semua akun Ledger?",
+    "description": "Delete all Ledger accounts confirmation message"
+  },
+  "evm_delete_all_imported_accounts_confirmation_message": {
+    "message": "Apakah Anda yakin ingin menghapus semua akun yang diimpor?",
+    "description": "Delete all imported accounts confirmation message"
+  },
+  "evm_delete_account_confirmation_message": {
+    "message": "Apakah Anda yakin ingin menghapus akun ini?",
+    "description": "Delete EVM account button"
+  },
+  "evm_add_wallet_seed_button": {
+    "message": "Tambahkan seed",
+    "description": "Add seed button"
+  },
+  "evm_add_nickname_to_address_popup_title": {
+    "message": "Tambahkan nama",
+    "description": "Add nickname to address title"
+  },
+  "evm_add_nickname_to_address_popup_caption": {
+    "message": "Tambahkan nama ke alamat Anda untuk mengidentifikasinya dengan lebih mudah",
+    "description": "Add nickname to address caption"
+  },
+  "evm_address_nickname": {
+    "message": "Nama panggilan",
+    "description": "Nickname"
+  },
+  "evm_seed_nickname": {
+    "message": "Nama Seed",
+    "description": "Nickname"
+  },
+  "evm_edit_seed_nickname": {
+    "message": "Sunting nama",
+    "decription": "Edit seed nickname"
+  },
+  "evm_edit_address_name": {
+    "message": "Edit nama alamat",
+    "description": "Edit wallet address nickname"
+  },
+  "evm_import_seed": {
+    "message": "Impor",
+    "description": "Import existing seed"
+  },
+  "evm_import_key": {
+    "message": "Impor kunci",
+    "description": "Import existing private key"
+  },
+  "evm_imported_seed": {
+    "message": "Impor",
+    "description": "Imported private key source name"
+  },
+  "evm_create_seed": {
+    "message": "Membuat",
+    "description": "Create seed"
+  },
+  "evm_connect_ledger_wallet": {
+    "message": "Hubungkan Ledger",
+    "description": "Open Ledger EVM wallet connection flow"
+  },
+  "evm_copy_seed": {
+    "message": "Salin seed",
+    "description": "Copy EVM seed menu item"
+  },
+  "evm_seeds_and_accounts": {
+    "message": "Seeds & Akun",
+    "description": "sseds and account page"
+  },
   "error_granularity": {
     "message": "Operasi ini dibatasi oleh ketentuan granularitas.",
     "description": "Error message if granularity failed has been used already"
+  },
+  "evm_seeds_already_in_keychain": {
+    "message": "Seed ini sudah ditambahkan di Keychain",
+    "description": "Seed already added in Keychain"
+  },
+  "evm_private_key_already_in_keychain": {
+    "message": "Akun EVM ini telah ditambahkan di Keychain",
+    "description": "Private key already added in Keychain"
+  },
+  "evm_transfer": {
+    "message": "Transfer",
+    "description": "Evm transfer"
+  },
+  "evm_mint_batch": {
+    "message": "kumpulan mint",
+    "description": "Evm mint batch"
+  },
+  "evm_approval": {
+    "message": "Persetujuan",
+    "description": "Evm approval"
+  },
+  "evm_mint": {
+    "message": "daun mint",
+    "description": "Evm mint"
+  },
+  "evm_broadcast": {
+    "message": "Siaran",
+    "description": "Evm generic broadcast"
+  },
+  "evm_unable_to_reach_verify_transaction": {
+    "message": "Keychain tidak dapat memverifikasi situs web, alamat, atau kontrak ini karena layanan keamanan EVM tidak tersedia. Lanjutkan hanya jika Anda memercayai permintaan ini.",
+    "description": "Error message if backend not available while fetch verify transaction info"
+  },
+  "evm_created_smart_contract": {
+    "message": "Membuat kontrak pintar",
+    "description": "Created smart contract label"
+  },
+  "evm_no_nfts_found": {
+    "message": "Tidak ada NFT yang ditemukan",
+    "description": "No nft"
+  },
+  "evm_tx_completed_notification_message": {
+    "message": "Tx #$1 selesai",
+    "description": "Transaction completed message"
+  },
+  "evm_tx_failed_notification_message": {
+    "message": "Tx #$1 gagal. Ketuk di sini untuk detail.",
+    "description": "Transaction completed message"
+  },
+  "evm_tx_completed_notification_title": {
+    "message": "Transaksi selesai",
+    "description": "Transaction completed title"
+  },
+  "evm_incoming_transaction_notification_title": {
+    "message": "$1 · Transaksi masuk di $2",
+    "description": "Incoming EVM transaction notification title"
+  },
+  "evm_tx_failed_notification_title": {
+    "message": "Transaksi gagal",
+    "description": "Transaction completed title"
+  },
+  "evm_wallets": {
+    "message": "Dompet",
+    "description": "Evm wallets"
+  },
+  "evm_contact_no_label": {
+    "message": "Tidak ada label",
+    "description": "Evm contact no label"
+  },
+  "evm_edit_contact_modal_title": {
+    "message": "Sunting kontak",
+    "description": "Evm edit contact modal title"
+  },
+  "evm_contact_address": {
+    "message": "Alamat",
+    "description": "Evm address"
+  },
+  "evm_contact_address_invalid": {
+    "message": "Masukkan alamat yang valid.",
+    "description": "Validation error when saving a contact with an invalid EVM address"
+  },
+  "evm_contact_label": {
+    "message": "Label",
+    "description": "Evm label"
+  },
+  "evm_delete_contact_link": {
+    "message": "Hapus kontak",
+    "description": "Evm delete contact link"
+  },
+  "evm_add_contact_link": {
+    "message": "Tambahkan kontak",
+    "description": "Evm add contact link"
+  },
+  "evm_contacts_section": {
+    "message": "Kontak",
+    "description": "Contacts section on the addresses settings page"
+  },
+  "evm_addresses_add": {
+    "message": "Menambahkan",
+    "description": "Add link on the addresses settings page"
+  },
+  "evm_addresses_no_whitelisted_account_yet": {
+    "message": "Belum ada akun yang masuk daftar putih.",
+    "description": "Empty state on the contacts section of the addresses settings page"
+  },
+  "evm_addresses_no_whitelisted_smart_contract_yet": {
+    "message": "Belum ada kontrak pintar yang masuk daftar putih.",
+    "description": "Empty state on the smart contracts section of the addresses settings page"
+  },
+  "evm_contact_new_contact": {
+    "message": "Kontak baru",
+    "description": "Evm new contact"
+  },
+  "evm_fee_estimate_unknown_duration": {
+    "message": "Tidak dikenal",
+    "description": "Unknown duration"
+  },
+  "evm_gas_fee_warning_not_available": {
+    "message": "Estimasi biaya jaringan saat ini tidak tersedia",
+    "description": "Gas fee estimation not available"
+  },
+  "evm_gas_fee_warning_not_available_for_chain": {
+    "message": "Estimasi biaya jaringan tidak tersedia untuk chain ini",
+    "description": "Gas fee estimation not available for chain"
+  },
+  "evm_gas_fee_warning_transaction_will_revert": {
+    "message": "Transaksi ini akan revert",
+    "description": "Gas fee warning shown when transaction simulation reverts"
+  },
+  "evm_transaction_broadcasted": {
+    "message": "Transaksi disiarkan. Tunggu konfirmasi.",
+    "description": "Transaction broadcasted message"
+  },
+  "evm_collection_name": {
+    "message": "Nama koleksi",
+    "description": "Collection name"
+  },
+  "evm_gas_fee_warning_priority_fee_higher_than_max_fee": {
+    "message": "Max fee harus lebih tinggi dari priority fee",
+    "description": "Priority fee is higher than max fee"
+  },
+  "evm_gas_fee_warning_gas_price_below_minimum": {
+    "message": "Harga gas di bawah minimum chain ini",
+    "description": "Legacy gas price is below the configured chain minimum"
+  },
+  "evm_gas_fee_warning_updated_after_insufficient_price": {
+    "message": "Harga gas tidak mencukupi. Biaya jaringan telah diperbarui",
+    "description": "Recoverable warning shown after custom-chain legacy gas price is rejected by RPC"
+  },
+  "evm_transaction_result_error_message_underpriced": {
+    "message": "Biaya terlalu rendah, naikkan",
+    "description": "Transaction result error message underpriced"
+  },
+  "evm_transaction_result_unknown_error": {
+    "message": "Terjadi kesalahan yang tidak diketahui",
+    "description": "Transaction result unknown error"
+  },
+  "evm_history_canceled_transaction": {
+    "message": "Transaksi dibatalkan",
+    "description": "Transaction canceled"
+  },
+  "evm_history_operation_canceled": {
+    "message": "Anda telah membatalkan operasi",
+    "description": "EVM history message for CANCELED_OP operations"
+  },
+  "evm_transaction_result_error_message_nonce_expired": {
+    "message": "Nonce kedaluwarsa, coba lagi",
+    "description": "Transaction result error message nonce expired"
+  },
+  "evm_transaction_not_canceled_error": {
+    "message": "Transaksi tidak dapat dibatalkan",
+    "description": "Transaction couldn't be canceled error message"
+  },
+  "evm_rpcs_not_responding_error": {
+    "message": "Tak satu pun dari RPC yang merespons, coba lagi nanti.",
+    "description": "All RPCs are not responding error message"
+  },
+  "evm_rpc_already_in_list": {
+    "message": "RPC ini sudah ada dalam daftar",
+    "description": "RPC already in list error message"
+  },
+  "evm_add_rpc_not_working_warning": {
+    "message": "RPC ini sepertinya tidak berfungsi. Apakah Anda yakin ingin menambahkannya?",
+    "description": "RPC not working warning message while adding new rpc"
+  },
+  "evm_add_http_rpc_warning": {
+    "message": "RPC ini menggunakan HTTP dan tidak dienkripsi. Hanya tambahkan jika Anda memercayai titik akhir ini.",
+    "description": "HTTP RPC warning message while adding a new EVM RPC from the popup"
+  },
+  "evm_add_rpc_invalid_chain_error": {
+    "message": "RPC ini tidak merespons rantai yang dipilih.",
+    "description": "Invalid chain error message while adding a new EVM RPC"
+  },
+  "evm_history_warning_potential_zero_amount_scam": {
+    "message": "Transaksi ini mungkin merupakan penipuan tanpa jumlah. Berhati-hatilah saat bertransaksi ke alamat ini.",
+    "description": "Potential zero amount scam warning message"
+  },
+  "evm_error_message_transfer_amount_exceeds_allowance": {
+    "message": "Jumlah transfer melebihi tunjangan",
+    "description": "Transaction result error message transfer amount exceeds allowance"
+  },
+  "evm_add_chain": {
+    "message": "Tambahkan rantai",
+    "description": "Add chain"
+  },
+  "evm_update_chain": {
+    "message": "Perbarui rantai",
+    "description": "Update chain"
+  },
+  "evm_chain_symbol": {
+    "message": "Simbol",
+    "description": "Chain symbol"
+  },
+  "evm_chain_decimals": {
+    "message": "Desimal",
+    "description": "Chain decimals"
+  },
+  "evm_chain_block_explorer": {
+    "message": "Blokir penjelajah",
+    "description": "Chain block explorer"
+  },
+  "evm_chain_rpcs": {
+    "message": "RPCs",
+    "description": "Chain rpc"
+  },
+  "evm_chain_name": {
+    "message": "Nama",
+    "description": "Chain name"
+  },
+  "evm_add_chain_caption": {
+    "message": "$1 meminta Anda menambahkan rantai baru. Pastikan Anda memercayai rantai ini sebelum menambahkannya.",
+    "description": "Add chain caption"
+  },
+  "evm_update_chain_caption": {
+    "message": "$1 meminta untuk memperbarui rantai yang ada. Ini akan menambahkan URL RPC ke daftar yang ada, namun URL tersebut tidak akan aktif secara otomatis.",
+    "description": "Update chain caption"
+  },
+  "html_popup_popular_chains": {
+    "message": "Jaringan populer",
+    "description": "Popular chains"
+  },
+  "html_popup_testnet_chains": {
+    "message": "jaringan pengujian",
+    "description": "Testnet chains"
+  },
+  "html_popup_custom_chains": {
+    "message": "Rantai khusus",
+    "description": "Custom chains section"
+  },
+  "html_popup_manage_chains": {
+    "message": "Kelola rantai",
+    "description": "Manage chains page and dropdown action"
+  },
+  "html_popup_search_chains": {
+    "message": "Rantai pencarian...",
+    "description": "Search chains input placeholder"
+  },
+  "html_popup_manage_chains_empty_results": {
+    "message": "Tidak ada rantai yang cocok dengan pencarian Anda.",
+    "description": "Empty state when Manage chains filters have no results"
+  },
+  "html_popup_non_popular_chains": {
+    "message": "Rantai lainnya",
+    "description": "Non popular chains"
+  },
+  "popup_html_show_testnets": {
+    "message": "Tampilkan testnet",
+    "description": "Show testnets"
+  },
+  "avalanche_smart_contract": {
+    "message": "Smart contract Avalanche"
+  },
+  "evm_pay_to_smart_contract": {
+    "message": "Bayar ke Kontrak Cerdas",
+    "description": "Pay to smart contract"
+  },
+  "evm_add_custom_token": {
+    "message": "Tambahkan token khusus",
+    "description": "Opens the add-token flow from manage tokens"
+  },
+  "evm_add_custom_nft": {
+    "message": "Tambahkan NFT khusus",
+    "description": "Add a custom NFT"
+  },
+  "evm_custom_tokens_page_title": {
+    "message": "Kelola token",
+    "description": "Title for the ERC20 tokens management page"
+  },
+  "evm_custom_nfts_page_title": {
+    "message": "NFTs khusus",
+    "description": "Title for the custom NFT management page"
+  },
+  "evm_custom_tokens_page_empty": {
+    "message": "Belum ada token khusus. Gunakan Tambahkan token khusus untuk mendaftarkan kontrak ERC20 untuk jaringan ini.",
+    "description": "Empty state for custom tokens section on manage tokens page"
+  },
+  "evm_custom_nfts_page_empty": {
+    "message": "Belum ada NFT khusus. Tambahkan satu untuk mendaftarkan ID token NFT untuk jaringan ini.",
+    "description": "Empty state on custom NFT page"
+  },
+  "evm_custom_tokens_page_caption": {
+    "message": "Sembunyikan token yang terdeteksi otomatis, atau edit dan hapus token khusus.<br/>Setelan berlaku per jaringan. Token dengan saldo nol tidak ditampilkan di halaman beranda.",
+    "description": "Intro caption on manage tokens page; may include a <br/> line break"
+  },
+  "evm_custom_tokens_section_title": {
+    "message": "Token khusus",
+    "description": "Custom token list section title on manage tokens page"
+  },
+  "evm_auto_detected_tokens_section_title": {
+    "message": "Token yang terdeteksi secara otomatis",
+    "description": "Auto-detected token list section title on manage tokens page"
+  },
+  "evm_auto_detected_tokens_empty": {
+    "message": "Tidak ditemukan token yang terdeteksi secara otomatis untuk jaringan ini.",
+    "description": "Empty state for auto-detected token list on manage tokens page"
+  },
+  "evm_auto_detected_tokens_loading": {
+    "message": "Memuat token yang terdeteksi otomatis...",
+    "description": "Loading state for auto-detected token list on manage tokens page"
+  },
+  "evm_auto_detected_tokens_error_loading": {
+    "message": "Tidak dapat memuat token yang terdeteksi otomatis untuk jaringan ini.",
+    "description": "Error state for auto-detected token list on manage tokens page"
+  },
+  "evm_auto_detected_tokens_hide": {
+    "message": "Sembunyikan dari halaman beranda",
+    "description": "Hide an auto-detected token from the home page"
+  },
+  "evm_auto_detected_tokens_restore": {
+    "message": "Pulihkan di halaman beranda",
+    "description": "Restore an auto-detected token on the home page"
+  },
+  "evm_custom_nfts_page_caption": {
+    "message": "NFT khusus disimpan per dompet dan jaringan. Entri yang disimpan tetap di sini meskipun Anda tidak lagi memiliki ID token tersebut.",
+    "description": "Intro caption on custom NFT page"
+  },
+  "evm_custom_tokens_delete": {
+    "message": "Menghapus",
+    "description": "Remove a custom ERC20 token from the list"
+  },
+  "evm_custom_nfts_delete": {
+    "message": "Menghapus",
+    "description": "Remove a custom NFT entry from the list"
+  },
+  "evm_custom_tokens_delete_confirm": {
+    "message": "Hapus \"$1\" dari token khusus Anda? Hal ini tidak dapat dibatalkan.",
+    "description": "Confirmation before deleting a custom token; $1 is symbol or name"
+  },
+  "evm_custom_nfts_delete_confirm": {
+    "message": "Hapus \"$1\" dari NFT khusus Anda? Hal ini tidak dapat dibatalkan.",
+    "description": "Confirmation before deleting a custom NFT entry; $1 is the contract address"
+  },
+  "evm_custom_tokens_modal_title_edit": {
+    "message": "Edit token khusus",
+    "description": "Title when editing a saved custom ERC20 token"
+  },
+  "evm_custom_nfts_modal_title_edit": {
+    "message": "Edit NFT khusus",
+    "description": "Title when editing a saved custom NFT entry"
+  },
+  "evm_custom_tokens_modal_caption_edit": {
+    "message": "Ubah simbol atau logo. Nama dan desimal dibaca dari kontrak saat Anda menyimpan.",
+    "description": "Caption when editing a custom ERC20 token"
+  },
+  "evm_custom_nfts_modal_caption_edit": {
+    "message": "Ganti daftar ID token untuk kontrak NFT ini. Tipe NFT tetap sama.",
+    "description": "Caption when editing a custom NFT entry"
+  },
+  "evm_wallet_tokens_filter_no_results": {
+    "message": "Tidak ada token yang ditemukan",
+    "description": "Shown on wallet tokens tab when the search/filter has no matching tokens"
+  },
+  "evm_custom_erc20_empty_card_message": {
+    "message": "Untuk menambahkan token secara manual, klik ikon pengaturan.",
+    "description": "Hint on wallet tokens tab when there are no custom ERC20 tokens"
+  },
+  "evm_custom_erc20_empty_card_hide": {
+    "message": "Bersembunyi",
+    "description": "Dismiss the custom ERC20 empty-state hint card"
+  },
+  "evm_custom_nft_empty_card_message": {
+    "message": "Untuk menambahkan NFT secara manual, klik ikon pengaturan.",
+    "description": "Hint on wallet NFT tab when there are no custom NFTs on a custom chain"
+  },
+  "evm_custom_history_info_card_message": {
+    "message": "Pada rantai khusus ini, hanya transaksi yang disiarkan oleh Keychain yang akan ditampilkan",
+    "description": "Hint on wallet history tab for custom EVM chains"
+  },
+  "evm_add_custom_token_popup_title": {
+    "message": "Tambahkan token khusus",
+    "description": "Add custom token popup title"
+  },
+  "evm_add_custom_nft_popup_title": {
+    "message": "Tambahkan NFT khusus",
+    "description": "Add custom NFT popup title"
+  },
+  "evm_smart_contract_address": {
+    "message": "Alamat kontrak pintar",
+    "description": "Smart contract address"
+  },
+  "evm_add_custom_token_popup_caption": {
+    "message": "Cari token yang dikenal untuk jaringan ini. Jika Anda tidak menemukan token yang Anda perlukan, tambahkan secara manual.",
+    "description": "Browse step caption in the add custom token popup"
+  },
+  "evm_custom_tokens_add_section_title": {
+    "message": "Tambahkan tanda",
+    "description": "Unused legacy key; known token list now lives in the add token popup"
+  },
+  "evm_add_custom_token_manually": {
+    "message": "Tambahkan secara manual",
+    "description": "Opens the manual ERC20 form from the add token popup browse step"
+  },
+  "evm_known_tokens_search_label": {
+    "message": "Token pencarian",
+    "description": "Known tokens search input label in the add token popup"
+  },
+  "evm_known_tokens_search_placeholder": {
+    "message": "Nama atau alamat kontrak",
+    "description": "Known tokens search input placeholder in the add token popup"
+  },
+  "evm_known_tokens_loading": {
+    "message": "Memuat token yang dikenal...",
+    "description": "Known tokens loading message in the add token popup"
+  },
+  "evm_known_tokens_empty": {
+    "message": "Tidak ditemukan token yang dikenal untuk jaringan ini.",
+    "description": "Known tokens empty state in the add token popup"
+  },
+  "evm_known_tokens_error_loading": {
+    "message": "Tidak dapat memuat token yang dikenal untuk jaringan ini.",
+    "description": "Known tokens load error in the add token popup"
+  },
+  "evm_known_tokens_add": {
+    "message": "Menambahkan",
+    "description": "Add known token button label in the add token popup"
+  },
+  "evm_watch_asset_title": {
+    "message": "Tambahkan token khusus",
+    "description": "Title when a dApp requests wallet_watchAsset"
+  },
+  "evm_watch_asset_caption": {
+    "message": "$1 meminta Anda menambahkan token khusus ke Keychain.",
+    "description": "Caption when a dApp requests wallet_watchAsset; $1 is the dApp domain"
+  },
+  "evm_watch_asset_already_added_title": {
+    "message": "Token already added",
+    "description": "Title when wallet_watchAsset targets a token already saved on this chain"
+  },
+  "evm_watch_asset_already_added_caption": {
+    "message": "$1 asked to add a token that is already saved. Confirm to tell the site it is available.",
+    "description": "Caption when wallet_watchAsset targets an existing token; $1 is the dApp domain"
+  },
+  "evm_watch_asset_zero_balance": {
+    "message": "This token has no balance. Keychain saves it, and it appears on the home page once the balance is above zero.",
+    "description": "Warning on wallet_watchAsset when the connected account balance is zero"
+  },
+  "evm_add_custom_nft_popup_caption": {
+    "message": "Tambahkan kontrak NFT dan ID token yang Anda miliki. Keychain akan mendeteksi apakah kontraknya ERC721 atau ERC1155.",
+    "description": "Add custom NFT popup caption"
+  },
+  "evm_custom_nfts_field_collection_name": {
+    "message": "Nama koleksi (opsional)",
+    "description": "Label for optional custom NFT collection display name"
+  },
+  "evm_custom_nfts_field_token_ids": {
+    "message": "ID Token",
+    "description": "Label for NFT token IDs field"
+  },
+  "evm_custom_nfts_type_auto_detected": {
+    "message": "Tipe NFT akan terdeteksi secara otomatis saat Anda menyimpan.",
+    "description": "Message explaining NFT type auto detection"
+  },
+  "evm_custom_nfts_type_detected": {
+    "message": "Entri yang disimpan ini menggunakan standar $1.",
+    "description": "Message explaining the detected NFT type; $1 is ERC721 or ERC1155"
+  },
+  "evm_custom_nfts_token_count": {
+    "message": "$1 ID token yang disimpan",
+    "description": "Custom NFT token count label; $1 is the number of saved token IDs"
+  },
+  "evm_image_url_error_invalid": {
+    "message": "Use a public HTTPS image URL or a supported image data URL.",
+    "description": "Validation error for unsafe token or chain image URLs"
+  },
+  "evm_add_custom_asset_error_contract_address_invalid": {
+    "message": "Masukkan alamat kontrak yang valid.",
+    "description": "Validation error when adding a custom EVM token or NFT with an invalid contract address"
+  },
+  "evm_add_custom_asset_error_contract_address_duplicate": {
+    "message": "Alamat kontrak ini sudah ditambahkan.",
+    "description": "Validation error when the contract address is already in custom tokens or NFTs"
+  },
+  "evm_add_custom_token_error_symbol_required": {
+    "message": "Simbol diperlukan.",
+    "description": "Validation error when saving a custom ERC20 without a symbol"
+  },
+  "evm_add_custom_token_error_name_required": {
+    "message": "Nama token wajib diisi.",
+    "description": "Validation error when saving a custom ERC20 without a name"
+  },
+  "evm_add_custom_token_error_decimals_invalid": {
+    "message": "Masukkan jumlah desimal yang valid antara 0 dan 255.",
+    "description": "Validation error when custom ERC20 decimals are missing or out of range"
+  },
+  "evm_add_custom_nft_error_token_ids_required": {
+    "message": "Masukkan setidaknya satu ID token.",
+    "description": "Validation error when saving a custom NFT without token IDs"
+  },
+  "evm_add_custom_nft_error_token_ids_format": {
+    "message": "ID Token harus berupa angka desimal atau nilai hex yang diawali 0x.",
+    "description": "Validation error when custom NFT token IDs use an invalid format"
+  },
+  "evm_add_custom_token_error_save_failed": {
+    "message": "Tidak dapat menyimpan token ini sekarang.",
+    "description": "Error when persisting a custom ERC20 token fails"
+  },
+  "evm_add_custom_token_error_fetch_erc20_metadata": {
+    "message": "Tidak dapat membaca nama token dan desimal dari rantai. Periksa alamatnya dan apakah itu adalah kontrak standar ERC20.",
+    "description": "Error when fetching ERC20 name and decimals from chain fails"
+  },
+  "evm_add_custom_nft_error_token_ids_not_owned": {
+    "message": "Satu atau lebih ID token tidak dimiliki oleh dompet ini.",
+    "description": "Error when listed NFT token IDs are not owned by the current wallet"
+  },
+  "evm_add_custom_nft_error_save_failed": {
+    "message": "Tidak dapat menyimpan NFT ini sekarang.",
+    "description": "Error when persisting a custom NFT entry fails"
+  },
+  "evm_add_custom_nft_error_unsupported_contract": {
+    "message": "Tidak dapat mendeteksi kontrak NFT yang didukung di alamat ini. Hanya kontrak ERC721 dan ERC1155 yang didukung.",
+    "description": "Error when the address is not a supported ERC721 or ERC1155 contract"
+  },
+  "evm_add_manually_discover": {
+    "message": "Temukan token",
+    "description": "Discover tokens"
+  },
+  "evm_pending_queued_transactions": {
+    "message": "Ada 1 transaksi tertunda dan $1 dalam antrean",
+    "description": "Pending and queued transactions"
+  },
+  "evm_one_pending_transaction": {
+    "message": "Anda memiliki 1 transaksi yang tertunda",
+    "description": "Pending transaction"
+  },
+  "evm_unknown_pending_transaction": {
+    "message": "Transaksi tertunda yang tidak diketahui",
+    "description": "Unknown pending transaction"
+  },
+  "evm_pending_transaction": {
+    "message": "Transaksi tertunda",
+    "description": "Pending transaction"
+  },
+  "evm_pending_transaction_warning": {
+    "message": "Ada transaksi tertunda. Transaksi baru tidak dikonfirmasi sebelum yang tertunda selesai.",
+    "description": "Pending transaction warning"
+  },
+  "evm_gas_fee_warning_gas_limit_too_low": {
+    "message": "Gas limit terlalu rendah. Minimal 21000",
+    "description": "Gas limit is too low"
+  },
+  "evm_nonce": {
+    "message": "Nonce",
+    "description": "Nonce"
+  },
+  "evm_cancel_transaction": {
+    "message": "Batalkan transaksi",
+    "description": "Cancel transaction"
+  },
+  "evm_canceled_transaction": {
+    "message": "Transaksi dibatalkan",
+    "description": "Canceled transaction"
+  },
+  "evm_cancel_transaction_error": {
+    "message": "Gagal membatalkan transaksi",
+    "description": "Error during cancel transaction"
+  },
+  "evm_cancel_transaction_confirm_message": {
+    "message": "Anda akan membatalkan transaksi tertunda yang tidak dikenal.",
+    "description": "Error during cancel transaction"
+  },
+  "insufficient_balance_warning": {
+    "message": "Saldo tidak mencukupi. Transaksi akan gagal.",
+    "description": "Insufficient balance warning message"
+  },
+  "coming_soon_panel_title": {
+    "message": "Segera hadir",
+    "description": "Coming soon panel title"
+  },
+  "coming_soon_panel_description": {
+    "message": "Fitur ini belum tersedia. Silakan cek lagi nanti.",
+    "description": "Coming soon panel description"
+  },
+  "evm_chain_non_supported": {
+    "message": "Rantai $1 tidak didukung oleh Keychain",
+    "description": "Chain not supported error message"
+  },
+  "evm_request_add_chain_title": {
+    "message": "Tambahkan rantai",
+    "description": "Request to add chain title"
+  },
+  "evm_request_add_chain_caption": {
+    "message": "$1 telah meminta untuk melakukan tindakan pada rantai yang belum Anda siapkan. Apakah Anda ingin menambahkannya ke Keychain dan melanjutkan transaksi itu?",
+    "description": "Request to add chain caption"
+  },
+  "evm_request_add_custom_chain_title": {
+    "message": "Tambahkan rantai khusus",
+    "description": "Request to add a custom chain title"
+  },
+  "evm_request_add_custom_chain_caption": {
+    "message": "$1 meminta peralihan ke rantai $2, tetapi Keychain belum mengetahui rantai ini. Tambahkan detail rantai khusus di bawah untuk melanjutkan.",
+    "description": "Request to add a custom chain caption"
+  },
+  "evm_link_to_other_receiver": {
+    "message": "Klik di sini untuk mengganti penerima",
+    "description": "Link to other receiver"
+  },
+  "evm_swap_receiver_address": {
+    "message": "Alamat penerima",
+    "description": "Swap receiver address"
+  },
+  "evm_processed_by": {
+    "message": "Diproses oleh $1",
+    "description": "Processed by"
+  },
+  "evm_swap_approval_amount": {
+    "message": "Jumlah persetujuan",
+    "description": "Swap approval amount"
+  },
+  "swap_error_getting_estimate": {
+    "message": "Terjadi kesalahan saat mendapatkan perkiraan",
+    "description": "Error getting estimate"
+  },
+  "evm_lifi_swap_confirm_message": {
+    "message": "Konfirmasikan swap $3 $1 ke $2 ini."
+  },
+  "evm_lifi_swap": {
+    "message": "LiFi Tukar",
+    "description": "LiFi Swap"
+  },
+  "evm_swap_operation": {
+    "message": "Menukar",
+    "description": "Swap operation"
+  },
+  "evm_approval_operation": {
+    "message": "Menyetujui",
+    "description": "Approval operation"
+  },
+  "evm_lifi_swap_amount_out": {
+    "message": "Jumlah keluar",
+    "description": "Amount out"
+  },
+  "evm_lifi_swap_amount_in": {
+    "message": "Jumlah masuk",
+    "description": "Amount in"
+  },
+  "evm_lifi_swap_status_wait_source_confirmation": {
+    "message": "Menunggu konfirmasi sumber",
+    "description": "Waiting for source confirmation"
+  },
+  "evm_lifi_swap_status_wait_target_confirmation": {
+    "message": "Menunggu konfirmasi tujuan",
+    "description": "Waiting for destination confirmation"
+  },
+  "evm_lifi_swap_status_bridge_not_available": {
+    "message": "Jembatan tidak tersedia",
+    "description": "Bridge not available"
+  },
+  "evm_lifi_swap_status_chain_not_available": {
+    "message": "Rantai tidak tersedia",
+    "description": "Chain not available"
+  },
+  "evm_lifi_swap_refund_in_progress": {
+    "message": "Pengembalian dana sedang berlangsung",
+    "description": "Refund in progress"
+  },
+  "evm_lifi_swap_unknown_error": {
+    "message": "Kesalahan tidak diketahui",
+    "description": "Unknown error"
+  },
+  "evm_lifi_swap_completed": {
+    "message": "Selesai",
+    "description": "Completed"
+  },
+  "evm_lifi_swap_partially_completed": {
+    "message": "Selesai sebagian. Anda menerima token yang berbeda, nilainya telah dipertahankan sepenuhnya",
+    "description": "Partially completed"
+  },
+  "evm_lifi_swap_refunded_completed": {
+    "message": "Pengembalian dana selesai",
+    "description": "Refund completed"
+  },
+  "evm_lifi_swap_manual_intervention_required": {
+    "message": "Diperlukan intervensi manual",
+    "description": "Manual intervention required"
+  },
+  "evm_lifi_swap_failed_out_of_gas": {
+    "message": "Operasi kehabisan Gas",
+    "description": "Operation ran out of gas"
+  },
+  "evm_lifi_swap_failed_slippage": {
+    "message": "Perlindungan slippage dipicu",
+    "description": "Slippage protection triggered"
+  },
+  "evm_lifi_swap_failed_insufficient_allowance": {
+    "message": "Tunjangan tidak mencukupi",
+    "description": "Insufficient allowance"
+  },
+  "evm_lifi_swap_failed_insufficient_balance": {
+    "message": "Saldo tidak mencukupi",
+    "description": "Insufficient balance"
+  },
+  "evm_lifi_swap_failed_transaction_expired": {
+    "message": "Transaksi sudah habis masa berlakunya",
+    "description": "Transaction expired"
+  },
+  "evm_lifi_swap_error_no_available_quotes": {
+    "message": "Tidak ada penawaran harga untuk transfer yang diminta",
+    "description": "No available quotes for the requested transfer"
+  },
+  "evm_lifi_swap_error_same_token_source_and_destination": {
+    "message": "Token yang sama tidak dapat digunakan sebagai sumber dan tujuan",
+    "description": "The same token cannot be used as source and destination"
+  },
+  "evm_lifi_swap_error_build_transaction": {
+    "message": "Tidak dapat membangun transaksi swap. Silakan coba lagi atau sesuaikan parameter Anda.",
+    "description": "LiFi failed to build transaction error"
+  },
+  "evm_lifi_swap_error_amount_too_low": {
+    "message": "Jumlahnya terlalu rendah untuk pertukaran ini. Coba tingkatkan jumlahnya.",
+    "description": "LiFi amount too low error"
+  },
+  "evm_lifi_swap_error_amount_too_high": {
+    "message": "Jumlahnya terlalu tinggi atau likuiditas tidak mencukupi. Cobalah jumlah yang lebih kecil.",
+    "description": "LiFi amount too high or insufficient liquidity error"
+  },
+  "evm_lifi_swap_error_fees_exceed_amount": {
+    "message": "Biaya jaringan melebihi jumlah swap. Cobalah jumlah yang lebih besar.",
+    "description": "LiFi fees higher than amount error"
+  },
+  "evm_lifi_swap_error_rate_limited": {
+    "message": "Terlalu banyak permintaan. Harap tunggu sebentar sebelum mencoba lagi.",
+    "description": "LiFi rate limit error"
+  },
+  "evm_lifi_swap_error_service_unavailable": {
+    "message": "Layanan penukaran untuk sementara tidak tersedia. Silakan coba lagi sebentar lagi.",
+    "description": "LiFi service unavailable error"
+  },
+  "evm_lifi_swap_error_invalid_request": {
+    "message": "Parameter pertukaran tidak valid. Silakan periksa pilihan Anda dan coba lagi.",
+    "description": "LiFi invalid request error"
+  },
+  "evm_lifi_swap_approving_smart_contract": {
+    "message": "Menyetujui kontrak pintar",
+    "description": "Approving smart contract"
+  },
+  "evm_lifi_swap_sending_swap_transaction": {
+    "message": "Mengirim transaksi swap",
+    "description": "Sending swap transaction"
+  },
+  "evm_lifi_swap_delay_caption_message": {
+    "message": "Pertukaran Anda mungkin memerlukan waktu beberapa menit untuk muncul di riwayat Anda setelah transaksi dikonfirmasi",
+    "description": "Delay caption message"
+  },
+  "evm_insufficient_token_balance": {
+    "message": "Saldo $1 tidak mencukupi. Transaksi akan gagal.",
+    "description": "Insufficient token balance message on EVM balance change card"
+  },
+  "evm_transaction_result_error_message_insufficient_funds": {
+    "message": "Dana tidak mencukupi untuk menyelesaikan transaksi ini",
+    "description": "Transaction result error message insufficient funds"
+  },
+  "evm_transaction_result_error_message_user_rejected": {
+    "message": "Transaksi ditolak oleh pengguna",
+    "description": "Transaction result error message user rejected"
+  },
+  "evm_transaction_result_error_message_transaction_replaced": {
+    "message": "Transaksi digantikan oleh transaksi lain",
+    "description": "Transaction result error message transaction replaced"
+  },
+  "evm_transaction_result_error_message_network": {
+    "message": "RPC ini sepertinya tidak berfungsi dengan benar. Pertimbangkan untuk mengubahnya di Pengaturan lanjutan",
+    "description": "Transaction result error when RPC/network fails; suggests changing RPC in Advanced Settings"
+  },
+  "evm_transaction_result_error_message_bad_data": {
+    "message": "RPC mengembalikan data yang tidak valid",
+    "description": "Transaction result error message bad data"
+  },
+  "evm_transaction_result_error_message_invalid_parameters": {
+    "message": "Permintaan transaksi berisi parameter yang tidak valid",
+    "description": "Transaction result error message invalid parameters"
+  },
+  "evm_transaction_result_error_message_unsupported_operation": {
+    "message": "Operasi ini tidak didukung oleh RPC atau kontrak",
+    "description": "Transaction result error message unsupported operation"
+  },
+  "evm_transaction_result_error_message_execution_reverted": {
+    "message": "Eksekusi transaksi dibatalkan oleh kontrak",
+    "description": "Transaction result error message execution reverted"
+  },
+  "evm_transaction_result_error_message_execution_reverted_with_reason": {
+    "message": "Eksekusi transaksi dibatalkan oleh kontrak : $1",
+    "description": "Transaction result error message execution reverted"
+  },
+  "evm_transaction_result_error_message_call_exception": {
+    "message": "Transaksi gagal saat eksekusi kontrak",
+    "description": "Transaction result error message call exception"
+  },
+  "evm_error_message_insufficient_token_balance": {
+    "message": "Saldo token tidak mencukupi",
+    "description": "Transaction result error message insufficient token balance"
+  },
+  "evm_transaction_result_error_message_gas_required_exceeds_allowance": {
+    "message": "Estimasi gas gagal karena transaksi kemungkinan akan dibatalkan",
+    "description": "Transaction result error message gas required exceeds allowance"
+  },
+  "evm_transaction_result_error_message_missing_revert_data": {
+    "message": "Transaksi gagal tanpa detail revert",
+    "description": "Transaction result error message missing revert data"
+  },
+  "evm_transaction_result_error_message_access_denied": {
+    "message": "Tindakan ini tidak diizinkan untuk akun saat ini",
+    "description": "Transaction result error message access denied"
+  },
+  "evm_transaction_result_error_message_paused": {
+    "message": "Kontrak ini sedang dijeda",
+    "description": "Transaction result error message paused"
+  },
+  "evm_transaction_result_error_message_blacklisted": {
+    "message": "Alamat ini diblokir oleh kontrak",
+    "description": "Transaction result error message blacklisted"
+  },
+  "evm_transaction_result_error_message_transaction_expired": {
+    "message": "Transaksi kedaluwarsa atau melewati batas waktunya",
+    "description": "Transaction result error message transaction expired"
+  },
+  "evm_transaction_result_error_message_slippage": {
+    "message": "Transaksi gagal karena toleransi slippage terlampaui",
+    "description": "Transaction result error message slippage"
+  },
+  "evm_activity_tab": {
+    "message": "Aktivitas",
+    "description": "Activity tab"
+  },
+  "manage_accounts": {
+    "message": "Kelola akun",
+    "description": "Manage accounts"
+  },
+  "evm_switch_chain": {
+    "message": "Ganti jaringan",
+    "description": "Title for EVM switch chain confirmation dialog"
+  },
+  "evm_switch_chain_caption": {
+    "message": "$DOMAIN$ ingin menggunakan rantai yang berbeda dengan dompet Anda.",
+    "description": "Caption for EVM switch chain confirmation dialog",
+    "placeholders": {
+      "domain": {
+        "content": "$1",
+        "example": "app.example.com"
+      }
+    }
+  },
+  "reload_extension": {
+    "message": "Muat ulang ekstensi",
+    "description": "Button label to reload the extension"
+  },
+  "accessibility_back": {
+    "message": "Kembali",
+    "description": "Accessible label for back buttons"
+  },
+  "accessibility_show_password": {
+    "message": "Tampilkan kata sandi",
+    "description": "Accessible label for password visibility buttons"
+  },
+  "accessibility_hide_password": {
+    "message": "Sembunyikan kata sandi",
+    "description": "Accessible label for password visibility buttons"
+  },
+  "accessibility_clear_input": {
+    "message": "Hapus input",
+    "description": "Accessible label for input clear buttons"
+  },
+  "accessibility_back_to_top": {
+    "message": "Kembali ke atas",
+    "description": "Accessible label for buttons that scroll to the top"
+  },
+  "evm_error_gas_estimate": {
+    "message": "Estimasi Gas gagal. Anda harus memasukkan biaya jaringan khusus.",
+    "description": "Gas estimation failed. You will need to enter a custom gas fee."
+  },
+  "portfolio_payment_method_credit_debit_card": {
+    "message": "Kartu kredit / debit"
+  },
+  "portfolio_payment_method_creditcard": {
+    "message": "Kartu kredit / debit"
+  },
+  "portfolio_payment_method_card": {
+    "message": "Kartu kredit / debit"
+  },
+  "portfolio_payment_method_card_payment": {
+    "message": "Pembayaran kartu"
+  },
+  "portfolio_payment_method_ach_bank_transfer": {
+    "message": "Transfer bank ACH"
+  },
+  "portfolio_payment_method_paypal": {
+    "message": "PayPal"
+  },
+  "portfolio_payment_method_gbp_bank_transfer": {
+    "message": "Transfer bank GBP"
+  },
+  "portfolio_payment_method_gbp_open_banking_payment": {
+    "message": "Open banking GBP"
+  },
+  "portfolio_payment_method_pix_instant_payment": {
+    "message": "PIX"
+  },
+  "portfolio_payment_method_sepa_bank_transfer": {
+    "message": "Transfer SEPA"
+  },
+  "portfolio_payment_method_applepay": {
+    "message": "Apple Pay"
+  },
+  "portfolio_payment_method_apple_pay": {
+    "message": "Apple Pay"
+  },
+  "portfolio_payment_method_googlepay": {
+    "message": "Google Pay"
+  },
+  "portfolio_payment_method_google_pay": {
+    "message": "Google Pay"
+  },
+  "portfolio_payment_method_banktransfer": {
+    "message": "Transfer bank"
+  },
+  "portfolio_payment_method_bank_transfer": {
+    "message": "Transfer bank"
+  },
+  "portfolio_payment_method_manual_bank_transfer": {
+    "message": "Transfer bank manual"
+  },
+  "portfolio_payment_method_auto_bank_transfer": {
+    "message": "Transfer bank otomatis"
+  },
+  "paid_hive_account_creation_notification_title": {
+    "message": "Akun Hive dibuat",
+    "description": "Title for the browser notification when a paid Hive account creation completes while Keychain is closed"
+  },
+  "paid_hive_account_creation_notification_message": {
+    "message": "Akun Hive $1 berhasil dibuat dan ditambahkan ke dompet Anda",
+    "description": "Browser notification message when a paid Hive account creation completes while Keychain is closed"
+  },
+  "portfolio_coming_soon_badge": {
+    "message": "Segera"
+  },
+  "portfolio_coming_soon_expected": {
+    "message": "Perkiraan $1",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "Q4 2026"
+      }
+    }
+  },
+  "portfolio_coming_soon_description_buy": {
+    "message": "Segera Anda bisa beli crypto dengan kartu atau transfer, tanpa keluar Keychain."
+  },
+  "portfolio_coming_soon_description_sell": {
+    "message": "Segera Anda bisa jual crypto ke fiat, tanpa keluar Keychain."
+  },
+  "portfolio_coming_soon_description_swap": {
+    "message": "Segera Anda bisa Swap dan Bridge token di rantai yang didukung."
+  },
+  "portfolio_quote_auto_refresh_countdown": {
+    "message": "Muat ulang dalam $1s",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "30"
+      }
+    }
+  },
+  "portfolio_quote_refresh_now": {
+    "message": "Segarkan sekarang"
+  },
+  "portfolio_quote_retry": {
+    "message": "Coba lagi"
+  },
+  "portfolio_quote_refreshing": {
+    "message": "Memperbarui penawaran…"
+  },
+  "portfolio_insufficient_balance": {
+    "message": "Saldo $1 tidak cukup.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "HIVE"
+      }
+    }
+  },
+  "portfolio_history_auto_refresh_countdown": {
+    "message": "Memuat ulang dalam $1s",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "15"
+      }
+    }
+  },
+  "portfolio_history_refresh_now": {
+    "message": "Segarkan sekarang"
+  },
+  "portfolio_history_refreshing": {
+    "message": "Menyegarkan…"
+  },
+  "portfolio_partial_load_error": {
+    "message": "Beberapa network gagal dimuat: $1",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "Ethereum, Polygon"
+      }
+    }
+  },
+  "portfolio_confirmation_provider_account": {
+    "message": "Akun penyedia"
+  },
+  "portfolio_confirmation_evm_destination": {
+    "message": "Alamat penyedia"
+  },
+  "portfolio_confirmation_approval_amount": {
+    "message": "Jumlah approval"
+  },
+  "portfolio_confirmation_approval_spender": {
+    "message": "Pemboros"
+  },
+  "portfolio_approving_smart_contract": {
+    "message": "Menyetujui smart contract"
+  },
+  "portfolio_sending_transaction": {
+    "message": "Mengirim transaksi"
+  },
+  "portfolio_recipient_hive_account": {
+    "message": "Akun Hive penerima"
+  },
+  "portfolio_recipient_bitcoin_address": {
+    "message": "Alamat tujuan Bitcoin"
+  },
+  "portfolio_recipient_solana_address": {
+    "message": "Alamat tujuan Solana"
+  },
+  "portfolio_recipient_sui_address": {
+    "message": "Alamat tujuan Sui"
+  },
+  "portfolio_recipient_tron_address": {
+    "message": "Alamat tujuan Tron"
+  },
+  "portfolio_recipient_destination_address": {
+    "message": "Alamat tujuan"
+  },
+  "portfolio_recipient_address_invalid": {
+    "message": "Masukkan alamat penerima yang valid untuk Swap ini."
+  },
+  "portfolio_estimated_amount": {
+    "message": "Jumlah perkiraan"
+  },
+  "portfolio_quote_provider_fee": {
+    "message": "Biaya penyedia"
+  },
+  "portfolio_quote_provider_fee_undisclosed": {
+    "message": "Tidak diungkap penyedia"
+  },
+  "portfolio_quote_network_fee": {
+    "message": "Biaya network"
+  },
+  "portfolio_view_all_quotes": {
+    "message": "Lihat penawaran ($1)",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "3"
+      }
+    }
+  },
+  "portfolio_hide_quotes": {
+    "message": "Sembunyikan penawaran"
+  },
+  "portfolio_swap_amount_out_of_range": {
+    "message": "Jumlah harus antara $1 dan $2.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "2200"
+      },
+      "2": {
+        "content": "$2",
+        "example": "110000"
+      }
+    }
+  },
+  "portfolio_amount_out_of_range_fiat": {
+    "message": "Jumlah harus antara $1 dan $2 $3.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "908"
+      },
+      "2": {
+        "content": "$2",
+        "example": "334910"
+      },
+      "3": {
+        "content": "$3",
+        "example": "TWD"
+      }
+    }
+  },
+  "portfolio_amount_below_minimum": {
+    "message": "Jumlah minimum adalah $1.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "0.01123"
+      }
+    }
+  },
+  "portfolio_amount_below_minimum_fiat": {
+    "message": "Jumlah minimum adalah $1 $2.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "908"
+      },
+      "2": {
+        "content": "$2",
+        "example": "TWD"
+      }
+    }
+  },
+  "portfolio_amount_above_maximum": {
+    "message": "Jumlah maksimum adalah $1.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "110000"
+      }
+    }
+  },
+  "portfolio_amount_above_maximum_fiat": {
+    "message": "Jumlah maksimum adalah $1 $2.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "334910"
+      },
+      "2": {
+        "content": "$2",
+        "example": "TWD"
+      }
+    }
+  },
+  "portfolio_swap_amount_out_of_range_generic": {
+    "message": "Tidak ada penawaran untuk jumlah ini."
+  },
+  "portfolio_amount_hint_increase": {
+    "message": "Naikkan ke $1 untuk buka $2 penyedia lagi.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "0.1"
+      },
+      "2": {
+        "content": "$2",
+        "example": "2"
+      }
+    }
+  },
+  "portfolio_amount_hint_decrease": {
+    "message": "Turunkan ke $1 untuk buka $2 penyedia lagi.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "10"
+      },
+      "2": {
+        "content": "$2",
+        "example": "2"
+      }
+    }
+  },
+  "portfolio_amount_hint_increase_provider": {
+    "message": "Naikkan ke $1 untuk buka $2.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "0.1"
+      },
+      "2": {
+        "content": "$2",
+        "example": "SimpleSwap"
+      }
+    }
+  },
+  "portfolio_amount_hint_decrease_provider": {
+    "message": "Turunkan ke $1 untuk buka $2.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "10"
+      },
+      "2": {
+        "content": "$2",
+        "example": "SimpleSwap"
+      }
+    }
+  },
+  "portfolio_history_exact_from_amount": {
+    "message": "Jumlah persis dari"
+  },
+  "portfolio_history_exact_to_amount": {
+    "message": "Jumlah persis ke"
+  },
+  "portfolio_history_received_amount": {
+    "message": "Jumlah diterima"
+  },
+  "portfolio_history_estimated_to_amount": {
+    "message": "Perkiraan jumlah ke"
+  },
+  "portfolio_history_fiat_currency": {
+    "message": "Mata uang fiat"
+  },
+  "portfolio_history_payment_method": {
+    "message": "Metode pembayaran"
+  },
+  "portfolio_history_status_verification_required": {
+    "message": "Verifikasi diperlukan"
+  },
+  "portfolio_compliance_review_banner_summary_one": {
+    "message": "1 Swap menunggu tinjauan compliance"
+  },
+  "portfolio_compliance_review_banner_summary": {
+    "message": "$1 Swap menunggu tinjauan compliance",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+  "portfolio_compliance_review_banner_explanation": {
+    "message": "Exchange ini dijeda penyedia untuk KYC atau compliance. Buka tiap Swap untuk hubungi penyedia dengan Exchange ID."
+  },
+  "portfolio_compliance_review_banner_view_history": {
+    "message": "Lihat di Riwayat"
+  },
+  "portfolio_history_compliance_explanation": {
+    "message": "Penyedia menjeda Swap ini untuk compliance. Hubungi mereka dan sertakan Exchange ID."
+  },
+  "portfolio_history_exchange_id": {
+    "message": "Pertukaran ID"
+  },
+  "portfolio_history_contact_provider": {
+    "message": "Hubungi penyedia"
+  },
+  "portfolio_all_networks_short": {
+    "message": "Semua"
+  },
+  "portfolio_to_asset_search": {
+    "message": "Cari simbol atau network"
+  },
+  "portfolio_more_networks": {
+    "message": "Network lainnya"
+  },
+  "portfolio_symbol_filter": {
+    "message": "Filter menurut simbol"
+  },
+  "portfolio_to_asset_filter_hint": {
+    "message": "Menampilkan aset pertama. Cari atau pilih network."
+  },
+  "portfolio_to_asset_results_truncated": {
+    "message": "$1 aset lagi cocok. Persempit pencarian untuk melihatnya.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "120"
+      }
+    }
+  },
+  "portfolio_no_matching_assets": {
+    "message": "Tidak ada aset yang cocok dengan filter."
+  },
+  "portfolio_swap_switch_tokens": {
+    "message": "Tukar token",
+    "description": "Tombol di antara panel dari dan ke pada swap portofolio"
+  },
+  "portfolio_swap_no_wallet_tokens": {
+    "message": "Dompet ini tidak memiliki token."
+  },
+  "portfolio_refresh": {
+    "message": "Segarkan data portfolio"
+  },
+  "html_popup_settings_notifications_channels_title": {
+    "message": "Saluran pengiriman",
+    "description": "Title for local Hive notification drop/browser preferences"
+  },
+  "html_popup_settings_notifications_channels_caption": {
+    "message": "Pilih di mana setiap operasi muncul. Perubahan disimpan lokal untuk akun ini.",
+    "description": "Caption for local Hive notification channel preferences"
+  },
+  "html_popup_settings_notifications_operation": {
+    "message": "Operasi",
+    "description": "Column header for notification operation name"
+  },
+  "html_popup_settings_notifications_operation_placeholder": {
+    "message": "Operasi",
+    "description": "Placeholder for notification operation criteria input"
+  },
+  "html_popup_settings_notifications_channel_drop": {
+    "message": "Menjatuhkan",
+    "description": "Toggle label for in-app notification dropdown"
+  },
+  "html_popup_settings_notifications_channel_browser": {
+    "message": "Notifikasi push",
+    "description": "Toggle label for browser OS push notifications"
+  },
+  "html_popup_settings_notifications_channel_browser_tooltip": {
+    "message": "Tampilkan notifikasi sistem saat operasi ini diterima, meski Keychain tertutup. Disimpan bersama config notifikasi.",
+    "description": "Tooltip explaining the push notification channel toggle"
+  },
+  "html_popup_settings_notifications_condition_field_placeholder": {
+    "message": "Bidang",
+    "description": "Placeholder for notification condition field dropdown"
+  },
+  "html_popup_settings_notifications_condition_operand_placeholder": {
+    "message": "Operator",
+    "description": "Placeholder for notification condition operator dropdown"
+  },
+  "html_popup_settings_notifications_condition_value_placeholder": {
+    "message": "Nilai",
+    "description": "Placeholder for notification condition value input"
+  },
+  "evm_light_node_assets_cache_warning": {
+    "message": "Layanan EVM tidak tersedia. Menampilkan info aset terakhir; saldo bisa refresh, tapi detail token dan NFT mungkin usang.",
+    "description": "Warning shown when EVM token or NFT data is loaded from local cache because the light-node is unavailable"
+  },
+  "hive_push_notification_title": {
+    "message": "$1 · Notifikasi Hive",
+    "description": "Incoming Hive push notification title"
+  },
+  "evm_nft_recipient": {
+    "message": "Recipient",
+    "description": "NFT send recipient field"
+  },
+  "evm_nft_you_own": {
+    "message": "You own $1",
+    "description": "NFT details ownership quantity"
+  },
+  "evm_nft_item_count_one": {
+    "message": "1 item",
+    "description": "NFT collection count when the wallet owns one item"
+  },
+  "evm_nft_item_count_other": {
+    "message": "$1 items",
+    "description": "NFT collection count"
+  },
+  "evm_nft_collection": {
+    "message": "Collection",
+    "description": "NFT collection label when it matches the token name"
+  },
+  "evm_nft_details": {
+    "message": "Details",
+    "description": "NFT details metadata section"
+  },
+  "evm_nft_token_standard": {
+    "message": "Standard",
+    "description": "NFT token standard label"
+  },
+  "evm_nft_quantity": {
+    "message": "Quantity",
+    "description": "ERC-1155 send quantity"
+  },
+  "evm_nft_quantity_decrease": {
+    "message": "Decrease quantity",
+    "description": "ERC-1155 quantity stepper"
+  },
+  "evm_nft_quantity_increase": {
+    "message": "Increase quantity",
+    "description": "ERC-1155 quantity stepper"
+  },
+  "popup_html_continue": {
+    "message": "Continue",
+    "description": "Continue to the next step"
+  },
+  "evm_nft_search_collection": {
+    "message": "Search a collection...",
+    "description": "NFT overview collection search"
+  },
+  "evm_nft_search_nft": {
+    "message": "Search an NFT...",
+    "description": "NFT collection gallery search"
+  },
+  "evm_nft_filter": {
+    "message": "Filter",
+    "description": "NFT gallery filter"
+  },
+  "evm_nft_sort": {
+    "message": "Sort",
+    "description": "NFT gallery sort"
+  },
+  "evm_nft_filter_all": {
+    "message": "All",
+    "description": "NFT gallery filter: all tokens"
+  },
+  "evm_nft_filter_multiple": {
+    "message": "Multiple copies",
+    "description": "NFT gallery filter: balances greater than one"
+  },
+  "evm_nft_sort_name": {
+    "message": "Name",
+    "description": "NFT gallery sort by name"
+  },
+  "evm_nft_sort_token_id": {
+    "message": "Token ID",
+    "description": "NFT gallery sort by token id"
+  },
+  "evm_nft_sort_quantity": {
+    "message": "Quantity",
+    "description": "NFT gallery sort by quantity"
+  },
+  "evm_nft_description": {
+    "message": "Description",
+    "description": "NFT details description tab"
+  },
+  "evm_nft_no_description": {
+    "message": "No description",
+    "description": "NFT details empty description"
+  },
+  "evm_nft_your_balance": {
+    "message": "Your balance",
+    "description": "NFT details owned balance"
+  },
+  "evm_nft_contract": {
+    "message": "Contract",
+    "description": "NFT details contract row"
+  },
+  "evm_nft_copy_token_id": {
+    "message": "Copy token ID",
+    "description": "Copy an NFT token id"
+  },
+  "evm_nft_send_title": {
+    "message": "Send an NFT",
+    "description": "NFT send screen title"
+  },
+  "evm_nft_recipient_placeholder": {
+    "message": "Address or ENS name",
+    "description": "NFT send recipient placeholder"
+  },
+  "evm_batch_title": {
+    "message": "Tinjau kumpulan transaksi"
+  },
+  "evm_batch_non_atomic": {
+    "message": "Ini transaksi terpisah yang dikirim berurutan. Masing-masing membayar gas dan bisa gagal sendiri. Transaksi yang berhasil tidak bisa dibatalkan. Transaksi berikutnya tetap bisa berjalan jika yang sebelumnya gagal."
+  },
+  "evm_batch_call": {
+    "message": "Panggilan $1"
+  },
+  "evm_batch_from": {
+    "message": "Dari"
+  },
+  "evm_batch_total_value": {
+    "message": "Total nilai native"
+  },
+  "evm_batch_total_fee": {
+    "message": "Total biaya jaringan maksimum"
+  },
+  "evm_batch_max_cost": {
+    "message": "Saldo native maksimum yang diperlukan"
+  },
+  "evm_batch_preparing": {
+    "message": "Memperkirakan biaya setiap panggilan…"
+  },
+  "evm_batch_prepare_failed": {
+    "message": "Kumpulan ini tidak bisa disiapkan. Gunakan akun perangkat lunak yang terhubung di jaringan yang sudah ditambahkan. Setiap panggilan harus lolos estimasi gas sendiri. Panggilan yang bergantung pada status sebelumnya mungkin tidak didukung. Batalkan dan coba lagi."
+  },
+  "evm_batch_review_failed": {
+    "message": "Panggilan ini tidak bisa ditinjau dengan aman. Batalkan dan coba lagi kumpulannya."
+  },
+  "evm_batch_status_title": {
+    "message": "Status kumpulan transaksi"
+  },
+  "evm_batch_status_failed": {
+    "message": "Kumpulan ini tidak bisa diambil. Statusnya hanya tersedia untuk aplikasi yang mengirimnya."
+  },
+  "evm_batch_status_100": {
+    "message": "Tertunda — pengiriman atau konfirmasi masih berlangsung."
+  },
+  "evm_batch_status_200": {
+    "message": "Semua panggilan berhasil."
+  },
+  "evm_batch_status_400": {
+    "message": "Kumpulan gagal tanpa transaksi yang disertakan."
+  },
+  "evm_batch_status_500": {
+    "message": "Kumpulan gagal; transaksi yang disertakan dibatalkan."
+  },
+  "evm_batch_status_600": {
+    "message": "Sebagian panggilan berhasil, sebagian gagal."
+  },
+  "evm_batch_call_succeeded": {
+    "message": "Berhasil"
+  },
+  "evm_batch_call_reverted": {
+    "message": "Dibatalkan"
+  },
+  "evm_batch_chain": {
+    "message": "Chain"
+  },
+  "evm_batch_block": {
+    "message": "Blok"
+  },
+  "evm_batch_close": {
+    "message": "Tutup"
   }
 }

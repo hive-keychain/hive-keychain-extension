@@ -1,0 +1,61 @@
+import {
+  RequestId,
+  RequestUpdateProposalVote,
+} from '@interfaces/keychain.interface';
+import { Rpc } from '@interfaces/rpc.interface';
+import React from 'react';
+import { Separator } from 'src/common-ui/separator/separator.component';
+import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with-avatar';
+import RequestItem from 'src/dialog/components/request-item/request-item';
+import Operation from 'src/dialog/hive/operation/operation';
+import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
+
+import { I18nUtils } from 'src/utils/i18n.utils';
+type Props = {
+  data: RequestUpdateProposalVote & RequestId;
+  domain: string;
+  tab: number;
+  rpc: Rpc;
+  accounts?: string[];
+  afterCancel: (requestId: number, tab: number) => void;
+};
+
+const UpdateProposalVote = (props: Props) => {
+  const { data, accounts } = props;
+  const anonymousProps = useAnonymousRequest(data, accounts);
+  const renderUsername = () => {
+    return !accounts && data.username ? (
+      <UsernameWithAvatar title={'dialog_account'} username={data.username} />
+    ) : (
+      <></>
+    );
+  };
+  return (
+    <Operation
+      title={I18nUtils.getMessage('dialog_title_vote_proposal')}
+      {...props}
+      {...anonymousProps}>
+      {renderUsername()}
+      <Separator type={'horizontal'} fullSize />
+      <RequestItem
+        title="dialog_proposal_ids"
+        content={
+          typeof data.proposal_ids === 'string'
+            ? JSON.parse(data.proposal_ids).join(', ')
+            : data.proposal_ids.join(', ')
+        }
+      />
+      <Separator type={'horizontal'} fullSize />
+      <RequestItem
+        title="dialog_approve"
+        content={
+          data.approve
+            ? I18nUtils.getMessage('common_yes')
+            : I18nUtils.getMessage('common_no')
+        }
+      />
+    </Operation>
+  );
+};
+
+export default UpdateProposalVote;

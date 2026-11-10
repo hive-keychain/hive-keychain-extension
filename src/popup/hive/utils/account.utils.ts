@@ -6,9 +6,15 @@ import type {
   ExtendedAccount,
 } from '@hiveio/dhive/lib/index-browser';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
+import {
+  ExportedAccountsV2,
+  ExportedSettings,
+} from '@interfaces/exported-accounts.interface';
 import { HiveInternalMarketLockedInOrders } from '@interfaces/hive-market.interface';
 import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
+import { StoredEvmAccountSource } from '@popup/evm/interfaces/wallet.interface';
 import { AccountValueType } from '@reference-data/account-value-type.enum';
+import { EXPORTABLE_SETTINGS_KEYS } from '@reference-data/exportable-settings.list';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
 import { isWif } from 'hive-keychain-commons';
 import Config from 'src/config';
@@ -27,6 +33,7 @@ import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import FormatUtils from 'src/utils/format.utils';
+import KeychainExportFileUtils from 'src/utils/keychain-export-file.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
@@ -115,9 +122,22 @@ const verifyAccount = async (
 const saveAccounts = async (localAccounts: LocalAccount[], mk: string) => {
   const accounts: Accounts = { list: localAccounts };
   const encyptedAccounts = await AccountUtils.encryptAccounts(accounts, mk);
-  LocalStorageUtils.saveValueInLocalStorage(
+  await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.ACCOUNTS,
     encyptedAccounts,
+  );
+
+  const { default: AccountSelectorOrderUtils } = await import(
+    '@popup/multichain/utils/account-selector-order.utils'
+  );
+  const { EvmWalletUtils } = await import('@popup/evm/utils/wallet.utils');
+  const evmVisibleAccounts = (
+    await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk)
+  ).filter((account) => !account.hide);
+  await AccountSelectorOrderUtils.syncDisplayOrderWithAccounts(
+    mk,
+    localAccounts,
+    evmVisibleAccounts,
   );
 };
 
@@ -359,6 +379,69 @@ const deleteAccount = (
   );
 };
 
+const accountUsesAuthorizedAccount = (
+  account: LocalAccount,
+  authorizedAccountName: string,
+) => {
+  const authorizedAccountRef = `@${authorizedAccountName}`;
+  return [
+    account.keys.activePubkey,
+    account.keys.memoPubkey,
+    account.keys.postingPubkey,
+  ].includes(authorizedAccountRef);
+};
+
+const removeAuthorizedAccountReferences = (
+  account: LocalAccount,
+  authorizedAccountName: string,
+): LocalAccount | undefined => {
+  const authorizedAccountRef = `@${authorizedAccountName}`;
+  const keys = { ...account.keys };
+
+  if (keys.activePubkey === authorizedAccountRef) {
+    delete keys.active;
+    delete keys.activePubkey;
+  }
+  if (keys.postingPubkey === authorizedAccountRef) {
+    delete keys.posting;
+    delete keys.postingPubkey;
+  }
+  if (keys.memoPubkey === authorizedAccountRef) {
+    delete keys.memo;
+    delete keys.memoPubkey;
+  }
+
+  if (Object.keys(keys).length === 0) {
+    return undefined;
+  }
+
+  return { ...account, keys };
+};
+
+const getAccountsAfterAccountRemoval = (
+  accountName: string,
+  accounts: LocalAccount[],
+): LocalAccount[] => {
+  const hasAuthorizedAccountLinked = accounts.some((account) =>
+    accountUsesAuthorizedAccount(account, accountName),
+  );
+  const accountsAfterRemoval = deleteAccount(accountName, accounts);
+
+  if (!hasAuthorizedAccountLinked) {
+    return accountsAfterRemoval;
+  }
+
+  return accountsAfterRemoval.flatMap((account) => {
+    const accountWithoutAuthorizedReference = removeAuthorizedAccountReferences(
+      account,
+      accountName,
+    );
+    return accountWithoutAuthorizedReference
+      ? [accountWithoutAuthorizedReference]
+      : [];
+  });
+};
+
 const isAccountListIdentical = (
   a: LocalAccount[],
   b: LocalAccount[],
@@ -366,16 +449,35 @@ const isAccountListIdentical = (
   return JSON.stringify(a) === JSON.stringify(b);
 };
 /* istanbul ignore next */
-const downloadAccounts = async (acc: LocalAccount[], mk: string) => {
-  const accounts = { list: acc };
-  var data = new Blob([await AccountUtils.encryptAccounts(accounts, mk)], {
+const downloadMultichainAccounts = async (
+  hiveAccounts: LocalAccount[],
+  evmAccounts: StoredEvmAccountSource[],
+  mk: string,
+) => {
+  const settings: ExportedSettings =
+    await LocalStorageUtils.getMultipleValueFromLocalStorage(
+      EXPORTABLE_SETTINGS_KEYS,
+    );
+  const exportedAccounts: ExportedAccountsV2 = {
+    v: 2,
+    hiveAccounts,
+    evmAccounts,
+    settings,
+  };
+  const data = new Blob([await EncryptUtils.encryptJson(exportedAccounts, mk)], {
     type: 'text/plain',
   });
-  var url = window.URL.createObjectURL(data);
+  const url = window.URL.createObjectURL(data);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'accounts.kc';
+  a.download = KeychainExportFileUtils.getKeychainExportFileName();
   a.click();
+};
+
+const downloadAccounts = async (acc: LocalAccount[], mk: string) => {
+  const { EvmWalletUtils } = await import('@popup/evm/utils/wallet.utils');
+  const evmAccounts = await EvmWalletUtils.getAccountsFromLocalStorage(mk);
+  await downloadMultichainAccounts(acc, evmAccounts, mk);
 };
 
 const getAccountValue = (
@@ -794,7 +896,9 @@ const AccountUtils = {
   deleteKey,
   isAccountListIdentical,
   deleteAccount,
+  getAccountsAfterAccountRemoval,
   downloadAccounts,
+  downloadMultichainAccounts,
   getKeys,
   getAccountValue,
   getPublicMemo,

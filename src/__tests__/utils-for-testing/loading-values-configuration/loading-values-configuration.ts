@@ -59,6 +59,7 @@ import { AsyncUtils } from 'src/utils/async.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import PopupUtils from 'src/utils/popup.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const manifestFile = {
   chromium: require('../../../../manifests/chromium/manifest.json'),
 };
@@ -153,9 +154,6 @@ export interface TestsAppLoadingValues {
       getProposalList?: Proposal[];
     };
   };
-  googleAnalytics?: {
-    window?: { gtag?: jest.Mock };
-  };
   popupsRelated?: {
     SurveyUtils?: {
       getSurvey?: jest.Mock;
@@ -215,7 +213,7 @@ const set = (params?: {
 
   /////////
   //chrome related
-  chrome.i18n.getMessage = jest
+  I18nUtils.getMessage = jest
     .fn()
     .mockImplementation(
       params?.app?.chrome?.i18n?.getMessageImplementation ??
@@ -478,12 +476,6 @@ const set = (params?: {
     .mockResolvedValue(
       params?.app?.proposal?.ProposalUtils?.getProposalList ?? [],
     );
-  //////////
-
-  window.gtag =
-    params?.app?.googleAnalytics?.window?.gtag ??
-    jest.fn().mockImplementation(() => undefined);
-
   /////////
   //AppPopups related (including: survey, governance, whats'new)
   SurveyUtils.getSurvey =

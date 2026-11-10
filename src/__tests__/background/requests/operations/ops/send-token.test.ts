@@ -1,4 +1,5 @@
 import LedgerModule from '@background/ledger.module';
+import { KeychainError } from 'src/keychain-error';
 import { broadcastSendToken } from '@background/requests/operations/ops/send-token';
 import { RequestsHandler } from '@background/requests/request-handler';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
@@ -18,6 +19,7 @@ import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import { mockHiveTxCreateTransactionForLedger } from 'src/__tests__/utils-for-testing/mocks/hive-tx-ledger.helpers';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('send-token tests:\n', () => {
   const data = {
     domain: 'domain',
@@ -37,11 +39,12 @@ describe('send-token tests:\n', () => {
     jest.resetAllMocks();
   });
   beforeEach(() => {
+    jest.spyOn(TokensUtils, 'getTokenPrecision').mockResolvedValue(3);
     jest
       .spyOn(AccountUtils, 'getExtendedAccount')
       .mockResolvedValue(accounts.extended);
     jest.spyOn(chrome.i18n, 'getUILanguage').mockReturnValueOnce('en-US');
-    chrome.i18n.getMessage = jest
+    I18nUtils.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom);
   });
@@ -55,14 +58,15 @@ describe('send-token tests:\n', () => {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          error: new Error('html_popup_error_while_signing_transaction'),
+          error: new KeychainError('html_popup_error_while_signing_transaction'),
           result: undefined,
           data: datas,
-          message: chrome.i18n.getMessage(
-            'html_popup_error_while_signing_transaction',
-          ),
+          message: I18nUtils.getMessage('html_popup_error_while_signing_transaction'),
+          messageKey: 'html_popup_error_while_signing_transaction',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -88,9 +92,14 @@ describe('send-token tests:\n', () => {
             tx_id: 'tx_id',
           },
           data: datas,
-          message: chrome.i18n.getMessage('bgd_ops_tokens'),
+          message: I18nUtils.getMessage('bgd_ops_tokens'),
+          messageKey: 'bgd_ops_tokens',
+          messageParams: undefined,
+          messageKey: 'bgd_ops_tokens',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -126,9 +135,14 @@ describe('send-token tests:\n', () => {
             tx_id: 'tx_id',
           },
           data: datas,
-          message: chrome.i18n.getMessage('bgd_ops_tokens'),
+          message: I18nUtils.getMessage('bgd_ops_tokens'),
+          messageKey: 'bgd_ops_tokens',
+          messageParams: undefined,
+          messageKey: 'bgd_ops_tokens',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });

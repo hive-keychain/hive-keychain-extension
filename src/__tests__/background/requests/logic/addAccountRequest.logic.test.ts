@@ -4,6 +4,7 @@ import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import keychainRequest from 'src/__tests__/utils-for-testing/data/keychain-request';
 import * as DialogLifeCycle from 'src/background/requests/dialog-lifecycle';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('addAccountRequest.logic tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -25,7 +26,7 @@ describe('addAccountRequest.logic tests:\n', () => {
       accounts.local.one,
     );
     expect(sCreatePopup.mock.calls[0][0].toString()).toContain(
-      "chrome.i18n.getMessage('popup_accounts_already_registered",
+      "I18nUtils.getMessage('popup_accounts_already_registered",
     );
   });
 

@@ -1,4 +1,5 @@
 import { TransactionOptions } from '@interfaces/keys.interface';
+import { Screen } from '@interfaces/screen.interface';
 import { PendingUnstaking, Token } from '@interfaces/tokens.interface';
 import { loadPendingUnstaking } from '@popup/hive/actions/token.actions';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
@@ -16,7 +17,6 @@ import {
 } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
-import { Screen } from '@reference-data/screen.enum';
 import Decimal from 'decimal.js';
 import { KeychainKeyTypes } from 'hive-keychain-commons';
 import moment from 'moment';
@@ -26,11 +26,12 @@ import {
   ConfirmationPageFields,
   ConfirmationPageFieldType,
 } from 'src/common-ui/confirmation-page/confirmation-field.interface';
-import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
+import { HiveConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {}
 
 const TokenPendingUnstake = ({
@@ -82,7 +83,7 @@ const TokenPendingUnstake = ({
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
-      message: chrome.i18n.getMessage('html_popup_cancel_unstaking_message'),
+      message: I18nUtils.getMessage('html_popup_cancel_unstaking_message'),
       title: 'html_popup_pending_unstake',
       titleParams: [tokenInfo.symbol],
       fields: fields,
@@ -110,7 +111,7 @@ const TokenPendingUnstake = ({
           removeFromLoadingList('html_popup_canceling_unstake_token');
         }
       },
-    } as ConfirmationPageParams);
+    } as HiveConfirmationPageParams);
   };
 
   return (
@@ -119,7 +120,7 @@ const TokenPendingUnstake = ({
         <div className="panel">
           <div className="total">
             <div className="label">
-              {chrome.i18n.getMessage('html_popup_total_pending_unstake')}
+              {I18nUtils.getMessage('html_popup_total_pending_unstake')}
             </div>
             <div className="value">
               {FormatUtils.formatCurrencyValue(
@@ -134,7 +135,7 @@ const TokenPendingUnstake = ({
               <div className="unstaking-row" key={`unstaking-${index}`}>
                 <div className="left">
                   <div className="top">
-                    {chrome.i18n.getMessage(
+                    {I18nUtils.getMessage(
                       'html_popup_remaining_transaction',
                       [unstaking.numberTransactionsLeft.toString()],
                     )}
@@ -160,7 +161,7 @@ const TokenPendingUnstake = ({
                     />
 
                     <span>
-                      {chrome.i18n.getMessage(
+                      {I18nUtils.getMessage(
                         'html_popup_unstake_per_transaction',
                         [
                           FormatUtils.formatCurrencyValue(

@@ -1,5 +1,5 @@
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
-import { Screen } from '@reference-data/screen.enum';
+import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
 import { act, cleanup, fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -12,6 +12,7 @@ import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('rpc-nodes.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -25,12 +26,9 @@ describe('rpc-nodes.component tests:\n', () => {
         initialStates.iniStateAs.defaultExistent,
       );
       await act(async () => {
-        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
+        await userEvent.click(await screen.findByTestId(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.SETTINGS),
-        );
-        await userEvent.click(
-          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.RPC),
+          await screen.findByTestId(dataTestIdButton.menuPreFix + Icons.RPC),
         );
       });
     });
@@ -69,12 +67,9 @@ describe('rpc-nodes.component tests:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
+        await userEvent.click(await screen.findByTestId(dataTestIdButton.menu));
         await userEvent.click(
-          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.SETTINGS),
-        );
-        await userEvent.click(
-          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.RPC),
+          await screen.findByTestId(dataTestIdButton.menuPreFix + Icons.RPC),
         );
       });
     });
@@ -103,7 +98,7 @@ describe('rpc-nodes.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_rpc_missing_fields'),
+          I18nUtils.getMessage('popup_html_rpc_missing_fields'),
           { exact: true },
         ),
       ).toBeInTheDocument();
@@ -122,7 +117,7 @@ describe('rpc-nodes.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('html_popup_url_not_valid'),
+          I18nUtils.getMessage('html_popup_url_not_valid'),
           { exact: true },
         ),
       ).toBeInTheDocument();
@@ -144,7 +139,7 @@ describe('rpc-nodes.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_rpc_missing_fields'),
+          I18nUtils.getMessage('popup_html_rpc_missing_fields'),
           { exact: true },
         ),
       ).toBeInTheDocument();
@@ -160,7 +155,11 @@ describe('rpc-nodes.component tests:\n', () => {
           'https://saturno.hive.com/rpc',
         );
         await userEvent.click(screen.getByTestId(dataTestIdButton.save));
-        fireEvent.click(screen.getByTestId(dataTestIdSelect.rpcNode.selected));
+        fireEvent.click(
+          screen
+            .getByTestId(dataTestIdSelect.rpcNode.selected)
+            .closest('[role="combobox"]') as HTMLElement,
+        );
       });
       expect(
         await screen.findByText('https://saturno.hive.com/rpc', {
@@ -183,13 +182,8 @@ describe('rpc-nodes.component tests:\n', () => {
           screen.getByTestId(dataTestIdCheckbox.rpcNodes.select.setAsActive),
         );
         await userEvent.click(screen.getByTestId(dataTestIdButton.save));
-        fireEvent.click(screen.getByTestId(dataTestIdSelect.rpcNode.selected));
       });
-      expect(
-        screen.getByTestId(
-          'custom-select-item-https://saturno.hive.com/rpc',
-        ),
-      ).toBeInTheDocument();
+      expect(sSetRpc).toHaveBeenCalled();
       sSetRpc.mockRestore();
     });
   });

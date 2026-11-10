@@ -1,4 +1,5 @@
 import LedgerModule from '@background/ledger.module';
+import { KeychainError } from 'src/keychain-error';
 import {
   broadcastCreateProposal,
   broadcastRemoveProposal,
@@ -20,6 +21,7 @@ import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import { mockHiveTxCreateTransactionForLedger } from 'src/__tests__/utils-for-testing/mocks/hive-tx-ledger.helpers';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('proposals tests:\n', () => {
   const data = {
     create: {
@@ -62,7 +64,7 @@ describe('proposals tests:\n', () => {
   });
   beforeEach(() => {
     jest.spyOn(chrome.i18n, 'getUILanguage').mockReturnValueOnce('en-US');
-    chrome.i18n.getMessage = jest
+    I18nUtils.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom);
   });
@@ -89,6 +91,7 @@ describe('proposals tests:\n', () => {
           data: datas,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         });
       });
 
@@ -105,14 +108,15 @@ describe('proposals tests:\n', () => {
           command: DialogCommand.ANSWER_REQUEST,
           msg: {
             success: false,
-            error: new Error('html_popup_error_while_signing_transaction'),
+            error: new KeychainError('html_popup_error_while_signing_transaction'),
             result: undefined,
             data: datas,
-            message: chrome.i18n.getMessage(
-              'html_popup_error_while_signing_transaction',
-            ),
+            message: I18nUtils.getMessage('html_popup_error_while_signing_transaction'),
+          messageKey: 'html_popup_error_while_signing_transaction',
+          messageParams: undefined,
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });
@@ -142,9 +146,12 @@ describe('proposals tests:\n', () => {
               tx_id: 'tx_id',
             },
             data: datas,
-            message: chrome.i18n.getMessage('bgd_ops_proposal_create'),
+            message: I18nUtils.getMessage('bgd_ops_proposal_create'),
+          messageKey: 'bgd_ops_proposal_create',
+          messageParams: undefined,
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });
@@ -184,9 +191,12 @@ describe('proposals tests:\n', () => {
               tx_id: 'tx_id',
             },
             data: datas,
-            message: chrome.i18n.getMessage('bgd_ops_proposal_create'),
+            message: I18nUtils.getMessage('bgd_ops_proposal_create'),
+          messageKey: 'bgd_ops_proposal_create',
+          messageParams: undefined,
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });
@@ -208,14 +218,15 @@ describe('proposals tests:\n', () => {
           command: DialogCommand.ANSWER_REQUEST,
           msg: {
             success: false,
-            error: new Error('html_popup_error_while_signing_transaction'),
+            error: new KeychainError('html_popup_error_while_signing_transaction'),
             result: undefined,
             data: datas,
-            message: chrome.i18n.getMessage(
-              'html_popup_error_while_signing_transaction',
-            ),
+            message: I18nUtils.getMessage('html_popup_error_while_signing_transaction'),
+          messageKey: 'html_popup_error_while_signing_transaction',
+          messageParams: undefined,
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });
@@ -246,11 +257,16 @@ describe('proposals tests:\n', () => {
               tx_id: 'tx_id',
             },
             data: datas,
-            message: chrome.i18n.getMessage('bgd_ops_proposal_votes', [
+            message: I18nUtils.getMessage('bgd_ops_proposal_votes', [
               data.update.proposal_ids.join(', #'),
             ]),
+          messageKey: 'bgd_ops_proposal_votes',
+          messageParams: [
+              data.update.proposal_ids.join(', #'),
+            ],
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });
@@ -282,12 +298,12 @@ describe('proposals tests:\n', () => {
               tx_id: 'tx_id',
             },
             data: datas,
-            message: chrome.i18n.getMessage(
-              'bgd_ops_proposal_vote',
-              ids_parsed.join(', #'),
-            ),
+            message: I18nUtils.getMessage('bgd_ops_proposal_vote', [ids_parsed[0]]),
+            messageKey: 'bgd_ops_proposal_vote',
+            messageParams: [ids_parsed[0]],
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });
@@ -306,7 +322,7 @@ describe('proposals tests:\n', () => {
           requestHandler,
           data.update,
         );
-        const ids = data.update.proposal_ids[0].toString();
+        const id = data.update.proposal_ids[0];
         const { request_id, ...datas } = data.update;
         expect(result).toEqual({
           command: DialogCommand.ANSWER_REQUEST,
@@ -319,9 +335,12 @@ describe('proposals tests:\n', () => {
               tx_id: 'tx_id',
             },
             data: datas,
-            message: chrome.i18n.getMessage('bgd_ops_proposal_vote', [ids]),
+            message: I18nUtils.getMessage('bgd_ops_proposal_vote', [id]),
+            messageKey: 'bgd_ops_proposal_vote',
+            messageParams: [id],
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });
@@ -354,9 +373,12 @@ describe('proposals tests:\n', () => {
               tx_id: 'tx_id',
             },
             data: datas,
-            message: chrome.i18n.getMessage('bgd_ops_proposal_unvotes', [ids]),
+            message: I18nUtils.getMessage('bgd_ops_proposal_unvotes', [ids]),
+          messageKey: 'bgd_ops_proposal_unvotes',
+          messageParams: [ids],
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });
@@ -376,7 +398,7 @@ describe('proposals tests:\n', () => {
           requestHandler,
           data.update,
         );
-        const ids = data.update.proposal_ids[0].toString();
+        const id = data.update.proposal_ids[0];
         const { request_id, ...datas } = data.update;
         expect(result).toEqual({
           command: DialogCommand.ANSWER_REQUEST,
@@ -389,9 +411,12 @@ describe('proposals tests:\n', () => {
               tx_id: 'tx_id',
             },
             data: datas,
-            message: chrome.i18n.getMessage('bgd_ops_proposal_unvote', [ids]),
+            message: I18nUtils.getMessage('bgd_ops_proposal_unvote', [id]),
+            messageKey: 'bgd_ops_proposal_unvote',
+            messageParams: [id],
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });
@@ -432,11 +457,14 @@ describe('proposals tests:\n', () => {
               tx_id: 'tx_id',
             },
             data: datas,
-            message: chrome.i18n.getMessage('bgd_ops_proposal_vote', [
-              datas.proposal_ids[0].toString(),
+            message: I18nUtils.getMessage('bgd_ops_proposal_vote', [
+              datas.proposal_ids[0],
             ]),
+            messageKey: 'bgd_ops_proposal_vote',
+            messageParams: [datas.proposal_ids[0]],
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });
@@ -473,9 +501,12 @@ describe('proposals tests:\n', () => {
               tx_id: 'tx_id',
             },
             data: datas,
-            message: chrome.i18n.getMessage('bgd_ops_proposal_vote', ['1']),
+            message: I18nUtils.getMessage('bgd_ops_proposal_vote', ['1']),
+          messageKey: 'bgd_ops_proposal_vote',
+          messageParams: [1],
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });
@@ -508,6 +539,7 @@ describe('proposals tests:\n', () => {
             message: (result.msg.error as SyntaxError).message,
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });
@@ -537,6 +569,7 @@ describe('proposals tests:\n', () => {
             message: (result.msg.error as SyntaxError).message,
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });
@@ -555,14 +588,15 @@ describe('proposals tests:\n', () => {
           command: DialogCommand.ANSWER_REQUEST,
           msg: {
             success: false,
-            error: new Error('html_popup_error_while_signing_transaction'),
+            error: new KeychainError('html_popup_error_while_signing_transaction'),
             result: undefined,
             data: datas,
-            message: chrome.i18n.getMessage(
-              'html_popup_error_while_signing_transaction',
-            ),
+            message: I18nUtils.getMessage('html_popup_error_while_signing_transaction'),
+          messageKey: 'html_popup_error_while_signing_transaction',
+          messageParams: undefined,
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });
@@ -594,9 +628,12 @@ describe('proposals tests:\n', () => {
               tx_id: 'tx_id',
             },
             data: datas,
-            message: chrome.i18n.getMessage('bgd_ops_proposal_remove', [ids]),
+            message: I18nUtils.getMessage('bgd_ops_proposal_remove', [ids]),
+          messageKey: 'bgd_ops_proposal_remove',
+          messageParams: [ids],
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });
@@ -638,9 +675,12 @@ describe('proposals tests:\n', () => {
               tx_id: 'tx_id',
             },
             data: datas,
-            message: chrome.i18n.getMessage('bgd_ops_proposal_remove', [ids]),
+            message: I18nUtils.getMessage('bgd_ops_proposal_remove', [ids]),
+          messageKey: 'bgd_ops_proposal_remove',
+          messageParams: [ids],
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });
@@ -676,9 +716,12 @@ describe('proposals tests:\n', () => {
               tx_id: 'tx_id',
             },
             data: datas,
-            message: chrome.i18n.getMessage('bgd_ops_proposal_remove', ['1']),
+            message: I18nUtils.getMessage('bgd_ops_proposal_remove', [[1]]),
+            messageKey: 'bgd_ops_proposal_remove',
+            messageParams: [[1]],
             request_id: request_id,
             publicKey: undefined,
+          tab: undefined,
           },
         });
       });

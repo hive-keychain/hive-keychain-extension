@@ -10,13 +10,20 @@
     row-gap: 16px;
   }
 
-  .label-title {
-    @include poppins600(14px);
-    color: var(--main-font-color);
-  }
+  .signing-key-tooltip {
+    display: block;
+    width: 100%;
+    grid-column: 1 / -1;
+    min-width: 0;
 
-  .smaller-text {
-    @include poppins500(12px);
-    color: var(--main-font-color);
+    .witness-info-data {
+      width: 100%;
+      box-sizing: border-box;
+    }
   }
+}
+
+.signing-key-tooltip.tooltip-portal .tooltip {
+  width: max-content;
+  max-width: min(360px, calc(100vw - 24px));
 }

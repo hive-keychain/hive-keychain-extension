@@ -9,27 +9,15 @@ import {
   NotificationConfigConditions,
   NotificationConfigForm,
   NotificationConfigFormItem,
+  NotificationConfigItem,
   NotificationOperationName,
   NotificationType,
+  NOTIFICATION_PUSH_EXTENSION_NAME,
 } from '@interfaces/notifications.interface';
 import { CustomJsonUtils } from '@popup/hive/utils/custom-json.utils';
-import { Asset } from 'hive-keychain-commons';
+import { PeakDNotificationContentUtils } from '@popup/hive/utils/notifications/peakd-notification-content.utils';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import moment from 'moment';
-import FormatUtils from 'src/utils/format.utils';
-
-const buildNotificationPostUrl = (author: string, permlink: string) =>
-  `https://peakd.com/@${encodeURIComponent(author)}/${encodeURIComponent(
-    permlink,
-  )}`;
-
-const buildNotificationPostLabel = (
-  author: string,
-  permlink: string,
-  withAtPrefix = false,
-) => `${withAtPrefix ? '@' : ''}${author}/${permlink}`;
-
-const buildNotificationTxUrl = (transactionId: string) =>
-  `https://hivehub.dev/tx/${encodeURIComponent(transactionId)}`;
 
 const operationFieldList = [
   // {
@@ -482,19 +470,50 @@ const getAccountConfig = async (username: string) => {
   return PeakDNotificationsApi.get(`users/${username}`);
 };
 
+const isPushNotificationEnabled = (item: NotificationConfigItem): boolean => {
+  const extension = item.extensions?.find(
+    (entry) => entry.name === NOTIFICATION_PUSH_EXTENSION_NAME,
+  );
+  return extension?.value === true;
+};
+
+const isPushNotificationEnabledForOperation = (
+  config: NotificationConfig,
+  operation: string,
+): boolean =>
+  config.some(
+    (item) =>
+      item.operation === operation && isPushNotificationEnabled(item),
+  );
+
+const getPushNotificationFromExtensions = (
+  item: NotificationConfigItem,
+): boolean => isPushNotificationEnabled(item);
+
+const buildPushNotificationExtensions = (pushNotification: boolean) => {
+  if (!pushNotification) {
+    return undefined;
+  }
+  return [
+    {
+      name: NOTIFICATION_PUSH_EXTENSION_NAME,
+      value: true as const,
+    },
+  ];
+};
+
 const initializeForm = (config: NotificationConfig): NotificationConfigForm => {
   const configForm: NotificationConfigForm = [];
 
-  config.forEach((configItem, indexConfigItem) => {
+  config.forEach((configItem) => {
     const configFormItem: NotificationConfigFormItem = {
-      // id: indexConfigItem,
       operation: configItem.operation,
       conditions: [],
+      pushNotification: getPushNotificationFromExtensions(configItem),
     };
     if (configItem.conditions) {
-      Object.keys(configItem.conditions).forEach((field, indexCondition) => {
+      Object.keys(configItem.conditions).forEach((field) => {
         configFormItem.conditions?.push({
-          // id: indexCondition,
           field: field,
           operand: configItem.conditions
             ? Object.keys(configItem.conditions[field])[0]
@@ -514,15 +533,19 @@ const initializeForm = (config: NotificationConfig): NotificationConfigForm => {
 const formatConfigForm = (form: NotificationConfigForm) => {
   const config: NotificationConfig = [];
   for (const item of form) {
-    const criteria = {
+    const criteria: NotificationConfigItem = {
       operation: item.operation,
       conditions: {} as NotificationConfigConditions,
     };
     for (const condition of item.conditions) {
       if (condition.field.length > 0 && condition.operand.length > 0)
-        criteria.conditions[condition.field] = {
+        criteria.conditions![condition.field] = {
           [condition.operand]: condition.value,
         };
+    }
+    const extensions = buildPushNotificationExtensions(item.pushNotification);
+    if (extensions) {
+      criteria.extensions = extensions;
     }
     config.push(criteria);
   }
@@ -533,37 +556,45 @@ const getSuggestedConfig = (username: string) => {
   const configForm: NotificationConfigForm = [];
   configForm.push({
     operation: 'transfer',
+    pushNotification: true,
     conditions: [{ field: 'to', operand: '==', value: username }],
   });
   configForm.push({
     operation: 'comment',
+    pushNotification: true,
     conditions: [{ field: 'body', operand: 'regex', value: `@${username}` }],
   });
   configForm.push({
     operation: 'comment',
+    pushNotification: true,
     conditions: [
       { field: 'parent_author', operand: '==', value: `${username}` },
     ],
   });
   configForm.push({
     operation: 'recurrent_transfer',
+    pushNotification: true,
     conditions: [{ field: 'to', operand: '==', value: username }],
   });
   configForm.push({
     operation: 'delegate_vesting_shares',
+    pushNotification: true,
     conditions: [{ field: 'delegatee', operand: '==', value: username }],
   });
   configForm.push({
     operation: 'custom_json',
+    pushNotification: true,
     conditions: [{ field: 'id', operand: '==', value: 'follow' }],
   });
   configForm.push({
     operation: 'custom_json',
+    pushNotification: true,
     conditions: [{ field: 'id', operand: '==', value: 'reblog' }],
   });
   for (const sub of suggestedConfig) {
     configForm.push({
       operation: sub as NotificationOperationName,
+      pushNotification: true,
       conditions: [{ field: '', operand: '', value: '' }],
     });
   }
@@ -571,18 +602,42 @@ const getSuggestedConfig = (username: string) => {
   return configForm;
 };
 
+const notifyPushSubscriptionsSync = (payload: {
+  username: string;
+  config?: NotificationConfig;
+  deleted?: boolean;
+}) => {
+  void chrome.runtime
+    .sendMessage({
+      command: BackgroundCommand.SYNC_HIVE_PUSH_NOTIFICATIONS,
+      value: {
+        username: payload.username.trim().toLowerCase(),
+        config: payload.config,
+        deleted: payload.deleted === true,
+      },
+    })
+    .catch(() => undefined);
+};
+
 const saveConfiguration = async (
   form: NotificationConfigForm,
   account: LocalAccount,
 ) => {
   const config = formatConfigForm(form);
-  return await CustomJsonUtils.send(
+  const response = await CustomJsonUtils.send(
     ['update_account', { config }],
     account.name,
     account.keys.posting!,
     KeyType.POSTING,
     'notify',
   );
+  if (response?.tx_id) {
+    notifyPushSubscriptionsSync({
+      username: account.name,
+      config,
+    });
+  }
+  return response;
 };
 
 const getNotifications = async (
@@ -611,442 +666,26 @@ const getNotifications = async (
   );
 
   for (const [index, notif] of rawNotifications.entries()) {
-    const payload = JSON.parse(notif.payload);
-    let messageParams: string[] = [];
-    let message: string = `notification_${notif.operation}`;
-    let externalUrl;
-    let linkLabel;
-    let linkUrl;
-    switch (notif.operation_type) {
-      case 'custom_json.follow': {
-        const json = payload.json[1];
-        message =
-          json.what && json.what.length > 0
-            ? 'notification_follow'
-            : 'notification_unfollow';
-        messageParams = [json.follower, json.following];
-        break;
-      }
-      case 'custom_json.reblog':
-        const json = payload.json[1];
-        message = json.delete ? 'notification_unreblog' : 'notification_reblog';
-        messageParams = [json.account, json.author, json.permlink];
-        linkUrl = buildNotificationPostUrl(json.author, json.permlink);
-        linkLabel = buildNotificationPostLabel(json.author, json.permlink);
-        break;
-      case 'transfer': {
-        if (typeof payload.amount !== 'string')
-          payload.amount = FormatUtils.fromNaiAndSymbol(payload.amount);
-
-        const amount = FormatUtils.withCommas(payload.amount, 3);
-        if (payload.to === username) {
-          messageParams = [amount, payload.from];
-          message = 'popup_html_wallet_info_transfer_in';
-        } else {
-          messageParams = [amount, payload.to];
-          message = 'popup_html_wallet_info_transfer_out';
-        }
-        break;
-      }
-      case 'fill_recurrent_transfer': {
-        const amount = FormatUtils.withCommas(payload.amount, 3);
-        if (payload.to === username) {
-          messageParams = [amount, payload.from, payload.remaining_executions];
-          message = 'popup_html_wallet_info_fill_recurrent_transfer_in';
-        } else {
-          messageParams = [amount, payload.to, payload.remaining_executions];
-          message = 'popup_html_wallet_info_fill_recurrent_transfer_out';
-        }
-
-        break;
-      }
-      case 'account_update':
-      case 'account_update2': {
-        message = 'notification_account_update';
-        messageParams = [payload.account];
-        break;
-      }
-      case 'account_witness_proxy': {
-        message = 'notification_account_witness_proxy';
-        messageParams = [payload.account, payload.proxy];
-        break;
-      }
-      case 'account_witness_vote': {
-        if (payload.approve) {
-          message = 'notification_account_witness_vote';
-          messageParams = [payload.account, payload.witness];
-        } else {
-          message = 'notification_account_witness_unvote';
-          messageParams = [payload.account, payload.witness];
-        }
-        break;
-      }
-      case 'change_recovery_account': {
-        message = 'notification_change_recovery_account';
-        messageParams = [
-          payload.account_to_recover,
-          payload.new_recovery_account,
-        ];
-        break;
-      }
-      case 'claim_account': {
-        message = 'popup_html_wallet_info_claim_account';
-        break;
-      }
-      case 'comment': {
-        const replyTrigger = `"parent_author":{"==":"${username}"}`;
-        if (notif.trigger.includes(replyTrigger)) {
-          // case response
-          message = 'notification_answer';
-          messageParams = [
-            notif.sender,
-            payload.author,
-            payload.parent_permlink,
-          ];
-          linkUrl = buildNotificationPostUrl(
-            payload.parent_author,
-            payload.parent_permlink,
-          );
-          linkLabel = buildNotificationPostLabel(
-            payload.parent_author,
-            payload.parent_permlink,
-          );
-        } else {
-          // case mention
-          message = 'notification_mention';
-          messageParams = [
-            notif.sender,
-            notif.account,
-            payload.author,
-            payload.permlink,
-          ];
-          linkUrl = buildNotificationPostUrl(payload.author, payload.permlink);
-          linkLabel = buildNotificationPostLabel(
-            payload.author,
-            payload.permlink,
-          );
-        }
-        externalUrl = buildNotificationPostUrl(
-          payload.author,
-          payload.permlink,
-        );
-        break;
-      }
-      case 'delegate_vesting_shares': {
-        if (Asset.fromString(payload.vesting_shares).amount > 0) {
-          message = 'notification_delegation';
-          messageParams = [
-            payload.delegator,
-            FormatUtils.toFormattedHP(
-              payload.vesting_shares.toString().replace('VESTS', ''),
-              globalProperties,
-            ),
-            payload.delegatee,
-          ];
-        } else {
-          message = 'notification_cancel_delegation';
-          messageParams = [payload.delegator, payload.delegatee];
-        }
-        break;
-      }
-      case 'feed_publish': {
-        // TODO check payload
-        break;
-      }
-      case 'recover_account': {
-        message = 'notification_requested_account_recovery';
-        messageParams = [payload.account_to_recover, payload.recovery_account];
-        break;
-      }
-      case 'request_account_recovery': {
-        message = 'notification_recovered_account';
-        messageParams = [payload.account_to_recover];
-        break;
-      }
-      case 'set_withdraw_vesting_route': {
-        message = 'notification_set_power_down_route';
-        messageParams = [payload.from_account, payload.to_account];
-        break;
-      }
-      case 'transfer_from_savings': {
-        message = 'popup_html_wallet_info_withdraw_savings';
-        const amount = FormatUtils.withCommas(payload.amount, 3);
-        messageParams = [amount];
-        break;
-      }
-      case 'transfer_to_savings': {
-        message = 'popup_html_wallet_info_deposit_savings';
-        const amount = FormatUtils.withCommas(payload.amount, 3);
-        messageParams = [amount];
-        break;
-      }
-      case 'transfer_to_vesting': {
-        const amount = FormatUtils.withCommas(payload.amount, 3);
-        if (payload.to === username) {
-          message = 'popup_html_wallet_info_power_up';
-          messageParams = [amount];
-        } else {
-          message = 'popup_html_wallet_info_power_up_other_account';
-          messageParams = [payload.from, amount, payload.to];
-        }
-        break;
-      }
-      case 'vote': {
-        message = 'notification_vote';
-        messageParams = [payload.voter, payload.author, payload.permlink];
-        externalUrl = buildNotificationPostUrl(
-          payload.author,
-          payload.permlink,
-        );
-        linkUrl = externalUrl;
-        linkLabel = buildNotificationPostLabel(
-          payload.author,
-          payload.permlink,
-          true,
-        );
-        break;
-      }
-      case 'withdraw_vesting': {
-        message = 'bgd_ops_pd';
-        messageParams = [
-          FormatUtils.toFormattedHP(
-            payload.vesting_shares.toString().replace('VESTS', ''),
-            globalProperties,
-          ),
-          payload.account,
-        ];
-        break;
-      }
-      case 'recurrent_transfer': {
-        const amount = FormatUtils.withCommas(payload.amount, 3);
-
-        message = 'notification_recurrent_transfer';
-        messageParams = [
-          payload.from,
-          amount,
-          payload.to,
-          payload.executions,
-          payload.recurrence,
-        ];
-        break;
-      }
-      case 'fill_convert_request': {
-        const amountIn = FormatUtils.withCommas(payload.amount_in, 3);
-        const amountOut = FormatUtils.withCommas(payload.amount_out, 3);
-
-        message = 'notification_fill_convert';
-        messageParams = [payload.owner, amountIn, amountOut];
-        break;
-      }
-      case 'author_reward': {
-        message = 'notification_author_reward';
-        messageParams = [
-          payload.author,
-          FormatUtils.withCommas(payload.hbd_payout, 3),
-          FormatUtils.withCommas(payload.hive_payout, 3),
-          FormatUtils.toFormattedHP(
-            payload.vesting_payout.toString().replace('VESTS', ''),
-            globalProperties,
-          ),
-          payload.permlink,
-        ];
-        externalUrl = buildNotificationPostUrl(
-          payload.author,
-          payload.permlink,
-        );
-        linkUrl = externalUrl;
-        linkLabel = buildNotificationPostLabel(
-          payload.author,
-          payload.permlink,
-        );
-
-        break;
-      }
-      case 'curation_reward': {
-        message = 'notification_curation_reward';
-        messageParams = [
-          payload.curator,
-          FormatUtils.toFormattedHP(
-            payload.reward.toString().replace('VESTS', ''),
-            globalProperties,
-          ),
-          payload.comment_author,
-          payload.comment_permlink,
-        ];
-        externalUrl = buildNotificationPostUrl(
-          payload.comment_author,
-          payload.comment_permlink,
-        );
-        linkUrl = externalUrl;
-        linkLabel = buildNotificationPostLabel(
-          payload.comment_author,
-          payload.comment_permlink,
-          true,
-        );
-        break;
-      }
-      case 'comment_reward': {
-        message = 'notification_comment_reward';
-        messageParams = [
-          payload.author,
-          FormatUtils.withCommas(payload.payout, 3),
-          payload.permlink,
-        ];
-        externalUrl = buildNotificationPostUrl(
-          payload.author,
-          payload.permlink,
-        );
-        linkUrl = externalUrl;
-        linkLabel = buildNotificationPostLabel(
-          payload.author,
-          payload.permlink,
-        );
-        break;
-      }
-      case 'interest': {
-        message = 'notification_hbd_interest';
-        messageParams = [
-          payload.owner,
-          FormatUtils.withCommas(payload.interest, 3),
-        ];
-        break;
-      }
-      case 'fill_vesting_withdraw': {
-        if (username === payload.from_account) {
-          message = 'notification_fill_power_down';
-          messageParams = [
-            payload.to_account,
-            FormatUtils.toFormattedHP(
-              payload.withdrawn.toString().replace('VESTS', ''),
-              globalProperties,
-            ),
-          ];
-        } else {
-          message = 'notification_fill_power_down_other_account';
-          messageParams = [
-            payload.to_account,
-            FormatUtils.toFormattedHP(
-              payload.withdrawn.toString().replace('VESTS', ''),
-              globalProperties,
-            ),
-            payload.from_account,
-          ];
-        }
-        break;
-      }
-      case 'fill_order': {
-        message = 'notification_fill_order';
-        messageParams = [
-          payload.current_owner,
-          payload.open_owner,
-          FormatUtils.withCommas(payload.current_pays, 3),
-          FormatUtils.withCommas(payload.open_pays, 3),
-        ];
-        break;
-      }
-      case 'fill_transfer_from_savings': {
-        const amount = FormatUtils.withCommas(payload.amount, 3);
-        if (payload.from === payload.to) {
-          message = 'notification_fill_transfer_from_savings';
-          messageParams = [payload.from, amount];
-        } else {
-          message =
-            'notification_fill_transfer_from_savings_from_other_account';
-          messageParams = [payload.from, amount, payload.to];
-        }
-        break;
-      }
-      case 'return_vesting_delegation': {
-        message = 'notification_returned_vesting_delegation';
-        messageParams = [
-          payload.account,
-          FormatUtils.toFormattedHP(
-            payload.vesting_shares.toString().replace('VESTS', ''),
-            globalProperties,
-          ),
-        ];
-        break;
-      }
-      case 'comment_benefactor_reward': {
-        message = 'notification_comment_benefactor_reward';
-        messageParams = [
-          payload.benefactor,
-          FormatUtils.withCommas(payload.hbd_payout, 3),
-          FormatUtils.withCommas(payload.hive_payout, 3),
-          FormatUtils.toFormattedHP(
-            payload.vesting_payout.toString().replace('VESTS', ''),
-            globalProperties,
-          ),
-          payload.author,
-          payload.permlink,
-        ];
-        externalUrl = buildNotificationPostUrl(
-          payload.author,
-          payload.permlink,
-        );
-        linkUrl = externalUrl;
-        linkLabel = buildNotificationPostLabel(
-          payload.author,
-          payload.permlink,
-          true,
-        );
-        break;
-      }
-      case 'producer_reward': {
-        message = 'notification_producer_reward';
-        messageParams = [
-          payload.producer,
-          FormatUtils.toFormattedHP(
-            payload.vesting_shares.toString().replace('VESTS', ''),
-            globalProperties,
-          ),
-        ];
-        break;
-      }
-      case 'changed_recovery_account': {
-        message = 'notification_changed_recovery_account';
-        messageParams = [
-          payload.account,
-          payload.old_recovery_account,
-          payload.new_recovery_account,
-        ];
-        break;
-      }
-      case 'fill_collateralized_convert_request': {
-        message = 'notification_fill_collateralized_convert_request';
-        messageParams = [
-          payload.owner,
-          FormatUtils.withCommas(payload.amount_in, 3),
-          FormatUtils.withCommas(payload.amount_out, 3),
-        ];
-        break;
-      }
-      case 'failed_recurrent_transfer': {
-        message = 'notification_failed_recurrent_transfer';
-        messageParams = [
-          FormatUtils.withCommas(payload.amount, 3),
-          payload.from,
-          payload.to,
-        ];
-        break;
-      }
-    }
+    const content = PeakDNotificationContentUtils.formatRawPeakDNotificationContent(
+      notif,
+      username,
+      globalProperties,
+    );
     notifications.push({
       type: NotificationType.PEAKD,
       isTypeLast:
         rawNotifications.length !== limit &&
         rawNotifications.length - 1 === index,
       id: notif.id,
+      operation:
+        PeakDNotificationContentUtils.getPeakDOperationName(notif),
       createdAt: moment(notif.created),
-      txUrl:
-        notif.trx_id && !notif.trx_id.startsWith('v')
-          ? buildNotificationTxUrl(notif.trx_id)
-          : undefined,
-      externalUrl: externalUrl,
-      linkLabel: linkLabel,
-      linkUrl: linkUrl,
-      message: message,
-      messageParams: messageParams,
+      txUrl: content.txUrl,
+      externalUrl: content.externalUrl,
+      linkLabel: content.linkLabel,
+      linkUrl: content.linkUrl,
+      message: content.message,
+      messageParams: content.messageParams,
       read: !!notif.read_at,
     });
   }
@@ -1069,13 +708,20 @@ const markAllAsRead = async (activeAccount: ActiveAccount) => {
 };
 
 const deleteAccountConfig = async (activeAccount: ActiveAccount) => {
-  return await CustomJsonUtils.send(
+  const response = await CustomJsonUtils.send(
     ['delete_account', {}],
     activeAccount.name!,
     activeAccount.keys.posting!,
     KeyType.POSTING,
     'notify',
   );
+  if (response?.tx_id) {
+    notifyPushSubscriptionsSync({
+      username: activeAccount.name!,
+      deleted: true,
+    });
+  }
+  return response;
 };
 
 const saveDefaultConfig = async (activeAccount: ActiveAccount) => {
@@ -1101,4 +747,5 @@ export const PeakDNotificationsUtils = {
   deleteAccountConfig,
   saveDefaultConfig,
   getSuggestedConfig,
+  isPushNotificationEnabledForOperation,
 };

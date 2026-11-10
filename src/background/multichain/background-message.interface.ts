@@ -1,0 +1,134 @@
+/* istanbul ignore file */
+import { EvmDappInfo, EvmRequest } from '@interfaces/evm-provider.interface';
+import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
+import { Rpc } from '@interfaces/rpc.interface';
+import { EvmAccountPublic } from '@popup/evm/interfaces/wallet.interface';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import {
+  DialogCommand,
+  MultisigDialogCommand,
+} from '@reference-data/dialog-message-key.enum';
+import { VaultCommand } from '@reference-data/vault-message-key.enum';
+import { KeychainRequestData } from 'hive-keychain-commons';
+import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
+
+export type BaseBackgroundMessage = {
+  command: BackgroundCommand | VaultCommand;
+  value?: any;
+  key?: string;
+};
+
+export type SendRequestMessage = {
+  command: BackgroundCommand.SEND_REQUEST;
+  request: any;
+  domain: string;
+  request_id: number;
+};
+
+export type BackgroundMessage = BaseBackgroundMessage | SendRequestMessage;
+
+export interface MultisigDialogMessage {
+  command: MultisigDialogCommand;
+  value?: any;
+}
+
+export type BaseDialogMessage = {
+  command: DialogCommand;
+  msg?: any;
+  requestSource?: PendingRequestSource;
+};
+
+export type AnswerDialogMessage = {
+  command: DialogCommand.ANSWER_EVM_REQUEST;
+  msg: any;
+  requestSource?: PendingRequestSource;
+};
+
+export type SendConfirmHiveMessage = {
+  command: DialogCommand.SEND_DIALOG_CONFIRM;
+  request: KeychainRequestData;
+  domain: string;
+  requestSource?: PendingRequestSource;
+  tab: number;
+  accounts?: string[] | undefined;
+  rpc?: Rpc;
+  hiveEngineConfig?: HiveEngineConfig;
+  queueSize?: number;
+  queuePosition?: number;
+  queue?: (SendConfirmHiveMessage | SendConfirmEvmMessage)[];
+};
+
+export type SendConfirmEvmMessage = {
+  command: DialogCommand.SEND_DIALOG_CONFIRM_EVM;
+  request: EvmRequest;
+  dappInfo: EvmDappInfo;
+  tab: number;
+  accounts: EvmAccountPublic[];
+  queueSize?: number;
+  queuePosition?: number;
+  queue?: (SendConfirmHiveMessage | SendConfirmEvmMessage)[];
+};
+
+export type RequestAddCustomEvmChainDialogMessage = {
+  command: DialogCommand.REQUEST_ADD_CUSTOM_EVM_CHAIN;
+  msg: {
+    request: EvmRequest;
+    dappInfo: EvmDappInfo;
+    requestedChainId: string;
+    initialChain?: Partial<EvmChain>;
+  };
+  tab: number;
+  queueSize?: number;
+  queuePosition?: number;
+  queue?: (SendConfirmHiveMessage | SendConfirmEvmMessage)[];
+};
+
+export type UnlockEvmDialogMessage = {
+  command: DialogCommand.UNLOCK_EVM;
+  msg: any;
+  tab: number;
+  dappInfo: EvmDappInfo;
+};
+export type UnlockDialogMessage = {
+  command: DialogCommand.UNLOCK;
+  msg: any;
+  tab: number;
+  dappInfo: string;
+};
+
+export type RegisterDialogMessage = {
+  command: DialogCommand.REGISTER;
+  msg: any;
+  tab: number;
+  domain: string;
+  requestSource?: PendingRequestSource;
+};
+
+export type SendDialogErrorMessage = {
+  command: DialogCommand.SEND_DIALOG_ERROR;
+  msg: any;
+  tab: number;
+  requestSource?: PendingRequestSource;
+};
+
+export type ReturnLedgerSignatureMessage = {
+  command: DialogCommand.LEDGER_RETURN_SIGNATURE;
+  signature: string;
+};
+
+export type DialogReadyMessage = {
+  command: DialogCommand.READY;
+};
+
+export type DialogMessage =
+  | BaseDialogMessage
+  | ReturnLedgerSignatureMessage
+  | SendConfirmEvmMessage
+  | SendConfirmHiveMessage
+  | RequestAddCustomEvmChainDialogMessage
+  | SendDialogErrorMessage
+  | UnlockDialogMessage
+  | UnlockEvmDialogMessage
+  | RegisterDialogMessage
+  | AnswerDialogMessage;

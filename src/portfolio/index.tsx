@@ -1,8 +1,16 @@
+import { ExtensionAppRootComponent } from '@popup/multichain/extension-app-root.component';
+import { ExtensionUiLifecycleUtils } from '@popup/multichain/utils/extension-ui-lifecycle.utils';
+import { PopupThemeStartupUtils } from '@popup/multichain/utils/popup-theme-startup.utils';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { PortfolioComponent } from 'src/portfolio/portfolio.component';
-import './portfolio.scss';
 
-ReactDOM.render(<PortfolioComponent />, document.getElementById('root'));
+const initialTheme = PopupThemeStartupUtils.getCachedTheme();
 
-export {};
+ReactDOM.render(
+  <ExtensionAppRootComponent initialTheme={initialTheme} />,
+  document.getElementById('root'),
+);
+
+ExtensionUiLifecycleUtils.registerExtensionUiLifecycle();
+
+Object.assign(global, { contextType: 'popup' });

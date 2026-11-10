@@ -1,0 +1,125 @@
+import { Screen } from '@interfaces/screen.interface';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
+import { removeFromLoadingList } from '@popup/multichain/actions/loading.actions';
+import { setErrorMessage } from '@popup/multichain/actions/message.actions';
+import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { RootState } from '@popup/multichain/store';
+import React, { useEffect, useState } from 'react';
+import { ConnectedProps, connect } from 'react-redux';
+import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
+import ButtonComponent from 'src/common-ui/button/button.component';
+import { LoadingComponent } from 'src/common-ui/loading/loading.component';
+import { Separator } from 'src/common-ui/separator/separator.component';
+import { TextAreaComponent } from 'src/common-ui/text-area/textarea.component';
+import { HtmlUtils } from 'src/utils/html.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
+const ImportWalletFromSeed = ({
+  chain,
+  navigateToWithParams,
+  setTitleContainerProperties,
+  setErrorMessage,
+  hasFinishedSignup,
+  mk,
+}: PropsType) => {
+  const [seed, setSeed] = useState<string[]>([]);
+  const [isLoading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setTitleContainerProperties({
+      title: 'popup_html_import_wallet_from_seed',
+      isBackButtonEnabled: true,
+      isCloseButtonDisabled: !hasFinishedSignup,
+    });
+  }, []);
+
+  const submitForm = async (): Promise<void> => {
+    const normalizedSeed = seed.join(' ').trim().toLowerCase();
+    const storedSeeds = await EvmWalletUtils.getAccountsFromLocalStorage(mk);
+    if (
+      storedSeeds.some(
+        (storedSeed) =>
+          'seed' in storedSeed &&
+          storedSeed.seed.trim().toLowerCase() === normalizedSeed,
+      )
+    ) {
+      setErrorMessage('evm_seeds_already_in_keychain');
+      return;
+    }
+
+    const { wallet, error, errorParams } =
+      EvmWalletUtils.getWalletFromSeedPhrase(seed.join(' '));
+
+    if (wallet) {
+      setLoading(true);
+
+      try {
+        const derivedWallets = await EvmWalletUtils.deriveWallets(
+          wallet.mnemonic!,
+          chain,
+        );
+        navigateToWithParams(Screen.IMPORT_EVM_WALLET_CONFIRMATION, {
+          wallet,
+          derivedWallets,
+        });
+      } catch {
+        setErrorMessage('evm_rpcs_not_responding_error');
+      } finally {
+        setLoading(false);
+        removeFromLoadingList('html_popup_deriving_wallets');
+      }
+    } else {
+      setErrorMessage(error!, errorParams);
+    }
+  };
+
+  return (
+    <div
+      data-testid={`${Screen.IMPORT_EVM_WALLET}-page`}
+      className="import-evm-wallet">
+      <FormContainer>
+        <div
+          className="caption"
+          dangerouslySetInnerHTML={{
+            __html: HtmlUtils.getSafeI18nHtml('html_popup_evm_setup_import_text'),
+          }}></div>
+        <Separator type="horizontal" />
+        <TextAreaComponent
+          dataTestId="input-seed-key"
+          value={seed}
+          onChange={setSeed}
+          label="html_popup_evm_seed_phrase"
+          placeholder="html_popup_evm_seed_phrase_placeholder"
+          rows={4}
+          useChips
+          maxChips={24}
+        />
+        <div className="fill-space"></div>
+        <ButtonComponent
+          dataTestId="submit-button"
+          label={'popup_html_submit'}
+          onClick={submitForm}
+        />
+      </FormContainer>
+      <LoadingComponent hide={!isLoading} />
+    </div>
+  );
+};
+
+const mapStateToProps = (state: RootState) => {
+  return {
+    hasFinishedSignup: state.hasFinishedSignup,
+    chain: state.chain as EvmChain,
+    mk: state.mk,
+  };
+};
+
+const connector = connect(mapStateToProps, {
+  navigateToWithParams,
+  setTitleContainerProperties,
+  setErrorMessage,
+});
+type PropsType = ConnectedProps<typeof connector>;
+
+export const ImportWalletFromSeedComponent = connector(ImportWalletFromSeed);

@@ -1,8 +1,15 @@
 import { FavoriteUserUtils } from '@hiveapp/utils/favorite-user.utils';
 import { SavingsUtils } from '@hiveapp/utils/savings.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
+import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
-import { act, cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  cleanup,
+  fireEvent,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
@@ -12,9 +19,9 @@ import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
-import { Screen } from 'src/reference-data/screen.enum';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('savings.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -56,7 +63,7 @@ describe('savings.component tests:\n', () => {
       it('Must show withdraw message', async () => {
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_html_withdraw_text'),
+            I18nUtils.getMessage('popup_html_withdraw_text'),
             { exact: true },
           ),
         ).toBeInTheDocument();
@@ -87,7 +94,7 @@ describe('savings.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_html_confirm_savings_withdraw', [
+            I18nUtils.getMessage('popup_html_confirm_savings_withdraw', [
               'HIVE',
             ]),
           ),
@@ -106,7 +113,7 @@ describe('savings.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('validation_error_less_or_equal_value'),
+            I18nUtils.getMessage('validation_error_less_or_equal_value'),
           ),
         ).toBeInTheDocument();
       });
@@ -127,7 +134,7 @@ describe('savings.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_html_withdraw_fail', ['HIVE']),
+            I18nUtils.getMessage('popup_html_withdraw_fail', ['HIVE']),
           ),
         ).toBeInTheDocument();
       });
@@ -153,7 +160,7 @@ describe('savings.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_html_withdraw_success', [
+            I18nUtils.getMessage('popup_html_withdraw_success', [
               `${FormatUtils.formatCurrencyValue(10)} HIVE`,
             ]),
           ),
@@ -233,7 +240,7 @@ describe('savings.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_html_confirm_savings_deposit', [
+            I18nUtils.getMessage('popup_html_confirm_savings_deposit', [
               'HIVE',
             ]),
           ),
@@ -252,7 +259,7 @@ describe('savings.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('validation_error_less_or_equal_value'),
+            I18nUtils.getMessage('validation_error_less_or_equal_value'),
           ),
         ).toBeInTheDocument();
       });
@@ -273,7 +280,7 @@ describe('savings.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_html_deposit_fail', ['HIVE']),
+            I18nUtils.getMessage('popup_html_deposit_fail', ['HIVE']),
           ),
         ).toBeInTheDocument();
       });
@@ -299,7 +306,7 @@ describe('savings.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_html_deposit_success', [
+            I18nUtils.getMessage('popup_html_deposit_success', [
               `${FormatUtils.formatCurrencyValue(10)} HIVE`,
             ]),
           ),
@@ -356,7 +363,7 @@ describe('savings.component tests:\n', () => {
       it('Must show withdraw message', async () => {
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_html_withdraw_text'),
+            I18nUtils.getMessage('popup_html_withdraw_text'),
             { exact: true },
           ),
         ).toBeInTheDocument();
@@ -384,7 +391,7 @@ describe('savings.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_html_confirm_savings_withdraw', [
+            I18nUtils.getMessage('popup_html_confirm_savings_withdraw', [
               'HBD',
             ]),
           ),
@@ -403,7 +410,7 @@ describe('savings.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('validation_error_less_or_equal_value'),
+            I18nUtils.getMessage('validation_error_less_or_equal_value'),
           ),
         ).toBeInTheDocument();
       });
@@ -424,7 +431,7 @@ describe('savings.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_html_withdraw_fail', ['HBD']),
+            I18nUtils.getMessage('popup_html_withdraw_fail', ['HBD']),
           ),
         ).toBeInTheDocument();
       });
@@ -450,7 +457,7 @@ describe('savings.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_html_withdraw_success', [
+            I18nUtils.getMessage('popup_html_withdraw_success', [
               `${FormatUtils.formatCurrencyValue(10)} HBD`,
             ]),
           ),
@@ -532,7 +539,7 @@ describe('savings.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_html_confirm_savings_deposit', [
+            I18nUtils.getMessage('popup_html_confirm_savings_deposit', [
               'HBD',
             ]),
           ),
@@ -551,7 +558,7 @@ describe('savings.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('validation_error_less_or_equal_value'),
+            I18nUtils.getMessage('validation_error_less_or_equal_value'),
           ),
         ).toBeInTheDocument();
       });
@@ -572,7 +579,7 @@ describe('savings.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_html_deposit_fail', ['HBD']),
+            I18nUtils.getMessage('popup_html_deposit_fail', ['HBD']),
           ),
         ).toBeInTheDocument();
       });
@@ -598,7 +605,7 @@ describe('savings.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_html_deposit_success', [
+            I18nUtils.getMessage('popup_html_deposit_success', [
               `${FormatUtils.formatCurrencyValue(10)} HBD`,
             ]),
           ),

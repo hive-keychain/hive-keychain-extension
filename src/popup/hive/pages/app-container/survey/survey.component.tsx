@@ -6,6 +6,7 @@ import ButtonComponent, {
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { Survey } from 'src/popup/hive/pages/app-container/survey/survey.interface';
 import { SurveyUtils } from 'src/popup/hive/utils/survey.utils';
+import { ImageUrlUtils } from 'src/utils/image-url.utils';
 
 interface Props {
   survey: Survey;
@@ -16,13 +17,23 @@ const Survey = ({ survey }: Props) => {
   const [image, setImage] = useState<HTMLImageElement>();
 
   useEffect(() => {
+    const safeSrc = ImageUrlUtils.getSafeImageUrl(survey.image);
+    if (!safeSrc) {
+      setReady(true);
+      return;
+    }
+
     const imageElement = new Image();
-    imageElement.src = survey.image;
-    setImage(imageElement);
+    imageElement.referrerPolicy = 'no-referrer';
     imageElement.onload = () => {
+      setImage(imageElement);
       setReady(true);
     };
-  }, []);
+    imageElement.onerror = () => {
+      setReady(true);
+    };
+    imageElement.src = safeSrc;
+  }, [survey.image]);
 
   const noThanks = () => {
     SurveyUtils.setCurrentAsSeen();
@@ -41,7 +52,7 @@ const Survey = ({ survey }: Props) => {
         <div className="popup-title">{survey.title}</div>
         {image && (
           <div className="image">
-            <img src={image.src} />
+            <img src={image.src} referrerPolicy="no-referrer" />
           </div>
         )}
         <div className="caption">

@@ -1,13 +1,25 @@
 export enum DialogCommand {
   UNLOCK = 'UNLOCK',
+  UNLOCK_EVM = 'UNLOCK_EVM',
   SEND_DIALOG_CONFIRM = 'sendDialogConfirm',
+  SEND_DIALOG_CONFIRM_EVM = 'sendDialogConfirmEvm',
   SEND_DIALOG_ERROR = 'sendDialogError',
+  UPDATE_EVM_GAS_FEES = 'updateEvmGasFees',
   REGISTER = 'register',
   BROADCASTING_WITHOUT_CONFIRMATION = 'broadcastingNoConfirm',
   WRONG_MK = 'WRONG_MK',
+  SEND_HIVE_RESPONSE = 'sendHiveResponse',
   ANSWER_REQUEST = 'answerRequest',
+  ANSWER_EVM_REQUEST = 'answerEvmRequest',
   READY = 'broadcastReady',
+  REQUEST_ADD_EVM_CHAIN = 'requestAddEvmChain',
+  REQUEST_ADD_CUSTOM_EVM_CHAIN = 'requestAddCustomEvmChain',
+
+  // Ledger messages
   SIGN_WITH_LEDGER = 'SIGN_WITH_LEDGER',
+  LEDGER_RETURN_SIGNATURE = 'LEDGER_RETURN_SIGNATURE',
+  LEDGER_RETURN_ERROR_SIGNING_TRANSACTION = 'LEDGER_RETURN_ERROR_SIGNING_TRANSACTION',
+
   RETURN_SIGNATURE = 'RETURN_SIGNATURE',
   RETURN_ERROR_SIGNING_TRANSACTION = 'RETURN_ERROR_SIGNING_TRANSACTION',
   REGISTER_KEYLESS_KEYCHAIN = 'REGISTER_KEYLESS_KEYCHAIN',
@@ -19,4 +31,10 @@ export enum DialogCommand {
 export enum MultisigDialogCommand {
   READY_MULTISIG = 'multisigReady',
   MULTISIG_SEND_DATA_TO_POPUP = 'MULTISIG_SEND_DATA_TO_POPUP',
+  PING = 'PING',
 }
+
+export type UnlockDialogCommand = Extract<
+  DialogCommand,
+  DialogCommand.UNLOCK | DialogCommand.UNLOCK_EVM
+>;

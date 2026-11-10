@@ -1,0 +1,45 @@
+import { ActionButton } from '@popup/hive/pages/app-container/home/hive-wallet-info-section/hive-wallet-info-section-actions';
+import React, { BaseSyntheticEvent, useState } from 'react';
+import { SVGIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+
+import { I18nUtils } from 'src/utils/i18n.utils';
+interface WalletInfoSectionItemButtonProps {
+  handleClick: (event: BaseSyntheticEvent, actionButton: ActionButton) => void;
+  actionButton: ActionButton;
+  /** Stable id for integration / popup tests (matches legacy tokens list actions). */
+  dataTestId?: string;
+}
+
+export const WalletInfoSectionItemButton = ({
+  handleClick,
+  actionButton,
+  dataTestId,
+}: WalletInfoSectionItemButtonProps) => {
+  const [hovered, setHovered] = useState(false);
+  const isOpticallyLargeIcon =
+    actionButton.icon === SVGIcons.PORTFOLIO_SWAP ||
+    actionButton.icon === SVGIcons.PORTFOLIO_BUY;
+
+  return (
+    <button
+      type="button"
+      data-testid={dataTestId}
+      className="wallet-action-button"
+      onClick={($event) => handleClick($event, actionButton)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}>
+      <SVGIcon
+        icon={actionButton.icon}
+        className={`action-icon${
+          isOpticallyLargeIcon ? ' action-icon--optically-large' : ''
+        }`}
+        hoverable
+        forceHover={hovered}
+      />
+      <div className="title">
+        {I18nUtils.getMessage(actionButton.label, actionButton.labelParams)}
+      </div>
+    </button>
+  );
+};

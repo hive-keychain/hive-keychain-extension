@@ -1,0 +1,17 @@
+import { EvmActionType } from '@popup/evm/actions/action-type.evm.enum';
+import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { ActionPayload } from '@popup/multichain/actions/interfaces';
+
+export const EvmAccountsReducer = (
+  state: EvmAccount[] = [],
+  { type, payload }: ActionPayload<EvmAccount[]>,
+): EvmAccount[] => {
+  switch (type) {
+    case EvmActionType.SET_ACCOUNTS:
+      return payload!;
+    case EvmActionType.RESET_STATE:
+      return [];
+    default:
+      return state;
+  }
+};

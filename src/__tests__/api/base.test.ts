@@ -24,7 +24,7 @@ describe('BaseApi', () => {
       });
     });
 
-    it('resolves with undefined when status is not 200', async () => {
+    it('resolves with undefined when status is not 2xx', async () => {
       global.fetch = jest.fn().mockResolvedValue({
         status: 404,
         json: () => Promise.resolve({}),
@@ -57,7 +57,18 @@ describe('BaseApi', () => {
       });
     });
 
-    it('resolves with undefined when status is not 200', async () => {
+    it('resolves with JSON body when status is 201', async () => {
+      global.fetch = jest.fn().mockResolvedValue({
+        status: 201,
+        json: () => Promise.resolve({ created: 1 }),
+      });
+
+      await expect(
+        BaseApi.post('https://example.com/api', { a: 1 }),
+      ).resolves.toEqual({ created: 1 });
+    });
+
+    it('resolves with undefined when status is not 2xx', async () => {
       global.fetch = jest.fn().mockResolvedValue({
         status: 500,
         json: () => Promise.resolve({}),

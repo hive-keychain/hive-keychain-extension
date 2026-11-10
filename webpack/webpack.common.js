@@ -1,32 +1,52 @@
-const webpack = require('webpack');
 const CopyPlugin = require('copy-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
-const path = require('path');
+const webpack = require('webpack');
+
+const useFastDev = process.env.WEBPACK_FS_CACHE === 'true';
 
 const config = {
   entry: {
-    hiveTx: 'hive-tx',
-    popup: { import: './src/popup/index.tsx', dependOn: 'hiveTx' },
+    // Application entry, not the hive-tx package. LavaMoat must initialize the
+    // $root$ compartment before that package copies globals.
+    hiveTx: './src/popup/hive-tx-bundle-entry.ts',
+    extensionApp: {
+      import: './src/popup/multichain/extension-app-root.component.tsx',
+      dependOn: 'hiveTx',
+    },
+    popup: { import: './src/popup/index.tsx', dependOn: 'extensionApp' },
+    portfolio: {
+      import: './src/portfolio/index.tsx',
+      dependOn: 'extensionApp',
+    },
     dialog: './src/dialog/index.tsx',
-    background: './src/background/index.ts',
+    background: './src/background/multichain/multichain-service-worker.ts',
     importAccounts: './src/import/import-accounts.tsx',
     importSettings: './src/import/import-settings.tsx',
     multisigDialog: './src/multisig/multisig-dialog.tsx',
-    addKeyFromLedger: './src/ledger/add-key/index.tsx',
-    linkLedgerDevice: './src/ledger/link-device/index.tsx',
     peakdNotificationsConfig: './src/peakd-notifications-config/index.tsx',
-    addAccountsFromLedger: './src/ledger/add-accounts/index.tsx',
-    web_interface: './src/content-scripts/web-interface/index.ts',
-    keychainify: './src/content-scripts/keychainify/index.ts',
-    portfolio: './src/portfolio/index.tsx',
+    web_interface: './src/content-scripts/hive/web-interface/index.ts',
+    keychainify: './src/content-scripts/hive/keychainify/index.ts',
+    evmKeychainProvider:
+      './src/content-scripts/evm/injected/evm-keychain-provider.ts',
+    evmKeychainLegacyPreferred:
+      './src/content-scripts/evm/injected/evm-keychain-legacy-preferred.ts',
+    evmKeychainLegacyYielding:
+      './src/content-scripts/evm/injected/evm-keychain-legacy-yielding.ts',
+    evmContentScript: './src/content-scripts/evm/evm-content-script.ts',
     vault: './src/vault/index.ts',
   },
   module: {
     rules: [
       {
         test: /\.(js|jsx)$/,
-        use: 'babel-loader',
+        use: {
+          loader: 'babel-loader',
+          options: {
+            cacheDirectory: true,
+            cacheCompression: false,
+          },
+        },
         exclude: /node_modules/,
       },
       {
@@ -41,12 +61,29 @@ const config = {
           },
           {
             loader: 'sass-loader',
+            options: {
+              // Disable source maps in sass-loader (webpack handles them)
+              // This significantly speeds up compilation
+              sourceMap: false,
+              sassOptions: {
+                outputStyle: 'expanded',
+              },
+            },
           },
         ],
       },
       {
         test: /\.ts(x)?$/,
-        loader: 'ts-loader',
+        use: {
+          loader: 'ts-loader',
+          options: {
+            experimentalWatchApi: true,
+            // Fast dev prioritizes rebuild speed; run npm run typecheck when needed.
+            onlyCompileBundledFiles: useFastDev,
+            transpileOnly: useFastDev,
+            useCaseSensitiveFileNames: useFastDev,
+          },
+        },
         exclude: /node_modules/,
       },
       {
@@ -68,8 +105,10 @@ const config = {
   },
   resolve: {
     extensions: ['.js', '.jsx', '.tsx', '.ts'],
-    alias: {
-      'react-dom': '@hot-loader/react-dom',
+    fallback: {
+      buffer: require.resolve('buffer/'),
+      crypto: false,
+      process: require.resolve('process/browser'),
     },
     plugins: [new TsconfigPathsPlugin({ configFile: './tsconfig.json' })],
   },
@@ -78,7 +117,13 @@ const config = {
       patterns: [{ from: 'public', to: '.' }],
     }),
 
-    new NodePolyfillPlugin(),
+    new NodePolyfillPlugin({
+      excludeAliases: ['Buffer', 'crypto'],
+    }),
+    new webpack.ProvidePlugin({
+      Buffer: ['buffer/', 'Buffer'],
+      process: require.resolve('process/browser'),
+    }),
   ],
 };
 

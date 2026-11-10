@@ -2,11 +2,77 @@ import type { CustomJsonOperation } from '@hiveio/dhive';
 import { Key, TransactionOptions } from '@interfaces/keys.interface';
 import { TokenTransaction } from '@interfaces/tokens.interface';
 import { HiveEngineTransactionStatus } from '@interfaces/transaction-status.interface';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { KeychainError } from 'src/keychain-error';
 import { ErrorUtils } from 'src/popup/hive/utils/error.utils';
 import { HiveEngineConfigUtils } from 'src/popup/hive/utils/hive-engine-config.utils';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { TokenRequestParams } from 'src/popup/hive/utils/token-request-params.interface';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
+import { useWorkingHiveEngineRPC } from 'src/utils/rpc-switcher.utils';
+
+const HIVE_ENGINE_RPC_TIMEOUT_MESSAGE = 'html_popup_tokens_timeout';
+
+const fetchHiveEngineJson = async <T>(
+  url: string,
+  options: RequestInit,
+  timeout: number,
+): Promise<T> => {
+  return new Promise((resolve, reject) => {
+    let resolved = false;
+    const timeoutId = setTimeout(() => {
+      if (!resolved) {
+        resolved = true;
+        reject(new KeychainError(HIVE_ENGINE_RPC_TIMEOUT_MESSAGE));
+      }
+    }, timeout * 1000);
+
+    const resolveRequest = (result: T) => {
+      if (!resolved) {
+        resolved = true;
+        clearTimeout(timeoutId);
+        resolve(result);
+      }
+    };
+
+    const rejectRequest = () => {
+      if (!resolved) {
+        resolved = true;
+        clearTimeout(timeoutId);
+        reject(new KeychainError(HIVE_ENGINE_RPC_TIMEOUT_MESSAGE));
+      }
+    };
+
+    fetch(url, options)
+      .then((res) => {
+        if (res?.status === 200) {
+          return res.json();
+        }
+        rejectRequest();
+      })
+      .then((res: T) => {
+        if (res) {
+          resolveRequest(res);
+        }
+      })
+      .catch(rejectRequest);
+  });
+};
+
+const runWithHiveEngineRpcFallback = async <T>(
+  request: (rpc: string) => Promise<T>,
+): Promise<T> => {
+  const activeRpc = HiveEngineConfigUtils.getApi();
+  try {
+    return await request(activeRpc);
+  } catch (error) {
+    const workingRpc = await useWorkingHiveEngineRPC(activeRpc);
+    if (workingRpc) {
+      return await request(workingRpc);
+    }
+    throw error;
+  }
+};
 
 const sendOperation = async (
   operations: CustomJsonOperation[],
@@ -71,48 +137,43 @@ const tryConfirmTransaction = (
 
 /* istanbul ignore next */
 const getDelayedTransactionInfo = (trxID: string) => {
-  return new Promise(function (fulfill, reject) {
-    setTimeout(async function () {
-      const url = `${HiveEngineConfigUtils.getApi()}/blockchain`;
-      let resolved = false;
-      fetch(url, {
-        method: 'POST',
-        body: JSON.stringify({
-          id: 1,
-          jsonrpc: '2.0',
-          method: 'getTransactionInfo',
-          params: {
-            txid: trxID,
-          },
-        }),
-        headers: { 'Content-Type': 'application/json' },
-      })
-        .then((res) => {
-          if (res && res.status === 200) {
-            resolved = true;
-            return res.json();
-          }
-        })
-        .then((res: any) => fulfill(res));
-
-      setTimeout(() => {
-        if (!resolved) {
-          reject(new KeychainError('html_popup_tokens_timeout'));
-        }
-      }, 20 * 1000);
+  return new Promise((fulfill, reject) => {
+    setTimeout(async () => {
+      try {
+        const res = await runWithHiveEngineRpcFallback((rpc) =>
+          fetchHiveEngineJson<any>(
+            `${rpc}/blockchain`,
+            {
+              method: 'POST',
+              body: JSON.stringify({
+                id: 1,
+                jsonrpc: '2.0',
+                method: 'getTransactionInfo',
+                params: {
+                  txid: trxID,
+                },
+              }),
+              headers: { 'Content-Type': 'application/json' },
+            },
+            20,
+          ),
+        );
+        fulfill(res);
+      } catch (error) {
+        reject(error);
+      }
     }, 1000);
   });
 };
 
-/* istanbul ignore next */
-const get = async <T>(
+const getFromRpc = async <T>(
+  rpc: string,
   params: TokenRequestParams,
-  timeout: number = 10,
+  timeout: number,
 ): Promise<T> => {
-  const url = `${HiveEngineConfigUtils.getApi()}/contracts`;
-  return new Promise((resolve, reject) => {
-    let resolved = false;
-    fetch(url, {
+  const res = await fetchHiveEngineJson<any>(
+    `${rpc}/contracts`,
+    {
       method: 'POST',
       body: JSON.stringify({
         jsonrpc: '2.0',
@@ -121,23 +182,20 @@ const get = async <T>(
         id: 1,
       }),
       headers: { 'Content-Type': 'application/json' },
-    })
-      .then((res) => {
-        if (res && res.status === 200) {
-          resolved = true;
-          return res.json();
-        }
-      })
-      .then((res: any) => {
-        resolve(res.result as unknown as T);
-      });
+    },
+    timeout,
+  );
+  return res.result as unknown as T;
+};
 
-    setTimeout(() => {
-      if (!resolved) {
-        reject(new KeychainError('html_popup_tokens_timeout'));
-      }
-    }, timeout * 1000);
-  });
+/* istanbul ignore next */
+const get = async <T>(
+  params: TokenRequestParams,
+  timeout: number = 10,
+): Promise<T> => {
+  return runWithHiveEngineRpcFallback((rpc) =>
+    getFromRpc<T>(rpc, params, timeout),
+  );
 };
 
 /* istanbul ignore next */
@@ -166,10 +224,18 @@ const getHistory = async (
 
     setTimeout(() => {
       if (!resolved) {
-        reject(new KeychainError('html_popup_tokens_timeout'));
+        reject(new KeychainError(HIVE_ENGINE_RPC_TIMEOUT_MESSAGE));
       }
     }, timeout * 1000);
   });
+};
+
+const loadHiddenTokensList = async () => {
+  return (
+    (await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.HIDDEN_TOKENS,
+    )) || []
+  );
 };
 
 export const HiveEngineUtils = {
@@ -178,4 +244,5 @@ export const HiveEngineUtils = {
   getHistory,
   sendOperation,
   tryConfirmTransaction,
+  loadHiddenTokensList,
 };

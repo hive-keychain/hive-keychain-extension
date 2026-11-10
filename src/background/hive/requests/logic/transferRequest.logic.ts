@@ -1,0 +1,104 @@
+import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
+import { createOrUpdateDialog } from '@background/multichain/dialog-lifecycle';
+import sendErrors from '@background/multichain/errors';
+import { removeRequestAfterDialogFeedback } from '@background/multichain/remove-request-after-dialog-feedback.logic';
+import {
+  KeychainRequest,
+  RequestTransfer,
+} from '@interfaces/keychain.interface';
+import { LocalAccount } from '@interfaces/local-account.interface';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
+import { Rpc } from '@interfaces/rpc.interface';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { CommunicationUtils } from 'src/utils/communication.utils';
+
+import { I18nUtils } from 'src/utils/i18n.utils';
+export const transferRequest = (
+  requestHandler: HiveRequestsHandler,
+  tab: number,
+  request: RequestTransfer,
+  domain: string,
+  accounts: LocalAccount[],
+  current_rpc: Rpc,
+  account?: LocalAccount,
+  source?: PendingRequestSource,
+) => {
+  const active_accounts = accounts
+    .filter((e) => !!e.keys.active)
+    .map((e) => e.name);
+  const { username, memo, enforce } = request;
+  const encode = memo && memo.length > 0 && memo[0] == '#';
+  const enforced = enforce || encode;
+  //if (encode) account = accountsList.get(username);
+  // If a username is specified, check that its active key has been added to the wallet
+  if (enforced && username && account && !account.keys.active) {
+    /* istanbul ignore next */
+    createOrUpdateDialog(async () => {
+      sendErrors(
+        tab!,
+        'user_cancel',
+        await I18nUtils.getMessage('bgd_auth_canceled'),
+        await I18nUtils.getMessage('bgd_auth_transfer_no_active', [username]),
+        request as KeychainRequest,
+        source,
+      );
+      await removeRequestAfterDialogFeedback(
+        requestHandler,
+        (request as KeychainRequest).request_id,
+        tab,
+        source,
+      );
+    }, requestHandler);
+  } else if (account && encode && !account.keys.memo) {
+    /* istanbul ignore next */
+    createOrUpdateDialog(async () => {
+      sendErrors(
+        tab!,
+        'user_cancel',
+        await I18nUtils.getMessage('bgd_auth_canceled'),
+        await I18nUtils.getMessage('bgd_auth_transfer_no_memo', [username!]),
+        request as KeychainRequest,
+        source,
+      );
+      await removeRequestAfterDialogFeedback(
+        requestHandler,
+        (request as KeychainRequest).request_id,
+        tab,
+        source,
+      );
+    }, requestHandler);
+  } else if (active_accounts.length == 0) {
+    /* istanbul ignore next */
+    createOrUpdateDialog(async () => {
+      sendErrors(
+        tab!,
+        'user_cancel',
+        await I18nUtils.getMessage('bgd_auth_canceled'),
+        await I18nUtils.getMessage('bgd_auth_transfer_no_active', [
+          username!,
+        ]),
+        request as KeychainRequest,
+        source,
+      );
+      await removeRequestAfterDialogFeedback(
+        requestHandler,
+        (request as KeychainRequest).request_id,
+        tab,
+        source,
+      );
+    }, requestHandler);
+  } else {
+    const callback = () => {
+      CommunicationUtils.runtimeSendMessage({
+        command: DialogCommand.SEND_DIALOG_CONFIRM,
+        request,
+        domain,
+        ...(source ? { requestSource: source } : {}),
+        accounts: encode || enforce ? undefined : active_accounts,
+        tab,
+        rpc: current_rpc,
+      });
+    };
+    createOrUpdateDialog(callback, requestHandler);
+  }
+};

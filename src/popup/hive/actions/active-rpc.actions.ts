@@ -2,10 +2,11 @@ import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { Rpc } from 'src/interfaces/rpc.interface';
 import { HiveActionType } from 'src/popup/hive/actions/action-type.enum';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 
 export const setActiveRpc = (rpc: Rpc) => {
   HiveTxUtils.setRpc(rpc);
-  chrome.runtime.sendMessage({
+  CommunicationUtils.runtimeSendMessage({
     command: BackgroundCommand.SAVE_RPC,
     value: rpc,
   });

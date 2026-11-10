@@ -1,5 +1,6 @@
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { Message } from '@interfaces/message.interface';
+import { Screen } from '@interfaces/screen.interface';
 import { PendingRecurrentTransfer } from '@interfaces/transaction.interface';
 import { fetchRecurrentTransfers } from '@popup/hive/actions/recurrent-transfer.actions';
 import { ActionPayload } from '@popup/multichain/actions/interfaces';
@@ -14,7 +15,6 @@ import {
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
-import { Screen } from '@reference-data/screen.enum';
 import { FormatUtils } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -23,6 +23,7 @@ import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import TransferUtils from 'src/popup/hive/utils/transfer.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const PendingRecurrentTransfersPage = ({
   recurrentTransfers,
   setTitleContainerProperties,
@@ -146,13 +147,13 @@ const RecurrentTransferItemComponent = ({
             <div className="expanded-panel">
               <div className="recurrent-transfer-details">
                 <div className="executions">
-                  {chrome.i18n.getMessage(
+                  {I18nUtils.getMessage(
                     'popup_html_pending_remaining_executions',
                     [remaining_executions.toString()],
                   )}
                 </div>
                 <div className="recurrence">
-                  {chrome.i18n.getMessage('popup_html_pending_recurrence', [
+                  {I18nUtils.getMessage('popup_html_pending_recurrence', [
                     recurrence.toString(),
                   ])}
                 </div>
@@ -164,7 +165,7 @@ const RecurrentTransferItemComponent = ({
                   onClick={() => cancelRecurrentTransfer()}>
                   <SVGIcon icon={SVGIcons.FAVORITE_ACCOUNTS_DELETE} />
                   <span className="label">
-                    {chrome.i18n.getMessage('popup_html_button_label_cancel')}
+                    {I18nUtils.getMessage('popup_html_button_label_cancel')}
                   </span>
                 </div>
               </div>

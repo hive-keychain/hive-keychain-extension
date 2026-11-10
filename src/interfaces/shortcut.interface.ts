@@ -1,6 +1,14 @@
 export enum ShortcutActionType {
   NAVIGATE = 'NAVIGATE',
   CHANGE_ACCOUNT = 'CHANGE_ACCOUNT',
+  CHANGE_CHAIN = 'CHANGE_CHAIN',
+  TOGGLE_THEME = 'TOGGLE_THEME',
+  OPEN_IN_TAB = 'OPEN_IN_TAB',
+}
+
+export enum ShortcutAccountType {
+  HIVE = 'HIVE',
+  EVM = 'EVM',
 }
 
 export interface ShortcutParams {
@@ -8,6 +16,11 @@ export interface ShortcutParams {
   tokenSymbol?: string;
   delegationType?: string;
   powerType?: string;
+  chainId?: string;
+  accountType?: ShortcutAccountType;
+  accountId?: string;
+  evmTokenContractAddress?: string;
+  evmTokenType?: string;
 }
 
 export interface ShortcutDefinition {

@@ -1,0 +1,385 @@
+import { afterEach, describe, expect, it, jest } from '@jest/globals';
+import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
+import { evmRequestWithoutConfirmation } from '@background/evm/requests/logic/evm-request-without-confirmation.logic';
+import { ProviderRpcErrorList } from '@interfaces/evm-provider.interface';
+import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+
+jest.mock('@background/hive/modules/mk.module', () => ({
+  __esModule: true,
+  default: {
+    getMk: jest.fn().mockResolvedValue('mk'),
+  },
+}));
+
+jest.mock('@popup/evm/utils/wallet.utils', () => ({
+  EvmWalletUtils: {
+    hasPermission: jest.fn(),
+    getConnectedWallets: jest.fn(),
+    revokeAllPermissions: jest.fn(),
+    getWalletPermission: jest.fn(),
+  },
+}));
+
+jest.mock('@popup/evm/utils/evm-chain.utils', () => ({
+  EvmChainUtils: {
+    getLastEvmChainIdForOrigin: jest.fn(),
+  },
+}));
+
+jest.mock('@popup/evm/utils/evm-requests.utils', () => ({
+  EvmRequestsUtils: {
+    getWalletCapabilities: jest.fn(),
+    call: jest.fn(),
+  },
+}));
+
+jest.mock('src/background/evm/evm-provider-state.utils', () => ({
+  emitAccountsChangedIfNeeded: jest.fn(),
+  getAccountsForOrigin: jest.fn(),
+  removeWhitelistedChainsForOrigin: jest.fn(),
+  setChainIdForOrigin: jest.fn(),
+}));
+
+jest.mock('src/utils/communication.utils', () => ({
+  CommunicationUtils: {
+    tabsSendMessage: jest.fn(),
+  },
+}));
+
+const createDeferred = () => {
+  let resolve!: () => void;
+  const promise = new Promise<void>((res) => {
+    resolve = res;
+  });
+  return { promise, resolve };
+};
+
+const flushAsync = () => new Promise((resolve) => setTimeout(resolve, 0));
+
+const loadTestContext = async () => {
+  const { EvmWalletUtils } = await import('@popup/evm/utils/wallet.utils');
+  const providerStateUtils = await import(
+    'src/background/evm/evm-provider-state.utils'
+  );
+  const { CommunicationUtils } = await import('src/utils/communication.utils');
+
+  return {
+    EvmWalletUtils: EvmWalletUtils as {
+      hasPermission: jest.Mock;
+      getConnectedWallets: jest.Mock;
+      revokeAllPermissions: jest.Mock;
+    },
+    providerStateUtils: providerStateUtils as {
+      emitAccountsChangedIfNeeded: jest.Mock;
+      getAccountsForOrigin: jest.Mock;
+      removeWhitelistedChainsForOrigin: jest.Mock;
+      setChainIdForOrigin: jest.Mock;
+    },
+    CommunicationUtils: CommunicationUtils as {
+      tabsSendMessage: jest.Mock;
+    },
+  };
+};
+
+describe('evm request without confirmation', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.restoreAllMocks();
+  });
+
+  it('emits one accountsChanged path for eth_requestAccounts', async () => {
+    const { EvmWalletUtils, providerStateUtils, CommunicationUtils } =
+      await loadTestContext();
+    EvmWalletUtils.hasPermission.mockResolvedValue(true);
+    EvmWalletUtils.getConnectedWallets.mockResolvedValue(['0xabc123']);
+    providerStateUtils.emitAccountsChangedIfNeeded.mockResolvedValue([
+      '0xabc123',
+    ]);
+    const requestHandler = {
+      removeRequestByLocator: jest.fn().mockResolvedValue(undefined),
+    } as any;
+
+    await evmRequestWithoutConfirmation(
+      requestHandler,
+      5,
+      {
+        request_id: 1,
+        method: EvmRequestMethod.REQUEST_ACCOUNTS,
+        params: [],
+      } as any,
+      {
+        origin: 'http://localhost:3000',
+        domain: 'localhost',
+        protocol: 'http:',
+        logo: '',
+      },
+    );
+
+    expect(providerStateUtils.emitAccountsChangedIfNeeded).toHaveBeenCalledTimes(1);
+    expect(providerStateUtils.emitAccountsChangedIfNeeded).toHaveBeenCalledWith(
+      'http://localhost:3000',
+      [],
+      ['0xabc123'],
+    );
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(
+      5,
+      {
+        command: BackgroundCommand.SEND_EVM_RESPONSE,
+        value: {
+          requestId: 1,
+          result: ['0xabc123'],
+        },
+      },
+      undefined,
+    );
+    expect(requestHandler.removeRequestByLocator).toHaveBeenCalledWith({
+      requestId: 1,
+      tab: 5,
+      origin: 'http://localhost:3000',
+    });
+  });
+
+  it('emits one accountsChanged([]) path for wallet_revokePermissions', async () => {
+    const { EvmWalletUtils, providerStateUtils, CommunicationUtils } =
+      await loadTestContext();
+    EvmWalletUtils.revokeAllPermissions.mockResolvedValue(undefined);
+    providerStateUtils.getAccountsForOrigin.mockResolvedValue(['0xabc123']);
+    providerStateUtils.emitAccountsChangedIfNeeded.mockResolvedValue([]);
+    const requestSource = {
+      tab: 8,
+      frameId: 2,
+      documentId: 'document-a',
+      origin: 'http://localhost:3000',
+    };
+    const requestHandler = {
+      removePendingAccountRequestsForOrigin: jest.fn().mockResolvedValue([
+        {
+          tab: requestSource.tab,
+          request: {
+            request_id: 10,
+            method: EvmRequestMethod.PERSONAL_SIGN,
+            params: ['message', '0xabc123'],
+          },
+          dappInfo: {
+            origin: requestSource.origin,
+            requestSource,
+          },
+        },
+      ]),
+      removeRequestByLocator: jest.fn().mockResolvedValue(undefined),
+    } as any;
+
+    await evmRequestWithoutConfirmation(
+      requestHandler,
+      6,
+      {
+        request_id: 2,
+        method: EvmRequestMethod.WALLET_REVOKE_PERMISSION,
+        params: [],
+      } as any,
+      {
+        origin: 'http://localhost:3000',
+        domain: 'localhost',
+        protocol: 'http:',
+        logo: '',
+      },
+    );
+
+    expect(EvmWalletUtils.revokeAllPermissions).toHaveBeenCalledWith(
+      'http://localhost:3000',
+    );
+    expect(
+      providerStateUtils.removeWhitelistedChainsForOrigin,
+    ).toHaveBeenCalledWith('http://localhost:3000');
+    expect(providerStateUtils.emitAccountsChangedIfNeeded).toHaveBeenCalledTimes(1);
+    expect(providerStateUtils.emitAccountsChangedIfNeeded).toHaveBeenCalledWith(
+      'http://localhost:3000',
+      ['0xabc123'],
+      [],
+    );
+    expect(
+      requestHandler.removePendingAccountRequestsForOrigin,
+    ).toHaveBeenCalledWith('http://localhost:3000');
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(
+      requestSource.tab,
+      {
+        command: BackgroundCommand.SEND_EVM_ERROR,
+        value: {
+          requestId: 10,
+          error: {
+            code: 4100,
+            message:
+              'The requested method and/or account has not been authorized by the user',
+          },
+        },
+      },
+      {
+        frameId: requestSource.frameId,
+        documentId: requestSource.documentId,
+      },
+    );
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(
+      6,
+      {
+        command: BackgroundCommand.SEND_EVM_RESPONSE,
+        value: {
+          requestId: 2,
+          result: null,
+        },
+      },
+      undefined,
+    );
+    expect(requestHandler.removeRequestByLocator).toHaveBeenCalledWith({
+      requestId: 2,
+      tab: 6,
+      origin: 'http://localhost:3000',
+    });
+  });
+
+  it('keeps the invalid-params error when a subscription has no chain id', async () => {
+    const { CommunicationUtils } = await loadTestContext();
+    (EvmChainUtils.getLastEvmChainIdForOrigin as jest.Mock).mockResolvedValue(
+      null,
+    );
+    const requestHandler = {
+      removeRequestByLocator: jest.fn().mockResolvedValue(undefined),
+    } as any;
+
+    await evmRequestWithoutConfirmation(
+      requestHandler,
+      4,
+      {
+        request_id: 9,
+        method: EvmRequestMethod.SUBSCRIBE,
+        params: ['newHeads'],
+      } as any,
+      {
+        origin: 'http://localhost:3000',
+        domain: 'localhost',
+        protocol: 'http:',
+        logo: '',
+      },
+    );
+
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(
+      4,
+      {
+        command: BackgroundCommand.SEND_EVM_ERROR,
+        value: {
+          requestId: 9,
+          error: {
+            code: ProviderRpcErrorList.invalidMethodParams.code,
+            message: 'Missing chain id',
+          },
+        },
+      },
+      undefined,
+    );
+  });
+
+  it('switches provider chain with the requesting tab for whitelisted wallet_switchEthereumChain', async () => {
+    const { providerStateUtils, CommunicationUtils } = await loadTestContext();
+    providerStateUtils.setChainIdForOrigin.mockResolvedValue('0x539');
+    const requestHandler = {
+      removeRequestByLocator: jest.fn().mockResolvedValue(undefined),
+    } as any;
+
+    await evmRequestWithoutConfirmation(
+      requestHandler,
+      7,
+      {
+        request_id: 3,
+        method: EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN,
+        params: [{ chainId: '0x539' }],
+      } as any,
+      {
+        origin: 'https://example.app',
+        domain: 'example.app',
+        protocol: 'https:',
+        logo: '',
+      },
+    );
+
+    expect(providerStateUtils.setChainIdForOrigin).toHaveBeenCalledWith(
+      'https://example.app',
+      '0x539',
+      { tabId: 7 },
+    );
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(
+      7,
+      {
+        command: BackgroundCommand.SEND_EVM_RESPONSE,
+        value: {
+          requestId: 3,
+          result: null,
+        },
+      },
+      undefined,
+    );
+    expect(requestHandler.removeRequestByLocator).toHaveBeenCalledWith({
+      requestId: 3,
+      tab: 7,
+      origin: 'https://example.app',
+    });
+  });
+
+  it('waits for request cleanup before sending the provider response', async () => {
+    const { EvmWalletUtils, providerStateUtils, CommunicationUtils } =
+      await loadTestContext();
+    const cleanup = createDeferred();
+    EvmWalletUtils.hasPermission.mockResolvedValue(true);
+    EvmWalletUtils.getConnectedWallets.mockResolvedValue(['0xabc123']);
+    providerStateUtils.emitAccountsChangedIfNeeded.mockResolvedValue([
+      '0xabc123',
+    ]);
+    const requestHandler = {
+      removeRequestByLocator: jest.fn().mockReturnValue(cleanup.promise),
+    } as any;
+
+    let settled = false;
+    const result = evmRequestWithoutConfirmation(
+      requestHandler,
+      5,
+      {
+        request_id: 3,
+        method: EvmRequestMethod.REQUEST_ACCOUNTS,
+        params: [],
+      } as any,
+      {
+        origin: 'http://localhost:3000',
+        domain: 'localhost',
+        protocol: 'http:',
+        logo: '',
+      },
+    ).then(() => {
+      settled = true;
+    });
+
+    await flushAsync();
+
+    expect(requestHandler.removeRequestByLocator).toHaveBeenCalledWith({
+      requestId: 3,
+      tab: 5,
+      origin: 'http://localhost:3000',
+    });
+    expect(CommunicationUtils.tabsSendMessage).not.toHaveBeenCalled();
+    expect(settled).toBe(false);
+
+    cleanup.resolve();
+    await result;
+
+    expect(settled).toBe(true);
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(
+      5,
+      {
+        command: BackgroundCommand.SEND_EVM_RESPONSE,
+        value: {
+          requestId: 3,
+          result: ['0xabc123'],
+        },
+      },
+      undefined,
+    );
+  });
+});

@@ -1,0 +1,1324 @@
+import { EvmAddressType } from '@popup/evm/interfaces/evm-addresses.interface';
+import { EvmSettings } from '@popup/evm/interfaces/evm-settings.interface';
+import {
+  EvmTokenTransferInHistoryItem,
+  EvmTokenTransferOutHistoryItem,
+  EvmUserHistoryItem,
+  EvmUserHistoryItemDetail,
+  EvmUserHistoryItemDetailType,
+  EvmUserHistoryItemType,
+} from '@popup/evm/interfaces/evm-tokens-history.interface';
+import {
+  EVMSmartContractType,
+  EvmSmartContractInfo,
+} from '@popup/evm/interfaces/evm-tokens.interface';
+import {
+  AvalancheNativeTransactionType,
+  EvmTransactionDecodedData,
+} from '@popup/evm/interfaces/evm-transactions.interface';
+import { EvmAddressesUtils } from '@popup/evm/utils/evm-addresses.utils';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
+import {
+  EvmLightNodeUtils,
+  LightNodeHistoryDetailItem,
+} from '@popup/evm/utils/evm-light-node.utils';
+import { EvmTransactionParserUtils } from '@popup/evm/utils/evm-transaction-parser.utils';
+import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
+import {
+  BlockExplorerType,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
+import { ethers, TransactionResponse } from 'ethers';
+import Logger from 'src/utils/logger.utils';
+
+import { I18nUtils } from 'src/utils/i18n.utils';
+const parseEvent = async (
+  event: any,
+  chain: EvmChain,
+  walletAddress: string,
+  evmSettings?: EvmSettings,
+  isPending?: boolean,
+) => {
+  const mainTokenMetadata = {} as EvmSmartContractInfo;
+
+  let historyItem = { ...getCommonHistoryItem(event) } as EvmUserHistoryItem;
+
+  // parse event
+
+  switch (chain.blockExplorerApi?.type) {
+    case BlockExplorerType.AVALANCHE_SCAN: {
+      if (event.token) {
+        const details: EvmUserHistoryItemDetail[] = [];
+        details.push({
+          label: 'popup_html_evm_transaction_info_from',
+          value: event.from,
+          type: EvmUserHistoryItemDetailType.ADDRESS,
+        });
+        details.push({
+          label: 'popup_html_evm_transaction_info_to',
+          value: event.to,
+          type: EvmUserHistoryItemDetailType.ADDRESS,
+        });
+
+        const addressDetails = await EvmAddressesUtils.getAddressDetails(
+          event.from.toLowerCase() === walletAddress.toLowerCase()
+            ? event.to
+            : event.from,
+          chain.chainId,
+        );
+
+        switch (event.token.type) {
+          case EVMSmartContractType.ERC20: {
+            const amount = ethers.formatUnits(
+              event.value,
+              event.token.decimals,
+            );
+            const amountS = EvmFormatUtils.formatTokenBalance(
+              amount,
+              event.token.decimals,
+            );
+
+            details.push({
+              label: 'popup_html_transfer_amount',
+              value: `${amountS} ${event.token!.symbol.toString()}`,
+              type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
+            });
+
+            if (
+              event.to.toLowerCase() === walletAddress.toLowerCase() &&
+              Number(amount) === 0 &&
+              (await EvmAddressesUtils.isPotentialSpoofing(event.from))
+            ) {
+              historyItem.warningMessage = I18nUtils.getMessage(
+                'evm_history_warning_potential_zero_amount_scam',
+              );
+            }
+
+            historyItem.label = I18nUtils.getMessage(
+              event.from.toLowerCase() === walletAddress.toLowerCase()
+                ? `popup_html_evm_history_transfer_out${
+                    isPending ? '_pending' : ''
+                  }`
+                : event.from === ethers.ZeroAddress
+                  ? 'evm_history_operation_transfer_in_no_sender'
+                  : 'popup_html_evm_history_transfer_in',
+              [
+                amountS,
+                event.token!.symbol,
+                addressDetails.formattedAddress,
+              ],
+            );
+
+            break;
+          }
+          case EVMSmartContractType.ERC721: {
+            details.unshift({
+              label: `${event.token.name}#${Number(event.token.tokenId)}`,
+              value: event.token.tokenId,
+              type: EvmUserHistoryItemDetailType.IMAGE,
+            });
+
+            historyItem.label = I18nUtils.getMessage(
+              event.from.toLowerCase() === walletAddress.toLowerCase()
+                ? `evm_history_operation_safe_transfer_from_erc721_out${
+                    isPending ? '_pending' : ''
+                  }`
+                : event.from === ethers.ZeroAddress
+                  ? 'evm_history_operation_safe_transfer_from_erc721_in_no_sender'
+                  : 'evm_history_operation_safe_transfer_from_erc721_in',
+              [
+                event.token!.symbol,
+                event.token!.tokenId,
+                addressDetails.formattedAddress,
+              ],
+            );
+
+            break;
+          }
+          case EVMSmartContractType.ERC1155: {
+            details.unshift({
+              label: `${event.token.name}#${Number(event.token.tokenId)}`,
+              value: event.token.tokenId,
+              type: EvmUserHistoryItemDetailType.IMAGE,
+            });
+
+            historyItem.label = I18nUtils.getMessage(
+              event.from.toLowerCase() === walletAddress.toLowerCase()
+                ? `evm_history_operation_safe_transfer_from_erc1155_out${
+                    isPending ? '_pending' : ''
+                  }`
+                : event.from === ethers.ZeroAddress
+                  ? 'evm_history_operation_safe_transfer_from_erc1155_in_no_sender'
+                  : 'evm_history_operation_safe_transfer_from_erc1155_in',
+              [
+                event.value,
+                event.token!.symbol,
+                event.token!.tokenId,
+                addressDetails.formattedAddress,
+              ],
+            );
+            break;
+          }
+          case EVMSmartContractType.PROTOCOL: {
+            break;
+          }
+        }
+
+        historyItem.pageTitle = 'popup_html_transfer_funds';
+        historyItem.tokenInfo = event.token;
+        historyItem.detailFields = details;
+      } else {
+        switch (event.method) {
+          case AvalancheNativeTransactionType.CONTRACT_CALL: {
+            // native event
+            const amount = EvmFormatUtils.etherToWei(
+              Number(event.value),
+            ).toString();
+            const amountS = EvmFormatUtils.formatTokenBalance(amount, 18);
+
+            const token = {} as EvmSmartContractInfo;
+
+            const details: EvmUserHistoryItemDetail[] = [];
+            details.push({
+              label: 'popup_html_evm_transaction_info_from',
+              value: event.from,
+              type: EvmUserHistoryItemDetailType.ADDRESS,
+            });
+            details.push({
+              label: 'popup_html_evm_transaction_info_to',
+              value: event.to,
+              type: EvmUserHistoryItemDetailType.ADDRESS,
+            });
+            details.push({
+              label: 'popup_html_transfer_amount',
+              value: `${amountS} ${mainTokenMetadata!.symbol.toString()}`,
+              type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
+            });
+            historyItem.detailFields = details;
+            historyItem.pageTitle = 'evm_pay_to_smart_contract';
+            historyItem.tokenInfo = mainTokenMetadata;
+
+            historyItem.label = I18nUtils.getMessage(
+              `popup_html_evm_history_transfer_out${
+                isPending ? '_pending' : ''
+              }`,
+              [
+                amountS,
+                mainTokenMetadata!.symbol,
+                token ? token.name : event.to,
+              ],
+            );
+            break;
+          }
+          case AvalancheNativeTransactionType.NATIVE_TRANSFER: {
+            historyItem = await getNativeTransferData(
+              event,
+              chain,
+              walletAddress,
+              mainTokenMetadata,
+              historyItem,
+              isPending,
+            );
+            break;
+          }
+        }
+      }
+
+      break;
+    }
+    case BlockExplorerType.BLOCKSCOUT:
+    case BlockExplorerType.ETHERSCAN: {
+      if (
+        (event.to === ethers.ZeroAddress && event.input === ethers.ZeroHash) ||
+        (event.from === walletAddress.toLowerCase() &&
+          event.to.toLowerCase() === walletAddress.toLowerCase())
+      ) {
+        historyItem.isCanceled = true;
+        historyItem.label = I18nUtils.getMessage(
+          'evm_history_canceled_transaction',
+        );
+        historyItem.pageTitle = 'evm_history_canceled_transaction';
+        historyItem.detailFields = [];
+      } else if (
+        event.contractAddress?.length > 0 &&
+        (!event.to || event.to.length === 0)
+      ) {
+        // contract creation
+        const details: EvmUserHistoryItemDetail[] = [];
+        details.push({
+          label: 'evm_created_smart_contract',
+          value: event.contractAddress,
+          type: EvmUserHistoryItemDetailType.ADDRESS,
+        });
+
+        historyItem = {
+          ...historyItem,
+          type: EvmUserHistoryItemType.SMART_CONTRACT_CREATION,
+        };
+
+        historyItem.label = I18nUtils.getMessage(
+          `evm_history_smart_contract_creation_message${
+            isPending ? '_pending' : ''
+          }`,
+          [EvmFormatUtils.formatAddress(event.contractAddress)],
+        );
+        historyItem.pageTitle = 'evm_history_smart_contract_creation';
+        historyItem.detailFields = details;
+      } else if (!!event.functionName && event.functionName.length > 0) {
+        const functionName = event.functionName.split('(')[0];
+        // console.log(functionName, event);
+        let label = '';
+        let pageTitle = '';
+
+        switch (functionName) {
+          case 'transfer': {
+            pageTitle = 'evm_transfer';
+            const fromDetails = await EvmAddressesUtils.getAddressDetails(
+              event.from,
+              chain.chainId,
+            );
+            const toDetails = await EvmAddressesUtils.getAddressDetails(
+              event.to,
+              chain.chainId,
+            );
+
+            if (event.to.toLowerCase() === walletAddress.toLowerCase()) {
+              // transfer in
+              label = I18nUtils.getMessage(
+                'evm_history_operation_transfer_in',
+                [
+                  ethers.formatUnits(event.value, event.tokenDecimals),
+                  event.tokenSymbol,
+                  fromDetails.formattedAddress,
+                ],
+              );
+            } else {
+              // transfer out
+              label = I18nUtils.getMessage(
+                `evm_history_operation_transfer_out${
+                  isPending ? '_pending' : ''
+                }`,
+                [
+                  ethers.formatUnits(event.value, event.tokenDecimals),
+                  event.tokenSymbol,
+                  toDetails.formattedAddress,
+                ],
+              );
+            }
+            break;
+          }
+          case 'transferFrom': {
+            pageTitle = 'evm_transfer';
+            switch (event.type) {
+              case EVMSmartContractType.ERC20: {
+                const fromDetails = await EvmAddressesUtils.getAddressDetails(
+                  event.from,
+                  chain.chainId,
+                );
+                const toDetails = await EvmAddressesUtils.getAddressDetails(
+                  event.to,
+                  chain.chainId,
+                );
+
+                if (event.to.toLowerCase() === walletAddress.toLowerCase()) {
+                  // transfer in
+                  label = I18nUtils.getMessage(
+                    'evm_history_operation_transfer_in',
+                    [
+                      ethers.formatUnits(event.value, event.tokenDecimals),
+                      event.tokenSymbol,
+                      fromDetails.formattedAddress,
+                    ],
+                  );
+                } else {
+                  // transfer out
+                  label = I18nUtils.getMessage(
+                    `evm_history_operation_transfer_out${
+                      isPending ? '_pending' : ''
+                    }`,
+                    [
+                      ethers.formatUnits(event.value, event.tokenDecimals),
+                      event.tokenSymbol,
+                      toDetails.formattedAddress,
+                    ],
+                  );
+                }
+                break;
+              }
+              case EVMSmartContractType.ERC721: {
+                const fromDetails = await EvmAddressesUtils.getAddressDetails(
+                  event.from,
+                  chain.chainId,
+                );
+                const toDetails = await EvmAddressesUtils.getAddressDetails(
+                  event.to,
+                  chain.chainId,
+                );
+
+                pageTitle = 'evm_transfer';
+                if (event.to.toLowerCase() === walletAddress.toLowerCase()) {
+                  // transfer in
+                  label = I18nUtils.getMessage(
+                    'evm_history_operation_safe_transfer_from_erc721_in',
+                    [
+                      event.tokenName,
+                      event.tokenID,
+                      fromDetails.formattedAddress,
+                    ],
+                  );
+                } else {
+                  // transfer out
+                  label = I18nUtils.getMessage(
+                    `evm_history_operation_safe_transfer_from_erc721_out${
+                      isPending ? '_pending' : ''
+                    }`,
+                    [
+                      event.tokenName,
+                      event.tokenID,
+                      toDetails.formattedAddress,
+                    ],
+                  );
+                }
+                break;
+              }
+            }
+          }
+          case 'safeTransferFrom': {
+            pageTitle = 'evm_transfer';
+            switch (event.type) {
+              case EVMSmartContractType.ERC721: {
+                const fromDetails = await EvmAddressesUtils.getAddressDetails(
+                  event.from,
+                  chain.chainId,
+                );
+                const toDetails = await EvmAddressesUtils.getAddressDetails(
+                  event.to,
+                  chain.chainId,
+                );
+                if (event.to.toLowerCase() === walletAddress.toLowerCase()) {
+                  // transfer in
+                  label = I18nUtils.getMessage(
+                    'evm_history_operation_safe_transfer_from_erc721_in',
+                    [
+                      event.tokenName,
+                      event.tokenID,
+                      fromDetails.formattedAddress,
+                    ],
+                  );
+                } else {
+                  // transfer out
+                  label = I18nUtils.getMessage(
+                    `evm_history_operation_safe_transfer_from_erc721_out${
+                      isPending ? '_pending' : ''
+                    }`,
+                    [
+                      event.tokenName,
+                      event.tokenID,
+                      toDetails.formattedAddress,
+                    ],
+                  );
+                }
+                break;
+              }
+              case EVMSmartContractType.ERC1155: {
+                const fromDetails = await EvmAddressesUtils.getAddressDetails(
+                  event.from,
+                  chain.chainId,
+                );
+                const toDetails = await EvmAddressesUtils.getAddressDetails(
+                  event.to,
+                  chain.chainId,
+                );
+                if (event.to.toLowerCase() === walletAddress.toLowerCase()) {
+                  // transfer in
+                  label = I18nUtils.getMessage(
+                    'evm_history_operation_safe_transfer_from_erc1155_in',
+                    [
+                      event.tokenValue,
+                      event.tokenName,
+                      event.tokenID,
+                      fromDetails.formattedAddress,
+                    ],
+                  );
+                } else {
+                  // transfer out
+                  label = I18nUtils.getMessage(
+                    `evm_history_operation_safe_transfer_from_erc1155_out${
+                      isPending ? '_pending' : ''
+                    }`,
+                    [
+                      event.tokenValue,
+                      event.tokenName,
+                      event.tokenID,
+                      toDetails.formattedAddress,
+                    ],
+                  );
+                }
+                break;
+              }
+            }
+          }
+          case 'safeBatchTransferFrom': {
+            pageTitle = 'evm_transfer';
+            //only 1155
+            // TODO: implement
+            break;
+          }
+          case 'mint': {
+            switch (event.type) {
+              case EVMSmartContractType.ERC721:
+              case EVMSmartContractType.ERC1155:
+                label = I18nUtils.getMessage(
+                  `evm_history_operation_mintNFTs${
+                    isPending ? '_pending' : ''
+                  }`,
+                  [event.tokenName, event.tokenID],
+                );
+                pageTitle = 'evm_mint';
+                break;
+            }
+          }
+          case 'mintBatch': {
+            // only 1155
+            //TODO need to find a transaction to test this
+            label = I18nUtils.getMessage(
+              `evm_history_operation_mint_batch${isPending ? '_pending' : ''}`,
+              [],
+            );
+            break;
+          }
+          case 'safeMint': {
+            // only 721
+            label = I18nUtils.getMessage(
+              `evm_history_operation_mintNFTs${isPending ? '_pending' : ''}`,
+              [event.tokenName, event.tokenID],
+            );
+            pageTitle = 'evm_mint';
+            break;
+          }
+
+          default: {
+            if (event.from.toLowerCase() === walletAddress.toLowerCase()) {
+              label = I18nUtils.getMessage(
+                `evm_history_operation_generic_smart_contract_messages_out${
+                  isPending ? '_pending' : ''
+                }`,
+                [
+                  functionName,
+                  event.tokenName,
+                  EvmFormatUtils.formatAddress(event.contractAddress),
+                ],
+              );
+            } else {
+              label = I18nUtils.getMessage(
+                `evm_history_operation_generic_smart_contract_messages_in${
+                  isPending ? '_pending' : ''
+                }`,
+                [
+                  functionName,
+                  event.tokenName,
+                  EvmFormatUtils.formatAddress(event.contractAddress),
+                ],
+              );
+            }
+            pageTitle = 'evm_history_smart_contract';
+            break;
+          }
+        }
+
+        const details: EvmUserHistoryItemDetail[] = [];
+        details.push({
+          label: 'evm_operation_smart_contract_address',
+          value: event.contractAddress,
+          type: EvmUserHistoryItemDetailType.ADDRESS,
+        });
+
+        historyItem = {
+          ...historyItem,
+          type: EvmUserHistoryItemType.SMART_CONTRACT,
+          pageTitle: pageTitle,
+          label: label,
+          detailFields: details,
+        };
+      } else if (
+        event.to &&
+        event.to.length > 0 &&
+        event.input &&
+        event.input.replace('0x', '').length > 0 &&
+        event.input.replace(ethers.ZeroHash, '').length > 0
+      ) {
+        let decodedData;
+        // Smart contract (parse transaction)
+        try {
+          const tokenMetadata = await EvmLightNodeUtils.getMetadata(
+            chain.chainId,
+            event.to.toLowerCase(),
+          );
+          historyItem = {
+            ...historyItem,
+            type: EvmUserHistoryItemType.SMART_CONTRACT,
+          };
+          decodedData = await EvmTransactionParserUtils.parseData(
+            event.input,
+            chain,
+          );
+          const specificData = await getSpecificData(
+            chain,
+            event.contractAddress.length > 0
+              ? event.contractAddress.toLowerCase()
+              : event.to.toLowerCase(),
+            event.from.toLowerCase(),
+            walletAddress.toLowerCase(),
+            decodedData,
+            tokenMetadata,
+            event,
+            evmSettings,
+            isPending,
+          );
+
+          if (!specificData) return;
+
+          historyItem.label = specificData.label;
+          historyItem.pageTitle = specificData.pageTitle;
+          historyItem.receiverAddress = specificData.receiverAddress;
+          historyItem.detailFields = specificData.detailFields;
+          historyItem.tokenInfo = specificData.tokenInfo;
+        } catch (err) {
+          Logger.error(err as string);
+          const defaultLabel =
+            event.from.toLowerCase() === walletAddress.toLowerCase()
+              ? `evm_history_default_out_smart_contract_operation${
+                  isPending ? '_pending' : ''
+                }`
+              : 'evm_history_default_in_smart_contract_operation';
+
+          historyItem.label = I18nUtils.getMessage(defaultLabel);
+          historyItem.pageTitle = defaultLabel;
+          // history.events.push(historyItem);
+        }
+      } else if (
+        (await EvmAddressesUtils.getAddressType(event.to, chain)) ===
+        EvmAddressType.WALLET_ADDRESS
+      ) {
+        // Normal transaction
+        historyItem = await getNativeTransferData(
+          event,
+          chain,
+          walletAddress,
+          mainTokenMetadata,
+          historyItem,
+          isPending,
+        );
+      } else {
+        Logger.error(`${event.hash} match no condition`);
+        const defaultLabel =
+          event.from.toLowerCase() === walletAddress.toLowerCase()
+            ? `evm_history_default_out_smart_contract_operation${
+                isPending ? '_pending' : ''
+              }`
+            : 'evm_history_default_in_smart_contract_operation';
+        historyItem.label = I18nUtils.getMessage(defaultLabel);
+        historyItem.pageTitle = defaultLabel;
+      }
+      break;
+    }
+
+    default:
+      break;
+  }
+  return historyItem;
+};
+
+const getNativeTransferData = async (
+  event: any,
+  chain: EvmChain,
+  walletAddress: string,
+  mainTokenMetadata: EvmSmartContractInfo,
+  historyItem: EvmUserHistoryItem,
+  isPending?: boolean,
+) => {
+  // native event
+  const amount = EvmFormatUtils.etherToWei(Number(event.value)).toString();
+  const amountS = EvmFormatUtils.formatTokenBalance(amount, 18);
+
+  const addressDetails = await EvmAddressesUtils.getAddressDetails(
+    event.from.toLowerCase() === walletAddress.toLowerCase()
+      ? event.to
+      : event.from,
+    chain.chainId,
+  );
+
+  if (
+    event.to.toLowerCase() === walletAddress.toLowerCase() &&
+    Number(amount) === 0 &&
+    (await EvmAddressesUtils.isPotentialSpoofing(event.from))
+  ) {
+    historyItem.warningMessage = I18nUtils.getMessage(
+      'evm_history_warning_potential_zero_amount_scam',
+    );
+  }
+
+  const details: EvmUserHistoryItemDetail[] = [];
+  details.push({
+    label: 'popup_html_evm_transaction_info_from',
+    value: event.from,
+    type: EvmUserHistoryItemDetailType.ADDRESS,
+  });
+  details.push({
+    label: 'popup_html_evm_transaction_info_to',
+    value: event.to,
+    type: EvmUserHistoryItemDetailType.ADDRESS,
+  });
+  details.push({
+    label: 'popup_html_transfer_amount',
+    value: `${amountS} ${mainTokenMetadata!.symbol.toString()}`,
+    type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
+  });
+
+  historyItem = {
+    ...historyItem,
+    type:
+      event.from.toLowerCase() === walletAddress.toLowerCase()
+        ? EvmUserHistoryItemType.TRANSFER_OUT
+        : EvmUserHistoryItemType.TRANSFER_IN,
+    from: event.from,
+    to: event.to,
+    amount: amount,
+    isCanceled: Number(event.value) === 0,
+    label: I18nUtils.getMessage(
+      event.from.toLowerCase() === walletAddress.toLowerCase()
+        ? `popup_html_evm_history_transfer_out${isPending ? '_pending' : ''}`
+        : 'popup_html_evm_history_transfer_in',
+      [
+        amountS,
+        mainTokenMetadata!.symbol,
+        addressDetails.formattedAddress,
+      ],
+    ),
+    detailFields: details,
+    pageTitle: 'popup_html_transfer_funds',
+    tokenInfo: mainTokenMetadata,
+  } as EvmTokenTransferInHistoryItem | EvmTokenTransferOutHistoryItem;
+  return historyItem;
+};
+
+const getSpecificData = async (
+  chain: EvmChain,
+  contractAddress: string,
+  broadcaster: string,
+  walletAddress: string,
+  decodedData: EvmTransactionDecodedData | undefined,
+  tokenMetadata: EvmSmartContractInfo,
+  event: any,
+  evmSettings?: EvmSettings,
+  isPending?: boolean,
+): Promise<EvmHistoryItemSpecificData | undefined> => {
+  const details: EvmUserHistoryItemDetail[] = [];
+
+  const defaultLabel =
+    broadcaster.toLowerCase() === walletAddress.toLowerCase()
+      ? `evm_history_default_out_smart_contract_operation${
+          isPending ? '_pending' : ''
+        }`
+      : 'evm_history_default_in_smart_contract_operation';
+
+  let result: EvmHistoryItemSpecificData = {
+    label: I18nUtils.getMessage(defaultLabel),
+    pageTitle: defaultLabel,
+    detailFields: details,
+  };
+
+  let name;
+  let symbol;
+
+  if (tokenMetadata) {
+    if (
+      evmSettings &&
+      tokenMetadata.type !== EVMSmartContractType.NATIVE &&
+      ((tokenMetadata.possibleSpam &&
+        !evmSettings.smartContracts.displayPossibleSpam) ||
+        (!tokenMetadata.verifiedContract &&
+          !evmSettings.smartContracts.displayNonVerifiedContracts))
+    ) {
+      Logger.info('Non displayed because of settings');
+      return;
+    }
+
+    name = tokenMetadata.name ?? tokenMetadata.symbol;
+    symbol = tokenMetadata.symbol;
+  } else {
+    const abi = await EvmLightNodeUtils.getAbi(chain.chainId, contractAddress);
+    const normalizedAbi = EvmTokensUtils.normalizeAbi(abi);
+
+    if (normalizedAbi) {
+      try {
+        const contract = new ethers.Contract(contractAddress, normalizedAbi);
+        [name, symbol] = await Promise.all([
+          contract.name(),
+          contract.symbol(),
+        ]);
+      } catch (err) {
+        name = EvmFormatUtils.formatAddress(contractAddress);
+        symbol = 'No symbol';
+      }
+    } else {
+      name = EvmFormatUtils.formatAddress(contractAddress);
+      symbol = 'NO symbol 2';
+    }
+  }
+
+  if (decodedData) {
+    switch (decodedData.operationName) {
+      case 'safeTransferFrom': {
+        const from = decodedData.inputs[0].value.toLowerCase();
+        const to = decodedData.inputs[1].value.toLowerCase();
+
+        const fromDetails = await EvmAddressesUtils.getAddressDetails(
+          from,
+          chain.chainId,
+        );
+        const toDetails = await EvmAddressesUtils.getAddressDetails(
+          to,
+          chain.chainId,
+        );
+
+        if (decodedData.inputs.length === 5) {
+          if (to === walletAddress)
+            result = {
+              label: I18nUtils.getMessage(
+                'evm_history_operation_safe_transfer_from_erc1155_in',
+                [
+                  decodedData.inputs[3].value,
+                  name,
+                  decodedData.inputs[2].value,
+                  fromDetails.formattedAddress,
+                ],
+              ),
+              pageTitle: 'evm_transfer',
+              receiverAddress: walletAddress,
+              detailFields: [
+                {
+                  label: `${decodedData.inputs[3].value} ${name}#${Number(
+                    decodedData.inputs[2].value,
+                  )}`,
+                  value: decodedData.inputs[2].value,
+                  type: EvmUserHistoryItemDetailType.IMAGE,
+                },
+                {
+                  label: 'popup_html_evm_transaction_info_from',
+                  value: from,
+                  type: EvmUserHistoryItemDetailType.ADDRESS,
+                },
+                {
+                  label: 'popup_html_evm_transaction_info_to',
+                  value: to,
+                  type: EvmUserHistoryItemDetailType.ADDRESS,
+                },
+              ],
+            };
+          else {
+            result = {
+              label: I18nUtils.getMessage(
+                `evm_history_operation_safe_transfer_from_erc1155_out${
+                  isPending ? '_pending' : ''
+                }`,
+                [
+                  decodedData.inputs[3].value,
+                  name,
+                  decodedData.inputs[2].value,
+                  toDetails.formattedAddress,
+                  ,
+                ],
+              ),
+              pageTitle: 'evm_transfer',
+              detailFields: [
+                {
+                  label: `${decodedData.inputs[3].value} ${name}#${Number(
+                    decodedData.inputs[2].value,
+                  )}`,
+                  value: decodedData.inputs[2].value,
+                  type: EvmUserHistoryItemDetailType.IMAGE,
+                },
+                {
+                  label: 'popup_html_evm_transaction_info_from',
+                  value: from,
+                  type: EvmUserHistoryItemDetailType.ADDRESS,
+                },
+                {
+                  label: 'popup_html_evm_transaction_info_to',
+                  value: to,
+                  type: EvmUserHistoryItemDetailType.ADDRESS,
+                },
+              ],
+            };
+          }
+        } else if (decodedData.inputs.length === 3) {
+          if (to === walletAddress)
+            result = {
+              label: I18nUtils.getMessage(
+                'evm_history_operation_safe_transfer_from_erc721_in',
+                [
+                  name,
+                  decodedData.inputs[2].value,
+                  fromDetails.formattedAddress,
+                ],
+              ),
+              pageTitle: 'evm_transfer',
+              detailFields: [
+                {
+                  label: `${name}#${Number(decodedData.inputs[2].value)}`,
+                  value: decodedData.inputs[2].value,
+                  type: EvmUserHistoryItemDetailType.IMAGE,
+                },
+                {
+                  label: 'popup_html_evm_transaction_info_from',
+                  value: from,
+                  type: EvmUserHistoryItemDetailType.ADDRESS,
+                },
+                {
+                  label: 'popup_html_evm_transaction_info_to',
+                  value: to,
+                  type: EvmUserHistoryItemDetailType.ADDRESS,
+                },
+              ],
+            };
+          else {
+            result = {
+              label: I18nUtils.getMessage(
+                `evm_history_operation_safe_transfer_from_erc721_out${
+                  isPending ? '_pending' : ''
+                }`,
+                [
+                  name,
+                  decodedData.inputs[2].value,
+                  toDetails.formattedAddress,
+                ],
+              ),
+              pageTitle: 'evm_transfer',
+              detailFields: [
+                {
+                  label: `${name}#${Number(decodedData.inputs[2].value)}`,
+                  value: decodedData.inputs[2].value,
+                  type: EvmUserHistoryItemDetailType.IMAGE,
+                },
+                {
+                  label: 'popup_html_evm_transaction_info_from',
+                  value: from,
+                  type: EvmUserHistoryItemDetailType.ADDRESS,
+                },
+                {
+                  label: 'popup_html_evm_transaction_info_to',
+                  value: to,
+                  type: EvmUserHistoryItemDetailType.ADDRESS,
+                },
+              ],
+            };
+          }
+        }
+        break;
+      }
+      case 'transfer': {
+        const to = decodedData.inputs[0].value.toLowerCase();
+
+        const isTransferIn = to === walletAddress;
+        const amount = Number(decodedData.inputs[1].value) / 1000000;
+
+        const broadcasterDetails = await EvmAddressesUtils.getAddressDetails(
+          broadcaster,
+          chain.chainId,
+        );
+        const toDetails = await EvmAddressesUtils.getAddressDetails(
+          to,
+          chain.chainId,
+        );
+
+        result = {
+          label: I18nUtils.getMessage(
+            isTransferIn
+              ? 'evm_history_operation_transfer_in'
+              : `evm_history_operation_transfer_out${
+                  isPending ? '_pending' : ''
+                }`,
+            [
+              amount,
+              symbol,
+              isTransferIn
+                ? broadcasterDetails.formattedAddress
+                : toDetails.formattedAddress,
+            ],
+          ),
+          pageTitle: 'evm_transfer',
+          detailFields: [
+            {
+              label: 'popup_html_transfer_amount',
+              value: `${amount.toString()} ${symbol}`,
+              type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
+            },
+            {
+              label: 'popup_html_evm_transaction_info_from',
+              value: broadcaster,
+              type: EvmUserHistoryItemDetailType.ADDRESS,
+            },
+            {
+              label: 'popup_html_evm_transaction_info_to',
+              value: to,
+              type: EvmUserHistoryItemDetailType.ADDRESS,
+            },
+          ],
+        };
+        break;
+      }
+      case 'transferFrom': {
+        const from = decodedData.inputs[0].value.toLowerCase();
+        const to = decodedData.inputs[1].value.toLowerCase();
+
+        const toDetails = await EvmAddressesUtils.getAddressDetails(
+          to,
+          chain.chainId,
+        );
+        const fromDetails = await EvmAddressesUtils.getAddressDetails(
+          from,
+          chain.chainId,
+        );
+
+        const isTransferIn = to === walletAddress;
+        const amount = Number(decodedData.inputs[2].value) / 1000000;
+
+        result = {
+          label: I18nUtils.getMessage(
+            isTransferIn
+              ? 'evm_history_operation_transfer_in'
+              : `evm_history_operation_transfer_out${
+                  isPending ? '_pending' : ''
+                }`,
+            [
+              amount,
+              symbol,
+              isTransferIn
+                ? fromDetails.formattedAddress
+                : toDetails.formattedAddress,
+            ],
+          ),
+          pageTitle: 'evm_transfer',
+          detailFields: [
+            {
+              label: 'popup_html_transfer_amount',
+              value: `${amount.toString()} ${symbol}`,
+              type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
+            },
+            {
+              label: 'popup_html_evm_transaction_info_from',
+              value: from,
+              type: EvmUserHistoryItemDetailType.ADDRESS,
+            },
+            {
+              label: 'popup_html_evm_transaction_info_to',
+              value: to,
+              type: EvmUserHistoryItemDetailType.ADDRESS,
+            },
+          ],
+        };
+        break;
+      }
+      case 'approve': {
+        const to = decodedData.inputs[0].value;
+
+        const toDetails = await EvmAddressesUtils.getAddressDetails(
+          to,
+          chain.chainId,
+        );
+
+        const amount = Number(decodedData.inputs[1].value) / 1000000;
+        if (tokenMetadata?.type === EVMSmartContractType.ERC20) {
+          result = {
+            label: I18nUtils.getMessage(
+              `evm_history_operation_approve_out_erc20${
+                isPending ? '_pending' : ''
+              }`,
+              [toDetails.label ?? toDetails.formattedAddress, amount, symbol],
+            ),
+            pageTitle: 'evm_approval',
+            detailFields: [
+              {
+                label: 'popup_html_transfer_amount',
+                value: `${amount.toString()} ${symbol}`,
+                type: EvmUserHistoryItemDetailType.TOKEN_AMOUNT,
+              },
+              {
+                label: 'popup_html_evm_transaction_info_from',
+                value: broadcaster,
+                type: EvmUserHistoryItemDetailType.ADDRESS,
+              },
+              {
+                label: 'popup_html_evm_transaction_info_to',
+                value: to,
+                type: EvmUserHistoryItemDetailType.ADDRESS,
+              },
+            ],
+          };
+        } else if (tokenMetadata?.type === EVMSmartContractType.ERC721) {
+          result = {
+            label: I18nUtils.getMessage(
+              `evm_history_operation_approve_out_erc721${
+                isPending ? '_pending' : ''
+              }`,
+              [
+                toDetails.label ?? toDetails.formattedAddress,
+                name,
+                decodedData.inputs[1].value,
+              ],
+            ),
+            pageTitle: 'evm_approval',
+            detailFields: [
+              {
+                label: `${name}#${Number(decodedData.inputs[1].value)}`,
+                value: decodedData.inputs[1].value,
+                type: EvmUserHistoryItemDetailType.IMAGE,
+              },
+              {
+                label: 'popup_html_evm_transaction_info_from',
+                value: broadcaster,
+                type: EvmUserHistoryItemDetailType.ADDRESS,
+              },
+              {
+                label: 'popup_html_evm_transaction_info_to',
+                value: to,
+                type: EvmUserHistoryItemDetailType.ADDRESS,
+              },
+            ],
+          };
+        }
+        break;
+      }
+      case 'mintBatch': {
+        const details = [];
+        for (let i = 0; i < decodedData.inputs[1].value.length; i++) {
+          details.push({
+            label: `${decodedData.inputs[2].value[i]} ${name}#${Number(
+              decodedData.inputs[1].value[i],
+            )}`,
+            value: decodedData.inputs[1].value[i],
+            type: EvmUserHistoryItemDetailType.IMAGE,
+          });
+        }
+
+        result = {
+          label: I18nUtils.getMessage(
+            `evm_history_operation_mint_batch${isPending ? '_pending' : ''}`,
+            [decodedData.inputs[1].value.length, name],
+          ),
+          pageTitle: 'evm_mint_batch',
+          detailFields: [
+            ...details,
+            {
+              label: 'popup_html_evm_transaction_info_from',
+              value: broadcaster,
+              type: EvmUserHistoryItemDetailType.ADDRESS,
+            },
+          ],
+        };
+        break;
+      }
+
+      case 'mintNFTs': {
+        result = {
+          label: I18nUtils.getMessage(
+            `evm_history_operation_mintNFTs${isPending ? '_pending' : ''}`,
+            [name, decodedData.inputs[0].value],
+          ),
+          pageTitle: 'evm_mint',
+          detailFields: [
+            {
+              label: `${name}#${Number(decodedData.inputs[0].value)}`,
+              value: decodedData.inputs[0].value,
+              type: EvmUserHistoryItemDetailType.IMAGE,
+            },
+          ],
+        };
+        break;
+      }
+      default: {
+        result = {
+          label: I18nUtils.getMessage(
+            `evm_history_operation_generic_smart_contract_messages${
+              isPending ? '_pending' : ''
+            }`,
+            [
+              decodedData.operationName,
+              name,
+              EvmFormatUtils.formatAddress(contractAddress),
+            ],
+          ),
+          pageTitle: 'evm_broadcast',
+          detailFields: [],
+        };
+        break;
+      }
+    }
+  }
+
+  result.detailFields.push({
+    label: 'evm_history_smart_contract',
+    value: contractAddress,
+    type: EvmUserHistoryItemDetailType.ADDRESS,
+  });
+
+  result.tokenInfo = tokenMetadata;
+  return result;
+};
+
+/** UI / inference union for transaction token category (v1 — swaps grouped under ERC20). */
+export type TransactionTokenKind = 'NATIVE' | 'ERC20' | 'ERC721' | 'ERC1155';
+
+/** Nested ERC-20 `transfer` / `transferFrom` selectors inside router meta-calldata (swap paths). */
+function calldataEmbedsStandardErc20TransferOps(dataHex: string): boolean {
+  const chunk = dataHex.slice(2).toLowerCase();
+  return chunk.includes('a9059cbb') || chunk.includes('23b872dd');
+}
+
+/**
+ * Top-level function selectors commonly used by ERC-20 swap / aggregation routers (extend over time).
+ * Classifies complex swaps as {@link TransactionTokenKind} `ERC20` per product convention.
+ */
+const TOP_LEVEL_ERC20_SWAPLIKE_SELECTORS = new Set<string>([
+  '0x5f3bd1c8', // LiFi-style aggregators / multi-hop swaps (observed production txs)
+  '0x38ed1739', // Uniswap V2 swapExactTokensForTokens
+  '0x7ff36ab5', // swapExactETHForTokens
+  '0x18cbafe5', // swapExactTokensForETH
+  '0x414bf389', // Uniswap V3 exactInputSingle
+  '0xad7d9e09', // Uniswap V3 exactInput
+]);
+
+/** ERC-721 safeTransferFrom(address,address,uint256) */
+const SEL721_SAFE_TRANSFER_FROM_3 = '0x42842e0e';
+/** ERC-721 safeTransferFrom(address,address,uint256,bytes) */
+const SEL721_SAFE_TRANSFER_FROM_DATA = '0xb88d4fde';
+
+const erc1155Iface = new ethers.Interface([
+  'function safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes data)',
+  'function safeBatchTransferFrom(address from, address to, uint256[] ids, uint256[] amounts, bytes data)',
+]);
+
+/**
+ * Best-effort token kind from signed tx calldata (works before history/light-node indexes the tx).
+ *
+ * Supported {@link TransactionTokenKind}:
+ * - **NATIVE** — plain value transfer with no calldata
+ * - **ERC20** — direct `transfer`; nested `transfer`/`transferFrom` in router calldata; common DEX swap selectors
+ * - **ERC721** / **ERC1155** — NFT `safeTransferFrom` shapes
+ *
+ * Router swaps and similar are labeled **ERC20** (not a separate “swap” type). Ambiguous selectors
+ * shared by ERC-20 / ERC-721 (e.g. standalone `transferFrom`, `approve`) are not classified here.
+ */
+export const inferTransactionTokenKindFromTx = (
+  tx: Pick<TransactionResponse, 'data' | 'value'>,
+): TransactionTokenKind | null => {
+  const dataHex =
+    tx.data == null
+      ? ''
+      : typeof tx.data === 'string'
+        ? tx.data
+        : ethers.hexlify(tx.data);
+
+  const value = tx.value ?? BigInt(0);
+
+  if (!dataHex || dataHex === '0x') {
+    return value > BigInt(0) ? 'NATIVE' : null;
+  }
+
+  const selector = dataHex.slice(0, 10).toLowerCase();
+
+  if (selector === '0xa9059cbb') {
+    return 'ERC20';
+  }
+
+  if (
+    selector === SEL721_SAFE_TRANSFER_FROM_3 ||
+    selector === SEL721_SAFE_TRANSFER_FROM_DATA
+  ) {
+    return 'ERC721';
+  }
+
+  try {
+    const parsed = erc1155Iface.parseTransaction({ data: dataHex });
+    if (
+      parsed?.name === 'safeTransferFrom' ||
+      parsed?.name === 'safeBatchTransferFrom'
+    ) {
+      return 'ERC1155';
+    }
+  } catch {
+    /* not ERC-1155 batch/single transfer */
+  }
+
+  if (TOP_LEVEL_ERC20_SWAPLIKE_SELECTORS.has(selector)) {
+    return 'ERC20';
+  }
+
+  if (calldataEmbedsStandardErc20TransferOps(dataHex)) {
+    return 'ERC20';
+  }
+
+  return null;
+};
+
+const getTransactionTokenKind = async (
+  chainId: string | number,
+  transactionId: string,
+): Promise<TransactionTokenKind | null> => {
+  const raw = await EvmLightNodeUtils.getHistoryDetail(chainId, transactionId);
+  if (raw == null) return null;
+
+  // API may return a single detail object, an array of operations, or a wrapper (e.g. { operations: [...] })
+  let details: LightNodeHistoryDetailItem[] = [];
+  if (Array.isArray(raw)) {
+    details = raw as LightNodeHistoryDetailItem[];
+  } else if (
+    typeof raw === 'object' &&
+    raw !== null &&
+    !('in' in raw) &&
+    !('out' in raw)
+  ) {
+    const arr =
+      (raw as Record<string, unknown>).operations ??
+      (raw as Record<string, unknown>).items ??
+      (raw as Record<string, unknown>).data;
+    details = Array.isArray(arr) ? (arr as LightNodeHistoryDetailItem[]) : [];
+  } else {
+    details = [raw as LightNodeHistoryDetailItem];
+  }
+
+  const items: Array<{ kind?: string }> = [];
+  for (const detail of details) {
+    if (detail?.in?.length) items.push(...detail.in);
+    if (detail?.out?.length) items.push(...detail.out);
+  }
+
+  const itemWithKind = items.find((item) => 'kind' in item && item.kind);
+  return (itemWithKind?.kind as TransactionTokenKind) ?? null;
+};
+
+const getCommonHistoryItem = (e: any) => {
+  return {
+    blockNumber: e.blockNumber,
+    transactionHash: e.hash,
+    transactionIndex: e.transactionIndex,
+    nonce: Number(e.nonce),
+    timestamp: e.timeStamp * 1000,
+    type: EvmUserHistoryItemType.BASE_TRANSACTION,
+  };
+};
+
+export const EvmTokensHistoryParserUtils = {
+  parseEvent,
+  getTransactionTokenKind,
+  inferTransactionTokenKindFromTx,
+};
+
+interface EvmHistoryItemSpecificData {
+  label: string;
+  pageTitle: string;
+  receiverAddress?: string;
+  detailFields: EvmUserHistoryItemDetail[];
+  tokenInfo?: EvmSmartContractInfo;
+}

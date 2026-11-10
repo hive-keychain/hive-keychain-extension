@@ -4,6 +4,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { OptionItem } from 'src/common-ui/custom-select/custom-select.component';
 import Config from 'src/config';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const getClaims = async (username: string) => {
@@ -69,7 +70,7 @@ const saveClaims = async (
     allSavings,
   );
 
-  chrome.runtime.sendMessage({
+  CommunicationUtils.runtimeSendMessage({
     command: BackgroundCommand.UPDATE_CLAIMS,
     value: {
       claimRewards: allRewards,
@@ -99,7 +100,7 @@ const initBackgroundClaims = async () => {
   let allRewards = await AutomatedTasksUtils.getAllClaimRewards();
   let allAccounts = await AutomatedTasksUtils.getAllClaimAccounts();
   let allSavings = await AutomatedTasksUtils.getAllClaimSavings();
-  chrome.runtime.sendMessage({
+  CommunicationUtils.runtimeSendMessage({
     command: BackgroundCommand.UPDATE_CLAIMS,
     value: {
       claimRewards: allRewards,

@@ -41,6 +41,7 @@
         @include poppins400(13px);
         color: var(--main-font-color);
         flex: 1;
+        min-width: 0;
       }
       .date {
         @include poppins400(12px);
@@ -69,4 +70,9 @@
       padding: 0px 12px 12px 12px;
     }
   }
+}
+
+.wallet-history-page .transaction .information-panel .right-panel {
+  grid-template-columns: minmax(0, 1fr) auto 20px;
+  overflow-wrap: anywhere;
 }

@@ -1,13 +1,13 @@
 import { ActionPayload } from '@popup/multichain/actions/interfaces';
 import { HiveActionType } from 'src/popup/hive/actions/action-type.enum';
 
-export interface AppStatus {
+export interface HiveAppStatus {
   processingDecryptAccount: boolean;
   priceLoaded: boolean;
   globalPropertiesLoaded: boolean;
   isLedgerSupported: boolean;
 }
-const INITIAL_STATE: AppStatus = {
+const INITIAL_STATE: HiveAppStatus = {
   processingDecryptAccount: false,
   priceLoaded: false,
   globalPropertiesLoaded: false,
@@ -15,8 +15,8 @@ const INITIAL_STATE: AppStatus = {
 };
 
 export const AppStatusReducer = (
-  state: AppStatus = INITIAL_STATE,
-  { type, payload }: ActionPayload<Partial<AppStatus>>,
+  state: HiveAppStatus = INITIAL_STATE,
+  { type, payload }: ActionPayload<Partial<HiveAppStatus>>,
 ) => {
   switch (type) {
     case HiveActionType.SET_APP_STATUS:

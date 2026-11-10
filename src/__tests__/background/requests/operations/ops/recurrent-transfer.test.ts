@@ -18,6 +18,7 @@ import mocksImplementation from 'src/__tests__/utils-for-testing/implementations
 import { mockHiveTxCreateTransactionForLedger } from 'src/__tests__/utils-for-testing/mocks/hive-tx-ledger.helpers';
 import { KeychainError } from 'src/keychain-error';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('recurrent-transfer tests:\n', () => {
   const data = {
     domain: 'domain',
@@ -43,7 +44,7 @@ describe('recurrent-transfer tests:\n', () => {
       .mockResolvedValue(accounts.extended);
     jest.spyOn(HiveMemo, 'encode').mockReturnValue('#mock-memo');
     jest.spyOn(chrome.i18n, 'getUILanguage').mockReturnValueOnce('en-US');
-    chrome.i18n.getMessage = jest
+    I18nUtils.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom);
   });
@@ -57,14 +58,15 @@ describe('recurrent-transfer tests:\n', () => {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          error: new Error('html_popup_error_while_signing_transaction'),
+          error: new KeychainError('html_popup_error_while_signing_transaction'),
           result: undefined,
           data: datas,
-          message: chrome.i18n.getMessage(
-            'html_popup_error_while_signing_transaction',
-          ),
+          message: I18nUtils.getMessage('html_popup_error_while_signing_transaction'),
+          messageKey: 'html_popup_error_while_signing_transaction',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -90,9 +92,14 @@ describe('recurrent-transfer tests:\n', () => {
             tx_id: 'tx_id',
           },
           data: datas,
-          message: chrome.i18n.getMessage('bgd_ops_recurrent_transfer'),
+          message: I18nUtils.getMessage('bgd_ops_recurrent_transfer'),
+          messageKey: 'bgd_ops_recurrent_transfer',
+          messageParams: undefined,
+          messageKey: 'bgd_ops_recurrent_transfer',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -129,9 +136,14 @@ describe('recurrent-transfer tests:\n', () => {
             tx_id: 'tx_id',
           },
           data: datas,
-          message: chrome.i18n.getMessage('bgd_ops_recurrent_transfer'),
+          message: I18nUtils.getMessage('bgd_ops_recurrent_transfer'),
+          messageKey: 'bgd_ops_recurrent_transfer',
+          messageParams: undefined,
+          messageKey: 'bgd_ops_recurrent_transfer',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -158,9 +170,14 @@ describe('recurrent-transfer tests:\n', () => {
             tx_id: 'tx_id',
           },
           data: datas,
-          message: chrome.i18n.getMessage('bgd_ops_stop_recurrent_transfer'),
+          message: I18nUtils.getMessage('bgd_ops_stop_recurrent_transfer'),
+          messageKey: 'bgd_ops_stop_recurrent_transfer',
+          messageParams: undefined,
+          messageKey: 'bgd_ops_stop_recurrent_transfer',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -181,9 +198,12 @@ describe('recurrent-transfer tests:\n', () => {
           error: new KeychainError(localeMessageKey),
           result: undefined,
           data: datas,
-          message: chrome.i18n.getMessage(localeMessageKey),
+          message: I18nUtils.getMessage(localeMessageKey),
+          messageKey: localeMessageKey,
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });

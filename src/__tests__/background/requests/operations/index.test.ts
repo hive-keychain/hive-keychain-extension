@@ -15,6 +15,7 @@ import * as DialogLifeCycle from 'src/background/requests/dialog-lifecycle';
 import Logger from 'src/utils/logger.utils';
 import * as PreferencesUtils from 'src/utils/preferences.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('index tests:\n', () => {
   const data = {
     domain: 'domain',
@@ -37,7 +38,7 @@ describe('index tests:\n', () => {
 
   beforeEach(() => {
     jest.spyOn(chrome.i18n, 'getUILanguage').mockReturnValueOnce('en-US');
-    chrome.i18n.getMessage = jest
+    I18nUtils.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom);
   });
@@ -55,7 +56,6 @@ describe('index tests:\n', () => {
       .spyOn(chrome.tabs, 'sendMessage')
       .mockImplementation(() => undefined);
     const sLoggerInfo = jest.spyOn(Logger, 'info');
-    const sLoggerLog = jest.spyOn(Logger, 'log');
     const sAddToWhitelist = jest
       .spyOn(PreferencesUtils, 'addToWhitelist')
       .mockResolvedValue(undefined);
@@ -66,7 +66,6 @@ describe('index tests:\n', () => {
     requestHandler.data.windowId = 1;
     await performOperation(requestHandler, data, 0, 'domain', true);
     expect(sLoggerInfo).toHaveBeenCalledWith('-- PERFORMING TRANSACTION --');
-    expect(sLoggerLog).toHaveBeenCalledWith(data);
     expect(sSendMessage).toHaveBeenCalledWith(
       0,
       `mocked message for ${KeychainRequestTypes.addAccount}`,

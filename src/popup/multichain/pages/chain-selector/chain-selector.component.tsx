@@ -1,27 +1,466 @@
-import { Chain, useChainContext } from '@popup/multichain/multichain.context';
-import React from 'react';
+import ButtonComponent, {
+  ButtonType,
+} from '@common-ui/button/button.component';
+import CheckboxComponent from '@common-ui/checkbox/checkbox/checkbox.component';
+import { InputType } from '@common-ui/input/input-type.enum';
+import InputComponent from '@common-ui/input/input.component';
+import { Screen } from '@interfaces/screen.interface';
+import { AddCustomEvmChainForm } from '@popup/evm/pages/home/settings/evm-custom-chains/add-custom-evm-chain-form.component';
+import { EvmLightNodeUtils } from '@popup/evm/utils/evm-light-node.utils';
+import { setChain } from '@popup/multichain/actions/chain.actions';
+import { closeModal, openModal } from '@popup/multichain/actions/modal.actions';
+import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
+import {
+  Chain,
+  ChainType,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
+import { RootState } from '@popup/multichain/store';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { GuidedTourTarget } from '@reference-data/guided-tour.enum';
+import React, { KeyboardEvent, useCallback, useEffect, useState } from 'react';
+import { ConnectedProps, connect } from 'react-redux';
+import { Badge, BadgeType } from 'src/common-ui/badge/badge.component';
+import { ChainLogo } from 'src/common-ui/chain-logo/chain-logo.component';
+import { SVGIcons } from 'src/common-ui/icons.enum';
+import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
-const ChainSelector = () => {
-  const { setChain } = useChainContext();
-  return (
-    <div className="chain-selector-page">
-      Chain selectors
+import { I18nUtils } from 'src/utils/i18n.utils';
+import Logger from 'src/utils/logger.utils';
+interface ChainSelectorProps {
+  hideTitle?: boolean;
+}
+
+const ChainSelector = ({
+  chain,
+  setChain,
+  openModal,
+  closeModal,
+  navigateToWithParams,
+  hideTitle,
+}: PropsFromRedux & ChainSelectorProps) => {
+  const [setupChains, setSetupChains] = useState<Chain[]>([]);
+  const [defaultChains, setDefaultChains] = useState<Chain[]>([]);
+  const [customChains, setCustomChains] = useState<EvmChain[]>([]);
+  const [showTestnets, setShowTestnets] = useState(false);
+  const [search, setSearch] = useState('');
+
+  const init = useCallback(async () => {
+    const [setup, defaults, custom] = await Promise.all([
+      ChainUtils.getSetupChains(),
+      ChainUtils.getDefaultChains(),
+      ChainUtils.getCustomChains(),
+    ]);
+    setSetupChains(setup ?? []);
+    setDefaultChains(defaults ?? []);
+    setCustomChains(custom ?? []);
+  }, []);
+
+  useEffect(() => {
+    void init();
+  }, [chain, init]);
+
+  const selectChain = async (selectedChain: Chain) => {
+    setChain(selectedChain, { syncProviderNetwork: true });
+  };
+
+  const onCloseClicked = async () => {
+    const previousChain = ChainUtils.getPreviousChain();
+    if (previousChain) {
+      setChain(previousChain, { syncProviderNetwork: true });
+    } else if (setupChains.length > 0) {
+      setChain(setupChains[0], { syncProviderNetwork: true });
+    }
+  };
+
+  const searchValue = search.trim().toLowerCase();
+  const setupChainIds = new Set(
+    setupChains.map((setupChain) => setupChain.chainId.toLowerCase()),
+  );
+
+  if (chain?.chainId) {
+    setupChainIds.add(chain.chainId.toLowerCase());
+  }
+
+  const filterChains = (chainToFilter: Chain) => {
+    if (!searchValue) return true;
+    return (
+      chainToFilter.chainId.toLowerCase().includes(searchValue) ||
+      chainToFilter.name.toLowerCase().includes(searchValue) ||
+      (chainToFilter.type === ChainType.EVM &&
+        (chainToFilter as EvmChain).mainToken
+          .toLowerCase()
+          .includes(searchValue))
+    );
+  };
+
+  const builtInChains = defaultChains.filter(
+    (defaultChain) =>
+      !defaultChain.isCustom && defaultChain.type !== ChainType.HIVE,
+  );
+  const popularChains = builtInChains
+    .filter((defaultChain) => !defaultChain.testnet)
+    .filter(filterChains);
+  const testnetChains = builtInChains
+    .filter((defaultChain) => !!defaultChain.testnet)
+    .filter(filterChains);
+  const filteredCustomChains = customChains.filter(filterChains);
+  const shouldShowTestnets =
+    showTestnets || (!!searchValue && testnetChains.length > 0);
+  const hasFilteredChainResults =
+    popularChains.length > 0 ||
+    (shouldShowTestnets && testnetChains.length > 0) ||
+    filteredCustomChains.length > 0;
+
+  const isChainEnabled = (chainToCheck: Chain) =>
+    setupChainIds.has(chainToCheck.chainId.toLowerCase());
+
+  const openAddModal = () => {
+    openModal({
+      title: 'evm_custom_chains_modal_title',
+      closeOnOverlayClick: true,
+      showCloseButton: true,
+      children: (
+        <AddCustomEvmChainForm
+          key="add-custom-chain"
+          onCancel={() => closeModal()}
+          onSuccess={async () => {
+            closeModal();
+            await init();
+          }}
+        />
+      ),
+    });
+  };
+
+  const openEditModal = (
+    chainToEdit: EvmChain,
+    isDefaultChain: boolean = false,
+  ) => {
+    const refreshActiveChainIfNeeded = async () => {
+      if (chain?.chainId?.toLowerCase() !== chainToEdit.chainId.toLowerCase()) {
+        return;
+      }
+      const updatedChain = await ChainUtils.getChain<EvmChain>(
+        chainToEdit.chainId,
+      );
+      if (updatedChain) {
+        setChain(updatedChain);
+      }
+    };
+
+    openModal({
+      title: isDefaultChain
+        ? 'evm_custom_chains_modal_title_edit_default'
+        : 'evm_custom_chains_modal_title_edit',
+      closeOnOverlayClick: true,
+      showCloseButton: true,
+      children: (
+        <AddCustomEvmChainForm
+          key={`edit-chain-${chainToEdit.chainId}`}
+          chainToEdit={chainToEdit}
+          isDefaultChain={isDefaultChain}
+          onUpdateRpc={() => {
+            closeModal();
+            navigateToWithParams(Screen.SETTINGS_NETWORK, {
+              chainId: chainToEdit.chainId,
+            });
+          }}
+          onCancel={() => closeModal()}
+          onSuccess={async () => {
+            closeModal();
+            await init();
+            await refreshActiveChainIfNeeded();
+          }}
+        />
+      ),
+    });
+  };
+
+  const deleteCustomChain = async (customChain: EvmChain) => {
+    const isActiveChain =
+      chain?.chainId?.toLowerCase() === customChain.chainId.toLowerCase();
+    await ChainUtils.removeCustomChain(customChain.chainId);
+    if (isActiveChain) {
+      const remainingSetup = await ChainUtils.getSetupChains();
+      if (remainingSetup?.length) {
+        setChain(remainingSetup[0], { syncProviderNetwork: true });
+      } else {
+        const previousChain = ChainUtils.getPreviousChain();
+        if (previousChain) {
+          setChain(previousChain, { syncProviderNetwork: true });
+        }
+      }
+    }
+    await init();
+  };
+
+  const openDeleteConfirmModal = (customChain: EvmChain) => {
+    openModal({
+      title: 'evm_custom_chains_delete',
+      closeOnOverlayClick: true,
+      showCloseButton: true,
+      children: (
+        <div className="evm-delete-confirm-modal">
+          <p className="evm-delete-confirm-modal__message">
+            {I18nUtils.getMessage('evm_custom_chains_delete_confirm', [
+              customChain.name,
+            ])}
+          </p>
+          <div className="evm-delete-confirm-modal__actions">
+            <ButtonComponent
+              dataTestId="custom-chain-delete-cancel"
+              label="dialog_cancel"
+              type={ButtonType.ALTERNATIVE}
+              onClick={() => closeModal()}
+              height="small"
+            />
+            <ButtonComponent
+              dataTestId="custom-chain-delete-confirm"
+              label="popup_html_confirm"
+              type={ButtonType.IMPORTANT}
+              height="small"
+              onClick={async () => {
+                closeModal();
+                await deleteCustomChain(customChain);
+              }}
+            />
+          </div>
+        </div>
+      ),
+    });
+  };
+
+  const toggleBuiltInChain = async (selectedChain: Chain) => {
+    const enabled = isChainEnabled(selectedChain);
+    if (enabled) {
+      await selectChain(selectedChain);
+      return;
+    }
+
+    await ChainUtils.addChainToSetupChains(selectedChain);
+    if (
+      selectedChain.type === ChainType.EVM &&
+      !(selectedChain as EvmChain).isCustom
+    ) {
+      try {
+        await EvmLightNodeUtils.registerLocalAddresses(selectedChain.chainId);
+      } catch (error) {
+        Logger.error(
+          'Error while registering EVM address with light node',
+          error,
+        );
+      }
+    }
+    await init();
+    await selectChain(selectedChain);
+  };
+
+  const handleCardKeyDown = (
+    event: KeyboardEvent<HTMLDivElement>,
+    callback: () => void,
+  ) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      callback();
+    }
+  };
+
+  const renderBuiltInChainCard = (builtInChain: Chain) => {
+    const enabled = isChainEnabled(builtInChain);
+    return (
       <div
-        className="chain-card"
-        onClick={() => {
-          setChain(Chain.HIVE);
-        }}>
-        HIVE
+        key={`chain-${builtInChain.chainId}`}
+        className={`chain-card chain-card--built-in ${
+          enabled ? 'chain-card--enabled' : 'chain-card--disabled'
+        }`}
+        role="button"
+        tabIndex={0}
+        onClick={() => void toggleBuiltInChain(builtInChain)}
+        onKeyDown={(event) =>
+          handleCardKeyDown(event, () => void toggleBuiltInChain(builtInChain))
+        }>
+        <ChainLogo
+          chainName={builtInChain.name}
+          logoUri={builtInChain.logo}
+          className="chain-card__logo"
+        />
+        <div className="chain-name">{builtInChain.name}</div>
+        <button
+          type="button"
+          className="custom-chain-settings-icon chain-card__default-settings-icon"
+          data-testid={`btn-edit-default-chain-${builtInChain.chainId}`}
+          aria-label={I18nUtils.getMessage(
+            'evm_custom_chains_modal_title_edit_default',
+          )}
+          onClick={(event) => {
+            event.stopPropagation();
+            openEditModal(builtInChain as EvmChain, true);
+          }}>
+          <SVGIcon icon={SVGIcons.WALLET_SETTINGS} svgViewBox="10 10 24 24" />
+        </button>
+        {enabled && (
+          <SVGIcon
+            icon={SVGIcons.SELECT_ACTIVE}
+            className="check-icon chain-card__default-check-icon"
+          />
+        )}
+        <div className="chain-card__meta-row">
+          <div className="chain-card__badge">
+            <Badge
+              small
+              badgeType={
+                builtInChain.testnet ? BadgeType.TESTNET : BadgeType.MAINNET
+              }
+              inverted
+            />
+          </div>
+          {!enabled && (
+            <SVGIcon icon={SVGIcons.SELECT_ADD} className="add-icon" />
+          )}
+        </div>
       </div>
-      <div
-        className="chain-card"
-        onClick={() => {
-          setChain(Chain.EVM);
+    );
+  };
+
+  const renderCustomChainCard = (customChain: EvmChain) => (
+    <div
+      key={`custom-chain-${customChain.chainId}`}
+      className="chain-card chain-card--custom">
+      <ChainLogo
+        chainName={customChain.name}
+        logoUri={customChain.logo}
+        className="chain-card__logo"
+      />
+      <button
+        type="button"
+        className="custom-chain-delete-icon"
+        data-testid={`btn-delete-custom-chain-${customChain.chainId}`}
+        aria-label={I18nUtils.getMessage('evm_custom_chains_delete')}
+        onClick={(event) => {
+          event.stopPropagation();
+          openDeleteConfirmModal(customChain);
         }}>
-        EVM
+        <SVGIcon icon={SVGIcons.GLOBAL_DELETE} className="svg-icon" />
+      </button>
+      <button
+        type="button"
+        className="custom-chain-settings-icon"
+        aria-label={I18nUtils.getMessage(
+          'evm_custom_chains_modal_title_edit',
+        )}
+        onClick={(event) => {
+          event.stopPropagation();
+          openEditModal(customChain);
+        }}>
+        <SVGIcon icon={SVGIcons.WALLET_SETTINGS} svgViewBox="10 10 24 24" />
+      </button>
+      <div className="chain-name">{customChain.name}</div>
+      <div className="chain-card__meta-row">
+        <Badge
+          small
+          badgeType={customChain.testnet ? BadgeType.TESTNET : BadgeType.MAINNET}
+          inverted
+        />
       </div>
     </div>
   );
+
+  return (
+    <>
+      {!hideTitle && (
+        <PageTitleComponent
+          title="html_popup_manage_chains"
+          isBackButtonEnabled={setupChains.length > 0}
+          isCloseButtonDisabled
+          onBackAdditional={onCloseClicked}></PageTitleComponent>
+      )}
+      <div
+        className={`chain-selector-page ${
+          hideTitle ? 'chain-selector-page--embedded' : ''
+        }`}
+        data-guided-tour={GuidedTourTarget.CHAIN_SELECTOR}>
+        <div className="search-container">
+          <InputComponent
+            classname="search-input"
+            value={search}
+            onChange={setSearch}
+            placeholder="html_popup_search_chains"
+            type={InputType.TEXT}
+          />
+          <CheckboxComponent
+            checked={showTestnets}
+            onChange={setShowTestnets}
+            title="popup_html_show_testnets"
+          />
+        </div>
+
+        <div className="lists-container">
+          {!!searchValue && !hasFilteredChainResults && (
+            <p className="chain-selector-empty">
+              {I18nUtils.getMessage('html_popup_manage_chains_empty_results')}
+            </p>
+          )}
+          {popularChains.length > 0 && (
+            <div className="chain-cards-container">
+              <div className="chain-cards-container-title">
+                {I18nUtils.getMessage('html_popup_popular_chains')}
+              </div>
+              <div className="chain-cards-container-list">
+                {popularChains.map(renderBuiltInChainCard)}
+              </div>
+            </div>
+          )}
+          {shouldShowTestnets && testnetChains.length > 0 && (
+            <div className="chain-cards-container">
+              <div className="chain-cards-container-title">
+                {I18nUtils.getMessage('html_popup_testnet_chains')}
+              </div>
+              <div className="chain-cards-container-list">
+                {testnetChains.map(renderBuiltInChainCard)}
+              </div>
+            </div>
+          )}
+          <div className="chain-cards-container">
+            <div className="chain-cards-container-title">
+              {I18nUtils.getMessage('html_popup_custom_chains')}
+            </div>
+            <div className="chain-cards-container-list">
+              {filteredCustomChains.map(renderCustomChainCard)}
+              <div
+                key="add-custom-chain"
+                className="chain-card add-custom-chain"
+                role="button"
+                tabIndex={0}
+                onClick={openAddModal}
+                onKeyDown={(event) => handleCardKeyDown(event, openAddModal)}>
+                <SVGIcon icon={SVGIcons.SELECT_ADD} />
+                <div className="chain-name">
+                  {I18nUtils.getMessage('evm_custom_chains_add')}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
 };
 
-export default ChainSelector;
+const mapStateToProps = (state: RootState) => {
+  return {
+    chain: state.chain,
+  };
+};
+
+const connector = connect(mapStateToProps, {
+  setChain,
+  openModal,
+  closeModal,
+  navigateToWithParams,
+});
+
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+export const ChainSelectorPageComponent = connector(ChainSelector);

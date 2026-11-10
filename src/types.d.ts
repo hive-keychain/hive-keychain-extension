@@ -4,10 +4,8 @@ declare module 'valid-url';
 declare module '@hiveio/hive-js/lib/auth/memo';
 declare module '@hiveio/hive-js/lib/auth';
 interface Window {
-  dataLayer: Array<any>;
-  gtag: (a: string, b: any, c?: any) => void;
+  ethereum: any;
 }
-
 declare module '*.svg' {
   import React = require('react');
 
@@ -15,3 +13,6 @@ declare module '*.svg' {
   const src: string;
   export default src;
 }
+
+declare module '@metamask/ethjs';
+/// <reference types="chrome" />

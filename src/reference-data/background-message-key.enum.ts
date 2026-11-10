@@ -2,9 +2,6 @@ export enum BackgroundCommand {
   PING = 'PING',
 
   // MK
-  GET_MK = 'getMk',
-  SEND_BACK_MK = 'sendBackMk',
-  SAVE_MK = 'saveMk',
 
   // Import
   IMPORT_ACCOUNTS = 'importAccounts',
@@ -21,6 +18,33 @@ export enum BackgroundCommand {
   UNLOCK_FROM_DIALOG = 'unlockFromDialog',
   REGISTER_FROM_DIALOG = 'registerFromDialog',
   ACCEPT_TRANSACTION = 'acceptTransaction',
+  REJECT_TRANSACTION = 'rejectTransaction',
+
+  // Keychain EVm Request
+  SEND_EVM_REQUEST = 'sendEvmRequest',
+  SEND_EVM_RESPONSE_TO_SW = 'sendEvmResponseToSw',
+  SEND_EVM_RESPONSE = 'sendEvmResponse',
+  SEND_EVM_ERROR = 'sendEvmError',
+  SEND_EVM_EVENT = 'sendEvmEvent',
+  SEND_EVM_EVENT_TO_CONTENT_SCRIPT = 'sendEvmEventToContentScript',
+  SEND_BACK_CONNECTED_WALLETS = 'sendBackConnectedWallets',
+  ACCEPT_EVM_TRANSACTION = 'acceptEvmTransaction',
+  PREVIEW_EVM_DECRYPT = 'previewEvmDecrypt',
+  EVM_TRANSACTION_SUBMISSION = 'evmTransactionSubmission',
+  PREVIEW_EVM_CALLS = 'previewEvmCalls',
+  GET_EVM_CALLS_STATUS = 'getEvmCallsStatus',
+  REJECT_EVM_TRANSACTION = 'rejectEvmTransaction',
+  GET_CHAIN_FROM_PROVIDER = 'getChainFromProvider',
+  SEND_BACK_CHAIN_FROM_PROVIDER = 'sendBackChainFromProvider',
+  SET_EVM_PROVIDER_CHAIN = 'setEvmProviderChain',
+  WAIT_FOR_EVM_TRANSACTION_CONFIRMATION = 'waitForEvmTransactionConfirmation',
+  EVM_TRANSACTION_RESOLVED = 'evmTransactionResolved',
+  EVM_INCOMING_TRANSACTION = 'evmIncomingTransaction',
+  EVM_WALLET_LOCK_STATE_CHANGED = 'evmWalletLockStateChanged',
+  ACCEPT_ADD_EVM_CHAIN = 'acceptAddEvmChain',
+  ACCEPT_ADD_CUSTOM_EVM_CHAIN = 'acceptAddCustomEvmChain',
+
+  SEND_EVM_INITIALIZE_PROVIDER_REQUEST = 'sendEvmInitializeProviderRequest',
 
   // User preferences
   UPDATE_CLAIMS = 'updateClaims',
@@ -41,4 +65,15 @@ export enum BackgroundCommand {
   KEYLESS_KEYCHAIN = 'KEYLESS_KEYCHAIN',
   KEYLESS_KEYCHAIN_REGISTER = 'KEYLESS_KEYCHAIN_REGISTER',
   VAULT_LOADED = 'VAULT_LOADED',
+
+  // Hive notifications
+  SYNC_HIVE_PUSH_NOTIFICATIONS = 'syncHivePushNotifications',
+
+  SIDE_PANEL_CLOSED = 'SIDE_PANEL_CLOSED',
 }
+
+export type SendBackImportCommand = Extract<
+  BackgroundCommand,
+  | BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS
+  | BackgroundCommand.IMPORT_SETTINGS_CALLBACK
+>;

@@ -1,16 +1,17 @@
-import { Screen } from '@reference-data/screen.enum';
+import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
-import { act, cleanup, screen } from '@testing-library/react';
+import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
 import dataTestIdCheckbox from 'src/__tests__/utils-for-testing/data-testid/data-testid-checkbox';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import { openAutomatedTasks } from 'src/__tests__/utils-for-testing/helpers/settings-navigation';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { Icons } from 'src/common-ui/icons.enum';
 import Config from 'src/config';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('automated-tasks.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -60,15 +61,7 @@ describe('automated-tasks.component tests:\n', () => {
           },
         );
         await act(async () => {
-          await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
-          await userEvent.click(
-            screen.getByTestId(dataTestIdButton.menuPreFix + Icons.PREFERENCES),
-          );
-          await userEvent.click(
-            screen.getByTestId(
-              dataTestIdButton.menuPreFix + Icons.AUTOMATED_TASKS,
-            ),
-          );
+          await openAutomatedTasks();
         });
       });
       it('Must load component and show messages', () => {
@@ -77,13 +70,13 @@ describe('automated-tasks.component tests:\n', () => {
         ).toBeInTheDocument();
         expect(
           screen.getByText(
-            chrome.i18n.getMessage('popup_html_automated_intro'),
+            I18nUtils.getMessage('popup_html_automated_intro'),
             { exact: true },
           ),
         ).toBeInTheDocument();
         expect(
           screen.getByText(
-            chrome.i18n.getMessage(
+            I18nUtils.getMessage(
               'popup_html_enable_autoclaim_accounts_info',
               [Config.claims.freeAccount.MIN_RC_PCT + ''],
             ),
@@ -109,6 +102,61 @@ describe('automated-tasks.component tests:\n', () => {
         });
         expect(sendMessage).toHaveBeenCalledTimes(1);
       });
+    });
+  });
+
+  describe('Hive Engine auto-stake tokens:\n', () => {
+    it('does not render a zero when no staking-enabled tokens are available', async () => {
+      const initialState = {
+        ...initialStates.iniStateAs.defaultExistent,
+        hive: {
+          ...initialStates.iniStateAs.defaultExistent.hive,
+          userTokens: {
+            loading: true,
+            list: [],
+          },
+        },
+      };
+      const store = await reactTestingLibrary.renderWithConfiguration(
+        <HiveAppComponent />,
+        initialState,
+        {
+          navigateToAfterMount: Screen.SETTINGS_AUTOMATED_TASKS,
+          app: {
+            accountsRelated: {
+              TokensUtils: {
+                getUserBalance: [],
+              },
+            },
+            localStorageRelated: {
+              LocalStorageUtils: {
+                getMultipleValueFromLocalStorage: {
+                  claimAccounts: {},
+                  claimRewards: {},
+                  claimSavings: {},
+                },
+              },
+            },
+          },
+        },
+      );
+
+      await waitFor(() => {
+        expect(store.getState().hive.userTokens.loading).toBe(false);
+      });
+
+      const autoStakeCheckbox = screen.getByTestId(
+        'checkbox-autostake-tokens',
+      );
+      const hiveEngineTasks = autoStakeCheckbox.closest('.tasks');
+
+      expect(hiveEngineTasks).not.toBeNull();
+      const renderedTextNodes = Array.from(hiveEngineTasks!.childNodes)
+        .filter((node) => node.nodeType === Node.TEXT_NODE)
+        .map((node) => node.textContent?.trim())
+        .filter(Boolean);
+
+      expect(renderedTextNodes).not.toContain('0');
     });
   });
 });

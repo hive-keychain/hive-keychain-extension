@@ -1,9 +1,9 @@
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { Screen } from '@interfaces/screen.interface';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
-import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useRef, useState } from 'react';
 import QRCode from 'react-qr-code';
 import { ConnectedProps, connect } from 'react-redux';
@@ -12,6 +12,7 @@ import ButtonComponent, {
 } from 'src/common-ui/button/button.component';
 import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export const QR_CONTENT_PREFIX = 'keychain://add_accounts=';
 
 const ExportedAccountsQR = ({
@@ -106,14 +107,14 @@ const ExportedAccountsQR = ({
           <div>
             <div className="qr-code-disclaimer">
               <div>
-                {chrome.i18n.getMessage(
+                {I18nUtils.getMessage(
                   'popup_html_qr_exported_set_disclaimer1',
                 ) + ' '}
               </div>
               <div className="red">
-                {chrome.i18n.getMessage('popup_html_qr_disclaimer2')}
+                {I18nUtils.getMessage('popup_html_qr_disclaimer2')}
               </div>
-              <div>{chrome.i18n.getMessage('popup_html_qr_disclaimer3')}</div>
+              <div>{I18nUtils.getMessage('popup_html_qr_disclaimer3')}</div>
             </div>
           </div>
           {!showQR ? (

@@ -1,5 +1,13 @@
-import { createMessage } from '@background/requests/operations/operations.utils';
-import { RequestsHandler } from '@background/requests/request-handler';
+import {
+  HiveRequestLocator,
+  HiveRequestsHandler,
+} from '@background/hive/requests/hive-request-handler';
+import { getPendingRequestMessageOptions } from '@background/multichain/pending-request.interface';
+import {
+  createMessage,
+  feedbackI18n,
+  feedbackPlain,
+} from '@background/hive/requests/operations/operations.utils';
 import { KeylessKeychainUtils } from '@background/utils/keyless-keychain.utils';
 import {
   AuthAck,
@@ -32,6 +40,7 @@ import {
   KeylessRequest,
 } from '@interfaces/keyless-keychain.interface';
 import { KeyType } from '@interfaces/keys.interface';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
 import { ConversionType } from '@popup/hive/pages/app-container/home/conversion/conversion-type.enum';
 import { AccountCreationUtils } from '@popup/hive/utils/account-creation.utils';
 import { BloggingUtils } from '@popup/hive/utils/blogging.utils';
@@ -50,10 +59,12 @@ import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { KeychainKeyTypes, RequestSignBuffer } from 'hive-keychain-commons';
 import Config from 'src/config';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import { DynamicGlobalPropertiesUtils } from 'src/popup/hive/utils/dynamic-global-properties.utils';
 import Logger from 'src/utils/logger.utils';
 import { getRequiredWifType } from 'src/utils/requests.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 let ws: WebSocket | null = null;
 let reconnectInterval = 1000;
 let connectionAttempts = 0;
@@ -66,8 +77,7 @@ const PRE_CORRELATION_WAIT_COMMANDS = [
   HasCmd.CHALLENGE_WAIT,
 ] as const;
 
-type PreCorrelationWaitCommand =
-  (typeof PRE_CORRELATION_WAIT_COMMANDS)[number];
+type PreCorrelationWaitCommand = (typeof PRE_CORRELATION_WAIT_COMMANDS)[number];
 type PreCorrelationRequest = AuthReq | SignReq | ChallengeReq;
 type PreCorrelationWait = AuthWait | SignWait | ChallengeWait;
 type PreCorrelationQueueEntry = {
@@ -80,12 +90,53 @@ type PreCorrelationQueueEntry = {
 let activePreCorrelationQueueEntry: PreCorrelationQueueEntry | null = null;
 const pendingPreCorrelationQueue: PreCorrelationQueueEntry[] = [];
 
+const getRequestsDataCompat = (requestHandler: HiveRequestsHandler) => {
+  if (requestHandler.requestsData?.length) {
+    return requestHandler.requestsData;
+  }
+  const legacyData = (requestHandler as any).data;
+  return legacyData ? [legacyData] : [];
+};
+
+const getRequestCompat = (
+  requestHandler: HiveRequestsHandler,
+  requestId: number,
+  locator?: HiveRequestLocator,
+) => {
+  if (locator && requestHandler.getRequestDataByLocator) {
+    return requestHandler.getRequestDataByLocator(locator)?.request;
+  }
+  return (
+    requestHandler.getRequest?.(requestId) ??
+    requestHandler.getRequestData?.(requestId)?.request ??
+    (requestHandler as any).data?.request
+  );
+};
+
+const buildPreCorrelationKey = (data: {
+  tab?: number;
+  source?: PendingRequestSource;
+  request_id?: number;
+  request?: { type?: string; username?: string };
+}) =>
+  [
+    data.source?.tab ?? data.tab ?? 'tab',
+    data.source?.frameId ?? 0,
+    data.source?.documentId ?? 'legacy',
+    data.source?.origin ?? 'origin',
+    data.request_id ?? 'request',
+    data.request?.type ?? 'type',
+    data.request?.username ?? 'anonymous',
+  ].join(':');
+
 const toError = (error: unknown, fallbackMessage: string) => {
   return error instanceof Error ? error : new Error(fallbackMessage);
 };
 
 const isKeylessCancellationError = (error: unknown) => {
-  return error instanceof Error && error.message === 'Keyless request cancelled';
+  return (
+    error instanceof Error && error.message === 'Keyless request cancelled'
+  );
 };
 
 const clearPingInterval = () => {
@@ -95,13 +146,25 @@ const clearPingInterval = () => {
   }
 };
 
-const getPreCorrelationKey = (requestHandler: RequestsHandler) => {
-  return [
-    requestHandler.data.tab ?? 'tab',
-    requestHandler.data.request_id ?? 'request',
-    requestHandler.data.request?.type ?? 'type',
-    requestHandler.data.request?.username ?? 'anonymous',
-  ].join(':');
+/**
+ * Builds a unique key for pre-correlation queue/cancel matching.
+ * Prefer passing requestId when the caller knows the specific request; otherwise falls back to first request in handler.
+ */
+const getPreCorrelationKey = (
+  requestHandler: HiveRequestsHandler,
+  requestId?: number,
+  locator?: HiveRequestLocator,
+): string => {
+  const data =
+    locator && requestHandler.getRequestDataByLocator
+      ? requestHandler.getRequestDataByLocator(locator) ??
+        (requestHandler as any).data
+      : requestId != null
+        ? requestHandler.getRequestData?.(requestId) ??
+          (requestHandler as any).data
+        : requestHandler.requestsData?.[0] ?? (requestHandler as any).data;
+  if (!data) return '';
+  return buildPreCorrelationKey(data);
 };
 
 const startNextPreCorrelationQueueEntry = () => {
@@ -129,15 +192,17 @@ const releasePreCorrelationQueueEntry = (entry: PreCorrelationQueueEntry) => {
 };
 
 const waitForPreCorrelation = async <T extends PreCorrelationWait>(
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   request: PreCorrelationRequest,
   expectedCommand: PreCorrelationWaitCommand,
   failureLabel: string,
   getProtocolError: (message: any) => Error | null,
+  requestId?: number,
+  locator?: HiveRequestLocator,
 ): Promise<T> => {
   return new Promise<T>((resolve, reject) => {
     const entry: PreCorrelationQueueEntry = {
-      key: getPreCorrelationKey(requestHandler),
+      key: getPreCorrelationKey(requestHandler, requestId, locator),
       reject,
       start: () => {
         if (!ws) {
@@ -264,18 +329,17 @@ const cancelAllPreCorrelationRequests = (error: Error) => {
   }
 };
 
-const cancelPreCorrelationRequest = (requestHandler: RequestsHandler) => {
-  if (!requestHandler.data.request) {
-    return;
-  }
-
-  const key = getPreCorrelationKey(requestHandler);
+const cancelPreCorrelationRequest = (requestHandler: HiveRequestsHandler) => {
   const cancellationError = new Error('Keyless request cancelled');
 
-  cancelQueuedPreCorrelationRequests(key, cancellationError);
-
-  if (activePreCorrelationQueueEntry?.key === key) {
-    activePreCorrelationQueueEntry.cancel?.(cancellationError);
+  for (const requestData of getRequestsDataCompat(requestHandler)) {
+    if (!requestData?.request) continue;
+    const key = buildPreCorrelationKey(requestData);
+    if (!key) continue;
+    cancelQueuedPreCorrelationRequests(key, cancellationError);
+    if (activePreCorrelationQueueEntry?.key === key) {
+      activePreCorrelationQueueEntry.cancel?.(cancellationError);
+    }
   }
 };
 
@@ -308,7 +372,9 @@ const setupWebSocketHandlers = (
   socket.onclose = async (event) => {
     clearPingInterval();
     cancelAllPreCorrelationRequests(
-      new Error('HiveAuth connection closed before correlation was established'),
+      new Error(
+        'HiveAuth connection closed before correlation was established',
+      ),
     );
     connectionAttempts++;
 
@@ -317,7 +383,7 @@ const setupWebSocketHandlers = (
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          message: await chrome.i18n.getMessage(
+          message: await I18nUtils.getMessage(
             'dialog_hiveauth_connection_failed',
           ),
           error: 'connection_failed',
@@ -359,7 +425,7 @@ const sendMessage = (message: any) => {
 };
 
 const authenticate = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   keylessRequest: KeylessRequest,
 ): Promise<AuthWait> => {
   if (keylessRequest.expire && keylessRequest.expire > Date.now()) {
@@ -400,16 +466,16 @@ const authenticate = async (
     data: authReqDataEncrypted,
   };
 
+  const requestId = (keylessRequest.request as KeychainRequest & { request_id?: number })
+    ?.request_id;
+
   return waitForPreCorrelation<AuthWait>(
     requestHandler,
     authReq,
     HasCmd.AUTH_WAIT,
     'Authentication request',
     (message) => {
-      if (
-        message.cmd === HasCmd.AUTH_NACK ||
-        message.cmd === 'auth_err'
-      ) {
+      if (message.cmd === HasCmd.AUTH_NACK || message.cmd === 'auth_err') {
         return new Error(
           `Authentication failed: ${
             message.error || message.data || 'Unknown error'
@@ -419,6 +485,7 @@ const authenticate = async (
 
       return null;
     },
+    requestId,
   );
 };
 
@@ -431,10 +498,11 @@ const generateAuthPayloadURI = async (authPayload: AuthPayload) => {
 };
 
 const listenToAuthAck = (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   username: string,
   keylessRequest: KeylessRequest,
   tab: number,
+  source?: PendingRequestSource,
 ): Promise<void> => {
   Logger.log('listenToAuthAck');
   if (!username || !keylessRequest) {
@@ -452,7 +520,7 @@ const listenToAuthAck = (
   const handleMessage = async (event: MessageEvent) => {
     try {
       const message = JSON.parse(event.data);
-      Logger.log('listenToAuthAck message:', { message });
+      Logger.log('listenToAuthAck message command:', message.cmd);
       if (message.cmd === HasCmd.AUTH_ACK) {
         if (message.uuid !== keylessRequest.uuid) return;
         ws?.removeEventListener('message', handleMessage);
@@ -463,6 +531,7 @@ const listenToAuthAck = (
             keylessRequest,
             message,
             tab,
+            source,
           );
         } catch (error) {
           Logger.error('Error handling auth ack:', error);
@@ -504,7 +573,10 @@ interface AuthAckError extends Error {
 }
 
 class AuthAckError extends Error {
-  constructor(message: string, public code: string) {
+  constructor(
+    message: string,
+    public code: string,
+  ) {
     super(message);
     this.name = 'AuthAckError';
   }
@@ -562,55 +634,90 @@ const handleSignBufferRequest = async (
   keylessRequest: KeylessRequest,
   authAckData: AuthAckData,
   tab: number,
+  source?: PendingRequestSource,
 ): Promise<void> => {
   const message = await createMessage(
     null,
     authAckData.challenge.challenge,
     keylessRequest.request,
-    await chrome.i18n.getMessage('bgd_ops_sign_success'),
+    tab,
+    feedbackI18n('bgd_ops_sign_success'),
     null,
     authAckData.challenge.pubkey,
   );
 
   await Promise.all([
     chrome.runtime.sendMessage(message),
-    chrome.tabs.sendMessage(tab, message),
+    CommunicationUtils.tabsSendMessage(
+      tab,
+      message,
+      getPendingRequestMessageOptions(source),
+    ),
   ]);
 };
 
+const hiveLocator = (
+  requestId: number | undefined,
+  source?: PendingRequestSource,
+): HiveRequestLocator | undefined => {
+  if (requestId == null || !source) return undefined;
+  return { requestId, ...source };
+};
+
 const handleSignRequest = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   keylessRequest: KeylessRequest,
   tab: number,
+  source?: PendingRequestSource,
 ): Promise<void> => {
+  const request = getRequestCompat(
+    requestHandler,
+    keylessRequest.request.request_id,
+    hiveLocator(keylessRequest.request.request_id, source),
+  )!;
+
   await signRequest(
     requestHandler,
-    requestHandler.data.request!,
+    request,
     keylessRequest.appName,
     tab,
+    source,
   );
 };
 
 const handleEncodeDecodeRequest = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   keylessRequest: KeylessRequest,
   tab: number,
+  source?: PendingRequestSource,
 ): Promise<void> => {
+  const request = getRequestCompat(
+    requestHandler,
+    keylessRequest.request.request_id,
+    hiveLocator(keylessRequest.request.request_id, source),
+  )!;
   await challengeRequest(
     requestHandler,
-    requestHandler.data.request!,
+    request,
     keylessRequest.appName,
     tab,
+    source,
   );
 };
 
 const handleAuthAck = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   username: string,
   keylessRequest: KeylessRequest,
   authAck: AuthAck,
   tab: number,
+  source?: PendingRequestSource,
 ): Promise<void> => {
+  const request = getRequestCompat(
+    requestHandler,
+    keylessRequest.request.request_id,
+    hiveLocator(keylessRequest.request.request_id, source),
+  )!;
   try {
     if (authAck.uuid !== keylessRequest.uuid) return;
     const authAckData = validateAuthAckData(authAck, keylessRequest);
@@ -630,19 +737,25 @@ const handleAuthAck = async (
       msg: {
         success: true,
         message: 'Keyless Authentication Success',
+        tab: tab,
       },
     });
 
     // Handle different request types
-    if (requestHandler.data.request?.type === KeychainRequestTypes.signBuffer) {
-      await handleSignBufferRequest(keylessRequest, authAckData, tab);
+    if (request.type === KeychainRequestTypes.signBuffer) {
+      await handleSignBufferRequest(keylessRequest, authAckData, tab, source);
     } else if (
-      requestHandler.data.request?.type === KeychainRequestTypes.encode ||
-      requestHandler.data.request?.type === KeychainRequestTypes.decode
+      request.type === KeychainRequestTypes.encode ||
+      request.type === KeychainRequestTypes.decode
     ) {
-      await handleEncodeDecodeRequest(requestHandler, keylessRequest, tab);
+      await handleEncodeDecodeRequest(
+        requestHandler,
+        keylessRequest,
+        tab,
+        source,
+      );
     } else {
-      await handleSignRequest(requestHandler, keylessRequest, tab);
+      await handleSignRequest(requestHandler, keylessRequest, tab, source);
     }
   } catch (error: unknown) {
     const errorMessage =
@@ -650,15 +763,20 @@ const handleAuthAck = async (
     const message = await createMessage(
       error,
       null,
-      requestHandler.data.request!,
+      request,
+      tab,
       null,
-      errorMessage,
+      feedbackPlain(errorMessage),
       null,
     );
 
     await Promise.all([
       chrome.runtime.sendMessage(message),
-      chrome.tabs.sendMessage(tab, message),
+      CommunicationUtils.tabsSendMessage(
+        tab,
+        message,
+        getPendingRequestMessageOptions(source),
+      ),
     ]);
 
     throw new AuthAckError(
@@ -914,10 +1032,11 @@ const getRequestOperation = async (request: KeychainRequest) => {
 };
 
 const signRequest = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   request: KeychainRequest,
   domain: string,
   tab: number,
+  source?: PendingRequestSource,
 ): Promise<void> => {
   if (!request.username) {
     throw new Error('Username is required');
@@ -950,27 +1069,32 @@ const signRequest = async (
     token: keylessAuthData.token,
   };
 
-  return waitForPreCorrelation<SignWait>(
-    requestHandler,
-    signReq,
-    HasCmd.SIGN_WAIT,
-    'Sign request',
-    (message) => {
-      if (message.cmd === HasCmd.SIGN_NACK || message.cmd === 'sign_err') {
-        return new Error(message.data || message.error || 'Sign request failed');
-      }
+  try {
+    const signWait = await waitForPreCorrelation<SignWait>(
+      requestHandler,
+      signReq,
+      HasCmd.SIGN_WAIT,
+      'Sign request',
+      (message) => {
+        if (message.cmd === HasCmd.SIGN_NACK || message.cmd === 'sign_err') {
+          return new Error(
+            message.data || message.error || 'Sign request failed',
+          );
+        }
 
-      return null;
-    },
-  )
-    .then((response) => handleSignWait(request, domain, tab, response))
-    .catch(async (error) => {
-      if (isKeylessCancellationError(error)) {
-        return;
-      }
+        return null;
+      },
+      request.request_id,
+      hiveLocator(request.request_id, source),
+    );
+    await handleSignWait(request, domain, tab, signWait, source);
+  } catch (error) {
+    if (isKeylessCancellationError(error)) {
+      return;
+    }
 
-      Logger.error('Error waiting for sign correlation:', error);
-    });
+    Logger.error('Error waiting for sign correlation:', error);
+  }
 };
 
 const handleSignWait = async (
@@ -978,6 +1102,7 @@ const handleSignWait = async (
   domain: string,
   tab: number,
   signWait: SignWait,
+  source?: PendingRequestSource,
 ): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
     if (!ws) {
@@ -995,13 +1120,20 @@ const handleSignWait = async (
         ) {
           ws?.removeEventListener('message', handleMessage);
 
-          await sendResponseToDapp(request, domain, tab, response, false);
+          await sendResponseToDapp(
+            request,
+            domain,
+            tab,
+            response,
+            false,
+            source,
+          );
 
           chrome.runtime.sendMessage({
             command: DialogCommand.ANSWER_REQUEST,
             msg: {
               success: true,
-              message: await chrome.i18n.getMessage('bgd_ops_sign_success'),
+              message: await I18nUtils.getMessage('bgd_ops_sign_success'),
               result: response,
             },
           });
@@ -1020,7 +1152,14 @@ const handleSignWait = async (
           };
           const error = new Error(response.data || 'Sign request was rejected');
 
-          await sendResponseToDapp(request, domain, tab, errorResponse, error);
+          await sendResponseToDapp(
+            request,
+            domain,
+            tab,
+            errorResponse,
+            error,
+            source,
+          );
 
           chrome.runtime.sendMessage({
             command: DialogCommand.ANSWER_REQUEST,
@@ -1028,6 +1167,7 @@ const handleSignWait = async (
               success: false,
               message: error.message,
               error: error.message,
+              tab: tab,
             },
           });
           reject(error);
@@ -1073,10 +1213,11 @@ const handleSignWait = async (
 };
 
 const challengeRequest = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   request: KeychainRequest,
   domain: string,
   tab: number,
+  source?: PendingRequestSource,
 ) => {
   if (!ws) {
     throw new Error('WebSocket is not connected');
@@ -1111,11 +1252,15 @@ const challengeRequest = async (
         message.cmd === HasCmd.CHALLENGE_NACK ||
         message.cmd === 'challenge_err'
       ) {
-        return new Error(message.data || message.error || 'Challenge request failed');
+        return new Error(
+          message.data || message.error || 'Challenge request failed',
+        );
       }
 
       return null;
     },
+    request.request_id,
+    hiveLocator(request.request_id, source),
   );
 
   await handleChallengeWait(
@@ -1125,18 +1270,20 @@ const challengeRequest = async (
     tab,
     challengeWait,
     keylessAuthData,
+    source,
   );
 
   return challengeWait;
 };
 
 const handleChallengeWait = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   request: KeychainRequest,
   domain: string,
   tab: number,
   challengeWait: ChallengeWait,
   keylessAuthData: KeylessAuthData,
+  source?: PendingRequestSource,
 ): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
     if (!ws) {
@@ -1160,6 +1307,7 @@ const handleChallengeWait = async (
               tab,
               challengeAck,
               keylessAuthData,
+              source,
             );
             resolve();
           }
@@ -1175,6 +1323,7 @@ const handleChallengeWait = async (
             domain,
             tab,
             challengeAck,
+            source,
           );
           reject(new Error('Challenge request failed'));
         }
@@ -1254,6 +1403,7 @@ const sendResponseToDapp = async (
   tab: number,
   response: SignAck | SignNack | ChallengeAckData | ChallengeNack,
   error?: any,
+  source?: PendingRequestSource,
 ) => {
   // Determine if the operation was successful
   const success =
@@ -1265,14 +1415,17 @@ const sendResponseToDapp = async (
       ? response.challenge
       : response,
     request,
-    success
-      ? await chrome.i18n.getMessage('bgd_ops_keyless_broadcast_success')
-      : error?.message || 'Operation failed',
-    error?.message || null,
+    tab,
+    success ? feedbackI18n('bgd_ops_keyless_broadcast_success') : null,
+    !success ? feedbackPlain(error?.message || 'Operation failed') : null,
     'challenge' in response && response.challenge ? response.pubkey : null,
   );
 
-  chrome.tabs.sendMessage(tab, message);
+  await CommunicationUtils.tabsSendMessage(
+    tab,
+    message,
+    getPendingRequestMessageOptions(source),
+  );
 };
 
 /**
@@ -1303,13 +1456,24 @@ const calculateVests = async (
   }
 };
 
+const isLocatedKeylessRequest = (
+  requestHandler: HiveRequestsHandler,
+  request: KeychainRequest,
+  source?: PendingRequestSource,
+) => {
+  const locator = hiveLocator(request.request_id, source);
+  if (!locator || !requestHandler.isKeyless) return false;
+  return !!requestHandler.isKeyless(locator);
+};
+
 const handleChallengeAck = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   request: KeychainRequest,
   domain: string,
   tab: number,
   challengeAck: ChallengeAck,
   keylessAuthData: KeylessAuthData,
+  source?: PendingRequestSource,
 ): Promise<void> => {
   try {
     const challengeAckData: ChallengeAckData =
@@ -1321,11 +1485,18 @@ const handleChallengeAck = async (
             ),
           )
         : challengeAck.data;
-    sendResponseToDapp(request, domain, tab, challengeAckData);
+    await sendResponseToDapp(
+      request,
+      domain,
+      tab,
+      challengeAckData,
+      undefined,
+      source,
+    );
 
     // Send message to runtime if request is anonymous
     if (
-      requestHandler.data.isKeyless ||
+      isLocatedKeylessRequest(requestHandler, request, source) ||
       request.type === KeychainRequestTypes.encode ||
       request.type === KeychainRequestTypes.decode
     ) {
@@ -1333,11 +1504,12 @@ const handleChallengeAck = async (
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: true,
-          message: await chrome.i18n.getMessage('bgd_ops_challenge_success', [
+          message: await I18nUtils.getMessage('bgd_ops_challenge_success', [
             request.type.charAt(0).toUpperCase() +
               request.type.slice(1).toLowerCase(),
           ]),
           result: challengeAckData,
+          tab: tab,
         },
       });
     }
@@ -1347,23 +1519,32 @@ const handleChallengeAck = async (
 };
 
 const handleChallengeNack = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   request: KeychainRequest,
   domain: string,
   tab: number,
   challengeNack: ChallengeNack,
+  source?: PendingRequestSource,
 ) => {
   const error = new Error(challengeNack.data || 'Challenge request failed');
-  sendResponseToDapp(request, domain, tab, challengeNack, error);
+  await sendResponseToDapp(
+    request,
+    domain,
+    tab,
+    challengeNack,
+    error,
+    source,
+  );
 
   // Send message to runtime if request is anonymous
-  if (requestHandler.data.isKeyless) {
+  if (isLocatedKeylessRequest(requestHandler, request, source)) {
     chrome.runtime.sendMessage({
       command: DialogCommand.ANSWER_REQUEST,
       msg: {
         success: false,
         message: error.message,
         error: error.message,
+        tab: tab,
       },
     });
   }

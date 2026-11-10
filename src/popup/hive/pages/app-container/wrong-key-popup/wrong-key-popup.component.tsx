@@ -1,9 +1,11 @@
 import { LocalAccount } from '@interfaces/local-account.interface';
-import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import { Screen } from '@interfaces/screen.interface';
+import {
+  navigateToWithParams,
+} from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { Screen } from '@reference-data/screen.enum';
-import React, { useState } from 'react';
+import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import ButtonComponent, {
@@ -11,9 +13,13 @@ import ButtonComponent, {
 } from 'src/common-ui/button/button.component';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { loadActiveAccount } from 'src/popup/hive/actions/active-account.actions';
-import { HtmlUtils } from 'src/utils/html.utils';
+import {
+  MANAGE_ACCOUNT_SELECTED_NAME_PARAM,
+} from 'src/popup/hive/pages/app-container/settings/accounts/manage-account/manage-account-selection.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { HtmlUtils } from 'src/utils/html.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
 export interface WrongKeysOnUser {
   [key: string]: string[];
 }
@@ -27,16 +33,11 @@ interface Props {
 const WrongKeyPopup = ({
   displayWrongKeyPopup,
   setDisplayWrongKeyPopup,
-  navigateTo,
+  navigateToWithParams,
   loadActiveAccount,
   accounts,
 }: Props & PropsType) => {
-  const [accountFound, setaccountFound] = useState(
-    Object.keys(displayWrongKeyPopup)[0],
-  );
-  const [wrongKeysFound, setWrongKeysFound] = useState<string[]>(
-    Object.values(displayWrongKeyPopup)[0],
-  );
+  const accountFound = Object.keys(displayWrongKeyPopup)[0];
 
   const skipKeyCheckOnAccount = async () => {
     let prevNoKeyCheck = await LocalStorageUtils.getValueFromLocalStorage(
@@ -53,26 +54,35 @@ const WrongKeyPopup = ({
   };
 
   const loadAccountGotoManage = async () => {
+    const targetAccount = accounts.find(
+      (account: LocalAccount) => account.name === accountFound,
+    );
+    if (!targetAccount) {
+      return;
+    }
+
     let actualNoKeyCheck = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.NO_KEY_CHECK,
     );
-    if (actualNoKeyCheck && actualNoKeyCheck[accountFound!]) {
-      delete actualNoKeyCheck[accountFound!];
+    if (actualNoKeyCheck && actualNoKeyCheck[accountFound]) {
+      delete actualNoKeyCheck[accountFound];
     }
     LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.NO_KEY_CHECK,
       actualNoKeyCheck,
     );
-    loadActiveAccount(
-      accounts.find((account: LocalAccount) => account.name === accountFound!)!,
-    );
-    navigateTo(Screen.SETTINGS_MANAGE_ACCOUNTS);
+    await loadActiveAccount(targetAccount);
+    setDisplayWrongKeyPopup(undefined);
+    navigateToWithParams(Screen.SETTINGS_MANAGE_ACCOUNTS, {
+      username: accountFound,
+      [MANAGE_ACCOUNT_SELECTED_NAME_PARAM]: accountFound,
+    });
   };
 
   return (
     <PopupContainer className="wrong-key-popup">
       <div className="popup-title">
-        {chrome.i18n.getMessage('html_popup_wrong_key_title')}
+        {I18nUtils.getMessage('html_popup_wrong_key_title')}
       </div>
       <div
         className="caption"
@@ -103,7 +113,7 @@ const mapStateToProps = (state: RootState) => {
 };
 
 const connector = connect(mapStateToProps, {
-  navigateTo,
+  navigateToWithParams,
   loadActiveAccount,
 });
 type PropsType = ConnectedProps<typeof connector>;

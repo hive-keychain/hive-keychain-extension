@@ -1,0 +1,42 @@
+import {
+  RequestId,
+  RequestRemoveProposal,
+} from '@interfaces/keychain.interface';
+import { Rpc } from '@interfaces/rpc.interface';
+import React from 'react';
+import { Separator } from 'src/common-ui/separator/separator.component';
+import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with-avatar';
+import RequestItem from 'src/dialog/components/request-item/request-item';
+import Operation from 'src/dialog/hive/operation/operation';
+
+import { I18nUtils } from 'src/utils/i18n.utils';
+type Props = {
+  data: RequestRemoveProposal & RequestId;
+  domain: string;
+  tab: number;
+  rpc: Rpc;
+  afterCancel: (requestId: number, tab: number) => void;
+};
+
+const RemoveProposal = (props: Props) => {
+  const { data } = props;
+
+  return (
+    <Operation
+      title={I18nUtils.getMessage('dialog_title_remove_proposal')}
+      {...props}>
+      <UsernameWithAvatar title="dialog_account" username={data.username} />
+      <Separator type={'horizontal'} fullSize />
+      <RequestItem
+        title="dialog_proposal_ids"
+        content={
+          typeof data.proposal_ids === 'string'
+            ? JSON.parse(data.proposal_ids).join(', ')
+            : data.proposal_ids.join(', ')
+        }
+      />
+    </Operation>
+  );
+};
+
+export default RemoveProposal;

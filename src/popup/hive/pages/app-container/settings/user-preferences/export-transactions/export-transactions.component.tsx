@@ -1,3 +1,8 @@
+import {
+  ComplexeCustomSelect,
+  OptionItem,
+} from '@common-ui/custom-select/custom-select.component';
+import { Screen } from '@interfaces/screen.interface';
 import { ExportTransactionUtils } from '@popup/hive/utils/export-transactions.utils';
 import {
   addToLoadingList,
@@ -5,21 +10,25 @@ import {
   setLoadingPercentage,
 } from '@popup/multichain/actions/loading.actions';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
-import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { SelectAccountSectionComponent } from 'src/common-ui/select-account-section/select-account-section.component';
 import { KeychainError } from 'src/keychain-error';
 import { setTitleContainerProperties } from 'src/popup/multichain/actions/title-container.actions';
 import { RootState } from 'src/popup/multichain/store';
+
 import { HtmlUtils } from 'src/utils/html.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
+type HiveAccountOption = OptionItem & {
+  value: string;
+};
 
 const ExportTransactions = ({
-  activeAccount,
+  accounts,
+  activeAccountName,
   setTitleContainerProperties,
   addToLoadingList,
   removeFromLoadingList,
@@ -28,6 +37,18 @@ const ExportTransactions = ({
 }: PropsFromRedux) => {
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
+  const [selectedAccountName, setSelectedAccountName] = useState(
+    activeAccountName ?? accounts[0]?.name,
+  );
+
+  const accountOptions: HiveAccountOption[] = accounts.map((account) => ({
+    label: account.name,
+    value: account.name,
+    img: `https://images.hive.blog/u/${account.name}/avatar`,
+  }));
+  const selectedAccountOption = accountOptions.find(
+    (accountOption) => accountOption.value === selectedAccountName,
+  );
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -36,7 +57,30 @@ const ExportTransactions = ({
     });
   }, []);
 
+  useEffect(() => {
+    if (!selectedAccountName && activeAccountName) {
+      setSelectedAccountName(activeAccountName);
+    }
+  }, [activeAccountName, selectedAccountName]);
+
+  useEffect(() => {
+    if (
+      selectedAccountName &&
+      accountOptions.some(
+        (accountOption) => accountOption.value === selectedAccountName,
+      )
+    ) {
+      return;
+    }
+
+    setSelectedAccountName(activeAccountName ?? accounts[0]?.name);
+  }, [accounts, activeAccountName, selectedAccountName]);
+
   const handleClickOnDownload = async () => {
+    if (!selectedAccountName) {
+      return;
+    }
+
     if (
       startDate &&
       endDate &&
@@ -50,7 +94,7 @@ const ExportTransactions = ({
     );
     try {
       await ExportTransactionUtils.downloadTransactions(
-        activeAccount.name!,
+        selectedAccountName,
         startDate,
         endDate,
         (percentage) => {
@@ -79,7 +123,18 @@ const ExportTransactions = ({
           ),
         }}
       />
-      <SelectAccountSectionComponent fullSize background="white" />
+      {selectedAccountOption && (
+        <div className="settings-hive-account-select-panel">
+          <ComplexeCustomSelect
+            options={accountOptions}
+            selectedItem={selectedAccountOption}
+            setSelectedItem={(option) =>
+              setSelectedAccountName(option.value)
+            }
+            background="white"
+          />
+        </div>
+      )}
       <FormContainer onSubmit={handleClickOnDownload}>
         <div className="form-fields">
           <InputComponent
@@ -111,7 +166,8 @@ const ExportTransactions = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.hive.activeAccount,
+    accounts: state.hive.accounts,
+    activeAccountName: state.hive.activeAccount.name,
   };
 };
 

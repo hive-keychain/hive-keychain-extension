@@ -4,19 +4,19 @@ const path = require('path');
 const WebpackBundleAnalyzer = require('webpack-bundle-analyzer');
 const { DefinePlugin } = require('webpack');
 const ESLintPlugin = require('eslint-webpack-plugin');
+const { toDefinePluginEnv } = require('../env');
+const { applyLavaMoat } = require('../lavamoat');
 
-module.exports = merge(common, {
+module.exports = applyLavaMoat(merge(common, {
   mode: 'production',
-  devtool: 'source-map',
+  devtool: false,
   output: {
     path: path.join(__dirname, '../../dist-prod-firefox'),
     filename: '[name]Bundle.js',
   },
   plugins: [
     // new WebpackBundleAnalyzer.BundleAnalyzerPlugin(),
-    new DefinePlugin({
-      'process.env': JSON.stringify({ IS_FIREFOX: true }),
-    }),
+    new DefinePlugin(toDefinePluginEnv({ IS_FIREFOX: true })),
     new ESLintPlugin({
       extensions: ['ts', 'tsx'],
       fix: false,
@@ -27,4 +27,6 @@ module.exports = merge(common, {
       exclude: ['../../node_modules', '../../src/utils/logger.utils.ts'],
     }),
   ],
-});
+}),
+  'firefox',
+);

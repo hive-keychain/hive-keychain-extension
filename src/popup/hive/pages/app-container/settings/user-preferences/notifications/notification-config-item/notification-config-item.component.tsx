@@ -4,18 +4,24 @@ import {
   NotificationConfigFormItem,
 } from '@interfaces/notifications.interface';
 import { NotificationConfigItemConditionComponent } from '@popup/hive/pages/app-container/settings/user-preferences/notifications/notification-config-item/notification-config-item-condition.component';
-import React, { useState } from 'react';
+import { HiveNotificationOperationLabelUtils } from '@popup/hive/utils/notifications/hive-notification-operation-label.utils';
+import React, { useEffect, useState } from 'react';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
+import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { I18nUtils } from 'src/utils/i18n.utils';
 
 interface Props {
   updateConfig: Function;
   configForm: NotificationConfigForm;
   configFormItem: NotificationConfigFormItem;
   configFormItemIndex: number;
+  pushNotification?: boolean;
+  onPushNotificationChange?: (value: boolean) => void;
+  forceOpen?: boolean;
 }
 
 export const NotificationConfigItemComponent = ({
@@ -23,18 +29,27 @@ export const NotificationConfigItemComponent = ({
   configFormItem,
   updateConfig,
   configFormItemIndex,
+  pushNotification,
+  onPushNotificationChange,
+  forceOpen = false,
 }: Props) => {
-  const [isOpen, setOpen] = useState<boolean>(false);
+  const [isOpen, setOpen] = useState<boolean>(forceOpen);
+  const conditionsId = `notification-criteria-${configFormItemIndex}-conditions`;
+  const operation = configFormItem.operation;
+  const showPushToggle =
+    pushNotification !== undefined && !!onPushNotificationChange;
+
+  useEffect(() => {
+    if (forceOpen) {
+      setOpen(true);
+    }
+  }, [forceOpen]);
 
   const addNewCondition = () => {
-    // const newId = Math.max(
-    //   ...configForm[configFormItemIndex].conditions.map((c) => c.id),
-    // );
     updateConfig(
       configFormItemIndex,
       null,
       {
-        // id: newId + 1,
         field: '',
         operand: '',
         value: '',
@@ -59,16 +74,50 @@ export const NotificationConfigItemComponent = ({
 
   return (
     <div className="criteria">
-      <div className="operation-panel" onClick={() => setOpen(!isOpen)}>
-        <div>{configFormItem.operation}</div>
-        <SVGIcon
-          icon={SVGIcons.GLOBAL_EXPAND_COLLAPSE}
-          className={`expand-detail-icon ${isOpen ? 'open' : 'closed'}`}
-        />
+      <div
+        className="criteria-header"
+        data-testid={
+          showPushToggle
+            ? `notification-channel-pref-${operation}`
+            : undefined
+        }>
+        <button
+          type="button"
+          className="operation-panel"
+          aria-expanded={isOpen}
+          aria-controls={conditionsId}
+          onClick={() => setOpen(!isOpen)}>
+          <div>
+            {HiveNotificationOperationLabelUtils.formatNotificationOperationLabel(
+              operation,
+            )}
+          </div>
+          <SVGIcon
+            icon={SVGIcons.GLOBAL_EXPAND_COLLAPSE}
+            className={`expand-detail-icon ${isOpen ? 'open' : 'closed'}`}
+          />
+        </button>
+        {showPushToggle && (
+          <div className="channel-toggles">
+            <CheckboxComponent
+              dataTestId={`notification-channel-browser-${operation}`}
+              checked={pushNotification}
+              onChange={onPushNotificationChange}
+              title="html_popup_settings_notifications_channel_browser"
+              ariaLabel={I18nUtils.getMessage(
+                'html_popup_settings_notifications_channel_browser',
+              )}
+              tooltipMessage="html_popup_settings_notifications_channel_browser_tooltip"
+            />
+          </div>
+        )}
       </div>
 
       {configFormItem && isOpen && (
-        <div className="conditions" key={configFormItem.operation}>
+        <div
+          id={conditionsId}
+          className="conditions"
+          key={operation}>
           {configFormItem.conditions &&
             configFormItem.conditions.map(
               (configFormItemCondition, configFormItemConditionIndex) => (
@@ -86,6 +135,9 @@ export const NotificationConfigItemComponent = ({
                   {
                     <SVGIcon
                       icon={SVGIcons.GLOBAL_DELETE}
+                      ariaLabel={`${I18nUtils.getMessage(
+                        'html_popup_delete_condition',
+                      )} ${configFormItemConditionIndex + 1}`}
                       onClick={() =>
                         deleteCondition(configFormItemConditionIndex)
                       }

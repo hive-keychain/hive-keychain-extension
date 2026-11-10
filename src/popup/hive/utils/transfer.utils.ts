@@ -13,6 +13,7 @@ import {
 import { SavingOperationType } from 'src/popup/hive/pages/app-container/home/savings/savings-operation-type.enum';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const getTransferWarningLabel = (
   account: string,
   currency: string,
@@ -29,19 +30,19 @@ const getTransferWarningLabel = (
   );
   switch (warning) {
     case TransferWarning.PHISHING:
-      return chrome.i18n.getMessage('popup_warning_phishing', [account]);
+      return I18nUtils.getMessage('popup_warning_phishing', [account]);
     case TransferWarning.EXCHANGE_MEMO:
-      return chrome.i18n.getMessage('popup_warning_exchange_memo');
+      return I18nUtils.getMessage('popup_warning_exchange_memo');
     case TransferWarning.EXCHANGE_RECURRENT:
-      return chrome.i18n.getMessage(
+      return I18nUtils.getMessage(
         'popup_html_transfer_recurrent_exchange_warning',
       );
     case TransferWarning.EXCHANGE_DEPOSIT:
-      return chrome.i18n.getMessage('popup_warning_exchange_deposit', [
+      return I18nUtils.getMessage('popup_warning_exchange_deposit', [
         currency,
       ]);
     case TransferWarning.PRIVATE_KEY_IN_MEMO:
-      return chrome.i18n.getMessage('popup_warning_private_key_in_memo');
+      return I18nUtils.getMessage('popup_warning_private_key_in_memo');
     default:
       return;
   }
@@ -56,11 +57,11 @@ const getTransferFromToSavingsValidationWarning = (
       .includes(account)
   ) {
     if (operation === SavingOperationType.DEPOSIT) {
-      return chrome.i18n.getMessage(
+      return I18nUtils.getMessage(
         'popup_html_transfer_to_saving_to_exchange_error',
       );
     } else {
-      return chrome.i18n.getMessage(
+      return I18nUtils.getMessage(
         'popup_html_transfer_from_saving_to_exchange_error',
       );
     }

@@ -1,0 +1,33 @@
+.import-evm-wallet {
+  display: flex;
+  flex-direction: column;
+  row-gap: 12px;
+  height: 100%;
+  align-items: center;
+
+  .setup-image {
+    height: 200px;
+    width: auto;
+    svg {
+      height: 200px;
+      width: auto;
+    }
+  }
+  .form-container {
+    width: 100%;
+    box-sizing: border-box;
+
+    .caption {
+      @include form-container-text;
+    }
+
+    .inputs-container {
+      display: flex;
+      flex-direction: column;
+      row-gap: 12px;
+      padding: 16px 24px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+  }
+}

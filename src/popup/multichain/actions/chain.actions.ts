@@ -1,0 +1,40 @@
+import { EvmActionType } from '@popup/evm/actions/action-type.evm.enum';
+import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import { EvmRpcUtils } from '@popup/evm/utils/evm-rpc.utils';
+import { MultichainActionType } from '@popup/multichain/actions/action-type.enum';
+import { AppThunk } from '@popup/multichain/actions/interfaces';
+import {
+  Chain,
+  ChainType,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
+import { syncProviderChainForActiveTab } from '@popup/multichain/utils/provider-chain-bootstrap.utils';
+
+interface SetChainOptions {
+  saveLastUsedChain?: boolean;
+  syncProviderNetwork?: boolean;
+}
+
+export const resetChain = (): AppThunk => async (dispatch, getState) => {
+  dispatch({ type: MultichainActionType.RESET_CHAIN, payload: {} });
+  dispatch({ type: EvmActionType.RESET_APP_STATUS });
+};
+
+export const setChain =
+  (chain: Chain, options: SetChainOptions = {}): AppThunk =>
+  async (dispatch, getState) => {
+    if (chain?.type === ChainType.EVM) {
+      if (options.saveLastUsedChain !== false) {
+        EvmChainUtils.saveLastUsedChain(chain as EvmChain);
+      }
+      EvmRpcUtils.setActiveRpc(
+        await EvmRpcUtils.getActiveRpc(chain as EvmChain),
+        chain as EvmChain,
+      );
+      if (options.syncProviderNetwork === true) {
+        await syncProviderChainForActiveTab(chain as EvmChain);
+      }
+    }
+    dispatch({ type: EvmActionType.RESET_APP_STATUS });
+    dispatch({ type: MultichainActionType.SET_CHAIN, payload: chain });
+  };

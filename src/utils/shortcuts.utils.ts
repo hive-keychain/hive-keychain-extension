@@ -1,4 +1,112 @@
-import { Screen } from '@reference-data/screen.enum';
+import {
+  ShortcutAccountType,
+  ShortcutActionType,
+  ShortcutDefinition,
+} from '@interfaces/shortcut.interface';
+import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
+import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
+import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
+
+type ShortcutNavigationScreen = MultichainScreen | HiveScreen | EvmScreen;
+
+/** `chrome.i18n` message keys; reuse existing settings/page titles where possible. */
+const SHORTCUT_NAVIGATION_SCREEN_MESSAGE_KEYS = {
+  [MultichainScreen.HOME_PAGE]: 'popup_html_shortcut_nav_HOME_PAGE',
+  [MultichainScreen.TRANSFER_FUND_PAGE]: 'popup_html_transfer_funds',
+  [MultichainScreen.BUY_COINS_PAGE]: 'popup_html_buy',
+  [MultichainScreen.TOKEN_SWAP_PAGE]: 'dialog_title_swap',
+  [MultichainScreen.TOKENS_SWAP_HISTORY]: 'html_popup_token_swaps_history',
+  [MultichainScreen.SETTINGS_ABOUT]: 'popup_html_about',
+  [MultichainScreen.SETTINGS_CHANGE_PASSWORD]: 'popup_html_change_password',
+  [MultichainScreen.SETTINGS_SHORTCUTS]: 'popup_html_shortcuts',
+  [MultichainScreen.SETTINGS_HELP]: 'popup_html_help',
+  [MultichainScreen.SETTINGS_CONTACTS]: 'popup_html_contacts',
+  [MultichainScreen.SETTINGS_NETWORK]: 'popup_html_network',
+  [MultichainScreen.SETTINGS_CONNECTED_DAPPS]:
+    'popup_html_connected_dapps',
+  [MultichainScreen.SETTINGS_PREFERENCES_AND_DISPLAY]:
+    'popup_html_preferences_and_display',
+  [MultichainScreen.SETTINGS_CHAIN_SETTINGS]: 'popup_html_chain_settings',
+  [MultichainScreen.SETTINGS_HELP_AND_ABOUT]: 'popup_html_help_and_about',
+  [MultichainScreen.SETTINGS_EVM]: 'evm_settings',
+  [MultichainScreen.SETTINGS_HIVE]: 'hive_settings',
+
+  [HiveScreen.RECURRENT_TRANSFERS_PAGE]: 'popup_html_recurrent_transfers',
+  [HiveScreen.WALLET_HISTORY_PAGE]: 'popup_html_wallet_history',
+  [HiveScreen.POWER_UP_PAGE]: 'popup_html_pu',
+  [HiveScreen.POWER_DOWN_PAGE]: 'popup_html_pd',
+  [HiveScreen.SAVINGS_PAGE]: 'popup_html_savings',
+  [HiveScreen.CONVERSION_PAGE]: 'popup_html_convert',
+  [HiveScreen.DELEGATION_PAGE]: 'popup_html_delegation',
+  [HiveScreen.RC_DELEGATIONS_PAGE]: 'popup_html_rc_delegation_title',
+  [HiveScreen.GOVERNANCE_PAGE]: 'popup_html_governance',
+  [HiveScreen.TOKENS_HISTORY]: 'popup_html_tokens_history',
+  [HiveScreen.TOKENS_TRANSFER]: 'popup_html_transfer_tokens',
+  [HiveScreen.TOKENS_DELEGATIONS]: 'popup_html_delegations',
+  [HiveScreen.TOKENS_PENDING_UNSTAKE]: 'popup_html_token_pending_unstake',
+  [HiveScreen.CREATE_ACCOUNT_PAGE_STEP_ONE]: 'popup_html_create_account',
+  [HiveScreen.SETTINGS_MAIN_PAGE]: 'popup_html_settings',
+  [HiveScreen.SETTINGS_ACCOUNTS]: 'popup_html_accounts',
+  [HiveScreen.SETTINGS_EXPORT_ACCOUNTS]: 'popup_html_export_accounts',
+  [HiveScreen.SETTINGS_EXPORT_ALL_ACCOUNTS_QR]:
+    'popup_html_export_all_accounts_as_QR',
+  [HiveScreen.SETTINGS_ADD_ACCOUNT]: 'popup_html_add_account',
+  [HiveScreen.SETTINGS_MANAGE_ACCOUNTS]: 'popup_html_manage_accounts',
+  [HiveScreen.SETTINGS_MANAGE_ACCOUNTS_AUTHORITIES]:
+    'popup_html_manage_accounts_authorities',
+  [HiveScreen.SETTINGS_ADD_KEY]: 'popup_html_add_key',
+  [HiveScreen.SETTINGS_ADVANCED]: 'popup_html_advanced_settings',
+  [HiveScreen.SETTINGS_AUTO_LOCK]: 'popup_html_autolock',
+  [HiveScreen.SETTINGS_KEYCHAINIFY]: 'popup_html_keychainify',
+  [HiveScreen.SETTINGS_CLEAR_ALL_DATA]: 'popup_html_clear',
+  [HiveScreen.SETTINGS_IMPORT_EXPORT]: 'popup_html_import_export_settings',
+  [HiveScreen.SETTINGS_AUTOMATED_TASKS]: 'popup_html_automated_tasks',
+  [HiveScreen.SETTINGS_EXPORT_TRANSACTIONS]: 'popup_html_export_transactions',
+  [HiveScreen.SETTINGS_MULTISIG]: 'popup_html_multisig',
+  [HiveScreen.SETTINGS_NOTIFICATIONS_CONFIGURATION]:
+    'html_popup_settings_notifications',
+
+  [EvmScreen.LIFI_HISTORY_PAGE]: 'html_popup_token_swaps_history',
+  [EvmScreen.EVM_SETTINGS]: 'popup_html_settings',
+  [EvmScreen.EVM_ACCOUNTS_SETTINGS]: 'evm_seeds_and_accounts',
+  [EvmScreen.EVM_ADVANCED_SETTINGS]: 'popup_html_advanced_settings',
+  [EvmScreen.EVM_CONTACTS]: 'evm_menu_contacts',
+  [EvmScreen.EVM_CUSTOM_CHAINS]: 'evm_menu_custom_chains',
+  [EvmScreen.EVM_CUSTOM_TOKENS_PAGE]: 'evm_custom_tokens_page_title',
+  [EvmScreen.EVM_CUSTOM_NFTS_PAGE]: 'evm_custom_nfts_page_title',
+} as Partial<Record<ShortcutNavigationScreen, string>>;
+
+const LEGACY_SHORTCUT_NAVIGATION_SCREEN_REMAP: Partial<
+  Record<string, ShortcutNavigationScreen>
+> = {
+  [HiveScreen.SETTINGS_RPC_NODES]: MultichainScreen.SETTINGS_NETWORK,
+  [HiveScreen.SETTINGS_USER_PREFERENCES]: MultichainScreen.SETTINGS_HIVE,
+  [HiveScreen.SETTINGS_AUTHORIZED_OPERATIONS]:
+    MultichainScreen.SETTINGS_CONNECTED_DAPPS,
+  [HiveScreen.SETTINGS_FAVORITE_ACCOUNTS]: MultichainScreen.SETTINGS_CONTACTS,
+  [HiveScreen.SETTINGS_OPERATION_POPUP]: MultichainScreen.SETTINGS_HIVE,
+  [EvmScreen.EVM_RPC_NODES_SETTINGS]: MultichainScreen.SETTINGS_NETWORK,
+  [EvmScreen.EVM_SECURITY_SETTINGS]: MultichainScreen.SETTINGS_EVM,
+  [EvmScreen.EVM_PROVIDER_SETTINGS]: MultichainScreen.SETTINGS_EVM,
+  [EvmScreen.EVM_DAPPS_CONNECTIONS]: MultichainScreen.SETTINGS_CONNECTED_DAPPS,
+  [EvmScreen.EVM_CONTACTS]: MultichainScreen.SETTINGS_CONTACTS,
+};
+
+const normalizeShortcutNavigationTarget = (screen: string): string => {
+  return (
+    LEGACY_SHORTCUT_NAVIGATION_SCREEN_REMAP[screen] ?? screen
+  );
+};
+
+const getShortcutNavigationScreenMessageKey = (
+  screen: ShortcutNavigationScreen,
+): string =>
+  (SHORTCUT_NAVIGATION_SCREEN_MESSAGE_KEYS as Partial<Record<string, string>>)[
+    normalizeShortcutNavigationTarget(screen)
+  ] ??
+  (SHORTCUT_NAVIGATION_SCREEN_MESSAGE_KEYS as Partial<Record<string, string>>)[
+    screen
+  ] ?? `popup_html_shortcut_nav_${screen}`;
 
 const MODIFIER_KEYS = ['Shift', 'Control', 'Alt', 'Meta'];
 const MODIFIER_ORDER = ['ctrl', 'alt', 'shift', 'command'];
@@ -119,84 +227,132 @@ const buildShortcutComboFromEvent = (event: KeyboardEvent) => {
   return normalizeShortcutCombo(parts.join('+'));
 };
 
-const NAVIGATION_SCREENS: Screen[] = [
-  Screen.HOME_PAGE,
-  Screen.TRANSFER_FUND_PAGE,
-  // Screen.RECURRENT_TRANSFERS_PAGE,
-  Screen.WALLET_HISTORY_PAGE,
+const SHARED_NAVIGATION_SCREENS: MultichainScreen[] = [
+  MultichainScreen.HOME_PAGE,
+  MultichainScreen.TRANSFER_FUND_PAGE,
+  MultichainScreen.BUY_COINS_PAGE,
+  MultichainScreen.TOKEN_SWAP_PAGE,
+  MultichainScreen.TOKENS_SWAP_HISTORY,
+  MultichainScreen.SETTINGS_ABOUT,
+  MultichainScreen.SETTINGS_HELP,
+  MultichainScreen.SETTINGS_CONTACTS,
+  MultichainScreen.SETTINGS_NETWORK,
+  MultichainScreen.SETTINGS_CONNECTED_DAPPS,
+  MultichainScreen.SETTINGS_PREFERENCES_AND_DISPLAY,
+  MultichainScreen.SETTINGS_CHAIN_SETTINGS,
+  MultichainScreen.SETTINGS_HELP_AND_ABOUT,
+  MultichainScreen.SETTINGS_EVM,
+  MultichainScreen.SETTINGS_HIVE,
+  MultichainScreen.SETTINGS_CHANGE_PASSWORD,
+  MultichainScreen.SETTINGS_SHORTCUTS,
+];
 
-  Screen.POWER_UP_PAGE,
-  Screen.POWER_DOWN_PAGE,
-  Screen.SAVINGS_PAGE,
-  Screen.CONVERSION_PAGE,
-  Screen.DELEGATION_PAGE,
-  Screen.RC_DELEGATIONS_PAGE,
+const HIVE_NAVIGATION_SCREENS: HiveScreen[] = [
+  HiveScreen.RECURRENT_TRANSFERS_PAGE,
+  HiveScreen.WALLET_HISTORY_PAGE,
 
-  Screen.TOKENS_TRANSFER,
-  Screen.TOKENS_HISTORY,
-  Screen.TOKEN_SWAP_PAGE,
-  Screen.TOKENS_SWAP_HISTORY,
+  HiveScreen.POWER_UP_PAGE,
+  HiveScreen.POWER_DOWN_PAGE,
+  HiveScreen.SAVINGS_PAGE,
+  HiveScreen.CONVERSION_PAGE,
+  HiveScreen.DELEGATION_PAGE,
+  HiveScreen.RC_DELEGATIONS_PAGE,
 
-  Screen.BUY_COINS_PAGE,
-  Screen.GOVERNANCE_PAGE,
+  HiveScreen.GOVERNANCE_PAGE,
 
-  // Screen.TOKENS_PAGE,
+  HiveScreen.TOKENS_HISTORY,
+  HiveScreen.TOKENS_TRANSFER,
+  HiveScreen.TOKENS_DELEGATIONS,
+  HiveScreen.TOKENS_PENDING_UNSTAKE,
 
-  // Screen.TOKENS_SETTINGS,
-  // Screen.TOKENS_OPERATION,
-  // Screen.TOKENS_DELEGATIONS,
-  // Screen.TOKENS_PENDING_UNSTAKE,
-
-  // Screen.PENDING_CONVERSION_PAGE,
-  // Screen.PENDING_SAVINGS_WITHDRAWAL_PAGE,
   // Screen.INCOMING_OUTGOING_PAGE,
   // Screen.RC_DELEGATIONS_INCOMING_OUTGOING_PAGE,
 
-  Screen.CREATE_ACCOUNT_PAGE_STEP_ONE,
-  Screen.SETTINGS_MAIN_PAGE,
-  Screen.SETTINGS_ACCOUNTS,
-  Screen.SETTINGS_EXPORT_ACCOUNTS,
-  Screen.SETTINGS_EXPORT_ALL_ACCOUNTS_QR,
-  Screen.SETTINGS_ADD_ACCOUNT,
-  Screen.SETTINGS_MANAGE_ACCOUNTS,
-  Screen.SETTINGS_MANAGE_ACCOUNTS_AUTHORITIES,
-  Screen.SETTINGS_ADD_KEY,
-  Screen.SETTINGS_ADVANCED,
-  Screen.SETTINGS_SHORTCUTS,
-  Screen.SETTINGS_CHANGE_PASSWORD,
-  Screen.SETTINGS_RPC_NODES,
-  Screen.SETTINGS_AUTO_LOCK,
-  Screen.SETTINGS_KEYCHAINIFY,
-  Screen.SETTINGS_CLEAR_ALL_DATA,
-  Screen.SETTINGS_IMPORT_EXPORT,
-  Screen.SETTINGS_USER_PREFERENCES,
-  Screen.SETTINGS_AUTOMATED_TASKS,
-  Screen.SETTINGS_AUTHORIZED_OPERATIONS,
-  Screen.SETTINGS_EXPORT_TRANSACTIONS,
-  Screen.SETTINGS_FAVORITE_ACCOUNTS,
-  Screen.SETTINGS_MULTISIG,
-  Screen.SETTINGS_OPERATION_POPUP,
-  Screen.SETTINGS_ABOUT,
-  Screen.SETTINGS_ANALYTICS,
-  Screen.SETTINGS_NOTIFICATIONS_CONFIGURATION,
-  Screen.SETTINGS_HELP,
+  HiveScreen.CREATE_ACCOUNT_PAGE_STEP_ONE,
+  HiveScreen.SETTINGS_MAIN_PAGE,
+  HiveScreen.SETTINGS_ACCOUNTS,
+  HiveScreen.SETTINGS_EXPORT_ACCOUNTS,
+  HiveScreen.SETTINGS_EXPORT_ALL_ACCOUNTS_QR,
+  HiveScreen.SETTINGS_ADD_ACCOUNT,
+  HiveScreen.SETTINGS_MANAGE_ACCOUNTS,
+  HiveScreen.SETTINGS_MANAGE_ACCOUNTS_AUTHORITIES,
+  HiveScreen.SETTINGS_ADD_KEY,
+  HiveScreen.SETTINGS_ADVANCED,
+  HiveScreen.SETTINGS_CHANGE_PASSWORD,
+  HiveScreen.SETTINGS_AUTO_LOCK,
+  HiveScreen.SETTINGS_KEYCHAINIFY,
+  HiveScreen.SETTINGS_CLEAR_ALL_DATA,
+  HiveScreen.SETTINGS_IMPORT_EXPORT,
+  HiveScreen.SETTINGS_AUTOMATED_TASKS,
+  HiveScreen.SETTINGS_EXPORT_TRANSACTIONS,
+  HiveScreen.SETTINGS_MULTISIG,
+  HiveScreen.SETTINGS_NOTIFICATIONS_CONFIGURATION,
 ];
 
-const CURRENCY_REQUIRED_SCREENS: Screen[] = [
-  Screen.TRANSFER_FUND_PAGE,
-  Screen.SAVINGS_PAGE,
-  Screen.CONVERSION_PAGE,
+const EVM_NAVIGATION_SCREENS: EvmScreen[] = [
+  EvmScreen.LIFI_HISTORY_PAGE,
+  EvmScreen.EVM_SETTINGS,
+  EvmScreen.EVM_ACCOUNTS_SETTINGS,
+  EvmScreen.EVM_ADVANCED_SETTINGS,
+  EvmScreen.EVM_CUSTOM_CHAINS,
+  EvmScreen.EVM_CUSTOM_TOKENS_PAGE,
+  EvmScreen.EVM_CUSTOM_NFTS_PAGE,
 ];
 
-const TOKEN_REQUIRED_SCREENS: Screen[] = [
-  Screen.TOKENS_HISTORY,
-  Screen.TOKENS_TRANSFER,
-  Screen.TOKENS_DELEGATIONS,
+const NAVIGATION_SCREENS: (MultichainScreen | HiveScreen | EvmScreen)[] = [
+  ...SHARED_NAVIGATION_SCREENS,
+  ...HIVE_NAVIGATION_SCREENS,
+  ...EVM_NAVIGATION_SCREENS,
 ];
 
-const DELEGATION_REQUIRED_SCREENS: Screen[] = [Screen.TOKENS_DELEGATIONS];
+const CURRENCY_REQUIRED_SCREENS: (MultichainScreen | HiveScreen)[] = [
+  MultichainScreen.TRANSFER_FUND_PAGE,
+  HiveScreen.SAVINGS_PAGE,
+  HiveScreen.CONVERSION_PAGE,
+];
 
-const formatScreenLabel = (screen: Screen) => {
+const TOKEN_REQUIRED_SCREENS: (MultichainScreen | HiveScreen)[] = [
+  HiveScreen.TOKENS_HISTORY,
+  HiveScreen.TOKENS_TRANSFER,
+  HiveScreen.TOKENS_DELEGATIONS,
+];
+
+const DELEGATION_REQUIRED_SCREENS: (MultichainScreen | HiveScreen)[] = [
+  HiveScreen.TOKENS_DELEGATIONS,
+];
+
+const DEFAULT_SHORTCUTS: ShortcutDefinition[] = [
+  {
+    id: 'preset-toggle-theme',
+    combo: 'ctrl+alt+t',
+    actionType: ShortcutActionType.TOGGLE_THEME,
+    target: '',
+  },
+  {
+    id: 'preset-open-in-tab',
+    combo: 'ctrl+d',
+    actionType: ShortcutActionType.OPEN_IN_TAB,
+    target: '',
+  },
+];
+
+const getShortcutsWithDefaultPresets = (
+  shortcuts: ShortcutDefinition[],
+): ShortcutDefinition[] => {
+  const presetsToAdd = DEFAULT_SHORTCUTS.filter((preset) => {
+    return !shortcuts.some(
+      (shortcut) =>
+        shortcut.actionType === preset.actionType ||
+        normalizeShortcutCombo(shortcut.combo) ===
+          normalizeShortcutCombo(preset.combo),
+    );
+  });
+  return [...shortcuts, ...presetsToAdd];
+};
+
+const formatScreenLabel = (
+  screen: MultichainScreen | HiveScreen | EvmScreen,
+) => {
   return screen
     .split('_')
     .map((part) => part.charAt(0) + part.slice(1).toLowerCase())
@@ -207,17 +363,99 @@ const formatScreenLabel = (screen: Screen) => {
 const createShortcutId = () =>
   `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 
+const buildShortcutAccountTarget = (
+  accountType: ShortcutAccountType,
+  accountId: string,
+) => `${accountType.toLowerCase()}:${accountId}`;
+
+const parseShortcutAccountTarget = (
+  target: string,
+  accountType?: ShortcutAccountType,
+  accountId?: string,
+) => {
+  if (accountType && accountId) {
+    return { accountType, accountId };
+  }
+
+  const separatorIndex = target.indexOf(':');
+  if (separatorIndex > 0) {
+    const prefix = target.slice(0, separatorIndex).toUpperCase();
+    const id = target.slice(separatorIndex + 1);
+    if (
+      (prefix === ShortcutAccountType.HIVE ||
+        prefix === ShortcutAccountType.EVM) &&
+      id
+    ) {
+      return {
+        accountType: prefix as ShortcutAccountType,
+        accountId: id,
+      };
+    }
+  }
+
+  return {
+    accountType: ShortcutAccountType.HIVE,
+    accountId: target,
+  };
+};
+
+const isHiveNavigationScreen = (screen: string) =>
+  (HIVE_NAVIGATION_SCREENS as string[]).includes(screen);
+
+const isEvmNavigationScreen = (screen: string) =>
+  (EVM_NAVIGATION_SCREENS as string[]).includes(screen);
+
+const isSharedNavigationScreen = (screen: string) =>
+  (SHARED_NAVIGATION_SCREENS as string[]).includes(screen);
+
 const ShortcutsUtils = {
   isEditableTarget,
   normalizeShortcutCombo,
   formatShortcutCombo,
   buildShortcutComboFromEvent,
   NAVIGATION_SCREENS,
+  HIVE_NAVIGATION_SCREENS,
+  EVM_NAVIGATION_SCREENS,
+  SHARED_NAVIGATION_SCREENS,
   CURRENCY_REQUIRED_SCREENS,
   TOKEN_REQUIRED_SCREENS,
   DELEGATION_REQUIRED_SCREENS,
+  DEFAULT_SHORTCUTS,
+  getShortcutsWithDefaultPresets,
   formatScreenLabel,
+  getShortcutNavigationScreenMessageKey,
   createShortcutId,
+  buildShortcutAccountTarget,
+  parseShortcutAccountTarget,
+  normalizeShortcutNavigationTarget,
+  isHiveNavigationScreen,
+  isEvmNavigationScreen,
+  isSharedNavigationScreen,
+};
+
+export {
+  buildShortcutAccountTarget,
+  buildShortcutComboFromEvent,
+  createShortcutId,
+  CURRENCY_REQUIRED_SCREENS,
+  DELEGATION_REQUIRED_SCREENS,
+  DEFAULT_SHORTCUTS,
+  getShortcutsWithDefaultPresets,
+  EVM_NAVIGATION_SCREENS,
+  formatScreenLabel,
+  formatShortcutCombo,
+  getShortcutNavigationScreenMessageKey,
+  HIVE_NAVIGATION_SCREENS,
+  isEditableTarget,
+  isEvmNavigationScreen,
+  isHiveNavigationScreen,
+  isSharedNavigationScreen,
+  NAVIGATION_SCREENS,
+  normalizeShortcutCombo,
+  normalizeShortcutNavigationTarget,
+  parseShortcutAccountTarget,
+  SHARED_NAVIGATION_SCREENS,
+  TOKEN_REQUIRED_SCREENS,
 };
 
 export default ShortcutsUtils;

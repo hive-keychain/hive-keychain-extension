@@ -1,6 +1,5 @@
-import { KeychainApi } from '@api/keychain';
-import { BackgroundMessage } from '@background/background-message.interface';
-import { MultisigModule } from '@background/multisig.module';
+import { MultisigModule } from '@background/hive/modules/multisig.module';
+import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import Hive from '@engrave/ledger-app-hive';
 import type { ExtendedAccount, Operation, Transaction } from '@hiveio/dhive';
 import {
@@ -15,6 +14,10 @@ import { Rpc } from '@interfaces/rpc.interface';
 import AccountUtils from '@popup/hive/utils/account.utils';
 import HiveUtils from '@popup/hive/utils/hive.utils';
 import { MultisigUtils } from '@popup/hive/utils/multisig.utils';
+import {
+  isRpcNetworkError,
+  withRpcFailover,
+} from '@popup/hive/utils/rpc-failover.utils';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
 import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
@@ -24,16 +27,19 @@ import {
   PrivateKey,
   call,
 } from 'hive-tx';
+import { KeychainApi } from 'src/api/keychain';
 import Config from 'src/config';
 import { KeychainError } from 'src/keychain-error';
 import { ErrorUtils } from 'src/popup/hive/utils/error.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import { AsyncUtils } from 'src/utils/async.utils';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import Logger from 'src/utils/logger.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
 const MINUTE = 60;
+const HIVE_RPC_TIMEOUT_SECONDS = 3;
 
 const setRpc = async (rpc: Rpc) => {
   HiveTxConfig.node =
@@ -74,14 +80,27 @@ const sendOperation = async (
   }
 };
 
-const createTransaction = async (operations: Operation[]) => {
-  let hiveTransaction = new HiveTransaction();
-  const tx = await hiveTransaction.create(
+const createHiveTransaction = async (
+  operations: Operation[],
+  expirationMinutes: number,
+) => {
+  const hiveTransaction = new HiveTransaction();
+  const transaction = await hiveTransaction.create(
     operations,
-    Config.transactions.expirationTimeInMinutes * MINUTE,
+    expirationMinutes * MINUTE,
   );
-  Logger.log(`length of transaction => ${JSON.stringify(tx).length}`);
-  return tx;
+  return { hiveTransaction, transaction };
+};
+
+const createTransaction = async (operations: Operation[]) => {
+  const { transaction } = await withRpcFailover(() =>
+    createHiveTransaction(
+      operations,
+      Config.transactions.expirationTimeInMinutes,
+    ),
+  );
+  Logger.log(`length of transaction => ${JSON.stringify(transaction).length}`);
+  return transaction;
 };
 
 const createSignAndBroadcastTransaction = async (
@@ -89,13 +108,22 @@ const createSignAndBroadcastTransaction = async (
   key: Key,
   options?: TransactionOptions,
 ): Promise<HiveTxBroadcastResult | undefined> => {
+  return withRpcFailover(() =>
+    createSignAndBroadcastTransactionOnCurrentRpc(operations, key, options),
+  );
+};
+
+const createSignAndBroadcastTransactionOnCurrentRpc = async (
+  operations: Operation[],
+  key: Key,
+  options?: TransactionOptions,
+): Promise<HiveTxBroadcastResult | undefined> => {
   if (key == null || key === '') {
     throw new Error('html_popup_error_while_signing_transaction');
   }
-  let hiveTransaction = new HiveTransaction();
-  let transaction = await hiveTransaction.create(
+  let { hiveTransaction, transaction } = await createHiveTransaction(
     operations,
-    Config.transactions.expirationTimeInMinutes * MINUTE,
+    Config.transactions.expirationTimeInMinutes,
   );
 
   const username = MultisigUtils.getUsernameFromTransaction(transaction);
@@ -124,35 +152,35 @@ const createSignAndBroadcastTransaction = async (
   if (isUsingMultisig) {
     const hardforkVersion = await HiveUtils.getHardforkVersion();
     Logger.log(`hardforkVersion => ${hardforkVersion}`);
-    transaction = await hiveTransaction.create(
+    ({ hiveTransaction, transaction } = await createHiveTransaction(
       operations,
       hardforkVersion >= 28
-        ? Config.transactions.multisigExpirationTimeInMinutesForHardfork28 *
-            MINUTE
-        : Config.transactions.multisigExpirationTimeInMinutes * MINUTE,
-    );
+        ? Config.transactions.multisigExpirationTimeInMinutesForHardfork28
+        : Config.transactions.multisigExpirationTimeInMinutes,
+    ));
     const signedTransaction = await signTransaction(transaction, key);
     if (!signedTransaction) {
       throw new Error('html_popup_error_while_signing_transaction');
     }
     let response: any;
     try {
-      if (document) {
-        response = await useMultisig(
-          transaction,
-          key,
-          initiatorAccount,
-          transactionAccount,
-          method,
-          signedTransaction?.signatures[0],
-          options,
-        );
-        return {
-          status: response as string,
-          tx_id: '',
-          isUsingMultisig: true,
-        } as HiveTxBroadcastResult;
+      if (typeof document === 'undefined') {
+        throw new Error('use_background_multisig');
       }
+      response = await useMultisig(
+        transaction,
+        key,
+        initiatorAccount,
+        transactionAccount,
+        method,
+        signedTransaction?.signatures[0],
+        options,
+      );
+      return {
+        status: response as string,
+        tx_id: '',
+        isUsingMultisig: true,
+      } as HiveTxBroadcastResult;
     } catch (err) {
       response = await useMultisigThroughBackgroundOnly(
         transaction,
@@ -222,6 +250,9 @@ const createSignAndBroadcastTransaction = async (
     }
   } catch (err) {
     Logger.error(err);
+    if (isRpcNetworkError(err)) {
+      throw err;
+    }
     throw new Error('html_popup_error_while_broadcasting');
   }
   response = response as HiveTxBroadcastErrorResponse;
@@ -300,6 +331,20 @@ const broadcastAndConfirmTransactionWithSignature = async (
   signature: string | string[],
   confirmation?: boolean,
 ): Promise<TransactionResult | undefined> => {
+  return withRpcFailover(() =>
+    broadcastAndConfirmTransactionWithSignatureOnCurrentRpc(
+      transaction,
+      signature,
+      confirmation,
+    ),
+  );
+};
+
+const broadcastAndConfirmTransactionWithSignatureOnCurrentRpc = async (
+  transaction: Transaction,
+  signature: string | string[],
+  confirmation?: boolean,
+): Promise<TransactionResult | undefined> => {
   let hiveTransaction = new HiveTransaction(transaction);
   if (typeof signature === 'string') {
     hiveTransaction.addSignature(signature);
@@ -310,7 +355,6 @@ const broadcastAndConfirmTransactionWithSignature = async (
   }
   let response;
   try {
-    Logger.log(hiveTransaction);
     response = await hiveTransaction.broadcast();
     if ((response as HiveTxBroadcastSuccessResponse).result) {
       const transactionResult: HiveTxBroadcastResult = (
@@ -326,6 +370,9 @@ const broadcastAndConfirmTransactionWithSignature = async (
     }
   } catch (err) {
     Logger.error(err);
+    if (isRpcNetworkError(err)) {
+      throw err;
+    }
     throw new Error('html_popup_error_while_broadcasting');
   }
   response = response as HiveTxBroadcastErrorResponse;
@@ -341,19 +388,23 @@ const getData = async (
   key?: string,
 ) => {
   try {
-    const response = await call(method, params, 3000);
+    const response = await withRpcFailover(() =>
+      call(method, params, HIVE_RPC_TIMEOUT_SECONDS),
+    );
     if (response?.result) {
       return key ? response.result[key] : response.result;
-    } else {
-      switchToWorkingRpc(method, response.error);
     }
+    await switchToWorkingRpc(method, response?.error);
   } catch (err) {
-    switchToWorkingRpc(method, err);
+    if (isRpcNetworkError(err)) {
+      throw err;
+    }
+    await switchToWorkingRpc(method, err);
   }
 };
 
 const switchToWorkingRpc = async (method: string, error: any) => {
-  if (window && window.document) {
+  if (typeof document !== 'undefined') {
     import('src/utils/rpc-switcher.utils').then(({ useWorkingRPC }) => {
       useWorkingRPC();
     });
@@ -411,7 +462,7 @@ const useMultisig = async (
     };
     chrome.runtime.onMessage.addListener(handleResponseFromBackground);
 
-    chrome.runtime.sendMessage({
+    CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.MULTISIG_REQUEST_SIGNATURES,
       value: {
         transaction: transaction,

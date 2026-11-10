@@ -1,4 +1,4 @@
-import { KeychainApi } from '@api/keychain';
+import { KeychainApi } from 'src/api/keychain';
 
 const getLastVersion = async () => {
   const response = await KeychainApi.get('last-extension-version');

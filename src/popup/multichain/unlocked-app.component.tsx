@@ -1,0 +1,964 @@
+import { BackgroundMessage } from '@background/multichain/background-message.interface';
+import { Rpc } from '@interfaces/rpc.interface';
+import { Screen } from '@interfaces/screen.interface';
+import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
+import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
+import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmActiveAccountInitUtils } from '@popup/evm/utils/evm-active-account-init.utils';
+import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
+import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import { EvmWalletSetupTabUtils } from '@popup/evm/utils/evm-wallet-setup-tab.utils';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
+import { setAccounts } from '@popup/hive/actions/account.actions';
+import { loadActiveAccount } from '@popup/hive/actions/active-account.actions';
+import { setActiveRpc } from '@popup/hive/actions/active-rpc.actions';
+import { loadCurrencyPrices } from '@popup/hive/actions/currency-prices.actions';
+import { loadGlobalProperties } from '@popup/hive/actions/global-properties.actions';
+import {
+  initHiveEngineConfigFromStorage,
+  setHEActiveRpc,
+} from '@popup/hive/actions/hive-engine-config.actions';
+import {
+  handleCompletedPaidHiveAccountCreations,
+  synchronizePendingHiveAccountCreations,
+} from '@popup/hive/actions/paid-account-creation.actions';
+import { setDisplayChangeRpcPopup } from '@popup/hive/actions/rpc-switcher';
+import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
+import { resetChain, setChain } from '@popup/multichain/actions/chain.actions';
+import {
+  navigateTo,
+  navigateToWithParams,
+  replaceNavigationStack,
+} from '@popup/multichain/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import {
+  Chain,
+  ChainType,
+  EvmChain,
+  HiveChain,
+} from '@popup/multichain/interfaces/chains.interface';
+import { LoadingState } from '@popup/multichain/reducers/loading.reducer';
+import { RootState } from '@popup/multichain/store';
+import { UnifiedRouterComponent } from '@popup/multichain/unified-router.component';
+import { GuidedTourComponent } from '@popup/multichain/guided-tour/guided-tour.component';
+import {
+  isAccountSetupScreenWithOwnCompletion,
+  stackHasAccountSetupPage,
+} from '@popup/multichain/utils/account-setup-screens.utils';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { ExtensionSurfaceUtils } from '@popup/multichain/utils/extension-surface.utils';
+import { LedgerRouteUtils } from '@popup/multichain/utils/ledger-route.utils';
+import { PaidAccountCreationRouteUtils } from '@popup/multichain/utils/paid-account-creation-route.utils';
+import { PortfolioRouteUtils } from '@popup/multichain/utils/portfolio-route.utils';
+import { resolvePopupStartup } from '@popup/multichain/utils/popup-startup.utils';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import React, { useEffect, useRef, useState } from 'react';
+import { ConnectedProps, connect, useStore } from 'react-redux';
+import ButtonComponent from 'src/common-ui/button/button.component';
+import { LoadingComponent } from 'src/common-ui/loading/loading.component';
+import { SplashscreenComponent } from 'src/common-ui/splashscreen/splashscreen.component';
+import Config from 'src/config';
+import { LocalAccount } from 'src/interfaces/local-account.interface';
+import { buildAddAccountSetupTitleProperties } from 'src/popup/hive/pages/add-account/add-account-setup-title.utils';
+import { KeylessKeychainComponent } from 'src/popup/hive/pages/add-account/keyless-keychain/keyless-keychain.component';
+import AccountUtils from 'src/popup/hive/utils/account.utils';
+import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
+import { HiveEngineConfigUtils } from 'src/popup/hive/utils/hive-engine-config.utils';
+import RpcUtils from 'src/popup/hive/utils/rpc.utils';
+import { ColorsUtils } from 'src/utils/colors.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
+import { PaidAccountCreationSyncUtils } from 'src/utils/paid-account-creation-sync.utils';
+import { PendingHiveAccountCreationUtils } from 'src/utils/pending-hive-account-creation.utils';
+import {
+  useWorkingHiveEngineRPC,
+  useWorkingRPC,
+} from 'src/utils/rpc-switcher.utils';
+
+import { I18nUtils } from 'src/utils/i18n.utils';
+
+const PAID_ACCOUNT_CREATION_POLL_INTERVAL_MS = 10000;
+
+const isSameChain = (left: Chain, right: Chain) =>
+  left?.chainId?.toLowerCase() === right?.chainId?.toLowerCase();
+
+const resolveHiveChain = async (): Promise<HiveChain | undefined> => {
+  const setupHiveChains = await ChainUtils.getAllSetupChainsForType<HiveChain>(
+    ChainType.HIVE,
+  );
+  if (setupHiveChains[0]) {
+    return setupHiveChains[0];
+  }
+  const setupChains = await ChainUtils.getSetupChains(true);
+  return setupChains.find((chain) => chain.type === ChainType.HIVE) as
+    | HiveChain
+    | undefined;
+};
+
+const resolveEvmChain = async (
+  currentChain: Chain,
+): Promise<EvmChain | undefined> => {
+  if (currentChain?.type === ChainType.EVM) {
+    return currentChain as EvmChain;
+  }
+  return (
+    (await EvmChainUtils.getLastEvmChain()) ??
+    (await EvmChainUtils.getEthChain())
+  );
+};
+
+let rpc: string | undefined = '';
+
+const UnlockedApp = ({
+  mk,
+  hiveAccounts,
+  evmAccounts,
+  activeAccountType,
+  activeRpc,
+  activeHiveAccount,
+  activeEvmAccount,
+  chain,
+  navigationStack,
+  appStatus,
+  loading,
+  loadingState,
+  isCurrentPageHomePage,
+  switchToRpc,
+  switchToHiveEngineRpc,
+  displayChangeRpcPopup,
+  hasFinishedSignup,
+  setAccounts,
+  setEvmAccounts,
+  setActiveAccountType,
+  setChain,
+  setActiveRpc,
+  setHEActiveRpc,
+  setDisplayChangeRpcPopup,
+  loadActiveAccount,
+  loadEvmActiveAccount,
+  loadCurrencyPrices,
+  loadGlobalProperties,
+  initHiveEngineConfigFromStorage,
+  synchronizePendingHiveAccountCreations,
+  handleCompletedPaidHiveAccountCreations,
+  navigateTo,
+  navigateToWithParams,
+  replaceNavigationStack,
+  setTitleContainerProperties,
+}: PropsFromRedux) => {
+  const store = useStore<RootState>();
+  const [isAppReady, setAppReady] = useState(false);
+  const [initialRpc, setInitialRpc] = useState<Rpc>();
+  const [initialHiveEngineRpc, setInitialHiveEngineRpc] = useState<string>();
+  const [displaySplashscreen, setDisplaySplashscreen] = useState(true);
+  const [isKeylessKeychainEnabled, setIsKeylessKeychainEnabled] =
+    useState<boolean>(false);
+  const previousAccountsCountRef = useRef<number | undefined>(undefined);
+  const transactionResolutionRefreshInFlight = useRef(false);
+  const transactionResolutionRefreshQueued = useRef(false);
+  const startupChainResolvedRef = useRef(false);
+  const paidAccountCreationPollInFlight = useRef(false);
+  const paidAccountCreationPollIntervalRef = useRef<number | undefined>(
+    undefined,
+  );
+  const previousNavigationPageRef = useRef<Screen | undefined>(undefined);
+
+  const getCompletePaidHiveAccountCreationOptions = () => {
+    const isOnPendingAccountCreationStatusPage =
+      store.getState().navigation.stack[0]?.currentPage ===
+      Screen.PENDING_ACCOUNT_CREATION_PAYMENT;
+
+    return {
+      showSuccessMessage: true,
+      activateCreatedAccount: true,
+      navigateToHomeAfterActivation: isOnPendingAccountCreationStatusPage,
+      showBrowserNotification: !isOnPendingAccountCreationStatusPage,
+    };
+  };
+
+  const stopPaidAccountCreationPolling = () => {
+    if (paidAccountCreationPollIntervalRef.current !== undefined) {
+      window.clearInterval(paidAccountCreationPollIntervalRef.current);
+      paidAccountCreationPollIntervalRef.current = undefined;
+    }
+  };
+
+  const ensurePaidAccountCreationPolling = async () => {
+    if (!mk) {
+      return;
+    }
+
+    if (!(await hasPendingAccountCreationsInProgress())) {
+      stopPaidAccountCreationPolling();
+      return;
+    }
+
+    if (paidAccountCreationPollIntervalRef.current !== undefined) {
+      return;
+    }
+
+    await reconcilePendingAccountCreations();
+    paidAccountCreationPollIntervalRef.current = window.setInterval(() => {
+      void reconcilePendingAccountCreations();
+    }, PAID_ACCOUNT_CREATION_POLL_INTERVAL_MS);
+  };
+
+  const reconcilePendingAccountCreations = async () => {
+    if (!mk || paidAccountCreationPollInFlight.current) {
+      return;
+    }
+
+    paidAccountCreationPollInFlight.current = true;
+    try {
+      const results = await synchronizePendingHiveAccountCreations();
+      await handleCompletedPaidHiveAccountCreations(
+        results.filter(
+          (result) =>
+            result.outcome === 'imported' ||
+            result.outcome === 'already_imported',
+        ),
+        getCompletePaidHiveAccountCreationOptions(),
+      );
+    } finally {
+      paidAccountCreationPollInFlight.current = false;
+    }
+  };
+
+  const hasPendingAccountCreationsInProgress = async () => {
+    if (!mk) {
+      return false;
+    }
+
+    try {
+      const pendingRequests =
+        await PendingHiveAccountCreationUtils.getPendingHiveAccountCreationRequests(
+          mk,
+        );
+      return PaidAccountCreationSyncUtils.hasPendingHiveAccountCreationsAwaitingSync(
+        pendingRequests,
+      );
+    } catch (error) {
+      Logger.error('Unable to load pending Hive account creations', error);
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    void initApplication();
+  }, []);
+
+  useEffect(() => {
+    const checkKeylessKeychain = async () => {
+      const enabled = await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.KEYLESS_KEYCHAIN_ENABLED,
+      );
+      setIsKeylessKeychainEnabled(enabled);
+    };
+
+    const handleStorageChange = (changes: {
+      [key: string]: chrome.storage.StorageChange;
+    }) => {
+      if (changes[LocalStorageKeyEnum.KEYLESS_KEYCHAIN_ENABLED]) {
+        setIsKeylessKeychainEnabled(
+          changes[LocalStorageKeyEnum.KEYLESS_KEYCHAIN_ENABLED].newValue,
+        );
+      }
+    };
+
+    void checkKeylessKeychain();
+    chrome.storage.local.onChanged.addListener(handleStorageChange);
+
+    return () => {
+      chrome.storage.local.onChanged.removeListener(handleStorageChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (activeRpc?.uri && activeRpc.uri !== 'NULL' && activeRpc.uri !== rpc) {
+      void refreshApplicationOnRpcChange();
+      if (
+        isAppReady &&
+        activeAccountType === ChainType.HIVE &&
+        hiveAccounts.length > 0 &&
+        !activeHiveAccount?.name
+      ) {
+        void initActiveHiveAccount(hiveAccounts);
+      }
+    }
+    rpc = activeRpc?.uri;
+  }, [
+    activeRpc,
+    activeAccountType,
+    activeHiveAccount?.name,
+    hiveAccounts,
+    isAppReady,
+  ]);
+
+  useEffect(() => {
+    const accountsCount = hiveAccounts.length + evmAccounts.length;
+    const isOnAccountSetupFlow = stackHasAccountSetupPage(navigationStack);
+    const currentNavigationPage = navigationStack[0]?.currentPage;
+    const previousAccountsCount = previousAccountsCountRef.current;
+    const didAddFirstAccount = previousAccountsCount === 0 && accountsCount > 0;
+    const shouldAutoNavigateAfterFirstAccount =
+      isOnAccountSetupFlow &&
+      didAddFirstAccount &&
+      !isAccountSetupScreenWithOwnCompletion(currentNavigationPage);
+
+    if (
+      isAppReady &&
+      (navigationStack.length === 0 || shouldAutoNavigateAfterFirstAccount) &&
+      (hasFinishedSignup || accountsCount > 0)
+    ) {
+      if (hiveAccounts.length > 0) {
+        initActiveHiveAccount(hiveAccounts);
+      }
+      if (!appStatus.processingDecryptAccount) {
+        selectComponent(mk, hiveAccounts, evmAccounts);
+      }
+    }
+    previousAccountsCountRef.current = accountsCount;
+  }, [
+    isAppReady,
+    mk,
+    hiveAccounts,
+    evmAccounts,
+    hasFinishedSignup,
+    appStatus.processingDecryptAccount,
+    navigationStack,
+  ]);
+
+  useEffect(() => {
+    if (!isAppReady || chain?.type !== ChainType.EVM || !evmAccounts.length) {
+      return;
+    }
+    if (
+      EvmActiveAccountInitUtils.shouldSkipRestoreActiveEvmAccountOnChainChange(
+        chain.chainId,
+      )
+    ) {
+      return;
+    }
+    if (activeEvmAccount.wallet?.address) {
+      void loadEvmActiveAccount(chain as EvmChain, activeEvmAccount.wallet);
+      return;
+    }
+    void initActiveEvmAccount(evmAccounts, chain as EvmChain);
+  }, [isAppReady, chain?.chainId, evmAccounts.length]);
+
+  useEffect(() => {
+    const onResolvedEvmTransaction = (message: BackgroundMessage) => {
+      if (
+        message.command !== BackgroundCommand.EVM_TRANSACTION_RESOLVED ||
+        chain?.type !== ChainType.EVM
+      ) {
+        return;
+      }
+
+      const resolvedChainId = Number(message.value?.chainId);
+      const currentChainId = Number(chain.chainId);
+      const resolvedWallet = message.value?.from?.toLowerCase();
+      const currentWallet = activeEvmAccount.wallet?.address?.toLowerCase();
+
+      if (
+        resolvedChainId !== currentChainId ||
+        !resolvedWallet ||
+        resolvedWallet !== currentWallet
+      ) {
+        return;
+      }
+
+      void refreshActiveEvmAccountAfterResolvedTransaction();
+    };
+
+    chrome.runtime.onMessage.addListener(onResolvedEvmTransaction);
+
+    return () => {
+      chrome.runtime.onMessage.removeListener(onResolvedEvmTransaction);
+    };
+  }, [activeEvmAccount.wallet, chain, loadEvmActiveAccount]);
+
+  useEffect(() => {
+    if (!isAppReady || !mk) {
+      return;
+    }
+
+    const refreshEvmAccountsFromStorage = async () => {
+      EvmWalletUtils.invalidateRebuildAccountsCache();
+      const rebuiltAccounts =
+        await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+      setEvmAccounts(rebuiltAccounts);
+
+      const currentChain = store.getState().chain as Chain;
+      if (currentChain?.type !== ChainType.EVM || !rebuiltAccounts[0]) {
+        return;
+      }
+
+      const activeWalletAddress = store
+        .getState()
+        .evm.activeAccount.wallet?.address?.toLowerCase();
+      const hasActiveWallet =
+        !!activeWalletAddress &&
+        rebuiltAccounts.some(
+          (account) =>
+            account.wallet.address.toLowerCase() === activeWalletAddress,
+        );
+      if (!hasActiveWallet) {
+        await loadEvmActiveAccount(
+          currentChain as EvmChain,
+          rebuiltAccounts[0].wallet,
+        );
+      }
+    };
+
+    const onEvmAccountsStorageChange = (
+      changes: { [key: string]: chrome.storage.StorageChange },
+      areaName: string,
+    ) => {
+      if (areaName !== 'local' || !changes[LocalStorageKeyEnum.EVM_ACCOUNTS]) {
+        return;
+      }
+
+      void refreshEvmAccountsFromStorage();
+    };
+
+    chrome.storage.onChanged.addListener(onEvmAccountsStorageChange);
+
+    return () => {
+      chrome.storage.onChanged.removeListener(onEvmAccountsStorageChange);
+    };
+  }, [isAppReady, loadEvmActiveAccount, mk, setEvmAccounts, store]);
+
+  useEffect(() => {
+    if (!isAppReady || !mk) {
+      return;
+    }
+
+    void ensurePaidAccountCreationPolling();
+
+    const onPendingAccountCreationStorageChange = (
+      changes: { [key: string]: chrome.storage.StorageChange },
+      areaName: string,
+    ) => {
+      if (
+        areaName !== 'local' ||
+        !changes[LocalStorageKeyEnum.PENDING_HIVE_ACCOUNT_CREATIONS]
+      ) {
+        return;
+      }
+
+      void ensurePaidAccountCreationPolling();
+    };
+
+    chrome.storage.onChanged.addListener(onPendingAccountCreationStorageChange);
+
+    return () => {
+      stopPaidAccountCreationPolling();
+      chrome.storage.onChanged.removeListener(
+        onPendingAccountCreationStorageChange,
+      );
+    };
+  }, [isAppReady, mk]);
+
+  useEffect(() => {
+    if (!isAppReady || !mk) {
+      return;
+    }
+
+    const currentPage = navigationStack[0]?.currentPage;
+    const previousPage = previousNavigationPageRef.current;
+    previousNavigationPageRef.current = currentPage;
+
+    if (
+      previousPage === Screen.PENDING_ACCOUNT_CREATION_PAYMENT &&
+      currentPage !== Screen.PENDING_ACCOUNT_CREATION_PAYMENT
+    ) {
+      void reconcilePendingAccountCreations();
+    }
+  }, [isAppReady, mk, navigationStack[0]?.currentPage]);
+
+  useEffect(() => {
+    if (
+      !displaySplashscreen ||
+      !isAppReady ||
+      !appStatus.priceLoaded ||
+      !appStatus.globalPropertiesLoaded
+    ) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setDisplaySplashscreen(false);
+    }, Config.loader.minDuration);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [
+    appStatus.globalPropertiesLoaded,
+    appStatus.priceLoaded,
+    displaySplashscreen,
+    isAppReady,
+  ]);
+
+  const refreshActiveEvmAccountAfterResolvedTransaction = async () => {
+    if (chain?.type !== ChainType.EVM || !activeEvmAccount.wallet) {
+      return;
+    }
+
+    if (transactionResolutionRefreshInFlight.current) {
+      transactionResolutionRefreshQueued.current = true;
+      return;
+    }
+
+    transactionResolutionRefreshInFlight.current = true;
+    try {
+      do {
+        transactionResolutionRefreshQueued.current = false;
+        await loadEvmActiveAccount(chain as EvmChain, activeEvmAccount.wallet);
+      } while (transactionResolutionRefreshQueued.current);
+    } finally {
+      transactionResolutionRefreshInFlight.current = false;
+    }
+  };
+
+  const initActiveRpc = async (rpc: Rpc) => {
+    const rpcStatusOk = await RpcUtils.checkRpcStatus(rpc.uri);
+    setDisplayChangeRpcPopup(!rpcStatusOk);
+    if (rpcStatusOk) {
+      setActiveRpc(rpc);
+    } else {
+      useWorkingRPC(rpc);
+    }
+  };
+
+  const initActiveHiveEngineRpc = async (rpc: string) => {
+    const rpcStatusOk = await HiveEngineConfigUtils.checkRpcStatus(rpc);
+    if (rpcStatusOk) {
+      setHEActiveRpc(rpc);
+    } else {
+      useWorkingHiveEngineRPC(rpc);
+    }
+  };
+
+  const ensureChainForAccountType = async (
+    nextAccountType: ChainType.HIVE | ChainType.EVM,
+  ) => {
+    const currentChain = store.getState().chain as Chain;
+    const targetChain =
+      nextAccountType === ChainType.EVM
+        ? await resolveEvmChain(currentChain)
+        : await resolveHiveChain();
+
+    if (targetChain && !isSameChain(currentChain, targetChain)) {
+      await setChain(targetChain);
+    }
+
+    return targetChain;
+  };
+
+  const resolveStartupChainAndAccountType = async (
+    hiveAccountsFromStorage: LocalAccount[],
+    evmAccountsFromStorage: EvmAccount[],
+  ) => {
+    const storedActiveAccountType =
+      await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.ACTIVE_ACCOUNT_TYPE,
+      );
+
+    return resolvePopupStartup(
+      store.getState().chain as Chain,
+      storedActiveAccountType,
+      hiveAccountsFromStorage,
+      evmAccountsFromStorage,
+      ensureChainForAccountType,
+    );
+  };
+
+  const initActiveAccountsForStartup = async (
+    hiveAccountsFromStorage: LocalAccount[],
+    evmAccountsFromStorage: EvmAccount[],
+    nextAccountType: ChainType.HIVE | ChainType.EVM,
+    targetChain: Chain | undefined,
+  ) => {
+    if (
+      nextAccountType === ChainType.HIVE &&
+      hiveAccountsFromStorage.length > 0
+    ) {
+      await initActiveHiveAccount(hiveAccountsFromStorage);
+      return;
+    }
+
+    if (
+      nextAccountType === ChainType.EVM &&
+      targetChain?.type === ChainType.EVM &&
+      evmAccountsFromStorage.length > 0
+    ) {
+      await initActiveEvmAccount(
+        evmAccountsFromStorage,
+        targetChain as EvmChain,
+      );
+    }
+  };
+
+  const refreshApplicationOnRpcChange = async () => {
+    loadCurrencyPrices();
+    loadGlobalProperties();
+
+    const rpc = await RpcUtils.getCurrentRpc();
+    setInitialRpc(rpc);
+    await initActiveRpc(rpc);
+  };
+
+  const initApplication = async () => {
+    ColorsUtils.downloadColors();
+    loadCurrencyPrices();
+
+    let hiveAccountsFromStorage: LocalAccount[] = [];
+    let evmAccountsFromStorage: EvmAccount[] = [];
+    if (mk) {
+      const [loadedHiveAccounts, loadedEvmAccounts] = await Promise.all([
+        AccountUtils.getAccountsFromLocalStorage(mk),
+        EvmWalletUtils.rebuildAccountsFromLocalStorage(mk),
+      ]);
+      hiveAccountsFromStorage = loadedHiveAccounts ?? [];
+      evmAccountsFromStorage = loadedEvmAccounts ?? [];
+      setAccounts(hiveAccountsFromStorage);
+      setEvmAccounts(evmAccountsFromStorage);
+    }
+
+    let nextAccountType = store.getState().activeAccountType;
+    let targetChain = store.getState().chain as Chain | undefined;
+
+    if (!startupChainResolvedRef.current) {
+      const startupResolution = await resolveStartupChainAndAccountType(
+        hiveAccountsFromStorage,
+        evmAccountsFromStorage,
+      );
+      nextAccountType = startupResolution.accountType;
+      targetChain = startupResolution.targetChain;
+      setActiveAccountType(nextAccountType);
+      startupChainResolvedRef.current = true;
+    }
+
+    await selectComponent(mk, hiveAccountsFromStorage, evmAccountsFromStorage);
+    setAppReady(true);
+
+    const rpc = await RpcUtils.getCurrentRpc();
+    setInitialRpc(rpc);
+    await initActiveRpc(rpc);
+    loadGlobalProperties();
+    await initHiveEngineConfigFromStorage();
+    const hiveEngineRpc = HiveEngineConfigUtils.getApi();
+    setInitialHiveEngineRpc(hiveEngineRpc);
+    await initActiveHiveEngineRpc(hiveEngineRpc);
+
+    await initActiveAccountsForStartup(
+      hiveAccountsFromStorage,
+      evmAccountsFromStorage,
+      nextAccountType,
+      targetChain,
+    );
+    const syncResults = await synchronizePendingHiveAccountCreations();
+    await handleCompletedPaidHiveAccountCreations(
+      syncResults.filter(
+        (result) =>
+          result.outcome === 'imported' ||
+          result.outcome === 'already_imported',
+      ),
+      getCompletePaidHiveAccountCreationOptions(),
+    );
+  };
+
+  const initActiveHiveAccount = async (accounts: LocalAccount[]) => {
+    const lastActiveAccountName =
+      await ActiveAccountUtils.getActiveAccountNameFromLocalStorage();
+    const lastActiveAccount = accounts.find(
+      (account: LocalAccount) => lastActiveAccountName === account.name,
+    );
+    loadActiveAccount(lastActiveAccount ? lastActiveAccount : accounts[0]);
+  };
+
+  const initActiveEvmAccount = async (
+    accounts: EvmAccount[],
+    evmChain: EvmChain,
+  ) => {
+    try {
+      const wallet =
+        await EvmActiveAccountUtils.getSavedActiveAccountWallet(accounts);
+      await loadEvmActiveAccount(evmChain, wallet);
+    } catch (err) {
+      Logger.log(err);
+    }
+  };
+
+  const selectComponent = async (
+    mk: string,
+    hiveAccounts: LocalAccount[],
+    evmAccounts: EvmAccount[],
+  ): Promise<void> => {
+    const hasAccounts = hiveAccounts.length > 0 || evmAccounts.length > 0;
+    const hasCompletedDisplayAppearanceSetup =
+      (await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.DISPLAY_APPEARANCE_SETUP_COMPLETED,
+      )) === true;
+
+    if (mk && mk.length > 0) {
+      const createWalletStack =
+        await EvmWalletSetupTabUtils.resolveCreateWalletNavigationOnStartup(
+          window.location.hash,
+        );
+      if (createWalletStack) {
+        EvmWalletSetupTabUtils.clearEvmWalletSetupHash();
+        replaceNavigationStack(createWalletStack);
+        return;
+      }
+    }
+
+    if (mk && mk.length > 0 && hasAccounts) {
+      setDisplaySplashscreen(true);
+      const navStack = store.getState().navigation.stack;
+      // Seed navigation on an empty stack, or when replacing sign-in / account-setup.
+      // Deep links (portfolio, ledger, etc.) must run in both cases — after unlock the
+      // stack already has SIGN_IN_PAGE from SignInRouter.
+      if (navStack.length === 0 || stackHasAccountSetupPage(navStack)) {
+        const portfolioRoute = PortfolioRouteUtils.parseHash(
+          window.location.hash,
+        );
+        const isPortfolioPage = ExtensionSurfaceUtils.isPortfolioPage();
+        if (isPortfolioPage || portfolioRoute) {
+          if (portfolioRoute) {
+            PortfolioRouteUtils.clearHash();
+          }
+          if (isPortfolioPage) {
+            navigateTo(Screen.PORTFOLIO_PAGE, true);
+            return;
+          }
+          PortfolioRouteUtils.open();
+          navigateTo(Screen.HOME_PAGE, true);
+          return;
+        }
+        const paidAccountCreationRoute =
+          PaidAccountCreationRouteUtils.parseHash(window.location.hash);
+        if (paidAccountCreationRoute) {
+          PaidAccountCreationRouteUtils.clearHash();
+          navigateToWithParams(
+            paidAccountCreationRoute.screen,
+            paidAccountCreationRoute.params,
+            true,
+          );
+          return;
+        }
+
+        const ledgerRoute = LedgerRouteUtils.parseHash(window.location.hash);
+        if (ledgerRoute) {
+          LedgerRouteUtils.clearHash();
+          if (ledgerRoute.screen === Screen.EVM_ADD_ACCOUNTS_FROM_LEDGER) {
+            const targetChain = await resolveEvmChain(chain);
+            if (targetChain) {
+              await setChain(targetChain);
+              setActiveAccountType(ChainType.EVM);
+            }
+          }
+          if (ledgerRoute.params) {
+            navigateToWithParams(
+              ledgerRoute.screen,
+              ledgerRoute.params,
+              true,
+            );
+          } else {
+            navigateTo(ledgerRoute.screen, true);
+          }
+          return;
+        }
+        if (!hasCompletedDisplayAppearanceSetup) {
+          navigateTo(Screen.SETUP_DISPLAY_APPEARANCE, true);
+          return;
+        }
+        navigateTo(Screen.HOME_PAGE, true);
+      }
+    } else if (mk && mk.length > 0) {
+      if (!hasCompletedDisplayAppearanceSetup) {
+        navigateTo(Screen.SETUP_DISPLAY_APPEARANCE, true);
+      } else {
+        setTitleContainerProperties(buildAddAccountSetupTitleProperties(false));
+        navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, true);
+      }
+    } else if (
+      mk &&
+      mk.length === 0 &&
+      hiveAccounts.length === 0 &&
+      evmAccounts.length === 0 &&
+      !hasFinishedSignup
+    ) {
+      navigateTo(Screen.SIGN_UP_PAGE, true);
+    } else {
+      navigateTo(Screen.SIGN_IN_PAGE);
+    }
+  };
+
+  const renderMainLayoutNav = () => {
+    if (!mk || mk.length === 0) {
+      return null;
+    }
+
+    const hasAccounts = hiveAccounts.length > 0 || evmAccounts.length > 0;
+    if (!hasAccounts && isKeylessKeychainEnabled) {
+      return <KeylessKeychainComponent />;
+    }
+
+    return <UnifiedRouterComponent />;
+  };
+
+  const renderPopup = (
+    loading: number,
+    activeRpc: Rpc | undefined,
+    displayChangeRpcPopup: boolean,
+    switchToRpc: Rpc | undefined,
+    switchToHiveEngineRpc: string | undefined,
+  ) => {
+    if (loading) {
+      return (
+        <LoadingComponent
+          operations={loadingState.loadingOperations}
+          caption={loadingState.caption}
+          loadingPercentage={loadingState.loadingPercentage}
+        />
+      );
+    } else if (displayChangeRpcPopup && activeRpc && switchToRpc) {
+      return (
+        <div className="change-rpc-popup">
+          <div className="message">
+            {I18nUtils.getMessage('popup_html_rpc_not_responding_error', [
+              initialRpc?.uri!,
+              switchToRpc?.uri!,
+            ])}
+          </div>
+          <ButtonComponent
+            label="popup_html_switch_rpc"
+            onClick={tryNewRpc}></ButtonComponent>
+        </div>
+      );
+    } else if (displayChangeRpcPopup && switchToHiveEngineRpc) {
+      return (
+        <div className="change-rpc-popup">
+          <div className="message">
+            {I18nUtils.getMessage('popup_html_rpc_not_responding_error', [
+              initialHiveEngineRpc!,
+              switchToHiveEngineRpc,
+            ])}
+          </div>
+          <ButtonComponent
+            label="popup_html_switch_rpc"
+            onClick={tryNewHiveEngineRpc}></ButtonComponent>
+        </div>
+      );
+    }
+  };
+
+  const tryNewRpc = () => {
+    setDisplayChangeRpcPopup(false);
+    setTimeout(() => {
+      setActiveRpc(switchToRpc!);
+    }, 1000);
+  };
+
+  const tryNewHiveEngineRpc = () => {
+    setDisplayChangeRpcPopup(false);
+    setTimeout(() => {
+      setHEActiveRpc(switchToHiveEngineRpc!);
+    }, 1000);
+  };
+
+  const needsHiveActiveAccount =
+    activeAccountType === ChainType.HIVE && hiveAccounts.length > 0;
+  const hasRpcSwitchPrompt =
+    displayChangeRpcPopup && Boolean(switchToRpc || switchToHiveEngineRpc);
+  const hasHiveRpcSwitchPrompt = displayChangeRpcPopup && Boolean(switchToRpc);
+  const isStartupActiveAccountReady =
+    hasHiveRpcSwitchPrompt ||
+    !needsHiveActiveAccount ||
+    !!activeHiveAccount?.name;
+  const isActiveRpcReady = !!activeRpc?.uri && activeRpc.uri !== 'NULL';
+
+  const showStartupSplash =
+    !isAppReady ||
+    (displaySplashscreen && !hasRpcSwitchPrompt) ||
+    (!isActiveRpcReady && !hasHiveRpcSwitchPrompt) ||
+    !isStartupActiveAccountReady;
+
+  if (showStartupSplash) {
+    return (
+      <div className={`App ${isCurrentPageHomePage ? 'homepage' : ''}`}>
+        <SplashscreenComponent />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={`App ${
+        activeAccountType === ChainType.EVM ? 'evm ' : ''
+      }${isCurrentPageHomePage ? 'homepage' : ''}`}>
+      {renderPopup(
+        loading,
+        activeRpc,
+        displayChangeRpcPopup,
+        switchToRpc,
+        switchToHiveEngineRpc,
+      )}
+      {renderMainLayoutNav()}
+      <GuidedTourComponent />
+    </div>
+  );
+};
+
+const mapStateToProps = (state: RootState) => {
+  return {
+    mk: state.mk,
+    hiveAccounts: state.hive.accounts as LocalAccount[],
+    evmAccounts: state.evm.accounts,
+    activeAccountType: state.activeAccountType,
+    activeRpc: state.hive.activeRpc,
+    switchToRpc: state.hive.rpcSwitcher.rpc,
+    switchToHiveEngineRpc: state.hive.rpcSwitcher.hiveEngineRpc,
+    displayChangeRpcPopup: state.hive.rpcSwitcher.display,
+    loading: state.loading.loadingOperations.length,
+    loadingState: state.loading as LoadingState,
+    activeHiveAccount: state.hive.activeAccount,
+    activeEvmAccount: state.evm.activeAccount,
+    isCurrentPageHomePage:
+      state.navigation.stack[0]?.currentPage === Screen.HOME_PAGE,
+    navigationStack: state.navigation.stack,
+    appStatus: state.hive.appStatus,
+    hasFinishedSignup: state.hasFinishedSignup,
+    chain: state.chain as Chain,
+  };
+};
+
+const connector = connect(mapStateToProps, {
+  setAccounts,
+  setEvmAccounts,
+  setActiveAccountType,
+  setChain,
+  setActiveRpc,
+  setHEActiveRpc,
+  setDisplayChangeRpcPopup,
+  loadActiveAccount,
+  loadEvmActiveAccount,
+  loadCurrencyPrices,
+  loadGlobalProperties,
+  initHiveEngineConfigFromStorage,
+  synchronizePendingHiveAccountCreations,
+  handleCompletedPaidHiveAccountCreations,
+  navigateTo,
+  navigateToWithParams,
+  replaceNavigationStack,
+  setTitleContainerProperties,
+  resetChain,
+});
+
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+export const UnlockedAppComponent = connector(UnlockedApp);

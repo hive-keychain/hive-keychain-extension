@@ -12,6 +12,7 @@ import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
 import { PendingRecurrentTransfersPageComponent } from 'src/popup/hive/pages/app-container/home/transfer-fund/recurrent-transfers/recurrent-transfers.component';
 import { RootState } from 'src/popup/multichain/store';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 /**
  * Covers cancel success messaging (moved off the transfer form; see
  * `transfer-fund.component.hive.test.tsx` history).
@@ -23,7 +24,7 @@ describe('recurrent-transfers.component:\n', () => {
   });
 
   beforeEach(() => {
-    chrome.i18n.getMessage = jest
+    I18nUtils.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom);
   });
@@ -67,7 +68,7 @@ describe('recurrent-transfers.component:\n', () => {
     await act(async () => {
       await userEvent.click(screen.getByText(`@${to}`));
     });
-    const cancelLabel = chrome.i18n.getMessage(
+    const cancelLabel = I18nUtils.getMessage(
       'popup_html_button_label_cancel',
     );
     const cancelBtn = await screen.findByText(cancelLabel);
@@ -78,7 +79,7 @@ describe('recurrent-transfers.component:\n', () => {
     expect(TransferUtils.sendTransfer).toHaveBeenCalled();
     expect(
       await screen.findByText(
-        chrome.i18n.getMessage(
+        I18nUtils.getMessage(
           'popup_html_cancel_transfer_recurrent_successful',
           [`@${to}`],
         ),

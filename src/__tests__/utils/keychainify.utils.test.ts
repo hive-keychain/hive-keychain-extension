@@ -43,13 +43,32 @@ describe('keychainify.utils.ts tests:\n', () => {
       ).toBe(false);
     });
 
-    it('Must accept cross-origin https redirects', () => {
+    it('Must reject when requester url is invalid', () => {
+      expect(
+        KeychainifyUtils.isRedirectUriAcceptable(
+          'https://app.example.com/hk-callback',
+          'not-a-real-url',
+        ),
+      ).toBe(false);
+    });
+
+    it('Must reject cross-origin https redirects', () => {
       expect(
         KeychainifyUtils.isRedirectUriAcceptable(
           'https://evil.example/steal',
           requesterUrl,
         ),
-      ).toBe(true);
+      ).toBe(false);
+    });
+
+    it('Must reject cross-origin https redirects even when localhost http is allowed', () => {
+      expect(
+        KeychainifyUtils.isRedirectUriAcceptable(
+          'https://evil.example/steal',
+          requesterUrl,
+          { allowLocalhostHttp: true },
+        ),
+      ).toBe(false);
     });
 
     it('Must reject file urls', () => {
@@ -70,14 +89,26 @@ describe('keychainify.utils.ts tests:\n', () => {
       ).toBe(false);
     });
 
-    it('Must accept localhost http redirects only when explicitly enabled', () => {
+    it('Must accept localhost http redirects only when explicitly enabled and same-origin', () => {
+      const localhostRequesterUrl = 'http://127.0.0.1:3000/request';
+
+      expect(
+        KeychainifyUtils.isRedirectUriAcceptable(
+          'http://127.0.0.1:3000/hk-callback',
+          localhostRequesterUrl,
+          { allowLocalhostHttp: true },
+        ),
+      ).toBe(true);
+    });
+
+    it('Must reject localhost http redirects when requester is not same-origin', () => {
       expect(
         KeychainifyUtils.isRedirectUriAcceptable(
           'http://127.0.0.1:3000/hk-callback',
           requesterUrl,
           { allowLocalhostHttp: true },
         ),
-      ).toBe(true);
+      ).toBe(false);
     });
   });
 });

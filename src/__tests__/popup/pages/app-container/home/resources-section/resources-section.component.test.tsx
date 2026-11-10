@@ -13,6 +13,7 @@ import fake_RC from 'src/__tests__/utils-for-testing/data/rc';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('resources-section.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -37,13 +38,13 @@ describe('resources-section.component tests:\n', () => {
     it('Must show mana and resource credits, labels & values', async () => {
       const vm = await screen.findByTestId(dataTestIdDiv.resources.vm);
       expect(vm).toHaveTextContent(
-        chrome.i18n.getMessage('popup_html_vm'),
+        I18nUtils.getMessage('popup_html_vm'),
       );
       expect(vm).toHaveTextContent('%');
       expect(vm).toHaveTextContent('$');
       const rcEl = await screen.findByTestId(dataTestIdDiv.resources.rc);
       expect(rcEl).toHaveTextContent(
-        chrome.i18n.getMessage('popup_html_rc'),
+        I18nUtils.getMessage('popup_html_rc'),
       );
       expect(rcEl).toHaveTextContent('100.00%');
     });
@@ -101,12 +102,12 @@ describe('resources-section.component tests:\n', () => {
     it('Must show -- as mana and credits 0', async () => {
       const vm = await screen.findByTestId(dataTestIdDiv.resources.vm);
       expect(vm).toHaveTextContent(
-        chrome.i18n.getMessage('popup_html_vm'),
+        I18nUtils.getMessage('popup_html_vm'),
       );
       expect(vm).toHaveTextContent('--%');
       const rcEl = await screen.findByTestId(dataTestIdDiv.resources.rc);
       expect(rcEl).toHaveTextContent(
-        chrome.i18n.getMessage('popup_html_rc'),
+        I18nUtils.getMessage('popup_html_rc'),
       );
       expect(rcEl).toHaveTextContent('0.00%');
     });
@@ -117,7 +118,7 @@ describe('resources-section.component tests:\n', () => {
       });
       expect(
         await screen.findByTestId(dataTestIdToolTip.content),
-      ).toHaveTextContent(chrome.i18n.getMessage('html_popup_voting_no_hp'));
+      ).toHaveTextContent(I18nUtils.getMessage('html_popup_voting_no_hp'));
     });
   });
 });

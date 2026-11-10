@@ -1,8 +1,12 @@
-import { KeychainApi } from '@api/keychain';
 import { Theme, ThemeOpacity } from '@popup/theme.context';
+import { KeychainApi } from 'src/api/keychain';
+import { ImageUrlUtils } from 'src/utils/image-url.utils';
 
 let imgColors: any = {};
 let loaded = false;
+const COLOR_SAMPLE_MAX_DIMENSION = 32;
+const COLOR_SAMPLE_MAX_SOURCE_DIMENSION = 512;
+const FALLBACK_IMAGE_BACKGROUND = '#0000002b';
 const componentToHex = (c: any) => {
   var hex = c.toString(16);
   return hex.length == 1 ? '0' + hex : hex;
@@ -13,12 +17,18 @@ const rgbToHex = (r: any, g: any, b: any) => {
 };
 
 const getBackgroundColor = (src: string) => {
+  const safeSrc = ImageUrlUtils.getSafeImageUrl(src);
+  if (!safeSrc) {
+    return FALLBACK_IMAGE_BACKGROUND;
+  }
+
   var img = new Image();
+  img.referrerPolicy = 'no-referrer';
   img.onerror = () => {
     img.onerror = null;
     img.src = '/assets/images/hive-engine.svg';
   };
-  img.src = src;
+  img.src = safeSrc;
   return getBackgroundColorFromImage(img);
 };
 
@@ -35,16 +45,35 @@ const getBackgroundColorFromBackend = (symbol: string, theme: Theme) => {
 const getBackgroundColorFromImage = (img: HTMLImageElement) => {
   var canvas = document.createElement('canvas');
   var context = canvas.getContext('2d');
-  if (!context) return '#0000002b';
-  canvas.width = img.width;
-  canvas.height = img.height;
-  context?.drawImage(img, 0, 0, img.width, img.height);
+  if (!context) return FALLBACK_IMAGE_BACKGROUND;
 
-  // Get the image data
+  const sourceWidth = img.naturalWidth || img.width;
+  const sourceHeight = img.naturalHeight || img.height;
+  if (
+    !Number.isFinite(sourceWidth) ||
+    !Number.isFinite(sourceHeight) ||
+    sourceWidth <= 0 ||
+    sourceHeight <= 0 ||
+    sourceWidth > COLOR_SAMPLE_MAX_SOURCE_DIMENSION ||
+    sourceHeight > COLOR_SAMPLE_MAX_SOURCE_DIMENSION
+  ) {
+    return FALLBACK_IMAGE_BACKGROUND;
+  }
+
+  const scale = Math.min(
+    1,
+    COLOR_SAMPLE_MAX_DIMENSION / Math.max(sourceWidth, sourceHeight),
+  );
+  const sampleWidth = Math.max(1, Math.round(sourceWidth * scale));
+  const sampleHeight = Math.max(1, Math.round(sourceHeight * scale));
+
   try {
-    var imageData = context.getImageData(0, 0, img.width, img.height);
+    canvas.width = sampleWidth;
+    canvas.height = sampleHeight;
+    context.drawImage(img, 0, 0, sampleWidth, sampleHeight);
+    var imageData = context.getImageData(0, 0, sampleWidth, sampleHeight);
   } catch (err) {
-    return '#0000002b';
+    return FALLBACK_IMAGE_BACKGROUND;
   }
   var data = imageData.data;
 
@@ -78,8 +107,20 @@ const getBackgroundColorFromImage = (img: HTMLImageElement) => {
       dominantColor = color;
     }
   }
-
   return `${dominantColor}2b`;
+};
+
+const stringToColor = (str: string) => {
+  let hash = 0;
+  str.split('').forEach((char) => {
+    hash = char.charCodeAt(0) + ((hash << 5) - hash);
+  });
+  let colour = '#';
+  for (let i = 0; i < 3; i++) {
+    const value = (hash >> (i * 8)) & 0xff;
+    colour += value.toString(16).padStart(2, '0');
+  }
+  return colour;
 };
 
 export const ColorsUtils = {
@@ -87,4 +128,5 @@ export const ColorsUtils = {
   getBackgroundColorFromImage,
   getBackgroundColorFromBackend,
   downloadColors,
+  stringToColor,
 };

@@ -1,8 +1,12 @@
 import RpcUtils from '@popup/hive/utils/rpc.utils';
+import { HiveEngineConfigUtils } from '@popup/hive/utils/hive-engine-config.utils';
 import { store } from '@popup/multichain/store';
 import { AsyncUtils } from 'src/utils/async.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import { useWorkingRPC } from 'src/utils/rpc-switcher.utils';
+import {
+  useWorkingHiveEngineRPC,
+  useWorkingRPC,
+} from 'src/utils/rpc-switcher.utils';
 
 jest.mock('@popup/hive/actions/active-rpc.actions', () => ({
   setActiveRpc: jest.fn((rpc: unknown) => ({
@@ -16,9 +20,20 @@ jest.mock('@popup/hive/actions/rpc-switcher', () => ({
     type: 'SET_SWITCH_TO_RPC',
     payload: rpc,
   })),
+  setSwitchToHiveEngineRpc: jest.fn((rpc: unknown) => ({
+    type: 'SET_SWITCH_TO_HIVE_ENGINE_RPC',
+    payload: rpc,
+  })),
   setDisplayChangeRpcPopup: jest.fn((display: boolean) => ({
     type: 'SET_DISPLAY_SWITCH_RPC',
     payload: display,
+  })),
+}));
+
+jest.mock('@popup/hive/actions/hive-engine-config.actions', () => ({
+  setHEActiveRpc: jest.fn((rpc: unknown) => ({
+    type: 'HE_SET_ACTIVE_RPC',
+    payload: { rpc },
   })),
 }));
 
@@ -33,6 +48,14 @@ jest.mock('@popup/hive/utils/rpc.utils', () => ({
   __esModule: true,
   default: {
     getFullList: jest.fn(),
+    checkRpcStatus: jest.fn(),
+  },
+}));
+
+jest.mock('@popup/hive/utils/hive-engine-config.utils', () => ({
+  HiveEngineConfigUtils: {
+    getApi: jest.fn(),
+    getFullRpcList: jest.fn(),
     checkRpcStatus: jest.fn(),
   },
 }));
@@ -66,6 +89,14 @@ describe('useWorkingRPC', () => {
       { uri: 'https://testnet.rpc', testnet: true },
     ]);
     (RpcUtils.checkRpcStatus as jest.Mock).mockResolvedValue(true);
+    (HiveEngineConfigUtils.getApi as jest.Mock).mockReturnValue(
+      'https://current-he.rpc',
+    );
+    (HiveEngineConfigUtils.getFullRpcList as jest.Mock).mockResolvedValue([
+      'https://current-he.rpc',
+      'https://alt-he.rpc',
+    ]);
+    (HiveEngineConfigUtils.checkRpcStatus as jest.Mock).mockResolvedValue(true);
   });
 
   it('dispatches setActiveRpc when auto-switch is enabled and a working RPC is found', async () => {
@@ -76,6 +107,18 @@ describe('useWorkingRPC', () => {
     expect(store.dispatch).toHaveBeenCalled();
     const dispatched = (store.dispatch as jest.Mock).mock.calls.map((c) => c[0]);
     expect(dispatched.some((a) => a.type === 'SET_ACTIVE_RPC')).toBe(true);
+  });
+
+  it('defaults to auto-switch when no Hive RPC preference is saved', async () => {
+    (LocalStorageUtils.getValueFromLocalStorage as jest.Mock).mockResolvedValue(
+      undefined,
+    );
+
+    await useWorkingRPC();
+
+    const dispatched = (store.dispatch as jest.Mock).mock.calls.map((c) => c[0]);
+    expect(dispatched.some((a) => a.type === 'SET_ACTIVE_RPC')).toBe(true);
+    expect(dispatched.some((a) => a.type === 'SET_SWITCH_TO_RPC')).toBe(false);
   });
 
   it('dispatches switch popup flow when auto-switch is disabled', async () => {
@@ -125,6 +168,61 @@ describe('useWorkingRPC', () => {
     (RpcUtils.checkRpcStatus as jest.Mock).mockResolvedValue(false);
 
     await useWorkingRPC();
+
+    expect(store.dispatch).not.toHaveBeenCalled();
+  });
+
+  it('dispatches setHEActiveRpc when a working Hive Engine RPC is found', async () => {
+    await useWorkingHiveEngineRPC();
+
+    expect(AsyncUtils.sleep).toHaveBeenCalledWith(1000);
+    expect(HiveEngineConfigUtils.checkRpcStatus).toHaveBeenCalledWith(
+      'https://alt-he.rpc',
+    );
+    expect(store.dispatch).toHaveBeenCalledWith({
+      type: 'HE_SET_ACTIVE_RPC',
+      payload: { rpc: 'https://alt-he.rpc' },
+    });
+  });
+
+  it('uses explicit active Hive Engine RPC when provided', async () => {
+    (HiveEngineConfigUtils.getFullRpcList as jest.Mock).mockResolvedValue([
+      'https://explicit-he.rpc',
+      'https://next-he.rpc',
+    ]);
+
+    await useWorkingHiveEngineRPC('https://explicit-he.rpc');
+
+    expect(HiveEngineConfigUtils.getApi).not.toHaveBeenCalled();
+    expect(HiveEngineConfigUtils.checkRpcStatus).toHaveBeenCalledWith(
+      'https://next-he.rpc',
+    );
+  });
+
+  it('dispatches Hive Engine switch popup flow when auto-switch is disabled', async () => {
+    (LocalStorageUtils.getValueFromLocalStorage as jest.Mock).mockResolvedValue(
+      false,
+    );
+
+    const rpc = await useWorkingHiveEngineRPC();
+
+    expect(rpc).toBeUndefined();
+    expect(store.dispatch).toHaveBeenCalledWith({
+      type: 'SET_SWITCH_TO_HIVE_ENGINE_RPC',
+      payload: 'https://alt-he.rpc',
+    });
+    expect(store.dispatch).toHaveBeenCalledWith({
+      type: 'SET_DISPLAY_SWITCH_RPC',
+      payload: true,
+    });
+  });
+
+  it('does not dispatch when no alternative Hive Engine RPC responds', async () => {
+    (HiveEngineConfigUtils.checkRpcStatus as jest.Mock).mockResolvedValue(
+      false,
+    );
+
+    await useWorkingHiveEngineRPC();
 
     expect(store.dispatch).not.toHaveBeenCalled();
   });

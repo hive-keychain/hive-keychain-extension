@@ -2,16 +2,17 @@ import {
   RcDelegation,
   RCDelegationValue,
 } from '@interfaces/rc-delegation.interface';
+import { Screen } from '@interfaces/screen.interface';
 import { RcIncomingOutgoingItemComponent } from '@popup/hive/pages/app-container/home/rc-delegations/incoming-outgoing-rc-page/incoming-outgoing-rc-delegation-item.component';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { HiveChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
-import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
-import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { RcDelegationsUtils } from 'src/popup/hive/utils/rc-delegations.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const IncomingOutgoingRcPage = ({
   delegationType,
   delegations,
@@ -36,6 +37,7 @@ const IncomingOutgoingRcPage = ({
   useEffect(() => {
     setTitleContainerProperties({
       title: delegationType,
+      titleParams: ['RC'],
       isBackButtonEnabled: true,
       isCloseButtonDisabled: false,
     });
@@ -69,7 +71,7 @@ const IncomingOutgoingRcPage = ({
       <div className="list-panel">
         <div className="panel">
           <div className="total">
-            <div className="label">{chrome.i18n.getMessage(header)}</div>
+            <div className="label">{I18nUtils.getMessage(header)}</div>
             {totalRC && (
               <div className="value">
                 <span className="rc-value">
@@ -157,9 +159,7 @@ const mapStateToProps = (state: RootState) => {
       .delegationType as DelegationType,
     delegations: state.navigation.stack[0].params.delegations as RcDelegation[],
     globalProperties: state.hive.globalProperties,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(
-      state.hive.activeRpc?.testnet!,
-    ),
+    currencyLabels: (state.chain as HiveChain).mainTokens,
   };
 };
 

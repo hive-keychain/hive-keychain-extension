@@ -1,0 +1,55 @@
+import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
+import { createMessage, feedbackI18n } from '@background/hive/requests/operations/operations.utils';
+import { RequestId, RequestVote } from '@interfaces/keychain.interface';
+import { TransactionOptions } from '@interfaces/keys.interface';
+import { KeychainKeyTypesLC } from 'hive-keychain-commons';
+import { KeychainError } from 'src/keychain-error';
+import { BloggingUtils } from 'src/popup/hive/utils/blogging.utils';
+
+import { I18nUtils } from 'src/utils/i18n.utils';
+export const broadcastVote = async (
+  requestHandler: HiveRequestsHandler,
+  data: RequestVote & RequestId,
+  options?: TransactionOptions,
+) => {
+  const request = requestHandler.getRequestData(data.request_id);
+  let key = request?.key;
+  if (!key) {
+    [key] = requestHandler.getUserKeyPair(
+      data.username!,
+      KeychainKeyTypesLC.posting,
+    ) as [string, string];
+  }
+  let err, result, err_message;
+  try {
+    // TODO : When Ledger ready for full usage with posting key, add compatibility with Ledger
+    result = await BloggingUtils.vote(
+      data.username!,
+      data.author,
+      data.permlink,
+      +data.weight,
+      key!,
+      options,
+    );
+  } catch (e: any) {
+    err = (e as KeychainError).trace || e;
+    err_message = feedbackI18n(
+      (e as KeychainError).message,
+      (e as KeychainError).messageParams,
+    );
+  } finally {
+    const message = await createMessage(
+      err,
+      result,
+      data,
+      request?.tab!,
+      feedbackI18n('bgd_ops_vote', [
+        data.author,
+        data.permlink,
+        +data.weight / 100 + '',
+      ]),
+      err_message,
+    );
+    return message;
+  }
+};

@@ -1,4 +1,12 @@
 .custom-select-container {
+  position: relative;
+
+  &.opened {
+    .custom-select {
+      z-index: 5;
+    }
+  }
+
   .label {
     @include input-label;
   }
@@ -10,10 +18,19 @@
     height: 52px;
     border-radius: 66px !important;
 
+    &:focus-visible {
+      outline: none !important;
+      box-shadow: inset 0 0 0 2px $red !important;
+    }
+
     .selected-item {
       @include poppins500(15px);
       user-select: none;
       color: var(--main-font-color);
+
+      &.is-placeholder {
+        opacity: 0.55;
+      }
     }
 
     &.white {
@@ -34,13 +51,53 @@
         box-sizing: border-box;
         width: 100%;
         font-size: $input-font-size;
+        position: relative;
 
+        > span {
+          flex: 1;
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
         .left-image {
-          @include icon-size(36px);
+          height: 24px;
+          width: 24px;
           border-radius: 50%;
           &.shimmer {
-            @include icon-size(36px);
+            @include icon-size(24px);
           }
+          &.chain-logo-initials {
+            @include poppins600(10px);
+          }
+        }
+        .left-svg {
+          height: 24px;
+          width: 24px;
+          svg {
+            height: 24px;
+            width: 24px;
+          }
+        }
+        .left-svg-chip {
+          @include icon-size(20px);
+          position: absolute;
+          top: 22px;
+          left: 18px;
+          color: $red;
+        }
+        img.left-svg-chip {
+          border: 1px solid white;
+          border-radius: 50%;
+          left: 24px;
+        }
+        .left-svg-chip.chain-logo-initials {
+          @include poppins600(7px);
+          border: 1px solid white;
+        }
+
+        &.has-img-chip {
+          column-gap: 16px;
         }
       }
     }
@@ -63,43 +120,85 @@
 
     .react-dropdown-select-dropdown {
       border-radius: 8px;
-      width: 100%;
+      box-sizing: border-box;
+      width: max-content;
+      min-width: 100%;
       max-height: 210px;
       border: 1px solid var(--input-border);
+      box-sizing: border-box;
       top: 60px;
       background-color: var(--input-background);
       border-radius: 16px;
       @include radius-bound-dropdown-scrollbar;
       @include poppins500(14px);
+
+      .custom-select-dropdown,
+      .option,
+      .custom-select-item {
+        box-sizing: border-box;
+        width: max-content;
+        min-width: 100%;
+      }
+
       .custom-select-dropdown {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+
+        .custom-select-options {
+          min-width: 100%;
+        }
+
         .filter-input {
-          border: unset !important;
-          border-radius: unset !important;
-          border-bottom: 1px solid var(--input-border);
+          width: 100%;
+          box-sizing: border-box;
           padding: 6px;
-          input {
-            @include poppins500(14px);
-            font-size: 14px;
+
+          .custom-input-content {
+            width: 100%;
+            box-sizing: border-box;
+            border: unset !important;
+            border-radius: unset !important;
+            border-bottom: 1px solid var(--input-border) !important;
+            padding: 6px 12px;
+            min-height: unset;
+            background: transparent;
+            box-shadow: none !important;
+
+            &:focus-within {
+              border-bottom-color: var(--input-border) !important;
+              box-shadow: none !important;
+            }
+
+            input {
+              @include poppins500(14px);
+              font-size: 14px;
+            }
           }
         }
 
         .option {
           display: flex;
           flex-direction: column;
-          &:hover {
+          max-width: unset;
+          &:hover,
+          &:has(.custom-select-item.keyboard-active) {
             background-color: $red;
             color: white;
             .account-name,
             .active-icon {
               color: var(--main-font-color) !important;
+              svg {
+                color: white !important;
+              }
             }
           }
         }
       }
       .option {
-        &:has(~ .option > .custom-select-item:hover) {
+        &:has(+ .option > .custom-select-item:hover) {
           .separator {
-            background: var(--input-background);
+            background: var(--card-background);
           }
         }
         .custom-select-item {
@@ -107,22 +206,84 @@
           align-items: center;
           column-gap: 12px;
           padding: 10px 6px;
-          box-sizing: border-box;
+          position: relative;
+          width: 100%;
 
           .left-image {
-            @include icon-size(36px);
+            @include icon-size(24px);
             &.shimmer {
-              @include icon-size(36px);
+              @include icon-size(24px);
             }
             border-radius: 50%;
-            margin-left: 10px;
+          }
+          .left-svg {
+            height: 24px;
+            width: 24px;
+            svg {
+              height: 24px;
+              width: 24px;
+            }
+          }
+
+          .left-svg-chip {
+            @include icon-size(20px);
+            position: absolute;
+            top: 22px;
+            left: 18px;
+            color: $red;
+          }
+          img.left-svg-chip {
+            border: 1px solid white;
+            border-radius: 50%;
+            left: 20px;
+          }
+          .left-svg-chip.chain-logo-initials {
+            @include poppins600(7px);
+            border: 1px solid white;
+          }
+
+          &:hover,
+          &.keyboard-active {
+            .left-svg-chip {
+              color: white;
+            }
           }
 
           .item-label {
-            flex: 1;
+            display: flex;
+            flex-direction: column;
+            line-height: 14px;
+            flex: 1 1 auto;
+            min-width: max-content;
             color: var(--main-font-color);
+            white-space: nowrap;
+            .item-sub-label,
+            .item-sub-label-hover {
+              @include poppins400(12px);
+              opacity: 0.8;
+              font-style: italic;
+              line-height: 14px;
+            }
+            .item-sub-label-hover {
+              display: none;
+            }
           }
+          .icons-wrapper {
+            width: 20px;
+            display: flex;
+            justify-content: flex-end;
+            flex-shrink: 0;
+
+            .active-icon,
+            .drag-icon {
+              height: 20px;
+              width: 20px;
+            }
+          }
+
           .active-icon {
+            height: 20px;
+            width: 20px;
             svg {
               height: 20px;
               width: 20px;
@@ -132,24 +293,44 @@
           .right-action-icon {
             display: none;
           }
-          &:hover {
-            .item-label {
-              color: white;
-            }
-            .sepa .active-icon {
-              svg {
-                color: white;
-              }
-            }
-            .right-action-icon {
-              display: block;
-            }
-            + .separator {
-              background: $red;
-            }
+
+          &.has-img-chip {
+            column-gap: 16px;
+          }
+        }
+        &:hover,
+        &:has(.custom-select-item.keyboard-active) {
+          .item-label {
+            color: white;
+          }
+          .right-action-icon {
+            display: block;
+            @include icon-size(20px);
+          }
+          .separator {
+            background: $red;
+          }
+        }
+
+        &.has-sub-label-hover:hover {
+          .item-sub-label-hover {
+            display: block !important;
+          }
+          .item-sub-label {
+            display: none;
           }
         }
       }
+    }
+  }
+
+  .overlay {
+    display: none;
+    @include overlay;
+    z-index: 4;
+
+    &.opened {
+      display: block;
     }
   }
 }

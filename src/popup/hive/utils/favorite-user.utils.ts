@@ -1,4 +1,4 @@
-import BgdAccountsUtils from '@background/utils/accounts.utils';
+import BgdAccountsUtils from '@background/hive/utils/accounts.utils';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import {
   AutoCompleteCategory,
@@ -37,14 +37,21 @@ const getAutocompleteList = async (
       if (
         !exchanges.find((exchange) => exchange.username === fav) &&
         !localAccounts.find((localAccount) => localAccount.name === fav)
-      )
-        autoCompleteList.push({ value: fav });
+      ) {
+        autoCompleteList.push({
+          label: fav,
+          value: fav,
+          img: `https://images.hive.blog/u/${fav}/avatar`,
+        });
+      }
     }
   }
   for (const localAccount of localAccounts) {
     if (localAccount.name !== username) {
       autoCompleteList.push({
+        label: localAccount.name,
         value: localAccount.name,
+        img: `https://images.hive.blog/u/${localAccount.name}/avatar`,
       });
     }
   }
@@ -57,16 +64,27 @@ const getAutocompleteList = async (
       )
         autoCompleteList.push({
           value: exchange.username,
+          label: exchange.username,
           subLabel: exchange.name,
+          img: `https://images.hive.blog/u/${exchange.username}/avatar`,
         });
     }
   return autoCompleteList;
 };
 
 const saveFavoriteUser = async (
-  username: string,
-  activeAccount: ActiveAccount,
+  activeAccountOrUsername: ActiveAccount | string,
+  usernameOrActiveAccount: string | ActiveAccount,
+  subLabel?: string,
 ) => {
+  const activeAccount =
+    typeof activeAccountOrUsername === 'string'
+      ? (usernameOrActiveAccount as ActiveAccount)
+      : activeAccountOrUsername;
+  const username =
+    typeof activeAccountOrUsername === 'string'
+      ? activeAccountOrUsername
+      : (usernameOrActiveAccount as string);
   const mk = await VaultUtils.getValueFromVault(VaultKey.__MK);
   const localAccounts = await BgdAccountsUtils.getAccountsFromLocalStorage(mk);
   let favoriteUser = await LocalStorageUtils.getValueFromLocalStorage(
@@ -92,11 +110,12 @@ const saveFavoriteUser = async (
     !localAccounts.find((localAccount) => localAccount.name === username)
   ) {
     favoriteUser[activeAccount.name!].push({
+      label: username,
       value: username,
-      subLabel: '',
+      subLabel: subLabel ?? '',
     } as AutoCompleteValue);
   }
-  LocalStorageUtils.saveValueInLocalStorage(
+  await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.FAVORITE_USERS,
     favoriteUser,
   );
@@ -139,7 +158,12 @@ const getAutocompleteListByCategories = async (
         !exchanges.find((exchange) => exchange.username === fav) &&
         !localAccounts.find((localAccount) => localAccount.name === fav)
       )
-        favoriteUsersList.values.push(fav);
+        favoriteUsersList.values.push({
+          value: fav.label,
+          label: fav.label,
+          subLabel: fav.subLabel,
+          img: `https://images.hive.blog/u/${fav.label}/avatar`,
+        });
     }
   }
 
@@ -147,7 +171,9 @@ const getAutocompleteListByCategories = async (
     if (localAccount.name !== username) {
       favoriteLocalAccountsList.values.push({
         value: localAccount.name,
+        label: localAccount.name,
         subLabel: '',
+        img: `https://images.hive.blog/u/${localAccount.name}/avatar`,
       });
     }
   }
@@ -160,7 +186,9 @@ const getAutocompleteListByCategories = async (
       )
         favoriteExchangesList.values.push({
           value: exchange.username,
+          label: exchange.username,
           subLabel: exchange.name,
+          img: `https://images.hive.blog/u/${exchange.username}/avatar`,
         });
     }
   if (favoriteUsersList.values.length > 0) {

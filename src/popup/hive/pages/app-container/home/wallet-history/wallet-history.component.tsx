@@ -1,3 +1,4 @@
+import { Screen } from '@interfaces/screen.interface';
 import {
   ClaimReward,
   CollateralizedConvert,
@@ -18,10 +19,10 @@ import {
   Transfer,
   WithdrawSavings,
 } from '@interfaces/transaction.interface';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { Screen } from '@reference-data/screen.enum';
 import FlatList from 'flatlist-react';
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
@@ -42,9 +43,10 @@ import TransactionUtils, {
   TRANSFER_TYPE_TRANSACTIONS,
 } from 'src/popup/hive/utils/transaction.utils';
 import { WalletHistoryUtils } from 'src/popup/hive/utils/wallet-history.utils';
-import ArrayUtils from 'src/utils/array.utils';
+import { ArrayUtils } from 'src/utils/array.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type FilterTransactionTypes = {
   [key: string]: boolean;
 };
@@ -76,6 +78,7 @@ const WalletHistory = ({
   transactions,
   activeAccountName,
   fetchAccountTransactions,
+  navigateTo,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
   const [isFilterOpened, setIsFilterPanelOpened] = useState(false);
@@ -460,7 +463,7 @@ const WalletHistory = ({
                           : 'not-selected')
                       }
                       onClick={() => toggleFilterType(filterOperationType)}>
-                      {chrome.i18n.getMessage(
+                      {I18nUtils.getMessage(
                         `popup_html_filter_type_${filterOperationType}`,
                       )}{' '}
                     </div>
@@ -476,7 +479,7 @@ const WalletHistory = ({
                   (filter.inSelected ? 'selected' : 'not-selected')
                 }
                 onClick={() => toggleFilterIn()}>
-                {chrome.i18n.getMessage(`popup_html_filter_in`)}
+                {I18nUtils.getMessage(`popup_html_filter_in`)}
               </div>
               <div
                 data-testid="filter-by-outgoing"
@@ -485,7 +488,7 @@ const WalletHistory = ({
                   (filter.outSelected ? 'selected' : 'not-selected')
                 }
                 onClick={() => toggleFilterOut()}>
-                {chrome.i18n.getMessage(`popup_html_filter_out`)}
+                {I18nUtils.getMessage(`popup_html_filter_out`)}
               </div>
             </div>
           </div>
@@ -503,6 +506,18 @@ const WalletHistory = ({
         ref={walletItemList}
         className="wallet-item-list"
         onScroll={handleScroll}>
+        <button
+          className="wallet-history-export-button"
+          data-testid="wallet-history-export-transactions"
+          onClick={() => navigateTo(Screen.SETTINGS_EXPORT_TRANSACTIONS)}
+          type="button">
+          <SVGIcon
+            icon={SVGIcons.MENU_ACCOUNTS_EXPORT}
+            className="wallet-history-export-button-icon"
+            svgViewBox="14 13 16 15"
+          />
+          <span>{I18nUtils.getMessage('popup_html_export')}</span>
+        </button>
         <FlatList
           list={displayedTransactions}
           renderItem={renderListItem}
@@ -516,12 +531,12 @@ const WalletHistory = ({
                   <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
                   <div className="text">
                     <div>
-                      {chrome.i18n.getMessage(
+                      {I18nUtils.getMessage(
                         'popup_html_transaction_list_is_empty',
                       )}
                     </div>
                     <div>
-                      {chrome.i18n.getMessage(
+                      {I18nUtils.getMessage(
                         'popup_html_transaction_list_is_empty_try_clear_filter',
                       )}
                     </div>
@@ -534,12 +549,15 @@ const WalletHistory = ({
         {transactions.list[transactions.list.length - 1]?.last === false &&
           transactions.lastUsedStart !== 0 &&
           !loading && (
-            <div className="load-more-panel" onClick={tryToLoadMore}>
+            <button
+              type="button"
+              className="load-more-panel"
+              onClick={tryToLoadMore}>
               <span className="label">
-                {chrome.i18n.getMessage('popup_html_load_more')}
+                {I18nUtils.getMessage('popup_html_load_more')}
               </span>
               <SVGIcon icon={SVGIcons.GLOBAL_ADD_CIRCLE}></SVGIcon>
-            </div>
+            </button>
           )}
         {loading && (
           <div className="rotating-logo-container">
@@ -561,6 +579,7 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   fetchAccountTransactions,
+  navigateTo,
   setTitleContainerProperties,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;

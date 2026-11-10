@@ -3,25 +3,34 @@ import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { GlobalProperties } from '@interfaces/global-properties.interface';
 import { Asset } from 'hive-keychain-commons';
 
-const withCommas = (nb: string, decimals = 3, removeTrailingZeros = false) => {
-  const currency = nb.split(' ')[1];
+const withCommas = (
+  nb: string | number,
+  decimals = 3,
+  removeTrailingZeros = false,
+) => {
+  let currency;
 
-  const value = parseFloat(nb).toFixed(decimals);
-  var parts = value.split('.');
+  if (typeof nb === 'string') {
+    currency = nb.split(' ')[1];
+  }
+  let value;
+  if (typeof nb === 'number') {
+    nb = nb.toString();
+  }
+
+  value = parseFloat(nb).toFixed(decimals);
+  let parts = value.split('.');
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   let finalNumber = parts.join('.');
-
   if (removeTrailingZeros) {
     finalNumber = finalNumber.replace(
       /^([\d,]+)$|^([\d,]+)\.0*$|^([\d,]+\.[0-9]*?)0*$/,
       '$1$2$3',
     );
   }
-
   if (currency) {
     finalNumber = finalNumber + ' ' + currency;
   }
-
   return finalNumber;
 };
 
@@ -40,7 +49,7 @@ const fromHP = (hp: string, props: DynamicGlobalProperties) =>
   parseFloat(props.total_vesting_shares + '');
 
 const formatCurrencyValue = (
-  value: string | Asset | number,
+  value: string | Asset | number | bigint,
   digits = 3,
   removeTrailingZeros = false,
 ) => {
@@ -137,6 +146,10 @@ const trimUselessZero = (number: number, precision: number) => {
   else return FormatUtils.withCommas(parseFloat(n).toFixed(3));
 };
 
+const urlToDomain = (url: string) => {
+  return new URL(url).hostname;
+};
+
 const getUSDFromVests = (
   vestAmount: Number,
   globalProperties: GlobalProperties,
@@ -162,6 +175,14 @@ const getOrdinalLabelTranslation = (active_rank: string) => {
   }
 };
 
+const shortenString = (string: string, length: number = 3) => {
+  return string.length > length * 2
+    ? `${string.substring(length + 2, 0)}...${string
+        ?.toString()
+        .slice(-length)}`
+    : string;
+};
+
 const FormatUtils = {
   withCommas,
   toHP,
@@ -179,6 +200,8 @@ const FormatUtils = {
   trimUselessZero,
   getUSDFromVests,
   getOrdinalLabelTranslation,
+  shortenString,
+  urlToDomain,
 };
 
 export default FormatUtils;

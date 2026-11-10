@@ -1,11 +1,12 @@
+import { Screen } from '@interfaces/screen.interface';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
-import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import { Card } from 'src/common-ui/card/card.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
-import { HtmlUtils } from 'src/utils/html.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const AboutPage = ({ setTitleContainerProperties }: PropsFromRedux) => {
   useEffect(() => {
     setTitleContainerProperties({
@@ -16,12 +17,14 @@ const AboutPage = ({ setTitleContainerProperties }: PropsFromRedux) => {
 
   return (
     <div data-testid={`${Screen.SETTINGS_ABOUT}-page`} className="about-page">
-      <div
-        data-testid={`${SVGIcons.MENU_ABOUT}-page-content`}
-        className="content"
-        dangerouslySetInnerHTML={{
-          __html: HtmlUtils.getSafeI18nHtml('popup_html_about_text'),
-        }}></div>
+      <Card className="about-page-card">
+        <div
+          data-testid={`${SVGIcons.MENU_ABOUT}-page-content`}
+          className="content"
+          dangerouslySetInnerHTML={{
+            __html: I18nUtils.getMessage('popup_html_about_text'),
+          }}></div>
+      </Card>
       <div className="version">
         {chrome.runtime.getManifest().name +
           ' ' +

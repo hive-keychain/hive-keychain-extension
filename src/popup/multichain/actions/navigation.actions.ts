@@ -1,12 +1,12 @@
+import { Screen } from '@interfaces/screen.interface';
 import { MultichainActionType } from '@popup/multichain/actions/action-type.enum';
-import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
-import { Screen } from 'src/reference-data/screen.enum';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { AppThunk } from './interfaces';
 
 export type NavigationParams = ConfirmationPageParams | any;
 
 export interface NavigationConfirmationPageParams {
-  screen: Screen.CONFIRMATION_PAGE;
+  screen: Screen;
   params: ConfirmationPageParams;
   resetStack: boolean;
 }
@@ -17,7 +17,6 @@ export const resetNav = (): AppThunk => async (dispatch, getState) => {
 export const navigateTo =
   (screen: Screen, resetStack: boolean = false): AppThunk =>
   async (dispatch, getState) => {
-    // AnalyticsTracker.trackNav(screen);
     dispatch({
       type: MultichainActionType.NAVIGATE_TO,
       payload: { nextPage: screen, resetStack },
@@ -31,7 +30,6 @@ export const navigateToWithParams =
     resetStack: boolean = false,
   ): AppThunk =>
   async (dispatch, getState) => {
-    // AnalyticsTracker.trackNav(screen);
     dispatch({
       type: MultichainActionType.NAVIGATE_TO_WITH_PARAMS,
       payload: { nextPage: screen, params, resetStack },
@@ -41,6 +39,18 @@ export const navigateToWithParams =
 export const goBack = (): AppThunk => async (dispatch, getState) => {
   dispatch({ type: MultichainActionType.GO_BACK });
 };
+
+export const replaceNavigationStack =
+  (stack: { currentPage: Screen; params?: NavigationParams }[]): AppThunk =>
+  async (dispatch) => {
+    dispatch({ type: MultichainActionType.RESET_NAV });
+    [...stack].reverse().forEach((entry) => {
+      dispatch({
+        type: MultichainActionType.NAVIGATE_TO_WITH_PARAMS,
+        payload: { nextPage: entry.currentPage, params: entry.params },
+      });
+    });
+  };
 
 export const goBackToThenNavigate =
   (navigateTo: Screen, goBackTo?: Screen): AppThunk =>

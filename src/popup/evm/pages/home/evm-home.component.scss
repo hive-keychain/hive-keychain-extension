@@ -1,0 +1,24 @@
+.evm-account-value-wrapper {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  .dapp-status-wrapper {
+    display: flex;
+    align-items: center;
+    margin-right: 50px;
+  }
+  .estimated-account-value-section {
+    flex: 1;
+  }
+}
+
+.pending-transactions-info {
+  @include small-card();
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  .pending-transactions-info-title {
+    @include poppins500(12px);
+    color: var(--main-font-color);
+  }
+}

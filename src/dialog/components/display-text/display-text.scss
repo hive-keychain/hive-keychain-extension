@@ -1,0 +1,14 @@
+.display-text {
+  .display-text-title {
+    @include poppins500(14px);
+    color: var(--main-font-color);
+    margin-bottom: 12px;
+  }
+  .text {
+    @include poppins400(13px);
+    word-break: break-all;
+    white-space: pre-wrap;
+    overflow-y: auto;
+    color: var(--main-font-color);
+  }
+}

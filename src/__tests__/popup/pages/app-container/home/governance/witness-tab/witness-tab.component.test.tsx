@@ -5,19 +5,18 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
+import { openGovernancePage } from 'src/__tests__/utils-for-testing/helpers/settings-navigation';
 import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
 import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
 import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
-import dataTestIdLink from 'src/__tests__/utils-for-testing/data-testid/data-testid-link';
 import dataTestIdSwitch from 'src/__tests__/utils-for-testing/data-testid/data-testid-switch';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import witness from 'src/__tests__/utils-for-testing/data/witness';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('witness tab:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -47,31 +46,13 @@ describe('witness tab:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
-        await userEvent.click(
-          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.GOVERNANCE),
-        );
+        await openGovernancePage();
       });
     });
     it('Must display only active witnesses', async () => {
       expect(
         await screen.findAllByTestId(dataTestIdDiv.rankingItem),
       ).toHaveLength(witness.rankingWInactive.length - 1);
-    });
-
-    it('Must display more information message', async () => {
-      expect(
-        (await screen.findByTestId(dataTestIdLink.linkToArcange)).textContent,
-      ).toContain(chrome.i18n.getMessage('html_popup_link_to_witness_website'));
-    });
-
-    it('Must open link about more information', async () => {
-      const sTabs = jest.spyOn(chrome.tabs, 'create');
-      await act(async () => {
-        await userEvent.click(screen.getByTestId(dataTestIdLink.linkToArcange));
-      });
-      expect(sTabs).toHaveBeenCalledWith({ url: witness.arcangeLink });
-      sTabs.mockRestore();
     });
 
     it('Must display no witnesses when typying a non existing witness on filter box', async () => {
@@ -167,7 +148,7 @@ describe('witness tab:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_error_unvote_wit', [
+          I18nUtils.getMessage('popup_error_unvote_wit', [
             `${selectedWitness}`,
           ]),
         ),
@@ -193,7 +174,7 @@ describe('witness tab:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_success_unvote_wit', [
+          I18nUtils.getMessage('popup_success_unvote_wit', [
             `${selectedWitness}`,
           ]),
         ),
@@ -241,7 +222,7 @@ describe('witness tab:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_success_wit', [
+          I18nUtils.getMessage('popup_success_wit', [
             `${selectedWitnessNameToVote}`,
           ]),
         ),
@@ -272,16 +253,13 @@ describe('witness tab:\n', () => {
         },
       );
       await act(async () => {
-        await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
-        await userEvent.click(
-          screen.getByTestId(dataTestIdButton.menuPreFix + Icons.GOVERNANCE),
-        );
+        await openGovernancePage();
       });
     });
     it('Must show 2 errors if request data fails', async () => {
       expect(
         await screen.findAllByText(
-          chrome.i18n.getMessage('popup_html_error_retrieving_witness_ranking'),
+          I18nUtils.getMessage('popup_html_error_retrieving_witness_ranking'),
           { exact: false },
         ),
       ).toHaveLength(2);

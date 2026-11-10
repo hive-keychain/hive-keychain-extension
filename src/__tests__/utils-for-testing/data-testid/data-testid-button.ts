@@ -1,8 +1,8 @@
 const dataTestIdButton = {
   login: 'login-button',
   submit: 'submit-button',
-  addByKeys: 'add-by-keys-button',
-  addByAuth: 'add-by-auth-button',
+  addByKeys: 'menu-settings-button-menu/accounts/add-account',
+  addByAuth: 'menu-settings-button-menu/accounts/add-account-by-authority',
   importKeys: 'import-keys-button',
   menu: 'clickable-settings',
   menuPreFix: 'menu-settings-button-',
@@ -58,7 +58,6 @@ const dataTestIdButton = {
       send: 'send-transfer',
     },
     voteProposal: 'vote-key-chain-proposal',
-    voteStoodkevWitness: 'vote-for-stoodkev-witness',
     tokens: {
       preFix: 'token-button-operation-',
       transfer: {

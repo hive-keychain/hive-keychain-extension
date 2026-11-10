@@ -1,17 +1,23 @@
 @import '/src/common-ui/separator/separator.component.scss';
 
 .about-page {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   height: 100%;
-  grid-template-rows: 1fr 28px;
   padding: 0px 24px;
+
+  .about-page-card {
+    align-items: stretch;
+    flex: 0 0 auto;
+    flex-direction: column;
+    height: fit-content;
+  }
+
   .content {
     ul {
-      padding-inline-start: 20px;
-      margin-inline-end: 20px;
-      li::marker {
-        font-size: 18px;
-      }
+      list-style: none;
+      margin: 0;
+      padding: 0;
       .text {
         opacity: 0.7;
       }
@@ -26,6 +32,8 @@
   }
   .version {
     @include poppins500(13px);
+    flex: 0 0 28px;
+    margin-top: auto;
     text-align: center;
     color: $red;
   }

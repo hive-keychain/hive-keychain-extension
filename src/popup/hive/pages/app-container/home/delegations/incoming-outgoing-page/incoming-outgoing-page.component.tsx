@@ -1,3 +1,4 @@
+import { Screen } from '@interfaces/screen.interface';
 import {
   setErrorMessage,
   setSuccessMessage,
@@ -7,15 +8,15 @@ import {
   navigateToWithParams,
 } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { HiveChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
-import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
 import { IncomingOutgoingItemComponent } from 'src/popup/hive/pages/app-container/home/delegations/incoming-outgoing-page/incoming-outgoing-item.component/incoming-outgoing-item.component';
-import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const IncomingOutgoingPage = ({
   delegationType,
   delegations,
@@ -42,6 +43,7 @@ const IncomingOutgoingPage = ({
   useEffect(() => {
     setTitleContainerProperties({
       title: delegationType,
+      titleParams: [currencyLabels.hp],
       isBackButtonEnabled: true,
     });
 
@@ -74,7 +76,7 @@ const IncomingOutgoingPage = ({
     }
 
     setTotalHP(FormatUtils.toHP(totalVests.toString(), globalProperties));
-  }, [delegations]);
+  }, [currencyLabels.hp, delegations]);
 
   return (
     <div
@@ -83,7 +85,7 @@ const IncomingOutgoingPage = ({
       {delegationType === DelegationType.OUTGOING &&
         totalPendingOutgoingUndelegation > 0 && (
           <div className="pending-disclaimer">
-            {chrome.i18n.getMessage(
+            {I18nUtils.getMessage(
               'popup_html_undelegation_pending_until_message',
             )}
           </div>
@@ -94,7 +96,7 @@ const IncomingOutgoingPage = ({
             <div className="panel pending-undelegations">
               <div className="total">
                 <div className="label">
-                  {chrome.i18n.getMessage(
+                  {I18nUtils.getMessage(
                     'popup_html_total_pending_undelegate',
                   )}
                 </div>
@@ -121,7 +123,7 @@ const IncomingOutgoingPage = ({
           )}
         <div className="panel">
           <div className="total">
-            <div className="label">{chrome.i18n.getMessage(header)}</div>
+            <div className="label">{I18nUtils.getMessage(header)}</div>
             <div className="value">
               {FormatUtils.withCommas(totalHP.toString())} {currencyLabels.hp}
             </div>
@@ -157,9 +159,7 @@ const mapStateToProps = (state: RootState) => {
       state.navigation.stack[0].params.totalPendingOutgoingUndelegation,
     delegations: state.hive.delegations,
     globalProperties: state.hive.globalProperties.globals,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(
-      state.hive.activeRpc?.testnet!,
-    ),
+    currencyLabels: (state.chain as HiveChain).mainTokens,
     available: state.navigation.stack[0].params.available,
   };
 };

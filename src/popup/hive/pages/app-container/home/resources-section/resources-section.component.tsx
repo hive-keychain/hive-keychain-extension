@@ -5,6 +5,7 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { ResourceItemComponent } from 'src/popup/hive/pages/app-container/home/resources-section/resource-item/resource-item.component';
 import HiveUtils from 'src/popup/hive/utils/hive.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const ResourcesSection = ({
   activeAccount,
   globalProperties,
@@ -46,7 +47,7 @@ const ResourcesSection = ({
       setManaReadyIn(
         hasMana
           ? HiveUtils.getTimeBeforeFull(mana!)
-          : chrome.i18n.getMessage('html_popup_voting_no_hp'),
+          : I18nUtils.getMessage('html_popup_voting_no_hp'),
       );
       setRcReadyIn(HiveUtils.getTimeBeforeFull(resources));
     }

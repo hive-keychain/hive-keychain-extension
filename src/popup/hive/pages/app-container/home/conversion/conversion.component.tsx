@@ -4,6 +4,7 @@ import {
   KeychainKeyTypesLC,
 } from '@interfaces/keychain.interface';
 import { TransactionOptions } from '@interfaces/keys.interface';
+import { Screen } from '@interfaces/screen.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -17,17 +18,18 @@ import {
   navigateToWithParams,
 } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { HiveChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { Asset } from 'hive-keychain-commons';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
+import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import { BalanceSectionComponent } from 'src/common-ui/balance-section/balance-section.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { ConfirmationPageFieldType } from 'src/common-ui/confirmation-page/confirmation-field.interface';
-import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
-import { FormContainer } from 'src/common-ui/form-container/form-container.component';
+import { HiveConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -36,11 +38,10 @@ import { Conversion as ConversionInterface } from 'src/interfaces/conversion.int
 import { fetchConversionRequests } from 'src/popup/hive/actions/conversion.actions';
 import { ConversionType } from 'src/popup/hive/pages/app-container/home/conversion/conversion-type.enum';
 import { ConversionUtils } from 'src/popup/hive/utils/conversion.utils';
-import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
-import { Screen } from 'src/reference-data/screen.enum';
 import { FormUtils } from 'src/utils/form.utils';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface ConversionForm {
   receiver: string;
   amount: number;
@@ -52,7 +53,7 @@ const rules = FormUtils.createRules<ConversionForm>({
   amount: Joi.number().required().positive().max(Joi.ref('$maxAmount')),
 });
 
-const Conversion = ({
+const ConversionPage = ({
   currencyLabels,
   activeAccount,
   conversionType,
@@ -154,7 +155,7 @@ const Conversion = ({
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
-      message: chrome.i18n.getMessage(
+      message: I18nUtils.getMessage(
         conversionType === ConversionType.CONVERT_HBD_TO_HIVE
           ? 'popup_html_confirm_hbd_to_hive_conversion'
           : 'popup_html_confirm_hive_to_hbd_conversion',
@@ -207,12 +208,12 @@ const Conversion = ({
             );
           }
         } catch (err: any) {
-          setErrorMessage(err.message);
+          setErrorMessage(err.message, err.messageParams);
         } finally {
           removeFromLoadingList('html_popup_conversion_operation');
         }
       },
-    } as ConfirmationPageParams);
+    } as HiveConfirmationPageParams);
   };
 
   const setToMax = () => {
@@ -247,13 +248,13 @@ const Conversion = ({
           onClick={goToPendingConversion}>
           <div className="pending-conversion-text">
             {totalPending} {watch('currency')}{' '}
-            {chrome.i18n.getMessage('popup_html_pending')}{' '}
+            {I18nUtils.getMessage('popup_html_pending')}{' '}
           </div>
         </div>
       )}
 
       <FormContainer onSubmit={handleSubmit(handleButtonClick)}>
-        <div className="text">{chrome.i18n.getMessage(text)}</div>
+        <div className="text">{I18nUtils.getMessage(text)}</div>
         <Separator fullSize type="horizontal" />
         <div className="form-fields">
           <div className="amount-panel">
@@ -295,9 +296,7 @@ const Conversion = ({
 const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.hive.activeAccount,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(
-      state.hive.activeRpc?.testnet!,
-    ),
+    currencyLabels: (state.chain as HiveChain).mainTokens,
     conversionType: state.navigation.stack[0].params
       .conversionType as ConversionType,
     conversions: state.hive.conversions as ConversionInterface[],
@@ -319,4 +318,4 @@ const connector = connect(mapStateToProps, {
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export const ConversionComponent = connector(Conversion);
+export const ConversionComponent = connector(ConversionPage);

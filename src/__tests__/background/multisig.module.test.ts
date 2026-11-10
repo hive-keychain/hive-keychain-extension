@@ -65,6 +65,12 @@ jest.mock('src/config', () => ({
     },
     vault: { portName: 'vault-connection' },
     keyless: { host: 'https://hive-auth.test/' },
+    hiveEngine: {
+      mainnet: 'ssc-mainnet-hive',
+      accountHistoryApi: 'https://history.hive-engine.com/',
+      rpc: 'https://api.hive-engine.com/rpc',
+      maxSpread: 100,
+    },
   },
 }));
 

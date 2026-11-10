@@ -1,6 +1,7 @@
 import { joiResolver } from '@hookform/resolvers/joi';
 import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
 import { TransactionOptions } from '@interfaces/keys.interface';
+import { Screen } from '@interfaces/screen.interface';
 import { ResourceItemComponent } from '@popup/hive/pages/app-container/home/resources-section/resource-item/resource-item.component';
 import {
   addToLoadingList,
@@ -15,16 +16,17 @@ import {
   navigateToWithParams,
 } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { HiveChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
+import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { ConfirmationPageFieldType } from 'src/common-ui/confirmation-page/confirmation-field.interface';
-import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
-import { FormContainer } from 'src/common-ui/form-container/form-container.component';
+import { HiveConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -35,13 +37,12 @@ import {
   loadPendingOutgoingUndelegations,
 } from 'src/popup/hive/actions/delegations.actions';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
-import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { DelegationUtils } from 'src/popup/hive/utils/delegation.utils';
 import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
-import { Screen } from 'src/reference-data/screen.enum';
 import { FormUtils } from 'src/utils/form.utils';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface DelegationForm {
   username: string;
   amount: number;
@@ -228,7 +229,7 @@ const Delegations = ({
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
-      message: chrome.i18n.getMessage('popup_html_confirm_delegation', [
+      message: I18nUtils.getMessage('popup_html_confirm_delegation', [
         stringifiedAmount,
         `@${form.username}`,
       ]),
@@ -270,8 +271,8 @@ const Delegations = ({
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
             await FavoriteUserUtils.saveFavoriteUser(
-              form.username,
               activeAccount,
+              form.username,
             );
 
             if (success.isUsingMultisig) {
@@ -286,14 +287,14 @@ const Delegations = ({
           removeFromLoadingList('html_popup_delegation_operation');
         }
       },
-    } as ConfirmationPageParams);
+    } as HiveConfirmationPageParams);
   };
 
   const cancelDelegation = (form: DelegationForm) => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
 
-      message: chrome.i18n.getMessage(
+      message: I18nUtils.getMessage(
         'popup_html_confirm_cancel_delegation_message',
       ),
       fields: [
@@ -326,8 +327,8 @@ const Delegations = ({
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
             await FavoriteUserUtils.saveFavoriteUser(
-              form.username,
               activeAccount,
+              form.username,
             );
 
             if (success.isUsingMultisig) {
@@ -342,7 +343,7 @@ const Delegations = ({
           removeFromLoadingList('html_popup_cancel_delegation_operation');
         }
       },
-    } as ConfirmationPageParams);
+    } as HiveConfirmationPageParams);
   };
 
   const getFormParams = () => {
@@ -376,7 +377,7 @@ const Delegations = ({
 
       <div className="available-panel">
         <div className="label">
-          {chrome.i18n.getMessage('popup_html_available')}
+          {I18nUtils.getMessage('popup_html_available')}
         </div>
         <div className="value">
           {available && (
@@ -389,7 +390,7 @@ const Delegations = ({
       </div>
       <FormContainer onSubmit={handleSubmit(handleButtonClick)}>
         <div className="text">
-          {chrome.i18n.getMessage('popup_html_delegations_text')}
+          {I18nUtils.getMessage('popup_html_delegations_text')}
         </div>
         <Separator type="horizontal" />
         <div className="form-fields">
@@ -447,9 +448,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     localAccounts: state.hive.accounts,
     activeAccount: state.hive.activeAccount,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(
-      state.hive.activeRpc?.testnet!,
-    ),
+    currencyLabels: (state.chain as HiveChain).mainTokens,
     delegations: state.hive.delegations,
     globalProperties: state.hive.globalProperties.globals,
     formParams: state.navigation.stack[0].previousParams?.formParams

@@ -4,7 +4,7 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
 type Props = { title: string };
 
-const DialogHeader = ({ title }: Props) => {
+export const DialogHeader = ({ title }: Props) => {
   return (
     <div className="dialog-header">
       <SVGIcon icon={SVGIcons.KEYCHAIN_LOGO_ROUND_SMALL} className="logo" />
@@ -12,5 +12,3 @@ const DialogHeader = ({ title }: Props) => {
     </div>
   );
 };
-
-export default DialogHeader;

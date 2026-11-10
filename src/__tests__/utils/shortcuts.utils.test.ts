@@ -1,5 +1,14 @@
-import { Screen } from '@reference-data/screen.enum';
-import ShortcutsUtils from 'src/utils/shortcuts.utils';
+import { Screen } from '@interfaces/screen.interface';
+import {
+  ShortcutAccountType,
+  ShortcutActionType,
+} from '@interfaces/shortcut.interface';
+import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
+import { HiveScreen } from '@popup/hive/reference-data/hive-screen.enum';
+import { MultichainScreen } from '@popup/multichain/reference-data/multichain-screen.enum';
+import ShortcutsUtils, {
+  getShortcutNavigationScreenMessageKey,
+} from 'src/utils/shortcuts.utils';
 
 describe('shortcuts.utils', () => {
   describe('isEditableTarget', () => {
@@ -35,12 +44,16 @@ describe('shortcuts.utils', () => {
       expect(ShortcutsUtils.normalizeShortcutCombo('shift+ctrl+a')).toBe(
         'ctrl+shift+a',
       );
-      expect(ShortcutsUtils.normalizeShortcutCombo('⌘+⇧+W')).toBe('shift+command+w');
+      expect(ShortcutsUtils.normalizeShortcutCombo('⌘+⇧+W')).toBe(
+        'shift+command+w',
+      );
       expect(ShortcutsUtils.normalizeShortcutCombo('')).toBe('');
     });
 
     it('normalizes space and arrow keys', () => {
-      expect(ShortcutsUtils.normalizeShortcutCombo('alt+Space')).toBe('alt+space');
+      expect(ShortcutsUtils.normalizeShortcutCombo('alt+Space')).toBe(
+        'alt+space',
+      );
       expect(ShortcutsUtils.normalizeShortcutCombo('meta+ArrowUp')).toBe(
         'command+up',
       );
@@ -50,7 +63,9 @@ describe('shortcuts.utils', () => {
   describe('formatShortcutCombo', () => {
     it('formats modifiers with symbols and title-cases keys', () => {
       expect(ShortcutsUtils.formatShortcutCombo('ctrl+shift+a')).toBe('⌃+⇧+A');
-      expect(ShortcutsUtils.formatShortcutCombo('command+space')).toBe('⌘+Space');
+      expect(ShortcutsUtils.formatShortcutCombo('command+space')).toBe(
+        '⌘+Space',
+      );
     });
   });
 
@@ -61,7 +76,9 @@ describe('shortcuts.utils', () => {
         ctrlKey: true,
         shiftKey: true,
       });
-      expect(ShortcutsUtils.buildShortcutComboFromEvent(ev)).toBe('ctrl+shift+b');
+      expect(ShortcutsUtils.buildShortcutComboFromEvent(ev)).toBe(
+        'ctrl+shift+b',
+      );
     });
 
     it('returns null for bare modifier keys', () => {
@@ -89,10 +106,103 @@ describe('shortcuts.utils', () => {
   describe('screen lists', () => {
     it('includes core navigation targets', () => {
       expect(ShortcutsUtils.NAVIGATION_SCREENS).toContain(Screen.HOME_PAGE);
+      expect(ShortcutsUtils.NAVIGATION_SCREENS).toContain(
+        EvmScreen.EVM_ACCOUNTS_SETTINGS,
+      );
+      expect(ShortcutsUtils.NAVIGATION_SCREENS).not.toContain(
+        HiveScreen.SETTINGS_RPC_NODES,
+      );
       expect(ShortcutsUtils.CURRENCY_REQUIRED_SCREENS).toContain(
         Screen.TRANSFER_FUND_PAGE,
       );
-      expect(ShortcutsUtils.TOKEN_REQUIRED_SCREENS).toContain(Screen.TOKENS_HISTORY);
+      expect(ShortcutsUtils.TOKEN_REQUIRED_SCREENS).toContain(
+        Screen.TOKENS_HISTORY,
+      );
+    });
+
+    it('defines default presets for theme and detached tab shortcuts', () => {
+      expect(ShortcutsUtils.DEFAULT_SHORTCUTS).toEqual([
+        {
+          id: 'preset-toggle-theme',
+          combo: 'ctrl+alt+t',
+          actionType: ShortcutActionType.TOGGLE_THEME,
+          target: '',
+        },
+        {
+          id: 'preset-open-in-tab',
+          combo: 'ctrl+d',
+          actionType: ShortcutActionType.OPEN_IN_TAB,
+          target: '',
+        },
+      ]);
+    });
+
+    it('adds missing default presets without duplicating existing shortcuts', () => {
+      const shortcuts = ShortcutsUtils.getShortcutsWithDefaultPresets([
+        {
+          id: 'custom-theme',
+          combo: 'ctrl+shift+t',
+          actionType: ShortcutActionType.TOGGLE_THEME,
+          target: '',
+        },
+      ]);
+
+      expect(shortcuts).toEqual([
+        {
+          id: 'custom-theme',
+          combo: 'ctrl+shift+t',
+          actionType: ShortcutActionType.TOGGLE_THEME,
+          target: '',
+        },
+        {
+          id: 'preset-open-in-tab',
+          combo: 'ctrl+d',
+          actionType: ShortcutActionType.OPEN_IN_TAB,
+          target: '',
+        },
+      ]);
+    });
+
+    it('resolves an i18n message key for every shortcut navigation screen', () => {
+      for (const screen of ShortcutsUtils.NAVIGATION_SCREENS) {
+        const key = getShortcutNavigationScreenMessageKey(screen);
+        expect(key).toMatch(/^popup_html_|^html_popup_|^evm_|^dialog_|^hive_/);
+      }
+    });
+
+    it('normalizes legacy settings targets to canonical multichain screens', () => {
+      expect(
+        ShortcutsUtils.normalizeShortcutNavigationTarget(
+          HiveScreen.SETTINGS_RPC_NODES,
+        ),
+      ).toBe(MultichainScreen.SETTINGS_NETWORK);
+      expect(
+        ShortcutsUtils.normalizeShortcutNavigationTarget(
+          EvmScreen.EVM_PROVIDER_SETTINGS,
+        ),
+      ).toBe(MultichainScreen.SETTINGS_EVM);
+    });
+  });
+
+  describe('account target compatibility', () => {
+    it('builds typed account targets', () => {
+      expect(
+        ShortcutsUtils.buildShortcutAccountTarget(
+          ShortcutAccountType.EVM,
+          '0xabc',
+        ),
+      ).toBe('evm:0xabc');
+    });
+
+    it('parses typed and legacy account targets', () => {
+      expect(ShortcutsUtils.parseShortcutAccountTarget('evm:0xabc')).toEqual({
+        accountType: ShortcutAccountType.EVM,
+        accountId: '0xabc',
+      });
+      expect(ShortcutsUtils.parseShortcutAccountTarget('alice')).toEqual({
+        accountType: ShortcutAccountType.HIVE,
+        accountId: 'alice',
+      });
     });
   });
 });

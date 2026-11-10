@@ -57,7 +57,7 @@ const GenericTransaction = ({
       case 'convert':
         return SVGIcons.WALLET_HISTORY_CONVERT;
       default:
-        return SVGIcons.WALLET_HIVE_LOGO;
+        return SVGIcons.WALLET_HISTORY_HIVE;
     }
   };
 

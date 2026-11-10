@@ -1,0 +1,25 @@
+---
+description: Ask before adding a new LocalStorageKeyEnum value to settings export
+alwaysApply: true
+---
+
+# Settings export classification
+
+`LocalStorageKeyEnum` is not exported automatically. Settings export and account backup only include keys in `EXPORTABLE_SETTINGS_KEYS` (`src/reference-data/exportable-settings.list.ts`).
+
+When adding a new `LocalStorageKeyEnum`:
+
+1. Do **not** add it to `EXPORTABLE_SETTINGS_KEYS` yet.
+2. **Ask the user first** whether this key should restore on another install via the settings/account export file. Include what the key stores.
+3. Only update the export list after they confirm **Yes**.
+4. If they say **No**, leave it off the list.
+5. After a **Yes**, also ask/decide import behavior in `src/background/hive/modules/settings.module.ts`: overwrite (default), merge, or skip.
+
+Never propose exporting secrets, encrypted accounts, auth tokens, caches, or session/runtime keys (`__MK`, `ACCOUNTS`, `EVM_ACCOUNTS`, `PORTFOLIO_CLIENT_TOKEN`, request handlers, dialog window IDs, discovered-token caches). Say so and default to not exporting.
+
+Example question:
+
+> New local-storage key `FOO` stores [brief description]. Should it be included in the settings/account export file?
+>
+> - **Yes**: restore this preference on import
+> - **No**: keep it device-local

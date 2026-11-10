@@ -1,0 +1,136 @@
+import { EvmLocalAccountListItem } from '@interfaces/list-item.interface';
+import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
+import React, { SyntheticEvent, useState } from 'react';
+import { EvmAccountImage } from 'src/common-ui/evm/evm-account-image/evm-account-image.component';
+import { SVGIcons } from 'src/common-ui/icons.enum';
+import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
+import type { SortableDragHandleRef } from 'src/common-ui/sortable-list/sortable-list.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import {
+  COPY_GENERIC_MESSAGE_KEY,
+  copyTextWithToast,
+} from 'src/common-ui/toast/copy-toast.utils';
+import FormatUtils from 'src/utils/format.utils';
+
+interface AccountItemProps {
+  isLast: boolean;
+  item: EvmLocalAccountListItem;
+  selectedAccount: string;
+  handleItemClicked: (
+    value: EvmLocalAccountListItem['value']['account']['wallet']['address'],
+  ) => void;
+  closeDropdown: () => void;
+  dragHandleRef: SortableDragHandleRef;
+  isDragging: boolean;
+  isOnMain: boolean;
+}
+
+export const EvmSelectAccountSectionItemComponent = ({
+  item,
+  selectedAccount,
+  isLast,
+  handleItemClicked,
+  closeDropdown,
+  dragHandleRef,
+  isDragging,
+  isOnMain,
+}: AccountItemProps) => {
+  const [hovered, setHovered] = useState<boolean>(false);
+
+  const copyUsernameToClipboard = async (event: SyntheticEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    closeDropdown();
+    void copyTextWithToast(
+      item.value.account.wallet.address,
+      COPY_GENERIC_MESSAGE_KEY,
+    );
+  };
+  const renderCheckedAccount = () => {
+    if (isOnMain)
+      return (
+        <div className="icons-wrapper">
+          {selectedAccount === item.value.account.wallet.address &&
+            !hovered &&
+            !isDragging && (
+              <SVGIcon
+                icon={SVGIcons.SELECT_ACTIVE}
+                className="active-icon"
+                forceHover={hovered}
+                hoverable
+              />
+            )}
+          {(hovered || isDragging) && (
+            <div
+              className={`hovered-icons ${
+                process.env.IS_FIREFOX ? 'firefox' : ''
+              }`}>
+              <div onClick={(event) => copyUsernameToClipboard(event)}>
+                <PreloadedImage
+                  className={'copy-icon'}
+                  src={`/assets/images/select/copy.svg`}
+                />
+              </div>
+              {!process.env.IS_FIREFOX && (
+                <span ref={dragHandleRef}>
+                  <SVGIcon icon={SVGIcons.SELECT_DRAG} className="drag-icon" />
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+      );
+    else if (selectedAccount === item.value.account.wallet.address)
+      return (
+        <SVGIcon
+          icon={SVGIcons.SELECT_ACTIVE}
+          className="active-icon"
+          forceHover={hovered}
+          hoverable
+        />
+      );
+  };
+
+  return (
+    <div
+      className="option"
+      onMouseEnter={() => {
+        setHovered(true);
+      }}
+      onMouseLeave={() => setHovered(false)}>
+      <div
+        data-testid={`select-account-item-${item.value}`}
+        className={`select-account-item ${
+          selectedAccount === item.value.account.wallet.address
+            ? 'selected'
+            : ''
+        }`}
+        onClick={() => {
+          handleItemClicked(item.value.account.wallet.address!);
+          closeDropdown();
+        }}>
+        <EvmAccountImage
+          address={item.value.account.wallet.address}
+          avatar={item.value.addressDetails.avatar}
+        />
+        <div
+          className="selected-account-name"
+          data-testid="selected-account-name">
+          <div className="seed-name">
+            {EvmAccountUtils.getSeedName(item.value.account)}
+          </div>
+          <div className="address-name">
+            {item.value.addressDetails.label ??
+              EvmAccountUtils.getAccountName(item.value.account) ??
+              'No name'}
+          </div>
+          <div className="address">
+            {FormatUtils.shortenString(item.value.account.wallet.address!, 4)}
+          </div>
+        </div>
+        {renderCheckedAccount()}
+      </div>
+      {!isLast && <div className="separator"></div>}
+    </div>
+  );
+};

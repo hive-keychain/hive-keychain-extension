@@ -1,6 +1,6 @@
 import AccountUtils from '@hiveapp/utils/account.utils';
 import { ExtendedAccount } from '@hiveio/dhive';
-import { Screen } from '@reference-data/screen.enum';
+import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -11,10 +11,11 @@ import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
+import { openAddAccountPage } from 'src/__tests__/utils-for-testing/helpers/settings-navigation';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('add-by-auth tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -39,15 +40,7 @@ describe('add-by-auth tests:\n', () => {
       },
     );
     await act(async () => {
-      await userEvent.click(await screen.findByTestId(dataTestIdButton.menu));
-      await userEvent.click(
-        await screen.findByTestId(dataTestIdButton.menuPreFix + Icons.ACCOUNTS),
-      );
-      await userEvent.click(
-        await screen.findByTestId(
-          dataTestIdButton.menuPreFix + Icons.ADD_ACCOUNT,
-        ),
-      );
+      await openAddAccountPage();
       await userEvent.click(
         await screen.findByTestId(dataTestIdButton.addByAuth),
       );
@@ -74,7 +67,7 @@ describe('add-by-auth tests:\n', () => {
     });
     expect(
       await screen.findByText(
-        chrome.i18n.getMessage('popup_html_account_already_existing'),
+        I18nUtils.getMessage('popup_html_account_already_existing'),
       ),
     ).toBeInTheDocument();
   });
@@ -92,7 +85,7 @@ describe('add-by-auth tests:\n', () => {
       await userEvent.click(await screen.findByTestId(dataTestIdButton.submit));
     });
     expect(
-      await screen.findByText(chrome.i18n.getMessage('popup_accounts_fill')),
+      await screen.findByText(I18nUtils.getMessage('popup_accounts_fill')),
     ).toBeInTheDocument();
   });
 
@@ -109,7 +102,7 @@ describe('add-by-auth tests:\n', () => {
       await userEvent.click(await screen.findByTestId(dataTestIdButton.submit));
     });
     expect(
-      await screen.findByText(chrome.i18n.getMessage('popup_accounts_fill')),
+      await screen.findByText(I18nUtils.getMessage('popup_accounts_fill')),
     ).toBeInTheDocument();
   });
 
@@ -127,7 +120,7 @@ describe('add-by-auth tests:\n', () => {
     });
     expect(
       await screen.findByText(
-        chrome.i18n.getMessage('popup_no_auth_account', ['theghost1980']),
+        I18nUtils.getMessage('popup_no_auth_account', ['theghost1980']),
       ),
     ).toBeInTheDocument();
   });
@@ -147,7 +140,7 @@ describe('add-by-auth tests:\n', () => {
     });
     expect(
       await screen.findByText(
-        chrome.i18n.getMessage('popup_accounts_incorrect_user'),
+        I18nUtils.getMessage('popup_accounts_incorrect_user'),
       ),
     ).toBeInTheDocument();
   });
@@ -171,7 +164,7 @@ describe('add-by-auth tests:\n', () => {
     });
     expect(
       await screen.findByText(
-        chrome.i18n.getMessage('popup_accounts_no_auth', [
+        I18nUtils.getMessage('popup_accounts_no_auth', [
           mk.user.one,
           'theghost1980',
         ]),

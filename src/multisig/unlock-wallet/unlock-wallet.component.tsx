@@ -1,4 +1,4 @@
-import { BackgroundMessage } from '@background/background-message.interface';
+import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import { MultisigUnlockData } from '@interfaces/multisig.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useState } from 'react';
@@ -7,7 +7,9 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface UnlockWalletProps {
   data: MultisigUnlockData;
 }
@@ -16,7 +18,7 @@ export const UnlockWalletComponent = ({ data }: UnlockWalletProps) => {
   const [password, setPassword] = useState('');
 
   const login = () => {
-    chrome.runtime.sendMessage({
+    CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.MULTISIG_UNLOCK_WALLET,
       value: password,
     } as BackgroundMessage);
@@ -37,7 +39,7 @@ export const UnlockWalletComponent = ({ data }: UnlockWalletProps) => {
         dataTestId={'password-input'}
       />
       {data.feedback && (
-        <div className="feedback">{chrome.i18n.getMessage(data.feedback)}</div>
+        <div className="feedback">{I18nUtils.getMessage(data.feedback)}</div>
       )}
       <div className="divider"></div>
       <div className="action-panel">

@@ -1,0 +1,334 @@
+import {
+  EvmLocalAccountListItem,
+  EvmSelectAccountItem,
+} from '@interfaces/list-item.interface';
+import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
+import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
+import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmSelectAccountSectionItemComponent } from '@popup/evm/pages/home/evm-select-account-section/evm-select-account-section-item.component';
+import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
+import { EvmAccountUtils } from '@popup/evm/utils/evm-account.utils';
+import {
+  EvmAddressDetail,
+  EvmAddressesUtils,
+} from '@popup/evm/utils/evm-addresses.utils';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import { setActiveAccountType } from '@popup/multichain/actions/active-account-type.actions';
+import {
+  ChainType,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
+import { RootState } from '@popup/multichain/store';
+import React, { useEffect, useRef, useState } from 'react';
+import Select, { SelectRenderer } from 'react-dropdown-select';
+import { ConnectedProps, connect } from 'react-redux';
+import { EvmAccountImage } from 'src/common-ui/evm/evm-account-image/evm-account-image.component';
+import { SVGIcons } from 'src/common-ui/icons.enum';
+import { SortableListComponent } from 'src/common-ui/sortable-list/sortable-list.component';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import FormatUtils from 'src/utils/format.utils';
+
+import { I18nUtils } from 'src/utils/i18n.utils';
+interface Props {
+  background?: 'white';
+  fullSize?: boolean;
+  isOnMain?: boolean;
+  removeBorder?: boolean;
+}
+
+const SelectAccountSection = ({
+  background,
+  fullSize,
+  accounts,
+  activeAccount,
+  chain,
+  mk,
+  loadEvmActiveAccount,
+  setActiveAccountType,
+  setEvmAccounts,
+  navigateTo,
+  isOnMain = false,
+  removeBorder,
+}: PropsFromRedux & Props) => {
+  const defaultOptions: EvmLocalAccountListItem[] = [];
+
+  const [isOpened, setIsOpened] = useState(false);
+  const [options, setOptions] = useState(defaultOptions);
+  const [selectedAddress, setSelectedAddress] =
+    useState<EvmSelectAccountItem>();
+  const initRequestId = useRef(0);
+  const isMountedRef = useRef(false);
+  const setStateIfMounted = <
+    TSetter extends React.Dispatch<React.SetStateAction<any>>,
+  >(
+    setter: TSetter,
+    value: Parameters<TSetter>[0],
+  ) => {
+    if (!isMountedRef.current) {
+      return;
+    }
+    setter(value);
+  };
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      initRequestId.current += 1;
+    };
+  }, []);
+
+  useEffect(() => {
+    void init();
+  }, [accounts, activeAccount.address, activeAccount.wallet?.address, chain?.chainId]);
+
+  const buildPlaceholderAddressDetail = (
+    account: EvmAccount,
+  ): EvmAddressDetail => ({
+    fullAddress: account.wallet.address,
+    formattedAddress: EvmFormatUtils.formatAddress(account.wallet.address),
+    label: EvmAccountUtils.getAccountName(account),
+    avatar: undefined,
+  });
+
+  const init = async () => {
+    const currentRequestId = ++initRequestId.current;
+
+    if (accounts && activeAccount.address) {
+      const visibleAccounts = accounts.filter((account) => !account.hide);
+
+      // Build options immediately with placeholder details so the selector
+      // renders without waiting for async ENS / label lookups.
+      const placeholderOpts = visibleAccounts.map((account: EvmAccount) => ({
+        label: account.wallet.address,
+        value: {
+          account: account,
+          addressDetails: buildPlaceholderAddressDetail(account),
+        },
+      }));
+
+      if (initRequestId.current !== currentRequestId) {
+        return;
+      }
+
+      setStateIfMounted(setOptions, placeholderOpts);
+      const placeholderSelected = placeholderOpts.find(
+        (opt) =>
+          opt.value.account.wallet.address === activeAccount.wallet.address,
+      );
+      if (placeholderSelected) {
+        setStateIfMounted(setSelectedAddress, placeholderSelected.value);
+      }
+
+      // Enrich with full address details (ENS, avatar, custom labels) in the
+      // background and update state once ready.
+      const enrichedOpts = await Promise.all(
+        visibleAccounts.map(async (account: EvmAccount) => ({
+          label: account.wallet.address,
+          value: {
+            account: account,
+            addressDetails: await EvmAddressesUtils.getAddressDetails(
+              account.wallet.address,
+              chain!.chainId,
+              false,
+              { localAccounts: accounts },
+            ),
+          },
+        })),
+      );
+
+      if (initRequestId.current !== currentRequestId) {
+        return;
+      }
+
+      setStateIfMounted(setOptions, enrichedOpts);
+      const enrichedSelected = enrichedOpts.find(
+        (opt) =>
+          opt.value.account.wallet.address === activeAccount.wallet.address,
+      );
+      if (enrichedSelected) {
+        setStateIfMounted(setSelectedAddress, enrichedSelected.value);
+      }
+    }
+  };
+
+  const handleItemClicked = async (address: string) => {
+    const itemClicked = accounts.find(
+      (account: EvmAccount) => account.wallet.address === address,
+    );
+    if (itemClicked) {
+      await EvmWalletUtils.promoteConnectedWalletAddress(address);
+      setActiveAccountType(ChainType.EVM);
+      loadEvmActiveAccount(chain, itemClicked?.wallet);
+      handleClickOnSelector();
+    }
+  };
+
+  const reorderAccounts = async (
+    sourceIndex: number,
+    destinationIndex: number,
+  ) => {
+    if (destinationIndex === sourceIndex) return;
+
+    const list = Array.from(options);
+    const [removed] = list.splice(sourceIndex, 1);
+    list.splice(destinationIndex, 0, removed);
+    setStateIfMounted(setOptions, list);
+
+    const reorderedAccounts = await EvmWalletUtils.reorderAccounts(
+      list.map((option) => option.value.account),
+      mk,
+    );
+    setEvmAccounts(reorderedAccounts);
+  };
+
+  const handleClickOnSelector = () => {
+    setStateIfMounted(setIsOpened, (previousState) => !previousState);
+  };
+
+  const customLabelRender = (
+    selectProps: SelectRenderer<EvmLocalAccountListItem>,
+  ) => {
+    return (
+      <div
+        className={`selected-account-panel ${fullSize ? 'fullsize' : ''}`}
+        onClick={() => {
+          handleClickOnSelector();
+        }}>
+        <EvmAccountImage
+          address={selectedAddress?.account.wallet.address}
+          avatar={selectedAddress?.addressDetails.avatar}
+        />
+        <div
+          className="selected-account-name"
+          data-testid="selected-account-name">
+          <div className="seed-name">
+            {EvmAccountUtils.getSeedName(selectedAddress?.account!)}
+          </div>
+          <div className="address-name">
+            {selectedAddress?.addressDetails.label ??
+              EvmAccountUtils.getAccountName(selectedAddress?.account!) ??
+              'No name'}
+          </div>
+          <div className="address">
+            {FormatUtils.shortenString(
+              selectedAddress?.account.wallet.address!,
+              4,
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const customHandleRenderer = ({
+    props,
+    state,
+    methods,
+  }: SelectRenderer<EvmLocalAccountListItem>) => {
+    return (
+      <SVGIcon
+        className="custom-select-handle"
+        icon={isOpened ? SVGIcons.SELECT_ARROW_UP : SVGIcons.SELECT_ARROW_DOWN}
+        onClick={() => {
+          handleClickOnSelector();
+        }}
+      />
+    );
+  };
+
+  const customDropdownRenderer = ({
+    props,
+    state,
+    methods,
+  }: SelectRenderer<EvmLocalAccountListItem>) => {
+    return (
+      <div className="custom-select-dropdown">
+        <SortableListComponent
+          items={options}
+          getItemId={(option) => option.value.account.wallet.address}
+          disabled={!isOnMain}
+          onReorder={(sourceIndex, destinationIndex) =>
+            void reorderAccounts(sourceIndex, destinationIndex)
+          }>
+          {(option, index, { dragHandleRef, isDragging }) => (
+            <EvmSelectAccountSectionItemComponent
+              key={`option-${option.value.account.wallet.address!}`}
+              isLast={options.length - 1 === index}
+              item={option}
+              selectedAccount={selectedAddress?.account.wallet.address!}
+              handleItemClicked={(
+                value: EvmLocalAccountListItem['value']['account']['wallet']['address'],
+              ) => handleItemClicked(value)}
+              isOnMain={isOnMain}
+              dragHandleRef={dragHandleRef}
+              isDragging={isDragging}
+              closeDropdown={() => methods.dropDown('close')}
+            />
+          )}
+        </SortableListComponent>
+        <div
+          className="manage-accounts-panel"
+          onClick={handleOnManageAccountsClicked}>
+          <SVGIcon icon={SVGIcons.MENU_ACCOUNTS_MANAGE_ACCOUNTS} />
+          <div className="text">
+            {I18nUtils.getMessage('manage_accounts')}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const handleOnManageAccountsClicked = () => {
+    navigateTo(EvmScreen.EVM_ACCOUNTS_SETTINGS);
+  };
+  return (
+    <>
+      {selectedAddress && options && (
+        <div
+          className={`evm-select-account-section ${
+            fullSize ? 'fullsize' : ''
+          } ${isOpened ? 'opened' : 'closed'} ${isOnMain ? 'main-page' : ''}`}>
+          <Select
+            keepOpen
+            values={[selectedAddress as any]}
+            options={options}
+            onChange={() => undefined}
+            contentRenderer={customLabelRender}
+            className={`select-account-select ${background ? background : ''} ${
+              removeBorder ? 'remove-border' : ''
+            }`}
+            dropdownHandleRenderer={customHandleRenderer}
+            dropdownRenderer={customDropdownRenderer}
+          />
+          <div
+            className={`overlay ${isOpened ? 'opened' : 'closed'}`}
+            onClick={() => {
+              setStateIfMounted(setIsOpened, false);
+            }}></div>
+        </div>
+      )}
+    </>
+  );
+};
+
+const mapStateToProps = (state: RootState) => {
+  return {
+    accounts: state.evm.accounts,
+    activeAccount: state.evm.activeAccount,
+    chain: state.chain as EvmChain,
+    mk: state.mk,
+  };
+};
+
+const connector = connect(mapStateToProps, {
+  loadEvmActiveAccount,
+  setActiveAccountType,
+  setEvmAccounts,
+  navigateTo,
+});
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+export const EvmSelectAccountSectionComponent = connector(SelectAccountSection);
