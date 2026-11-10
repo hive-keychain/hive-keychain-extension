@@ -157,4 +157,54 @@ describe('claim.module tests:\n', () => {
     );
     expect(sClaimSavings).not.toHaveBeenCalled();
   });
+
+  it('skips auto-claim when get_accounts does not return an account list', async () => {
+    jest.spyOn(MkModule, 'getMk').mockResolvedValue(mk.user.one);
+    LocalStorageUtils.getMultipleValueFromLocalStorage = jest
+      .fn()
+      .mockResolvedValue({
+        claimAccounts: { 'keychain.tests': true },
+        claimRewards: undefined,
+        claimSavings: undefined,
+      });
+    AccountUtils.getExtendedAccounts = jest
+      .fn()
+      .mockResolvedValue({ not: 'a list' });
+    const getLocalAccounts = jest
+      .spyOn(BgdAccountsUtils, 'getAccountsFromLocalStorage')
+      .mockResolvedValue([accounts.local.justTwoKeys]);
+    const claimAccounts = jest
+      .spyOn(AccountUtils, 'claimAccounts')
+      .mockResolvedValue(undefined);
+    const loggerError = jest.spyOn(Logger, 'error');
+
+    await expect(ClaimModule.start()).resolves.toBeUndefined();
+
+    expect(loggerError).toHaveBeenCalledWith(
+      'Auto-claim skipped because get_accounts did not return an account list',
+    );
+    expect(getLocalAccounts).not.toHaveBeenCalled();
+    expect(claimAccounts).not.toHaveBeenCalled();
+  });
+
+  it('logs and continues when auto-claim throws', async () => {
+    jest.spyOn(MkModule, 'getMk').mockResolvedValue(mk.user.one);
+    LocalStorageUtils.getMultipleValueFromLocalStorage = jest
+      .fn()
+      .mockResolvedValue({
+        claimRewards: { 'keychain.tests': true },
+        claimAccounts: undefined,
+        claimSavings: undefined,
+      });
+    AccountUtils.getExtendedAccounts = jest
+      .fn()
+      .mockRejectedValue(new Error('rpc unavailable'));
+    const loggerError = jest.spyOn(Logger, 'error');
+
+    await expect(ClaimModule.start()).resolves.toBeUndefined();
+
+    expect(loggerError).toHaveBeenCalledWith(
+      'Auto-claim failed: rpc unavailable',
+    );
+  });
 });

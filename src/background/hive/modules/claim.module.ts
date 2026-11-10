@@ -24,26 +24,30 @@ const start = async () => {
 };
 
 const alarmHandler = async () => {
-  const localStorage = await LocalStorageUtils.getMultipleValueFromLocalStorage(
-    [
-      LocalStorageKeyEnum.CLAIM_ACCOUNTS,
-      LocalStorageKeyEnum.CLAIM_REWARDS,
-      LocalStorageKeyEnum.CLAIM_SAVINGS,
-    ],
-  );
-  const mk = await MkModule.getMk();
-  const claimAccounts = localStorage[LocalStorageKeyEnum.CLAIM_ACCOUNTS];
-  const claimRewards = localStorage[LocalStorageKeyEnum.CLAIM_REWARDS];
-  const claimSavings = localStorage[LocalStorageKeyEnum.CLAIM_SAVINGS];
-  if (!mk) return;
-  if (claimAccounts) {
-    await initClaimAccounts(claimAccounts, mk);
-  }
-  if (claimRewards) {
-    await initClaimRewards(claimRewards, mk);
-  }
-  if (claimSavings) {
-    await initClaimSavings(claimSavings, mk);
+  try {
+    const localStorage =
+      await LocalStorageUtils.getMultipleValueFromLocalStorage([
+        LocalStorageKeyEnum.CLAIM_ACCOUNTS,
+        LocalStorageKeyEnum.CLAIM_REWARDS,
+        LocalStorageKeyEnum.CLAIM_SAVINGS,
+      ]);
+    const mk = await MkModule.getMk();
+    const claimAccounts = localStorage[LocalStorageKeyEnum.CLAIM_ACCOUNTS];
+    const claimRewards = localStorage[LocalStorageKeyEnum.CLAIM_REWARDS];
+    const claimSavings = localStorage[LocalStorageKeyEnum.CLAIM_SAVINGS];
+    if (!mk) return;
+    if (claimAccounts) {
+      await initClaimAccounts(claimAccounts, mk);
+    }
+    if (claimRewards) {
+      await initClaimRewards(claimRewards, mk);
+    }
+    if (claimSavings) {
+      await initClaimSavings(claimSavings, mk);
+    }
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : 'Auto-claim failed';
+    Logger.error(`Auto-claim failed: ${detail}`);
   }
 };
 
@@ -63,8 +67,20 @@ const initClaimRewards = async (
   }
 };
 
-const iterateClaimRewards = async (users: string[], mk: string) => {
+const getExtendedAccountsForClaim = async (users: string[]) => {
   const userExtendedAccounts = await AccountUtils.getExtendedAccounts(users);
+  if (!Array.isArray(userExtendedAccounts)) {
+    Logger.error(
+      'Auto-claim skipped because get_accounts did not return an account list',
+    );
+    return undefined;
+  }
+  return userExtendedAccounts;
+};
+
+const iterateClaimRewards = async (users: string[], mk: string) => {
+  const userExtendedAccounts = await getExtendedAccountsForClaim(users);
+  if (!userExtendedAccounts) return;
   const localAccounts: LocalAccount[] =
     await BgdAccountsUtils.getAccountsFromLocalStorage(mk);
   for (const userAccount of userExtendedAccounts) {
@@ -110,7 +126,8 @@ const initClaimSavings = async (
 };
 
 const iterateClaimSavings = async (users: string[], mk: string) => {
-  const userExtendedAccounts = await AccountUtils.getExtendedAccounts(users);
+  const userExtendedAccounts = await getExtendedAccountsForClaim(users);
+  if (!userExtendedAccounts) return;
   const localAccounts: LocalAccount[] =
     await BgdAccountsUtils.getAccountsFromLocalStorage(mk);
 
@@ -182,7 +199,8 @@ const initClaimAccounts = async (
 };
 
 const iterateClaimAccounts = async (users: string[], mk: string) => {
-  const userExtendedAccounts = await AccountUtils.getExtendedAccounts(users);
+  const userExtendedAccounts = await getExtendedAccountsForClaim(users);
+  if (!userExtendedAccounts) return;
   const localAccounts: LocalAccount[] =
     await BgdAccountsUtils.getAccountsFromLocalStorage(mk);
   for (const userAccount of userExtendedAccounts) {
