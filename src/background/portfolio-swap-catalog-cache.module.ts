@@ -11,8 +11,8 @@ let initialized = false;
 const warmCache = async () => {
   try {
     await PortfolioSwapCatalogCacheUtils.ensureSwapCatalogCached();
-  } catch (error) {
-    Logger.error('Unable to warm portfolio swap catalog cache', error);
+  } catch {
+    Logger.error('Unable to warm portfolio swap catalog cache');
   }
 };
 

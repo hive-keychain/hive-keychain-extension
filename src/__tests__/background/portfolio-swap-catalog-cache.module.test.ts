@@ -82,4 +82,35 @@ describe('PortfolioSwapCatalogCacheModule', () => {
       PortfolioSwapCatalogCacheUtils.ensureSwapCatalogCached,
     ).toHaveBeenCalledTimes(3);
   });
+
+  it('logs a catalog warm failure without the upstream error body', async () => {
+    jest.resetModules();
+    const error = jest.fn();
+    jest.doMock('src/utils/logger.utils', () => ({
+      __esModule: true,
+      default: { error },
+    }));
+
+    const { PortfolioSwapCatalogCacheModule: cacheModule } = await import(
+      '@background/portfolio-swap-catalog-cache.module'
+    );
+    const { PortfolioSwapCatalogCacheUtils: cacheUtils } = await import(
+      'src/portfolio/portfolio-swap-catalog-cache.utils'
+    );
+    const upstreamError = new Error(
+      'Invalid prisma.canonicalAsset.findMany() invocation',
+    );
+    (cacheUtils.ensureSwapCatalogCached as jest.Mock).mockRejectedValueOnce(
+      upstreamError,
+    );
+
+    cacheModule.start();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(error).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledWith(
+      'Unable to warm portfolio swap catalog cache',
+    );
+  });
 });
