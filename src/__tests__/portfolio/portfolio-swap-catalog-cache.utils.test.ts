@@ -179,7 +179,7 @@ describe('PortfolioSwapCatalogCacheUtils', () => {
     expect(LocalStorageUtils.saveValueInLocalStorage).not.toHaveBeenCalled();
   });
 
-  it('leaves a valid cache untouched when refresh fails', async () => {
+  it('preserves a stale cache and skips retries during the failure cooldown', async () => {
     const stalePayload = {
       response: swapCatalog,
       fetchedAt:
@@ -196,9 +196,23 @@ describe('PortfolioSwapCatalogCacheUtils', () => {
       PortfolioSwapCatalogCacheUtils.ensureSwapCatalogCached(),
     ).rejects.toThrow('offline');
     await expect(
+      PortfolioSwapCatalogCacheUtils.ensureSwapCatalogCached(),
+    ).resolves.toEqual(swapCatalog);
+    await expect(
       PortfolioSwapCatalogCacheUtils.getCachedSwapCatalog(),
     ).resolves.toEqual(stalePayload);
+    expect(PortfolioApiUtils.listAvailableAssets).toHaveBeenCalledTimes(1);
     expect(LocalStorageUtils.saveValueInLocalStorage).not.toHaveBeenCalled();
+
+    jest.spyOn(Date, 'now').mockReturnValue(now + 61 * 1000);
+    (PortfolioApiUtils.listAvailableAssets as jest.Mock).mockResolvedValue(
+      swapCatalog,
+    );
+
+    await expect(
+      PortfolioSwapCatalogCacheUtils.ensureSwapCatalogCached(),
+    ).resolves.toEqual(swapCatalog);
+    expect(PortfolioApiUtils.listAvailableAssets).toHaveBeenCalledTimes(2);
   });
 
   it('treats the exact one-hour boundary as stale', async () => {

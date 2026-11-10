@@ -677,7 +677,6 @@ export const Portfolio = ({
   const historyLoadRequestIdRef = useRef(0);
   const historyLoadedPageRef = useRef(1);
   const isHistoryLoadingMoreRef = useRef(false);
-  const swapAvailableAssetsLoadedRef = useRef(false);
   const isSwapAvailableAssetsLoadInFlightRef = useRef(false);
   const setupEvmChainsPromiseRef = useRef<Promise<EvmChain[]> | null>(null);
   const hiveTokensPromiseRef = useRef<
@@ -2534,11 +2533,6 @@ export const Portfolio = ({
   };
 
   const loadSwapAvailableAssets = async () => {
-    if (swapAvailableAssetsLoadedRef.current) {
-      setHasLoadedSwapAvailableAssets(true);
-      return;
-    }
-
     if (isSwapAvailableAssetsLoadInFlightRef.current) {
       return;
     }
@@ -2557,7 +2551,11 @@ export const Portfolio = ({
         );
         setHasLoadedSwapAvailableAssets(true);
         setIsSwapAvailableAssetsLoading(false);
-        swapAvailableAssetsLoadedRef.current = true;
+        if (
+          PortfolioSwapCatalogCacheUtils.isSwapCatalogCacheFresh(cached)
+        ) {
+          return;
+        }
       }
 
       const response =
@@ -2566,7 +2564,6 @@ export const Portfolio = ({
       setPortfolioChains((current) =>
         mergePortfolioChainRecords(current, response.chains),
       );
-      swapAvailableAssetsLoadedRef.current = response.assets.length > 0;
     } catch (error) {
       Logger.error('Unable to load swap available assets', error);
       if (!hasCachedCatalog) {
@@ -2578,14 +2575,6 @@ export const Portfolio = ({
       setHasLoadedSwapAvailableAssets(true);
     }
   };
-
-  const preloadSwapAvailableAssets = (): Promise<void> => {
-    return loadSwapAvailableAssets();
-  };
-
-  useEffect(() => {
-    void preloadSwapAvailableAssets();
-  }, []);
 
   useEffect(() => {
     if (!isFiatRampSection(section) || isCurrentSectionComingSoon) {

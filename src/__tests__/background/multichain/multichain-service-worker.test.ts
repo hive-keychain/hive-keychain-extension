@@ -1,5 +1,6 @@
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { VaultCommand, VaultKey } from '@reference-data/vault-message-key.enum';
+import { PortfolioApiUtils } from 'src/portfolio/portfolio-api.utils';
 
 jest.mock('@background/evm/evm-service-worker', () => ({
   EvmServiceWorker: { initializeServiceWorker: jest.fn() },
@@ -27,8 +28,8 @@ jest.mock('@background/multichain/side-panel-toolbar.lifecycle', () => ({
     handleToolbarClickWhileSidePanelSessionActive: jest.fn(),
   },
 }));
-jest.mock('@background/portfolio-swap-catalog-cache.module', () => ({
-  PortfolioSwapCatalogCacheModule: { start: jest.fn() },
+jest.mock('src/portfolio/portfolio-api.utils', () => ({
+  PortfolioApiUtils: { listAvailableAssets: jest.fn() },
 }));
 jest.mock('@background/vault.module', () => ({
   __esModule: true,
@@ -114,6 +115,30 @@ describe('multichain service worker message routing', () => {
         jest.fn(),
       ),
     ).toBe(false);
+  });
+
+  it('does not request the swap catalog on startup, unlock, or vault load', async () => {
+    const addListenerSpy = jest.spyOn(chrome.runtime.onMessage, 'addListener');
+    Object.defineProperty(chrome, 'action', {
+      configurable: true,
+      value: { onClicked: { addListener: jest.fn() } },
+    });
+
+    await import('@background/multichain/multichain-service-worker');
+    const listener = addListenerSpy.mock.calls[0][0];
+    listener(
+      { command: BackgroundCommand.VAULT_LOADED },
+      internalSender(),
+      jest.fn(),
+    );
+    listener(
+      { command: BackgroundCommand.EVM_WALLET_LOCK_STATE_CHANGED },
+      internalSender(),
+      jest.fn(),
+    );
+    await Promise.resolve();
+
+    expect(PortfolioApiUtils.listAvailableAssets).not.toHaveBeenCalled();
   });
 
   it('sends the Firefox master password back to the popup', async () => {

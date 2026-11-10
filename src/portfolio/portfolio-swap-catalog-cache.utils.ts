@@ -6,6 +6,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
 const PORTFOLIO_SWAP_CATALOG_TTL_MS = 60 * 60 * 1000;
+const PORTFOLIO_SWAP_CATALOG_FAILURE_COOLDOWN_MS = 60 * 1000;
 const PORTFOLIO_SWAP_CATALOG_CACHE_VERSION = 1;
 const BASE64_CHUNK_SIZE = 32_768;
 
@@ -23,6 +24,15 @@ interface StoredPortfolioSwapCatalogCachePayload {
 }
 
 let refreshPromise: Promise<PortfolioAvailableAssetsResponse> | null = null;
+let lastRefreshFailureAt: number | null = null;
+
+const getEmptySwapCatalogResponse = (): PortfolioAvailableAssetsResponse => ({
+  mode: 'swap',
+  direction: null,
+  sourceAssetId: null,
+  assets: [],
+  chains: {},
+});
 
 const parseSwapCatalogResponse = (
   value: unknown,
@@ -180,6 +190,18 @@ const refreshSwapCatalog = (): Promise<PortfolioAvailableAssetsResponse> => {
     return refreshPromise;
   }
 
+  const timeSinceLastFailure =
+    lastRefreshFailureAt === null ? null : Date.now() - lastRefreshFailureAt;
+  if (
+    timeSinceLastFailure !== null &&
+    timeSinceLastFailure >= 0 &&
+    timeSinceLastFailure < PORTFOLIO_SWAP_CATALOG_FAILURE_COOLDOWN_MS
+  ) {
+    return getCachedSwapCatalog().then(
+      (cached) => cached?.response ?? getEmptySwapCatalogResponse(),
+    );
+  }
+
   const requestPromise = PortfolioApiUtils.listAvailableAssets({ mode: 'swap' })
     .then(async (response) => {
       const validResponse = parseSwapCatalogResponse(response);
@@ -194,6 +216,8 @@ const refreshSwapCatalog = (): Promise<PortfolioAvailableAssetsResponse> => {
         };
         return cached?.response ?? emptyResponse;
       }
+
+      lastRefreshFailureAt = null;
 
       try {
         const payload: StoredPortfolioSwapCatalogCachePayload = {
@@ -212,6 +236,10 @@ const refreshSwapCatalog = (): Promise<PortfolioAvailableAssetsResponse> => {
         Logger.error('Unable to cache portfolio swap catalog', error);
       }
       return validResponse;
+    })
+    .catch((error) => {
+      lastRefreshFailureAt = Date.now();
+      throw error;
     })
     .finally(() => {
       refreshPromise = null;

@@ -8,7 +8,6 @@ import {
 import { SidePanelToolbarLifecycle } from '@background/multichain/side-panel-toolbar.lifecycle';
 import { PendingRequestLifecycle } from '@background/multichain/pending-request-lifecycle';
 import { ExtensionUiLifecycle } from '@background/multichain/extension-ui.lifecycle';
-import { PortfolioSwapCatalogCacheModule } from '@background/portfolio-swap-catalog-cache.module';
 import VaultModule from '@background/vault.module';
 import { ChainUtils } from '@popup/multichain/utils/chain.utils';
 import { VaultCommand, VaultKey } from '@reference-data/vault-message-key.enum';
@@ -25,7 +24,6 @@ Object.assign(global, { contextType: 'service_worker' });
 void I18nUtils.initLanguageFromStorage();
 HiveServiceWorker.initializeServiceWorker();
 EvmServiceWorker.initializeServiceWorker();
-PortfolioSwapCatalogCacheModule.start();
 PendingRequestLifecycle.register();
 
 const syncSidePanelStartupSettings = () => {

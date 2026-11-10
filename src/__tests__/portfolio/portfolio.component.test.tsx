@@ -18,6 +18,7 @@ import {
   PortfolioApiUtils,
 } from 'src/portfolio/portfolio-api.utils';
 import { PortfolioFlowUtils } from 'src/portfolio/portfolio-flow.utils';
+import { PortfolioAvailableAssetsResponse } from 'src/portfolio/portfolio-api.interface';
 import { Portfolio } from 'src/portfolio/portfolio.component';
 import { PortfolioSwapCatalogCacheUtils } from 'src/portfolio/portfolio-swap-catalog-cache.utils';
 import { PortfolioUtils } from 'src/utils/porfolio.utils';
@@ -48,6 +49,7 @@ jest.mock('src/portfolio/portfolio-swap-catalog-cache.utils', () => ({
   PortfolioSwapCatalogCacheUtils: {
     getCachedSwapCatalog: jest.fn().mockResolvedValue(null),
     ensureSwapCatalogCached: jest.fn(),
+    isSwapCatalogCacheFresh: jest.fn(),
   },
 }));
 
@@ -81,6 +83,14 @@ const swapAssetsFixture = [
     rankScore: 0,
   },
 ];
+
+const swapCatalogFixture: PortfolioAvailableAssetsResponse = {
+  mode: 'swap',
+  direction: null,
+  sourceAssetId: null,
+  assets: swapAssetsFixture,
+  chains: {},
+};
 
 const mockPortfolioListAvailableAssets = () => {
   (PortfolioApiUtils.listAvailableAssets as jest.Mock).mockImplementation(
@@ -301,6 +311,12 @@ describe('Portfolio', () => {
       PortfolioSwapCatalogCacheUtils.ensureSwapCatalogCached as jest.Mock
     ).mockImplementation(() =>
       PortfolioApiUtils.listAvailableAssets({ mode: 'swap' }),
+    );
+    (
+      PortfolioSwapCatalogCacheUtils.isSwapCatalogCacheFresh as jest.Mock
+    ).mockImplementation(
+      (cached: { fetchedAt: number }) =>
+        Date.now() - cached.fetchedAt < 60 * 60 * 1000,
     );
     jest
       .spyOn(PortfolioFlowUtils, 'getLastUsedSwapAssets')
@@ -877,7 +893,7 @@ describe('Portfolio', () => {
     });
   });
 
-  it('preloads swap available assets during portfolio initialization', async () => {
+  it('does not load swap available assets during portfolio initialization', async () => {
     const { container } = render(
       <Portfolio
         hiveAccounts={[]}
@@ -901,12 +917,15 @@ describe('Portfolio', () => {
       expect(container.textContent).toContain('ETH');
     });
 
-    await waitFor(() => {
-      expect(PortfolioApiUtils.listAvailableAssets).toHaveBeenCalledWith({
-        mode: 'swap',
-      });
+    expect(
+      PortfolioSwapCatalogCacheUtils.getCachedSwapCatalog,
+    ).not.toHaveBeenCalled();
+    expect(
+      PortfolioSwapCatalogCacheUtils.ensureSwapCatalogCached,
+    ).not.toHaveBeenCalled();
+    expect(PortfolioApiUtils.listAvailableAssets).not.toHaveBeenCalledWith({
+      mode: 'swap',
     });
-
     expect(container.querySelector('.portfolio-flow')).toBeNull();
   });
 
@@ -951,8 +970,154 @@ describe('Portfolio', () => {
       expect(container.querySelector('.portfolio-flow')).not.toBeNull();
       expect(container.querySelector('#portfolio-from-asset')).not.toBeNull();
     });
+    expect(
+      PortfolioSwapCatalogCacheUtils.ensureSwapCatalogCached,
+    ).toHaveBeenCalledTimes(1);
     expect(PortfolioApiUtils.listAssets).not.toHaveBeenCalled();
     expect(PortfolioApiUtils.listHistory).not.toHaveBeenCalled();
+  });
+
+  it('renders a fresh cached swap catalog without requesting a refresh', async () => {
+    window.history.replaceState(null, '', '/#swap');
+    (
+      PortfolioSwapCatalogCacheUtils.getCachedSwapCatalog as jest.Mock
+    ).mockResolvedValue({
+      response: swapCatalogFixture,
+      fetchedAt: Date.now(),
+    });
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[{ id: 1, wallet: { address: '0xabc' } } as never]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-from-asset')).not.toBeNull();
+    });
+    expect(
+      PortfolioSwapCatalogCacheUtils.ensureSwapCatalogCached,
+    ).not.toHaveBeenCalled();
+  });
+
+  it('preserves stale swap assets when the background refresh fails', async () => {
+    window.history.replaceState(null, '', '/#swap');
+    (
+      PortfolioSwapCatalogCacheUtils.getCachedSwapCatalog as jest.Mock
+    ).mockResolvedValue({
+      response: swapCatalogFixture,
+      fetchedAt: Date.now() - 2 * 60 * 60 * 1000,
+    });
+    (
+      PortfolioSwapCatalogCacheUtils.ensureSwapCatalogCached as jest.Mock
+    ).mockRejectedValue(new Error('offline'));
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[{ id: 1, wallet: { address: '0xabc' } } as never]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-from-asset')).not.toBeNull();
+      expect(
+        PortfolioSwapCatalogCacheUtils.ensureSwapCatalogCached,
+      ).toHaveBeenCalledTimes(1);
+    });
+    expect(container.querySelector('#portfolio-from-asset')?.textContent).toContain(
+      'ETH',
+    );
+  });
+
+  it('reconciles a refreshed swap catalog without resetting form input', async () => {
+    window.history.replaceState(null, '', '/#swap');
+    (
+      PortfolioSwapCatalogCacheUtils.getCachedSwapCatalog as jest.Mock
+    ).mockResolvedValue({
+      response: swapCatalogFixture,
+      fetchedAt: Date.now() - 2 * 60 * 60 * 1000,
+    });
+    let resolveRefresh: (response: PortfolioAvailableAssetsResponse) => void;
+    (
+      PortfolioSwapCatalogCacheUtils.ensureSwapCatalogCached as jest.Mock
+    ).mockImplementation(
+      () =>
+        new Promise<PortfolioAvailableAssetsResponse>((resolve) => {
+          resolveRefresh = resolve;
+        }),
+    );
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[{ id: 1, wallet: { address: '0xabc' } } as never]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-to-asset')).not.toBeNull();
+    });
+    const amountInput = container.querySelector(
+      '.portfolio-flow .portfolio-amount-field input[type="number"]',
+    ) as HTMLInputElement;
+    fireEvent.change(amountInput, { target: { value: '0.25' } });
+
+    await act(async () => {
+      resolveRefresh!({
+        ...swapCatalogFixture,
+        assets: [
+          ...swapAssetsFixture,
+          {
+            ...swapAssetsFixture[1],
+            assetId: 'evm:erc20:polygon:usdc',
+            symbol: 'USDC',
+            name: 'USD Coin',
+            address: '0xusdc',
+            isNative: false,
+            familyId: 'usdc',
+          },
+        ],
+      });
+    });
+
+    fireEvent.click(
+      container.querySelector('#portfolio-to-asset') as HTMLButtonElement,
+    );
+    await waitFor(() =>
+      expect(
+        container.querySelector('#portfolio-to-asset-listbox')?.textContent,
+      ).toContain('USDC'),
+    );
+    expect(amountInput.value).toBe('0.25');
+    expect(container.querySelector('#portfolio-from-asset')?.textContent).toContain(
+      'ETH',
+    );
+    expect(container.querySelector('#portfolio-to-asset')?.textContent).toContain(
+      'MATIC',
+    );
   });
 
   it('reuses cached portfolio balances when opening swap', async () => {
@@ -1014,7 +1179,9 @@ describe('Portfolio', () => {
     });
 
     clickPortfolioNav(container, 'swap');
-    expect(container.querySelector('#portfolio-flow-account')).not.toBeNull();
+    await waitFor(() => {
+      expect(container.querySelector('#portfolio-flow-account')).not.toBeNull();
+    });
 
     clickPortfolioNav(container, 'portfolio');
     expect(container.querySelector('#portfolio-flow-account')).toBeNull();
