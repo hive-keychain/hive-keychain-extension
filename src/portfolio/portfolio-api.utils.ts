@@ -507,6 +507,9 @@ const listAvailableAssets = async (params: {
   const searchParams = new URLSearchParams({
     mode: params.mode,
   });
+  if (params.mode === 'swap') {
+    searchParams.set('clientCatalog', 'lazy-v1');
+  }
   if (params.direction) {
     searchParams.set('direction', params.direction);
   }

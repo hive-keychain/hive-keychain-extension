@@ -429,6 +429,28 @@ describe('PortfolioApiUtils', () => {
     });
   });
 
+  it.each([
+    ['swap', 'mode=swap&clientCatalog=lazy-v1'],
+    ['buy', 'mode=buy'],
+    ['sell', 'mode=sell'],
+    ['bridge', 'mode=bridge'],
+  ] as const)(
+    'builds the expected %s available-assets URL',
+    async (mode, query) => {
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: jest.fn().mockResolvedValue({ assets: [], chains: {} }),
+      });
+
+      await PortfolioApiUtils.listAvailableAssets({ mode });
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        `https://portfolio.example/assets/available?${query}`,
+        expect.any(Object),
+      );
+    },
+  );
+
   it('parses full quote responses from the portfolio api', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
