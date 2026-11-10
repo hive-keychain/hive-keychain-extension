@@ -24,7 +24,6 @@ interface StoredPortfolioSwapCatalogCachePayload {
 }
 
 let refreshPromise: Promise<PortfolioAvailableAssetsResponse> | null = null;
-let lastRefreshFailureAt: number | null = null;
 
 const getEmptySwapCatalogResponse = (): PortfolioAvailableAssetsResponse => ({
   mode: 'swap',
@@ -33,6 +32,26 @@ const getEmptySwapCatalogResponse = (): PortfolioAvailableAssetsResponse => ({
   assets: [],
   chains: {},
 });
+
+const getLastRefreshFailureAt = async (): Promise<number | null> => {
+  const value = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.PORTFOLIO_SWAP_CATALOG_LAST_FAILURE_AT,
+  );
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+};
+
+const saveLastRefreshFailureAt = async (
+  value: number | null,
+): Promise<void> => {
+  try {
+    await LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.PORTFOLIO_SWAP_CATALOG_LAST_FAILURE_AT,
+      value,
+    );
+  } catch (error) {
+    Logger.error('Unable to cache portfolio swap catalog failure time', error);
+  }
+};
 
 const parseSwapCatalogResponse = (
   value: unknown,
@@ -190,22 +209,26 @@ const refreshSwapCatalog = (): Promise<PortfolioAvailableAssetsResponse> => {
     return refreshPromise;
   }
 
-  const timeSinceLastFailure =
-    lastRefreshFailureAt === null ? null : Date.now() - lastRefreshFailureAt;
-  if (
-    timeSinceLastFailure !== null &&
-    timeSinceLastFailure >= 0 &&
-    timeSinceLastFailure < PORTFOLIO_SWAP_CATALOG_FAILURE_COOLDOWN_MS
-  ) {
-    return getCachedSwapCatalog().then(
-      (cached) => cached?.response ?? getEmptySwapCatalogResponse(),
-    );
-  }
+  const requestPromise = (async () => {
+    const lastRefreshFailureAt = await getLastRefreshFailureAt();
+    const timeSinceLastFailure =
+      lastRefreshFailureAt === null ? null : Date.now() - lastRefreshFailureAt;
+    if (
+      timeSinceLastFailure !== null &&
+      timeSinceLastFailure >= 0 &&
+      timeSinceLastFailure < PORTFOLIO_SWAP_CATALOG_FAILURE_COOLDOWN_MS
+    ) {
+      const cached = await getCachedSwapCatalog();
+      return cached?.response ?? getEmptySwapCatalogResponse();
+    }
 
-  const requestPromise = PortfolioApiUtils.listAvailableAssets({ mode: 'swap' })
-    .then(async (response) => {
+    try {
+      const response = await PortfolioApiUtils.listAvailableAssets({
+        mode: 'swap',
+      });
       const validResponse = parseSwapCatalogResponse(response);
       if (!validResponse) {
+        await saveLastRefreshFailureAt(Date.now());
         const cached = await getCachedSwapCatalog();
         const emptyResponse: PortfolioAvailableAssetsResponse = {
           ...response,
@@ -216,8 +239,6 @@ const refreshSwapCatalog = (): Promise<PortfolioAvailableAssetsResponse> => {
         };
         return cached?.response ?? emptyResponse;
       }
-
-      lastRefreshFailureAt = null;
 
       try {
         const payload: StoredPortfolioSwapCatalogCachePayload = {
@@ -235,15 +256,15 @@ const refreshSwapCatalog = (): Promise<PortfolioAvailableAssetsResponse> => {
       } catch (error) {
         Logger.error('Unable to cache portfolio swap catalog', error);
       }
+      await saveLastRefreshFailureAt(null);
       return validResponse;
-    })
-    .catch((error) => {
-      lastRefreshFailureAt = Date.now();
+    } catch (error) {
+      await saveLastRefreshFailureAt(Date.now());
       throw error;
-    })
-    .finally(() => {
-      refreshPromise = null;
-    });
+    }
+  })().finally(() => {
+    refreshPromise = null;
+  });
 
   refreshPromise = requestPromise;
   return requestPromise;

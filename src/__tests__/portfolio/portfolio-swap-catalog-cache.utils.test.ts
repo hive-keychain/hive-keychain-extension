@@ -159,14 +159,29 @@ describe('PortfolioSwapCatalogCacheUtils', () => {
     ).resolves.toBeNull();
   });
 
-  it('retains a stale valid cache when a refresh is empty', async () => {
+  it('retains a stale cache and cools down after an empty response', async () => {
     const stalePayload = {
       response: swapCatalog,
       fetchedAt:
         now - PortfolioSwapCatalogCacheUtils.PORTFOLIO_SWAP_CATALOG_TTL_MS - 1,
     };
-    (LocalStorageUtils.getValueFromLocalStorage as jest.Mock).mockResolvedValue(
-      stalePayload,
+    let lastFailureAt: number | undefined;
+    (LocalStorageUtils.getValueFromLocalStorage as jest.Mock).mockImplementation(
+      async (key: LocalStorageKeyEnum) =>
+        key === LocalStorageKeyEnum.PORTFOLIO_SWAP_CATALOG_CACHE
+          ? stalePayload
+          : lastFailureAt,
+    );
+    (LocalStorageUtils.saveValueInLocalStorage as jest.Mock).mockImplementation(
+      async (key: LocalStorageKeyEnum, value: unknown) => {
+        if (
+          key ===
+            LocalStorageKeyEnum.PORTFOLIO_SWAP_CATALOG_LAST_FAILURE_AT &&
+          typeof value === 'number'
+        ) {
+          lastFailureAt = value;
+        }
+      },
     );
     (PortfolioApiUtils.listAvailableAssets as jest.Mock).mockResolvedValue({
       ...swapCatalog,
@@ -176,7 +191,38 @@ describe('PortfolioSwapCatalogCacheUtils', () => {
     await expect(
       PortfolioSwapCatalogCacheUtils.ensureSwapCatalogCached(),
     ).resolves.toEqual(swapCatalog);
-    expect(LocalStorageUtils.saveValueInLocalStorage).not.toHaveBeenCalled();
+    await expect(
+      PortfolioSwapCatalogCacheUtils.ensureSwapCatalogCached(),
+    ).resolves.toEqual(swapCatalog);
+    expect(PortfolioApiUtils.listAvailableAssets).toHaveBeenCalledTimes(1);
+    expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.PORTFOLIO_SWAP_CATALOG_LAST_FAILURE_AT,
+      now,
+    );
+    expect(LocalStorageUtils.saveValueInLocalStorage).not.toHaveBeenCalledWith(
+      LocalStorageKeyEnum.PORTFOLIO_SWAP_CATALOG_CACHE,
+      expect.anything(),
+    );
+  });
+
+  it('uses a persisted failure time after the Portfolio page reloads', async () => {
+    const stalePayload = {
+      response: swapCatalog,
+      fetchedAt:
+        now - PortfolioSwapCatalogCacheUtils.PORTFOLIO_SWAP_CATALOG_TTL_MS - 1,
+    };
+    (LocalStorageUtils.getValueFromLocalStorage as jest.Mock).mockImplementation(
+      async (key: LocalStorageKeyEnum) =>
+        key === LocalStorageKeyEnum.PORTFOLIO_SWAP_CATALOG_CACHE
+          ? stalePayload
+          : now - 1000,
+    );
+
+    await expect(
+      PortfolioSwapCatalogCacheUtils.ensureSwapCatalogCached(),
+    ).resolves.toEqual(swapCatalog);
+
+    expect(PortfolioApiUtils.listAvailableAssets).not.toHaveBeenCalled();
   });
 
   it('preserves a stale cache and skips retries during the failure cooldown', async () => {
@@ -185,8 +231,21 @@ describe('PortfolioSwapCatalogCacheUtils', () => {
       fetchedAt:
         now - PortfolioSwapCatalogCacheUtils.PORTFOLIO_SWAP_CATALOG_TTL_MS - 1,
     };
-    (LocalStorageUtils.getValueFromLocalStorage as jest.Mock).mockResolvedValue(
-      stalePayload,
+    let lastFailureAt: number | null = null;
+    (LocalStorageUtils.getValueFromLocalStorage as jest.Mock).mockImplementation(
+      async (key: LocalStorageKeyEnum) =>
+        key === LocalStorageKeyEnum.PORTFOLIO_SWAP_CATALOG_CACHE
+          ? stalePayload
+          : lastFailureAt,
+    );
+    (LocalStorageUtils.saveValueInLocalStorage as jest.Mock).mockImplementation(
+      async (key: LocalStorageKeyEnum, value: unknown) => {
+        if (
+          key === LocalStorageKeyEnum.PORTFOLIO_SWAP_CATALOG_LAST_FAILURE_AT
+        ) {
+          lastFailureAt = typeof value === 'number' ? value : null;
+        }
+      },
     );
     (PortfolioApiUtils.listAvailableAssets as jest.Mock).mockRejectedValue(
       new Error('offline'),
@@ -202,7 +261,10 @@ describe('PortfolioSwapCatalogCacheUtils', () => {
       PortfolioSwapCatalogCacheUtils.getCachedSwapCatalog(),
     ).resolves.toEqual(stalePayload);
     expect(PortfolioApiUtils.listAvailableAssets).toHaveBeenCalledTimes(1);
-    expect(LocalStorageUtils.saveValueInLocalStorage).not.toHaveBeenCalled();
+    expect(LocalStorageUtils.saveValueInLocalStorage).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.PORTFOLIO_SWAP_CATALOG_LAST_FAILURE_AT,
+      now,
+    );
 
     jest.spyOn(Date, 'now').mockReturnValue(now + 61 * 1000);
     (PortfolioApiUtils.listAvailableAssets as jest.Mock).mockResolvedValue(
