@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import Logger from 'src/utils/logger.utils';
 
 jest.mock('@popup/evm/utils/wallet.utils', () => ({
   EvmWalletUtils: {
@@ -74,6 +75,7 @@ describe('evm provider state utils', () => {
   });
 
   afterEach(() => {
+    delete (chrome.runtime as { lastError?: chrome.runtime.LastError }).lastError;
     jest.restoreAllMocks();
   });
 
@@ -91,6 +93,51 @@ describe('evm provider state utils', () => {
       'http://localhost:3000',
       ['0xabc123'],
     );
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledTimes(1);
+    expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(1, {
+      command: BackgroundCommand.SEND_EVM_EVENT_TO_CONTENT_SCRIPT,
+      value: {
+        eventType: 'accountsChanged',
+        args: ['0xabc123'],
+        scope: { kind: 'origin', origin: 'http://localhost:3000' },
+      },
+    });
+  });
+
+  it('resolves without messaging tabs when the tab query result is not a list', async () => {
+    const { setAccountsForOrigin, EvmWalletUtils, CommunicationUtils } =
+      await loadTestContext();
+    EvmWalletUtils.getConnectedWallets.mockResolvedValue([]);
+    EvmWalletUtils.setConnectedWallets.mockResolvedValue(undefined);
+    chrome.tabs.query.mockImplementation((_queryInfo, callback) => {
+      callback(undefined);
+    });
+    const loggerError = jest.spyOn(Logger, 'error').mockImplementation(() => undefined);
+
+    await expect(
+      setAccountsForOrigin('http://localhost:3000', ['0xAbC123']),
+    ).resolves.toEqual(['0xabc123']);
+
+    expect(loggerError).toHaveBeenCalledWith(
+      'Skipped origin-scoped EVM event because tab query did not return a tab list',
+    );
+    expect(CommunicationUtils.tabsSendMessage).not.toHaveBeenCalled();
+  });
+
+  it('still delivers a tab list when the runtime also reports a query error', async () => {
+    const { setAccountsForOrigin, EvmWalletUtils, CommunicationUtils } =
+      await loadTestContext();
+    EvmWalletUtils.getConnectedWallets.mockResolvedValue([]);
+    EvmWalletUtils.setConnectedWallets.mockResolvedValue(undefined);
+    Object.defineProperty(chrome.runtime, 'lastError', {
+      configurable: true,
+      value: { message: 'stale query' },
+    });
+
+    await expect(
+      setAccountsForOrigin('http://localhost:3000', ['0xAbC123']),
+    ).resolves.toEqual(['0xabc123']);
+
     expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledTimes(1);
     expect(CommunicationUtils.tabsSendMessage).toHaveBeenCalledWith(1, {
       command: BackgroundCommand.SEND_EVM_EVENT_TO_CONTENT_SCRIPT,

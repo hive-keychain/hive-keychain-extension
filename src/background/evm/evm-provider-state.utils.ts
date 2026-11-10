@@ -11,6 +11,7 @@ import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { getOriginFromUrl } from 'src/utils/browser-origin.utils';
 import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
 import { ImageUrlUtils } from 'src/utils/image-url.utils';
 import {
   areEvmAccountsEqual,
@@ -34,30 +35,48 @@ const routeOriginScopedEvent = async (
   event: OriginScopedRoutedEvmEvent,
 ): Promise<void> => {
   await new Promise<void>((resolve) => {
-    chrome.tabs.query({}, async (tabs) => {
-      const matchingTabIds = new Set<number>();
-      for (const tab of tabs) {
-        if (tab.id === undefined) continue;
-        if (
-          getOriginFromUrl(tab.url) === event.scope.origin ||
-          tab.id === event.scope.tabId
-        ) {
-          matchingTabIds.add(tab.id);
-        }
-      }
-
-      await Promise.all(
-        [...matchingTabIds].map((tabId) =>
-          CommunicationUtils.tabsSendMessage(tabId, {
-            command: BackgroundCommand.SEND_EVM_EVENT_TO_CONTENT_SCRIPT,
-            value: event,
-          }),
-        ),
-      );
-
-      resolve();
+    chrome.tabs.query({}, (tabs) => {
+      void sendOriginScopedEvent(event, tabs).finally(resolve);
     });
   });
+};
+
+const sendOriginScopedEvent = async (
+  event: OriginScopedRoutedEvmEvent,
+  tabs: chrome.tabs.Tab[] | undefined,
+) => {
+  // A failed tabs.query invokes the callback with a non-array. Iterating it
+  // rejects the service worker, and skipping resolve() leaves account and
+  // chain updates hanging. An actual tab list is still delivered.
+  const queryError = chrome.runtime.lastError?.message;
+  if (!Array.isArray(tabs)) {
+    Logger.error(
+      queryError
+        ? `Skipped origin-scoped EVM event because tab query failed: ${queryError}`
+        : 'Skipped origin-scoped EVM event because tab query did not return a tab list',
+    );
+    return;
+  }
+
+  const matchingTabIds = new Set<number>();
+  for (const tab of tabs) {
+    if (typeof tab?.id !== 'number') continue;
+    if (
+      getOriginFromUrl(tab.url) === event.scope.origin ||
+      tab.id === event.scope.tabId
+    ) {
+      matchingTabIds.add(tab.id);
+    }
+  }
+
+  await Promise.all(
+    [...matchingTabIds].map((tabId) =>
+      CommunicationUtils.tabsSendMessage(tabId, {
+        command: BackgroundCommand.SEND_EVM_EVENT_TO_CONTENT_SCRIPT,
+        value: event,
+      }),
+    ),
+  );
 };
 
 export const emitAccountsChangedIfNeeded = async (
