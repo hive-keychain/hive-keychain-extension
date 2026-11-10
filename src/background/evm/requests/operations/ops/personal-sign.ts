@@ -1,0 +1,35 @@
+import {
+  EvmRequestHandler,
+  EvmRequestLocator,
+} from '@background/evm/requests/evm-request-handler';
+import { createEvmMessage, feedbackI18n } from '@background/hive/requests/operations/operations.utils';
+import { EvmRequest } from '@interfaces/evm-provider.interface';
+import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
+
+import { I18nUtils } from 'src/utils/i18n.utils';
+export const personalSign = async (
+  requestHandler: EvmRequestHandler,
+  request: EvmRequest,
+  locator: EvmRequestLocator,
+) => {
+  const requestData = requestHandler.getRequestDataByLocator(locator);
+  const account = requestHandler.accounts.find((account: EvmAccount) => {
+    return (
+      account.wallet.address.toLowerCase() === request.params[1].toLowerCase()
+    );
+  });
+  if (account) {
+    const res = await EvmSignerUtils.signMessage(
+      account.wallet,
+      request.params[0],
+    );
+    return await createEvmMessage(
+      null,
+      res,
+      request,
+      requestData?.tab!,
+      feedbackI18n('dialog_evm_sign_request_success'),
+    );
+  }
+};

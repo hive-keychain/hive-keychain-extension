@@ -15,6 +15,7 @@ import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import { GlobalProperties } from 'src/interfaces/global-properties.interface';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('hive.utils tests:\n', () => {
   async function resetClient() {
     await HiveTxUtils.setRpc({ uri: 'https://api.hive.blog' } as Rpc);
@@ -120,7 +121,7 @@ describe('hive.utils tests:\n', () => {
   describe('getTimeBeforeFull tests:\n', () => {
     test('Passing a votingPower=100.0 must return the message "popup_utils_full" from i18n', () => {
       const expectedMessage = 'popup_utils_full';
-      chrome.i18n.getMessage = jest.fn().mockImplementationOnce((...args) => {
+      I18nUtils.getMessage = jest.fn().mockImplementationOnce((...args) => {
         return args;
       });
       const result = HiveUtils.getTimeBeforeFull(100.0);
@@ -129,7 +130,7 @@ describe('hive.utils tests:\n', () => {
     });
 
     test('Passing a negative votingPower value will return undefined', () => {
-      chrome.i18n.getMessage = jest.fn().mockImplementationOnce((...args) => {
+      I18nUtils.getMessage = jest.fn().mockImplementationOnce((...args) => {
         return args;
       });
       const result = HiveUtils.getTimeBeforeFull(-50.0);

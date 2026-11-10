@@ -1,4 +1,5 @@
 import AccountUtils from 'src/popup/hive/utils/account.utils';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import MkUtils from 'src/popup/hive/utils/mk.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
@@ -14,20 +15,56 @@ describe('mk.utils tests:\n', () => {
       AccountUtils.getAccountsFromLocalStorage = jest
         .fn()
         .mockResolvedValueOnce(undefined);
+      jest
+        .spyOn(EvmWalletUtils, 'getAccountsFromLocalStorage')
+        .mockResolvedValueOnce(undefined as never);
       LocalStorageUtils.getMultipleValueFromLocalStorage = jest
         .fn()
         .mockResolvedValueOnce({});
       const result = await MkUtils.login('wrong_password_to_decrypt');
       expect(result).toBe(false);
     });
+    test('Passing an invalid password when evm decrypt throws must return false', async () => {
+      AccountUtils.getAccountsFromLocalStorage = jest
+        .fn()
+        .mockResolvedValueOnce(undefined);
+      jest
+        .spyOn(EvmWalletUtils, 'getAccountsFromLocalStorage')
+        .mockRejectedValueOnce(new Error('Unable to decrypt payload'));
+      LocalStorageUtils.getMultipleValueFromLocalStorage = jest
+        .fn()
+        .mockResolvedValueOnce({});
+
+      const result = await MkUtils.login('wrong_password_to_decrypt');
+
+      expect(result).toBe(false);
+    });
     test('Passing a valid password must return true', async () => {
       AccountUtils.getAccountsFromLocalStorage = jest
         .fn()
         .mockResolvedValueOnce([]);
+      jest
+        .spyOn(EvmWalletUtils, 'getAccountsFromLocalStorage')
+        .mockResolvedValueOnce([] as never);
       LocalStorageUtils.getMultipleValueFromLocalStorage = jest
         .fn()
         .mockResolvedValueOnce({});
       const result = await MkUtils.login('right_password');
+      expect(result).toBe(true);
+    });
+    test('Passing a valid password must return true even if evm decrypt throws', async () => {
+      AccountUtils.getAccountsFromLocalStorage = jest
+        .fn()
+        .mockResolvedValueOnce([]);
+      jest
+        .spyOn(EvmWalletUtils, 'getAccountsFromLocalStorage')
+        .mockRejectedValueOnce(new Error('Unable to decrypt payload'));
+      LocalStorageUtils.getMultipleValueFromLocalStorage = jest
+        .fn()
+        .mockResolvedValueOnce({});
+
+      const result = await MkUtils.login('right_password');
+
       expect(result).toBe(true);
     });
     test('Passing a valid password with only v2 keyless storage must return true', async () => {
@@ -43,6 +80,9 @@ describe('mk.utils tests:\n', () => {
       AccountUtils.getAccountsFromLocalStorage = jest
         .fn()
         .mockResolvedValueOnce(undefined);
+      jest
+        .spyOn(EvmWalletUtils, 'getAccountsFromLocalStorage')
+        .mockResolvedValueOnce(undefined as never);
       LocalStorageUtils.getValueFromLocalStorage = jest
         .fn()
         .mockResolvedValueOnce(keylessPayload);

@@ -1,10 +1,9 @@
 @import '../common-style/common-style.scss';
 @import '../common-ui/common-ui.scss';
-@import './components/collapsible-item/collapsible-item.scss';
-@import './components/dialog-header/dialog-header.component.scss';
-@import './components/operation/operation.scss';
-@import './components/request-username/request-username.scss';
-@import './pages/pages.scss';
+@import './hive/hive.scss';
+@import './evm/evm.scss';
+@import './components/components.scss';
+@import './multichain/multichain.scss';
 
 .theme {
   &.light {
@@ -48,6 +47,19 @@ html {
       padding: 32px;
       box-sizing: border-box;
       font-size: 16px;
+
+      .loading-container {
+        .overlay {
+          background: var(--background-color);
+          opacity: 1;
+        }
+
+        .loading-text,
+        .loading-caption,
+        .loading-operation span {
+          color: var(--main-font-color);
+        }
+      }
 
       @include dialogs-title-panel();
 

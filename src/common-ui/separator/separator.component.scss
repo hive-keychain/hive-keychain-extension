@@ -1,7 +1,7 @@
 .separator {
   background: var(--separator-color);
   align-self: center;
-
+  z-index: 2;
   &.horizontal {
     width: 80%;
     height: 2px;

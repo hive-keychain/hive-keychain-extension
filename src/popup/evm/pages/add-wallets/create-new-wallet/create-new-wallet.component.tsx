@@ -1,0 +1,179 @@
+import { SlidingBarComponent } from '@common-ui/switch-bar/sliding-bar.component';
+import { Screen } from '@interfaces/screen.interface';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
+import { setErrorMessage } from '@popup/multichain/actions/message.actions';
+import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { RootState } from '@popup/multichain/store';
+import { HDNodeWallet } from 'ethers';
+import React, { useEffect, useState } from 'react';
+import { ConnectedProps, connect } from 'react-redux';
+import ButtonComponent from 'src/common-ui/button/button.component';
+import { SVGIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { copyTextWithToast } from 'src/common-ui/toast/copy-toast.utils';
+
+import { I18nUtils } from 'src/utils/i18n.utils';
+const CreateNewWallet = ({
+  navigateToWithParams,
+  setTitleContainerProperties,
+  setErrorMessage,
+}: PropsType) => {
+  const [wallet, setWallet] = useState<HDNodeWallet | undefined>(undefined);
+  const [wallet12Words, setWallet12Words] = useState<HDNodeWallet | undefined>(
+    undefined,
+  );
+  const [wallet24Words, setWallet24Words] = useState<HDNodeWallet | undefined>(
+    undefined,
+  );
+  const [selectedWalletType, setSelectedWalletType] = useState<number>(12);
+
+  const [isMnemonicDisplayed, setMnemonicDisplayed] = useState(false);
+  const [hasCopiedSeedPhrase, setHasCopiedSeedPhrase] = useState(false);
+
+  useEffect(() => {
+    setTitleContainerProperties({
+      title: 'popup_html_create_new_wallet_create_seed',
+      isBackButtonEnabled: true,
+      isCloseButtonDisabled: true,
+    });
+
+    const wallet12 = EvmWalletUtils.createWallet(12);
+    const wallet24 = EvmWalletUtils.createWallet(24);
+    setWallet12Words(wallet12);
+    setWallet24Words(wallet24);
+
+    setWallet(wallet12);
+  }, []);
+
+  const submitForm = async (): Promise<void> => {
+    if (!hasCopiedSeedPhrase) {
+      setErrorMessage('html_popup_evm_create_wallet_copy_seed_phrase_error');
+      return;
+    } else {
+      navigateToWithParams(Screen.CREATE_EVM_WALLET_VERIFICATION, wallet);
+    }
+  };
+
+  const copySeedPhraseToClipboard = () => {
+    if (wallet?.mnemonic?.phrase) {
+      copyTextWithToast(
+        wallet.mnemonic.phrase,
+        'html_popup_evm_create_wallet_copied_mnemonic',
+      ).then((hasCopied) => {
+        if (hasCopied) {
+          setHasCopiedSeedPhrase(true);
+        }
+      });
+    }
+  };
+
+  const onTabChange = (tab: number) => {
+    setSelectedWalletType(tab);
+    if (tab === 12) {
+      setWallet(wallet12Words);
+    } else {
+      setWallet(wallet24Words);
+    }
+    setMnemonicDisplayed(false);
+    setHasCopiedSeedPhrase(false);
+  };
+
+  return (
+    <div
+      data-testid={`${Screen.CREATE_EVM_WALLET}-page`}
+      className="create-new-wallet-page">
+      <div className="title">
+        {I18nUtils.getMessage('html_popup_evm_create_new_wallet_title')}
+      </div>
+      <div className="form-container">
+        <div className="caption">
+          {I18nUtils.getMessage('html_popup_evm_create_wallet_tips')}
+        </div>
+        <SlidingBarComponent
+          id="wallet-type"
+          onChange={onTabChange}
+          selectedValue={selectedWalletType}
+          values={[
+            { value: 12, label: 'html_popup_evm_12_words' },
+            { value: 24, label: 'html_popup_evm_24_words' },
+          ]}
+        />
+        <div className="mnemonic-container">
+          {!isMnemonicDisplayed && (
+            <div className="mnemonic-overlay">
+              <div className="mnemonic-overlay-text">
+                {I18nUtils.getMessage('html_popup_mnemonic_overlay')}
+              </div>
+            </div>
+          )}
+          <div
+            className={`words-container ${
+              isMnemonicDisplayed ? 'displayed' : 'hidden'
+            }`}>
+            {wallet &&
+              wallet.mnemonic?.phrase &&
+              wallet.mnemonic?.phrase.split(' ').map((word, index) => (
+                <div className="word-card" key={`word-card-${index}`}>
+                  <span className="number">{index + 1}</span>
+                  {word}
+                </div>
+              ))}
+          </div>
+        </div>
+        {isMnemonicDisplayed && (
+          <div className="mnemonic-actions">
+            <div
+              className="hide-seed-phrase"
+              onClick={() => setMnemonicDisplayed(false)}>
+              <SVGIcon icon={SVGIcons.EVM_SETUP_HIDE_MNEMONIC} />
+              <span>
+                {I18nUtils.getMessage(
+                  'html_popup_evm_create_wallet_hide_mnemonic',
+                )}
+              </span>
+            </div>
+            <div
+              className="copy-seed-phrase"
+              onClick={() => copySeedPhraseToClipboard()}>
+              <SVGIcon icon={SVGIcons.EVM_SETUP_COPY_MNEMONIC} />
+              <span>
+                {I18nUtils.getMessage(
+                  'html_popup_evm_create_wallet_copy_mnemonic',
+                )}
+              </span>
+            </div>
+          </div>
+        )}
+        <div className="fill-space"></div>
+        {!isMnemonicDisplayed && (
+          <ButtonComponent
+            dataTestId="display-mnemonic-button"
+            label={'html_popup_evm_create_wallet_display_mnemonic'}
+            onClick={() => setMnemonicDisplayed(true)}
+          />
+        )}
+        {isMnemonicDisplayed && (
+          <ButtonComponent
+            dataTestId="submit-button"
+            label={'popup_html_submit'}
+            onClick={submitForm}
+          />
+        )}
+      </div>
+    </div>
+  );
+};
+
+const mapStateToProps = (state: RootState) => {
+  return {};
+};
+
+const connector = connect(mapStateToProps, {
+  navigateToWithParams,
+  setTitleContainerProperties,
+  setErrorMessage,
+});
+type PropsType = ConnectedProps<typeof connector>;
+
+export const CreateNewWalletComponent = connector(CreateNewWallet);

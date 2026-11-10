@@ -43,6 +43,35 @@ html {
           flex: 1;
           flex-direction: column;
           row-gap: 16px;
+
+          .derivation-mode-selector {
+            display: flex;
+            flex-direction: column;
+            row-gap: 8px;
+
+            .derivation-mode-option {
+              border: 1px solid var(--input-border);
+              border-radius: 8px;
+              background: var(--input-background);
+              color: var(--main-font-color);
+              padding: 10px 12px;
+              text-align: left;
+              display: flex;
+              flex-direction: column;
+              row-gap: 2px;
+              cursor: pointer;
+              @include poppins400(14px);
+
+              &.selected {
+                border-color: $red;
+              }
+
+              .derivation-mode-start-index {
+                @include poppins300(11px);
+                color: $lighter-grey;
+              }
+            }
+          }
         }
 
         .select-accounts,
@@ -60,6 +89,13 @@ html {
             display: flex;
             flex-direction: column;
             row-gap: 8px;
+
+            .ledger-account-path {
+              @include poppins300(11px);
+              color: $lighter-grey;
+              margin-left: 8px;
+              align-self: center;
+            }
           }
 
           .bottom-button-panel {

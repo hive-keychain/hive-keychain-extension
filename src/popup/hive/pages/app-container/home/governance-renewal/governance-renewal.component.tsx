@@ -9,8 +9,9 @@ import ButtonComponent from 'src/common-ui/button/button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox/checkbox.component';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { GovernanceUtils } from 'src/popup/hive/utils/governance.utils';
-import { HtmlUtils } from 'src/utils/html.utils';
 
+import { HtmlUtils } from 'src/utils/html.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface GovernanceRenewalProps {
   accountNames: string[];
 }
@@ -78,7 +79,7 @@ const GovernanceRenewal = ({
     <PopupContainer
       className={`governance-renewal ${forceHide ? 'force-hide' : ''}`}>
       <div className="popup-title">
-        {chrome.i18n.getMessage('html_popup_governance_renewal_title')}
+        {I18nUtils.getMessage('html_popup_governance_renewal_title')}
       </div>
       <div
         className="caption"
@@ -101,7 +102,7 @@ const GovernanceRenewal = ({
         </div>
       )}
       <a className="read-more-link" onClick={() => navigateToArticle()}>
-        {chrome.i18n.getMessage('html_popup_governance_expiration_read_more')}
+        {I18nUtils.getMessage('html_popup_governance_expiration_read_more')}
       </a>
       <div className="popup-footer">
         <ButtonComponent

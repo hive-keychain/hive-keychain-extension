@@ -1,5 +1,5 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
@@ -7,20 +7,26 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import Config from 'src/config';
-import { HtmlUtils } from 'src/utils/html.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { HtmlUtils } from 'src/utils/html.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
 const TutorialPopup = () => {
   const [show, setShow] = useState(false);
+  const isMountedRef = useRef(false);
   useEffect(() => {
-    init();
+    isMountedRef.current = true;
+    void init();
+    return () => {
+      isMountedRef.current = false;
+    };
   }, []);
 
   const init = async () => {
     const skipTutorial = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.SKIP_TUTORIAL,
     );
-    if (!skipTutorial) {
+    if (!skipTutorial && isMountedRef.current) {
       setShow(true);
     }
   };
@@ -35,7 +41,9 @@ const TutorialPopup = () => {
       LocalStorageKeyEnum.SKIP_TUTORIAL,
       true,
     );
-    setShow(false);
+    if (isMountedRef.current) {
+      setShow(false);
+    }
   };
 
   if (!show) return null;
@@ -43,7 +51,7 @@ const TutorialPopup = () => {
     return (
       <PopupContainer data-testid="tutorial-popup" className="tutorial">
         <div className="popup-title">
-          {chrome.i18n.getMessage('popup_html_tutorial_popup_title')}
+          {I18nUtils.getMessage('popup_html_tutorial_popup_title')}
         </div>
 
         <SVGIcon className="image" icon={SVGIcons.KEYCHAIN_LOGO_SPLASHSCREEN} />

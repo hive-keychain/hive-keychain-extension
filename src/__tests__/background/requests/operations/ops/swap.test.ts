@@ -25,6 +25,9 @@ describe('broadcastSwap', () => {
   beforeEach(() => {
     jest.spyOn(chrome.i18n, 'getMessage').mockImplementation((k) => String(k));
     jest.spyOn(SwapTokenUtils, 'saveEstimate').mockResolvedValue('est-id');
+    jest.spyOn(SwapTokenUtils, 'getConfig').mockResolvedValue({
+      account: 'swap.bot',
+    } as any);
   });
 
   afterEach(() => {
@@ -32,6 +35,7 @@ describe('broadcastSwap', () => {
   });
 
   it('throws when swapAccount is missing', async () => {
+    jest.spyOn(SwapTokenUtils, 'getConfig').mockResolvedValue({} as any);
     const requestHandler = {
       getUserPrivateKey: jest.fn().mockReturnValue('k'),
     } as unknown as RequestsHandler;

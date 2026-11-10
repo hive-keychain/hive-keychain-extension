@@ -1,5 +1,6 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { TransactionOptions } from '@interfaces/keys.interface';
+import { Screen } from '@interfaces/screen.interface';
 import { SwapConfig } from '@interfaces/swap-token.interface';
 import { Token } from '@interfaces/tokens.interface';
 import { loadTokensMarket } from '@popup/hive/actions/token.actions';
@@ -22,22 +23,21 @@ import {
 } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
-import { Screen } from '@reference-data/screen.enum';
 import { IStep, KeychainKeyTypes } from 'hive-keychain-commons';
 import ImageUtils from 'hive-keychain-commons/lib/utils/images.utils';
 import { ThrottleSettings, throttle } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
+import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { ConfirmationPageFieldType } from 'src/common-ui/confirmation-page/confirmation-field.interface';
-import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
+import { HiveConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import {
   ComplexeCustomSelect,
   OptionItem,
 } from 'src/common-ui/custom-select/custom-select.component';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -52,6 +52,7 @@ import {
   SwapTokenUtils,
 } from 'src/utils/swap-token.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const TokenSwaps = ({
   activeAccount,
   setErrorMessage,
@@ -382,7 +383,7 @@ const TokenSwaps = ({
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
-      message: chrome.i18n.getMessage('html_popup_swap_token_confirm_message'),
+      message: I18nUtils.getMessage('html_popup_swap_token_confirm_message'),
       fields: fields,
       title: 'html_popup_swap_token_confirm_title',
       formParams: getFormParams(),
@@ -442,7 +443,7 @@ const TokenSwaps = ({
       afterCancelAction: async () => {
         await SwapTokenUtils.cancelSwap(estimateId);
       },
-    } as ConfirmationPageParams);
+    } as HiveConfirmationPageParams);
   };
 
   const getFormParams = () => {
@@ -511,7 +512,7 @@ const TokenSwaps = ({
         <div>
           <div className="caption">
             {' '}
-            {chrome.i18n.getMessage('swap_no_token')}
+            {I18nUtils.getMessage('swap_no_token')}
           </div>
         </div>
       </div>
@@ -525,12 +526,12 @@ const TokenSwaps = ({
         {!loading && !underMaintenance && !serviceUnavailable && (
           <>
             <div className="caption">
-              {chrome.i18n.getMessage('swap_caption')}
+              {I18nUtils.getMessage('swap_caption')}
             </div>
 
             <div className="top-row">
               <div className="fee">
-                {chrome.i18n.getMessage('swap_fee')}: {swapConfig.fee?.amount}%
+                {I18nUtils.getMessage('swap_fee')}: {swapConfig.fee?.amount}%
               </div>
               <SVGIcon
                 className="swap-history-button"
@@ -565,7 +566,7 @@ const TokenSwaps = ({
                     />
                   </div>
                   <span className="available">
-                    {chrome.i18n.getMessage('popup_html_available')} :{' '}
+                    {I18nUtils.getMessage('popup_html_available')} :{' '}
                     {startToken?.value.balance
                       ? FormatUtils.withCommas(startToken?.value.balance)
                       : ''}
@@ -629,7 +630,7 @@ const TokenSwaps = ({
                       <>
                         {
                           <span>
-                            {chrome.i18n.getMessage(
+                            {I18nUtils.getMessage(
                               'swap_autorefresh',
                               autoRefreshCountdown + '',
                             )}
@@ -646,7 +647,7 @@ const TokenSwaps = ({
                       setIsAdvancedParametersOpen(!isAdvancedParametersOpen)
                     }>
                     <div className="title">
-                      {chrome.i18n.getMessage('swap_advanced_parameters')}
+                      {I18nUtils.getMessage('swap_advanced_parameters')}
                     </div>
                     <SVGIcon
                       icon={SVGIcons.GLOBAL_ARROW}
@@ -687,7 +688,7 @@ const TokenSwaps = ({
           <div className="maintenance-mode">
             <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
             <div className="text">
-              {chrome.i18n.getMessage('swap_under_maintenance')}
+              {I18nUtils.getMessage('swap_under_maintenance')}
             </div>
           </div>
         )}

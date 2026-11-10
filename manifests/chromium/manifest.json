@@ -2,15 +2,24 @@
   "name": "__MSG_keychain__",
   "description": "__MSG_description__",
   "default_locale": "en",
-  "version": "3.15.8",
-  "permissions": ["storage", "idle", "alarms", "offscreen"],
-  "host_permissions": ["https://*/*"],
+  "version": "4.1.0",
+  "permissions": [
+    "storage",
+    "scripting",
+    "idle",
+    "alarms",
+    "notifications",
+    "webNavigation",
+    "offscreen",
+    "sidePanel"
+  ],
+  "host_permissions": ["https://*/*", "http://*/*"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": "/assets/images/iconhive.png"
   },
   "icons": { "128": "/assets/images/iconhive.png" },
-  "background": { "service_worker": "backgroundBundle.js", "type": "module" },
+  "background": { "service_worker": "backgroundBundle.js" },
   "web_accessible_resources": [
     {
       "resources": ["/images/logo.png", "hive_keychain.js", "_locales/*"],
@@ -23,7 +32,23 @@
       "matches": ["https://*/*", "http://0.0.0.0:1337/*", "http://*/*"],
       "js": ["keychainifyBundle.js", "web_interfaceBundle.js"],
       "all_frames": true
+    },
+    {
+      "matches": ["https://*/*", "http://0.0.0.0:1337/*", "http://*/*"],
+      "js": ["evmContentScriptBundle.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "matches": ["https://*/*", "http://0.0.0.0:1337/*", "http://*/*"],
+      "js": ["evmKeychainProviderBundle.js"],
+      "run_at": "document_start",
+      "world": "MAIN",
+      "all_frames": true
     }
   ],
-  "manifest_version": 3
+  "manifest_version": 3,
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' https: data: blob:; media-src 'self' https: blob:"
+  }
 }

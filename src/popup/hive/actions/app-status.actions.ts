@@ -1,5 +1,5 @@
 import { HiveActionType } from 'src/popup/hive/actions/action-type.enum';
-import { AppStatus } from 'src/popup/hive/reducers/app-status.reducer';
+import { HiveAppStatus } from 'src/popup/hive/reducers/app-status.reducer';
 
 export const setProcessingDecryptAccount = (
   processingDecryptAccount: boolean,
@@ -8,7 +8,7 @@ export const setProcessingDecryptAccount = (
     type: HiveActionType.SET_APP_STATUS,
     payload: {
       processingDecryptAccount: processingDecryptAccount,
-    } as Partial<AppStatus>,
+    } as Partial<HiveAppStatus>,
   };
 };
 
@@ -17,6 +17,6 @@ export const setIsLedgerSupported = (isLedgerSupported: boolean) => {
     type: HiveActionType.SET_APP_STATUS,
     payload: {
       isLedgerSupported,
-    } as Partial<AppStatus>,
+    } as Partial<HiveAppStatus>,
   };
 };

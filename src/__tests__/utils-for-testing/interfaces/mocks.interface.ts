@@ -123,6 +123,7 @@ export interface CustomDataFromLocalStorage {
   customRpcList?: string[] | string;
   customAutolock?: Autolock | string;
   customSwitchAuto?: boolean;
+  customHiveEngineSwitchAuto?: boolean;
   customsRpcs?: Rpc[];
   customAuthorizedOP?: NoConfirm | string;
   customlastVersionSeen?: string;
@@ -135,6 +136,7 @@ export interface CustomDataFromLocalStorage {
   customFavoriteUsers?: { [key: string]: string[] };
   customHiddenTokenList?: string[];
   customKeychainifyEnabled?: boolean;
+  customGuidedTours?: Record<string, { status: string; currentStep: number }>;
 }
 
 export interface MocksOverwrite {

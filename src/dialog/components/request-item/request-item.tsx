@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export enum RequestItemType {
   STRING = 'STRING',
   LIST = 'LIST',
@@ -45,7 +46,7 @@ const RequestItem = ({
     <>
       <React.Fragment key={title}>
         <div className="field">
-          <div className="label">{chrome.i18n.getMessage(title)}</div>
+          <div className="label">{I18nUtils.getMessage(title)}</div>
           <div className={`value ${xsFont ? 'xs-font' : ''}`}>
             {renderContent(content, type)}
           </div>

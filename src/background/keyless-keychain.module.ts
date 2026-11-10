@@ -1,4 +1,4 @@
-import { RequestsHandler } from '@background/requests/request-handler';
+import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
 import { KeylessKeychainUtils } from '@background/utils/keyless-keychain.utils';
 import { AuthPayload, AuthPayloadUri } from '@interfaces/has.interface';
 import {
@@ -7,27 +7,32 @@ import {
   RequestSignBuffer,
 } from '@interfaces/keychain.interface';
 import { KeylessRequest } from '@interfaces/keyless-keychain.interface';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import Config from 'src/config';
 import HiveAuthUtils from 'src/utils/hive-auth.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const handleOperation = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   request: KeychainRequest,
   domain: string,
   tab: number,
+  source?: PendingRequestSource,
 ) => {
   await HiveAuthUtils.connect();
 
   switch (request.type) {
     case KeychainRequestTypes.signBuffer:
-      HiveAuthUtils.challengeRequest(requestHandler, request, domain, tab);
-      break;
     case KeychainRequestTypes.encode:
-      HiveAuthUtils.challengeRequest(requestHandler, request, domain, tab);
-      break;
     case KeychainRequestTypes.decode:
-      HiveAuthUtils.challengeRequest(requestHandler, request, domain, tab);
+      HiveAuthUtils.challengeRequest(
+        requestHandler,
+        request,
+        domain,
+        tab,
+        source,
+      );
       break;
     case KeychainRequestTypes.swap:
     case KeychainRequestTypes.encodeWithKeys:
@@ -35,23 +40,25 @@ const handleOperation = async (
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          message: await chrome.i18n.getMessage(
+          message: await I18nUtils.getMessage(
             'dialog_keyless_unsupported_operation',
             [request.type],
           ),
+          tab: tab,
         },
       });
       break;
     default:
-      HiveAuthUtils.signRequest(requestHandler, request, domain, tab);
+      HiveAuthUtils.signRequest(requestHandler, request, domain, tab, source);
   }
 };
 
 const register = async (
-  requestHandler: RequestsHandler,
+  requestHandler: HiveRequestsHandler,
   request: KeychainRequest,
   domain: string,
   tab: number,
+  source?: PendingRequestSource,
 ) => {
   await HiveAuthUtils.connect();
   if (!request.username) {
@@ -59,9 +66,10 @@ const register = async (
       command: DialogCommand.ANSWER_REQUEST,
       msg: {
         success: false,
-        message: await chrome.i18n.getMessage(
+        message: await I18nUtils.getMessage(
           'dialog_keyless_username_required',
         ),
+        tab: tab,
       },
     });
     return;
@@ -104,15 +112,15 @@ const register = async (
       key: keylessRequest.authKey,
       host: Config.keyless.host,
     };
-    const authPayloadUri = await HiveAuthUtils.generateAuthPayloadURI(
-      authPayload,
-    );
+    const authPayloadUri =
+      await HiveAuthUtils.generateAuthPayloadURI(authPayload);
     showQRCode(keylessRequest, domain, authPayloadUri);
     await HiveAuthUtils.listenToAuthAck(
       requestHandler,
       username,
       keylessRequest,
       tab,
+      source,
     );
   }
 };

@@ -14,6 +14,7 @@ import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import { KeychainError } from 'src/keychain-error';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('sign-buffer tests:\n', () => {
   const data = {
     domain: 'domain',
@@ -32,7 +33,7 @@ describe('sign-buffer tests:\n', () => {
   });
   beforeEach(() => {
     jest.spyOn(chrome.i18n, 'getUILanguage').mockReturnValueOnce('en-US');
-    chrome.i18n.getMessage = jest
+    I18nUtils.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom);
   });
@@ -64,9 +65,14 @@ describe('sign-buffer tests:\n', () => {
         error: null,
         result: expectedHex,
         data: datas,
-        message: chrome.i18n.getMessage('bgd_ops_sign_success'),
+        message: I18nUtils.getMessage('bgd_ops_sign_success'),
+          messageKey: 'bgd_ops_sign_success',
+          messageParams: undefined,
+          messageKey: 'bgd_ops_sign_success',
+          messageParams: undefined,
         request_id: request_id,
         publicKey: undefined,
+        tab: undefined,
       },
     });
   });
@@ -89,9 +95,14 @@ describe('sign-buffer tests:\n', () => {
         error: null,
         result: expectedBufferHex,
         data: datas,
-        message: chrome.i18n.getMessage('bgd_ops_sign_success'),
+        message: I18nUtils.getMessage('bgd_ops_sign_success'),
+          messageKey: 'bgd_ops_sign_success',
+          messageParams: undefined,
+          messageKey: 'bgd_ops_sign_success',
+          messageParams: undefined,
         request_id: request_id,
         publicKey: undefined,
+        tab: undefined,
       },
     });
   });
@@ -109,9 +120,14 @@ describe('sign-buffer tests:\n', () => {
         error: new KeychainError('sign_buffer_ledger_error'),
         result: null,
         data: datas,
-        message: chrome.i18n.getMessage('sign_buffer_ledger_error'),
+        message: I18nUtils.getMessage('sign_buffer_ledger_error'),
+          messageKey: 'sign_buffer_ledger_error',
+          messageParams: undefined,
+          messageKey: 'sign_buffer_ledger_error',
+          messageParams: undefined,
         request_id: request_id,
         publicKey: undefined,
+        tab: undefined,
       },
     });
   });

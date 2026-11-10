@@ -9,7 +9,7 @@ import React from 'react';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import * as AnoynymousRequestsModule from 'src/dialog/hooks/anonymous-requests';
-import WitnessVote from 'src/dialog/pages/requests/witness-vote';
+import WitnessVote from 'src/dialog/hive/requests/witness-vote';
 
 describe('anonymous-requests tests:\n', () => {
   const data = {
@@ -38,6 +38,7 @@ describe('anonymous-requests tests:\n', () => {
           domain={'domain'}
           tab={0}
           rpc={DefaultRpcs[1]}
+          afterCancel={jest.fn()}
         />,
       );
       expect(sUseAnonymousRequest).toHaveBeenLastCalledWith(
@@ -57,6 +58,7 @@ describe('anonymous-requests tests:\n', () => {
           tab={0}
           rpc={DefaultRpcs[1]}
           accounts={accounts.twoAccounts.map((acc) => acc.name)}
+          afterCancel={jest.fn()}
         />,
       );
       expect(sUseAnonymousRequest).toHaveBeenLastCalledWith({ ...data }, [

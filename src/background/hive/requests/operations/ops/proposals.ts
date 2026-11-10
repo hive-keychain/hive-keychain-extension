@@ -1,0 +1,243 @@
+import LedgerModule from '@background/hive/modules/ledger.module';
+import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
+import { createMessage, feedbackI18n } from '@background/hive/requests/operations/operations.utils';
+import {
+  RequestCreateProposal,
+  RequestId,
+  RequestRemoveProposal,
+  RequestUpdateProposalVote,
+} from '@interfaces/keychain.interface';
+import { PrivateKeyType, TransactionOptions } from '@interfaces/keys.interface';
+import { KeychainKeyTypesLC } from 'hive-keychain-commons';
+import { KeychainError } from 'src/keychain-error';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
+import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
+import ProposalUtils from 'src/popup/hive/utils/proposal.utils';
+import Logger from 'src/utils/logger.utils';
+
+import { I18nUtils } from 'src/utils/i18n.utils';
+export const broadcastCreateProposal = async (
+  requestHandler: HiveRequestsHandler,
+  data: RequestCreateProposal & RequestId,
+  options?: TransactionOptions,
+) => {
+  let err, result, err_message;
+  const key = requestHandler.getRequestData(data.request_id)?.key;
+  const request = requestHandler.getRequestData(data.request_id);
+
+  try {
+    switch (KeysUtils.getKeyType(key!)) {
+      case PrivateKeyType.LEDGER: {
+        const tx = await ProposalUtils.getCreateProposalTransaction(
+          data.username,
+          data.receiver,
+          data.start,
+          data.end,
+          data.daily_pay,
+          data.subject,
+          data.permlink,
+          data.extensions,
+        );
+        LedgerModule.signTransactionFromLedger({
+          transaction: tx,
+          key: key!,
+        });
+        const signature = await LedgerModule.getSignatureFromLedger();
+        result = await HiveTxUtils.broadcastAndConfirmTransactionWithSignature(
+          tx,
+          signature,
+        );
+        break;
+      }
+      default: {
+        result = await ProposalUtils.createProposal(
+          data.username,
+          data.receiver,
+          data.start,
+          data.end,
+          data.daily_pay,
+          data.subject,
+          data.permlink,
+          data.extensions,
+          key!,
+        );
+        break;
+      }
+    }
+  } catch (e) {
+    Logger.error(e);
+    err = (e as KeychainError).trace || e;
+    err_message = feedbackI18n(
+      (e as KeychainError).message,
+      (e as KeychainError).messageParams,
+    );
+  } finally {
+    const message = await createMessage(
+      err,
+      result,
+      data,
+      request?.tab!,
+      feedbackI18n('bgd_ops_proposal_create'),
+      err_message,
+    );
+    return message;
+  }
+};
+
+export const broadcastUpdateProposalVote = async (
+  requestHandler: HiveRequestsHandler,
+  data: RequestUpdateProposalVote & RequestId,
+  options?: TransactionOptions,
+) => {
+  let key = requestHandler.getRequestData(data.request_id)?.key;
+  const request = requestHandler.getRequestData(data.request_id);
+
+  if (!key) {
+    [key] = requestHandler.getUserKeyPair(
+      data.username!,
+      KeychainKeyTypesLC.active,
+    ) as [string, string];
+  }
+  let result, err, err_message;
+  try {
+    switch (KeysUtils.getKeyType(key!)) {
+      case PrivateKeyType.LEDGER: {
+        const tx = await ProposalUtils.getUpdateProposalVoteTransaction(
+          typeof data.proposal_ids === 'string'
+            ? JSON.parse(data.proposal_ids)
+            : data.proposal_ids,
+          data.username!,
+          data.approve,
+        );
+        LedgerModule.signTransactionFromLedger({
+          transaction: tx,
+          key: key!,
+        });
+        const signature = await LedgerModule.getSignatureFromLedger();
+        result = await HiveTxUtils.broadcastAndConfirmTransactionWithSignature(
+          tx,
+          signature,
+        );
+        break;
+      }
+      default: {
+        result = await ProposalUtils.updateProposalVotes(
+          typeof data.proposal_ids === 'string'
+            ? JSON.parse(data.proposal_ids)
+            : data.proposal_ids,
+          data.username!,
+          data.approve,
+          key!,
+          options,
+        );
+        break;
+      }
+    }
+  } catch (e) {
+    Logger.error(e);
+    err = (e as KeychainError).trace || e;
+    err_message = feedbackI18n(
+      (e as KeychainError).message,
+      (e as KeychainError).messageParams,
+    );
+  } finally {
+    let messageText: ReturnType<typeof feedbackI18n>;
+    const ids =
+      typeof data.proposal_ids === 'string'
+        ? JSON.parse(data.proposal_ids)
+        : data.proposal_ids;
+    if (data.approve) {
+      if (ids.length === 1)
+        messageText = feedbackI18n('bgd_ops_proposal_vote', [
+          ids[0],
+        ]);
+      else {
+        messageText = feedbackI18n('bgd_ops_proposal_votes', [
+          ids.join(', #'),
+        ]);
+      }
+    } else {
+      if (ids.length === 1)
+        messageText = feedbackI18n('bgd_ops_proposal_unvote', [
+          ids[0],
+        ]);
+      else
+        messageText = feedbackI18n('bgd_ops_proposal_unvotes', [
+          ids.join(', #'),
+        ]);
+    }
+    const message = await createMessage(
+      err,
+      result,
+      data,
+      request?.tab!,
+      messageText,
+      err_message,
+    );
+    return message;
+  }
+};
+
+export const broadcastRemoveProposal = async (
+  requestHandler: HiveRequestsHandler,
+  data: RequestRemoveProposal & RequestId,
+  options?: TransactionOptions,
+) => {
+  let err, result, ids, err_message;
+  const request = requestHandler.getRequestData(data.request_id);
+
+  const key = requestHandler.getRequestData(data.request_id)?.key;
+  try {
+    ids =
+      typeof data.proposal_ids === 'string'
+        ? JSON.parse(data.proposal_ids)
+        : data.proposal_ids;
+
+    switch (KeysUtils.getKeyType(key!)) {
+      case PrivateKeyType.LEDGER: {
+        const tx = await ProposalUtils.getRemoveProposalTransaction(
+          data.username,
+          ids,
+          data.extensions,
+        );
+        LedgerModule.signTransactionFromLedger({
+          transaction: tx,
+          key: key!,
+        });
+        const signature = await LedgerModule.getSignatureFromLedger();
+        result = await HiveTxUtils.broadcastAndConfirmTransactionWithSignature(
+          tx,
+          signature,
+        );
+        break;
+      }
+      default: {
+        result = await ProposalUtils.removeProposal(
+          data.username,
+          ids,
+          data.extensions,
+          key!,
+          options,
+        );
+        break;
+      }
+    }
+  } catch (e) {
+    Logger.error(e);
+    err = (e as KeychainError).trace || e;
+    err_message = feedbackI18n(
+      (e as KeychainError).message,
+      (e as KeychainError).messageParams,
+    );
+  } finally {
+    const message = await createMessage(
+      err,
+      result,
+      data,
+      request?.tab!,
+      feedbackI18n('bgd_ops_proposal_remove', [ids]),
+      err_message,
+    );
+    return message;
+  }
+};

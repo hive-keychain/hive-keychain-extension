@@ -12,11 +12,16 @@
     .introduction {
       padding: 0px 32px;
       @include caption;
-    }
+      @include small-card;
+      display: unset;
+      margin: unset;
 
-    .warning-message {
-      @include caption;
-      color: $red;
+      .reset-keychain-warning {
+        display: block;
+        margin-top: 12px;
+        color: $red;
+        @include poppins400(12px);
+      }
     }
 
     .multisig-message {
@@ -38,7 +43,7 @@
     .fields {
       display: flex;
       flex-direction: column;
-      row-gap: 16px;
+      row-gap: 8px;
       max-height: 324px;
       overflow: auto;
       padding: 16px 24px;
@@ -50,14 +55,20 @@
       .field {
         display: flex;
         justify-content: space-between;
+        align-items: center;
+        column-gap: 12px;
         .label {
           @include poppins500(14px);
           display: flex;
           align-items: center;
-          justify-content: center;
+          justify-content: flex-start;
+          flex: 1;
+          min-width: 0;
+          line-height: 18px;
         }
         .value {
           max-width: 70%;
+          flex-shrink: 0;
           text-align: right;
           user-select: text;
           @include poppins400(14px);
@@ -68,6 +79,52 @@
           &.xs-font {
             font-size: 11px;
           }
+          &.nft-image {
+            width: 100%;
+            max-width: unset;
+            display: flex;
+            justify-content: center;
+            .nft-media {
+              width: 50%;
+              height: 260px;
+              object-fit: contain;
+            }
+          }
+        }
+      }
+    }
+
+    .balance-change-panel {
+      display: flex;
+      flex-direction: column;
+      row-gap: 8px;
+      align-items: flex-start;
+      color: var(--main-font-color);
+      .balance-change-title {
+        align-self: flex-start;
+      }
+
+      .balance-change-rows {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 32px minmax(0, 1fr);
+        align-items: center;
+        align-self: stretch;
+        width: 100%;
+        min-width: 0;
+        column-gap: 8px;
+        row-gap: 8px;
+        line-height: 24px;
+        @include poppins400(14px);
+
+        .icon {
+          --triangle-arrow-color: #{$red};
+          justify-self: center;
+          align-self: center;
+          @include icon-size(24px);
+        }
+
+        .balance-after {
+          text-align: right;
         }
       }
     }
@@ -75,10 +132,41 @@
 
   .bottom-panel {
     position: absolute;
-    left: 24px;
+    left: 0px;
     bottom: 32px;
     width: calc(100% - 48px);
     display: flex;
     column-gap: 16px;
+    padding: 0px 24px;
+    padding-bottom: 16px;
+  }
+  .evm-bottom-panel {
+    width: calc(100% - 48px);
+    display: flex;
+    column-gap: 16px;
+    padding: 0px 24px;
+    padding-bottom: 16px;
+  }
+
+  &--embedded {
+    display: flex;
+    flex-direction: column;
+    row-gap: var(--kc-space-4, 16px);
+    min-height: 0;
+
+    .confirmation-top {
+      padding: 0;
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+    }
+
+    .bottom-panel,
+    .evm-bottom-panel {
+      position: static;
+      width: 100%;
+      padding: 0;
+      margin-top: auto;
+    }
   }
 }

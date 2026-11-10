@@ -9,6 +9,18 @@
   left: 0;
   z-index: 6;
 
+  &.message-container--viewport {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+
+    .overlay {
+      inset: 0;
+      opacity: 1;
+      background: var(--background-color);
+    }
+  }
+
   .overlay {
     position: absolute;
     width: 100%;
@@ -46,6 +58,13 @@
       @include dmSans400(15px);
       color: var(--main-font-color);
       user-select: all;
+    }
+    .confirmation-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      width: 100%;
+      column-gap: 12px;
     }
   }
 }

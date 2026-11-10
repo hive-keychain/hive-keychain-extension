@@ -1,0 +1,51 @@
+.edit-contact-item {
+  .contact-label-panel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .contact-label {
+      display: flex;
+      align-items: center;
+      column-gap: 8px;
+      color: var(--main-font-color);
+      @include poppins500($input-font-size);
+      .user-picture {
+        @include user-avatar;
+      }
+    }
+
+    .contact-actions {
+      display: flex;
+      align-items: center;
+      column-gap: 8px;
+      visibility: hidden;
+      flex-shrink: 0;
+
+      .edit-icon,
+      .delete-icon {
+        @include icon-size(16px);
+        cursor: pointer;
+      }
+    }
+
+    &:hover {
+      .contact-actions {
+        visibility: visible;
+      }
+    }
+    @include hint;
+  }
+  .edit-contact-input-panel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 8px;
+  }
+  &.edit-mode {
+    @include small-card;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    align-items: stretch;
+  }
+}

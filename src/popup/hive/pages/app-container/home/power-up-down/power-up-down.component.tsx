@@ -5,6 +5,7 @@ import {
   KeychainKeyTypesLC,
 } from '@interfaces/keychain.interface';
 import { TransactionOptions } from '@interfaces/keys.interface';
+import { Screen } from '@interfaces/screen.interface';
 import { ResourceItemComponent } from '@popup/hive/pages/app-container/home/resources-section/resource-item/resource-item.component';
 import {
   addToLoadingList,
@@ -19,19 +20,20 @@ import {
   navigateToWithParams,
 } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { HiveChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { connect, ConnectedProps } from 'react-redux';
+import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import {
   ConfirmationPageFields,
   ConfirmationPageFieldType,
 } from 'src/common-ui/confirmation-page/confirmation-field.interface';
-import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
+import { HiveConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
-import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -40,13 +42,12 @@ import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { loadDelegatees } from 'src/popup/hive/actions/delegations.actions';
 import { PowerType } from 'src/popup/hive/pages/app-container/home/power-up-down/power-type.enum';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
-import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import { PowerUtils } from 'src/popup/hive/utils/power.utils';
-import { Screen } from 'src/reference-data/screen.enum';
 import { FormUtils } from 'src/utils/form.utils';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface PowerUpDownForm {
   receiver: string;
   amount: number;
@@ -176,7 +177,7 @@ const PowerUpDown = ({
       setErrorMessage('popup_html_power_up_down_error');
       return;
     }
-    const operationString = chrome.i18n.getMessage(
+    const operationString = I18nUtils.getMessage(
       powerType === PowerType.POWER_UP ? 'popup_html_pu' : 'popup_html_pd',
     );
     const formattedAmount = `${parseFloat(form.amount.toString()).toFixed(3)} ${
@@ -211,7 +212,7 @@ const PowerUpDown = ({
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
-      message: chrome.i18n.getMessage(
+      message: I18nUtils.getMessage(
         'popup_html_confirm_power_up_down_message',
         [operationString.toLowerCase()],
       ),
@@ -250,8 +251,8 @@ const PowerUpDown = ({
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
             await FavoriteUserUtils.saveFavoriteUser(
-              form.receiver,
               activeAccount,
+              form.receiver,
             );
             if (success.isUsingMultisig) {
               setSuccessMessage('multisig_transaction_sent_to_signers');
@@ -270,7 +271,7 @@ const PowerUpDown = ({
           removeFromLoadingList('html_popup_power_down_operation');
         }
       },
-    } as ConfirmationPageParams);
+    } as HiveConfirmationPageParams);
   };
 
   const setToMax = () => {
@@ -285,7 +286,7 @@ const PowerUpDown = ({
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       title: 'popup_html_confirm_cancel_power_down_title',
       method: KeychainKeyTypes.active,
-      message: chrome.i18n.getMessage(
+      message: I18nUtils.getMessage(
         'popup_html_confirm_cancel_power_down_message',
       ),
       fields: [],
@@ -305,8 +306,8 @@ const PowerUpDown = ({
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
             await FavoriteUserUtils.saveFavoriteUser(
-              form.receiver,
               activeAccount,
+              form.receiver,
             );
             if (success.isUsingMultisig) {
               setSuccessMessage('multisig_transaction_sent_to_signers');
@@ -322,7 +323,7 @@ const PowerUpDown = ({
           removeFromLoadingList('html_popup_cancel_power_down_operation');
         }
       },
-    } as ConfirmationPageParams);
+    } as HiveConfirmationPageParams);
   };
 
   return (
@@ -362,13 +363,13 @@ const PowerUpDown = ({
         powerDownInfo[0] !== powerDownInfo[1] && (
           <CustomTooltip
             dataTestId="custom-tool-tip-next-power-down"
-            message={chrome.i18n.getMessage('popup_next_powerdown', [
+            message={I18nUtils.getMessage('popup_next_powerdown', [
               powerDownInfo[2].split('T').join(', '),
             ])}
             skipTranslation>
             <div className="power-down-panel">
               <div className="power-down-text">
-                {chrome.i18n.getMessage('popup_html_powering_down')}{' '}
+                {I18nUtils.getMessage('popup_html_powering_down')}{' '}
                 {powerDownInfo[0]} / {powerDownInfo[1]} {currencyLabels.hp}
               </div>
               <SVGIcon
@@ -381,7 +382,7 @@ const PowerUpDown = ({
         )}
 
       <FormContainer onSubmit={handleSubmit(handleButtonClick)}>
-        <div className="text">{chrome.i18n.getMessage(text)}</div>
+        <div className="text">{I18nUtils.getMessage(text)}</div>
         <Separator fullSize type="horizontal" />
         <div className="form-fields">
           {powerType === PowerType.POWER_UP && (
@@ -436,9 +437,7 @@ const PowerUpDown = ({
 const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.hive.activeAccount,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(
-      state.hive.activeRpc?.testnet!,
-    ),
+    currencyLabels: (state.chain as HiveChain).mainTokens,
     powerType: state.navigation.stack[0].params.powerType as PowerType,
     globalProperties: state.hive.globalProperties,
     formParams: state.navigation.stack[0].previousParams?.formParams

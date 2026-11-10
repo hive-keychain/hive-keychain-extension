@@ -1,0 +1,14 @@
+.import-evm-wallet-confirmation-page {
+  display: flex;
+  flex-direction: column;
+  row-gap: 6px;
+  height: 100%;
+  .caption {
+    @include caption();
+  }
+
+  .form-container {
+    @include pageLayoutRowGap;
+    margin-top: 16px;
+  }
+}

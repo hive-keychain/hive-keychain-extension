@@ -1,4 +1,4 @@
-import { Screen } from '@reference-data/screen.enum';
+import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -12,7 +12,17 @@ import { LoadingValuesConfiguration } from 'src/__tests__/utils-for-testing/load
 import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
 import { RootState } from 'src/popup/multichain/store';
 import { SignUpComponent } from 'src/popup/multichain/pages/sign-up/sign-up.component';
+import LegalDocumentsUtils from 'src/utils/legal-documents.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
+
+jest.mock('src/utils/legal-documents.utils', () => ({
+  __esModule: true,
+  default: {
+    needsLegalDocumentAcceptance: jest.fn().mockResolvedValue(false),
+    acceptLegalDocumentHashes: jest.fn().mockResolvedValue(undefined),
+  },
+}));
 /** Sign-up UI lives under ChainRouter when !mk; test the screen directly (not HiveApp). */
 describe('sign-up.component tests:\n', () => {
   let store: Store<RootState>;
@@ -38,6 +48,9 @@ describe('sign-up.component tests:\n', () => {
       initialState: initialEmptyStateStore,
     });
     store = result.store;
+    (
+      LegalDocumentsUtils.acceptLegalDocumentHashes as jest.Mock
+    ).mockClear();
     await waitFor(() => {});
   });
   afterEach(() => cleanup());
@@ -67,11 +80,11 @@ describe('sign-up.component tests:\n', () => {
       );
     });
     expect(
-      await screen.findByText(
-        chrome.i18n.getMessage('popup_password_mismatch'),
-        { exact: true },
-      ),
+      await screen.findByText(I18nUtils.getMessage('popup_password_mismatch'), {
+        exact: true,
+      }),
     ).toBeInTheDocument();
+    expect(LegalDocumentsUtils.acceptLegalDocumentHashes).not.toHaveBeenCalled();
   });
 
   it('Must show error message when using different passwords and clicking button', async () => {
@@ -88,10 +101,9 @@ describe('sign-up.component tests:\n', () => {
       await userEvent.click(screen.getByTestId(dataTestIdButton.signUp));
     });
     expect(
-      await screen.findByText(
-        chrome.i18n.getMessage('popup_password_mismatch'),
-        { exact: true },
-      ),
+      await screen.findByText(I18nUtils.getMessage('popup_password_mismatch'), {
+        exact: true,
+      }),
     ).toBeInTheDocument();
   });
 
@@ -108,7 +120,7 @@ describe('sign-up.component tests:\n', () => {
       );
     });
     expect(
-      await screen.findByText(chrome.i18n.getMessage('popup_password_regex'), {
+      await screen.findByText(I18nUtils.getMessage('popup_password_regex'), {
         exact: true,
       }),
     ).toBeInTheDocument();
@@ -128,13 +140,13 @@ describe('sign-up.component tests:\n', () => {
       await userEvent.click(screen.getByTestId(dataTestIdButton.signUp));
     });
     expect(
-      await screen.findByText(chrome.i18n.getMessage('popup_password_regex'), {
+      await screen.findByText(I18nUtils.getMessage('popup_password_regex'), {
         exact: true,
       }),
     ).toBeInTheDocument();
   });
 
-  it('Must navigate to add_keys_page with valid password and pressing enter', async () => {
+  it('Must navigate to display preferences with valid password and pressing enter', async () => {
     await acceptTerms();
     await act(async () => {
       await userEvent.type(
@@ -148,12 +160,15 @@ describe('sign-up.component tests:\n', () => {
     });
     await waitFor(() => {
       expect(store.getState().navigation.stack[0]?.currentPage).toBe(
-        Screen.ACCOUNT_PAGE_INIT_ACCOUNT,
+        Screen.SETUP_DISPLAY_APPEARANCE,
       );
     });
+    expect(LegalDocumentsUtils.acceptLegalDocumentHashes).toHaveBeenCalledTimes(
+      1,
+    );
   });
 
-  it('Must navigate to add_keys_page with valid password and click button', async () => {
+  it('Must navigate to display preferences with valid password and click button', async () => {
     await acceptTerms();
     await act(async () => {
       await userEvent.type(
@@ -168,8 +183,11 @@ describe('sign-up.component tests:\n', () => {
     });
     await waitFor(() => {
       expect(store.getState().navigation.stack[0]?.currentPage).toBe(
-        Screen.ACCOUNT_PAGE_INIT_ACCOUNT,
+        Screen.SETUP_DISPLAY_APPEARANCE,
       );
     });
+    expect(LegalDocumentsUtils.acceptLegalDocumentHashes).toHaveBeenCalledTimes(
+      1,
+    );
   });
 });

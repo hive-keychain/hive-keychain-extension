@@ -1,0 +1,12 @@
+---
+description: Follow every section of AGENTS.md on each code change
+alwaysApply: true
+---
+
+# AGENTS.md is the whole contract
+
+On every code change, follow **every** section of `AGENTS.md` at the repo root. Cursor already loads that file. Apply it as written.
+
+- Do not apply only the section that matches the current task.
+- Do not replace it with a narrower rule or with a plan from earlier in the chat.
+- If a planned edit conflicts with any section, drop the extra edit and keep the change that section allows.

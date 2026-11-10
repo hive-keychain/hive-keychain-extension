@@ -9,6 +9,7 @@ import { KeychainError } from 'src/keychain-error';
 import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const signature = require('@hiveio/hive-js/lib/auth/ecc');
 
 const DEFAULT_RPC = 'https://api.hive.blog';
@@ -120,7 +121,7 @@ const getTimeBeforeFull = (votingPower: number) => {
   // 1% every 72minutes
   let minutesNeeded = remainingPowerToGet * 72;
   if (minutesNeeded === 0) {
-    return chrome.i18n.getMessage('popup_utils_full');
+    return I18nUtils.getMessage('popup_utils_full');
   } else {
     let fullInDays = parseInt((minutesNeeded / 1440).toString());
     let fullInHours = parseInt(
@@ -135,37 +136,37 @@ const getTimeBeforeFull = (votingPower: number) => {
       fullIn.push(
         fullInDays +
           (fullInDays > 1
-            ? ` ${chrome.i18n.getMessage('days')}`
-            : ` ${chrome.i18n.getMessage('day')}`),
+            ? ` ${I18nUtils.getMessage('days')}`
+            : ` ${I18nUtils.getMessage('day')}`),
       );
     }
     if (fullInHours) {
       fullIn.push(
         fullInHours +
           (fullInHours > 1
-            ? ` ${chrome.i18n.getMessage('hours')}`
-            : ` ${chrome.i18n.getMessage('hour')}`),
+            ? ` ${I18nUtils.getMessage('hours')}`
+            : ` ${I18nUtils.getMessage('hour')}`),
       );
     }
     if (fullInMinutes) {
       fullIn.push(
         fullInMinutes +
           (fullInMinutes > 1
-            ? ` ${chrome.i18n.getMessage('minutes')}`
-            : ` ${chrome.i18n.getMessage('minute')}`),
+            ? ` ${I18nUtils.getMessage('minutes')}`
+            : ` ${I18nUtils.getMessage('minute')}`),
       );
     }
 
-    let fullInString = fullIn.join(` ${chrome.i18n.getMessage('common_and')} `);
+    let fullInString = fullIn.join(` ${I18nUtils.getMessage('common_and')} `);
 
     if (fullIn.length === 3) {
       fullInString = fullInString.replace(
-        ` ${chrome.i18n.getMessage('common_and')} `,
+        ` ${I18nUtils.getMessage('common_and')} `,
         ', ',
       );
     }
 
-    return chrome.i18n.getMessage('full_in', [fullInString]);
+    return I18nUtils.getMessage('full_in', [fullInString]);
   }
 };
 

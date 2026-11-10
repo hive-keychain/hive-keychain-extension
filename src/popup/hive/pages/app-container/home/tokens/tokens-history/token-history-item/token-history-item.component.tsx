@@ -21,6 +21,7 @@ import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.compo
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface TokenHistoryItemProps {
   transaction: TokenTransaction;
   dataTestId?: string;
@@ -58,21 +59,21 @@ const TokenHistoryItem = ({
     switch (transaction.operation) {
       case OperationsHiveEngine.COMMENT_AUTHOR_REWARD: {
         const t = transaction as AuthorCurationTransaction;
-        return chrome.i18n.getMessage(
+        return I18nUtils.getMessage(
           'popup_html_token_wallet_info_author_reward',
           [t.amount],
         );
       }
       case OperationsHiveEngine.COMMENT_CURATION_REWARD: {
         const t = transaction as CommentCurationTransaction;
-        return chrome.i18n.getMessage(
+        return I18nUtils.getMessage(
           'popup_html_token_wallet_info_comment_curation_reward',
           [t.amount],
         );
       }
       case OperationsHiveEngine.MINING_LOTTERY: {
         const t = transaction as MiningLotteryTransaction;
-        return chrome.i18n.getMessage(
+        return I18nUtils.getMessage(
           'popup_html_token_wallet_info_mining_lottery',
           [t.amount, t.poolId],
         );
@@ -80,12 +81,12 @@ const TokenHistoryItem = ({
       case OperationsHiveEngine.TOKENS_TRANSFER: {
         const t = transaction as TransferTokenTransaction;
         if (t.from === activeAccountName) {
-          return chrome.i18n.getMessage(
+          return I18nUtils.getMessage(
             'popup_html_token_wallet_info_transfer_out',
             [t.amount, t.to],
           );
         } else {
-          return chrome.i18n.getMessage(
+          return I18nUtils.getMessage(
             'popup_html_token_wallet_info_transfer_in',
             [t.amount, t.from],
           );
@@ -94,12 +95,12 @@ const TokenHistoryItem = ({
       case OperationsHiveEngine.TOKENS_DELEGATE: {
         const t = transaction as DelegateTokenTransaction;
         if (t.delegator === activeAccountName) {
-          return chrome.i18n.getMessage(
+          return I18nUtils.getMessage(
             'popup_html_token_wallet_info_delegation_out',
             [t.amount, t.delegatee],
           );
         } else {
-          return chrome.i18n.getMessage(
+          return I18nUtils.getMessage(
             'popup_html_token_wallet_info_delegation_in',
             [t.delegator, t.amount],
           );
@@ -108,12 +109,12 @@ const TokenHistoryItem = ({
       case OperationsHiveEngine.TOKEN_UNDELEGATE_START: {
         const t = transaction as UndelegateTokenStartTransaction;
         if (t.delegator === activeAccountName) {
-          return chrome.i18n.getMessage(
+          return I18nUtils.getMessage(
             'popup_html_token_wallet_info_start_cancel_delegation_out',
             [t.amount, t.delegatee],
           );
         } else {
-          return chrome.i18n.getMessage(
+          return I18nUtils.getMessage(
             'popup_html_token_wallet_info_start_cancel_delegation_in',
             [t.delegator, t.amount],
           );
@@ -122,12 +123,12 @@ const TokenHistoryItem = ({
       case OperationsHiveEngine.TOKEN_UNDELEGATE_DONE: {
         const t = transaction as UndelegateTokenDoneTransaction;
         if (t.delegator === activeAccountName) {
-          return chrome.i18n.getMessage(
+          return I18nUtils.getMessage(
             'popup_html_token_wallet_info_cancel_delegation_out',
             [t.amount, t.delegatee],
           );
         } else {
-          return chrome.i18n.getMessage(
+          return I18nUtils.getMessage(
             'popup_html_token_wallet_info_cancel_delegation_in',
             [t.delegator, t.amount],
           );
@@ -136,35 +137,35 @@ const TokenHistoryItem = ({
       case OperationsHiveEngine.TOKEN_STAKE: {
         const t = transaction as StakeTokenTransaction;
         if (t.from !== activeAccountName) {
-          return chrome.i18n.getMessage(
+          return I18nUtils.getMessage(
             'popup_html_token_wallet_info_stake_other_user',
             [t.from, t.amount, t.to],
           );
         } else
-          return chrome.i18n.getMessage('popup_html_token_wallet_info_stake', [
+          return I18nUtils.getMessage('popup_html_token_wallet_info_stake', [
             t.amount,
           ]);
       }
       case OperationsHiveEngine.TOKEN_UNSTAKE_START: {
         const t = transaction as UnStakeTokenStartTransaction;
-        return chrome.i18n.getMessage(
+        return I18nUtils.getMessage(
           'popup_html_token_wallet_info_start_unstake',
           [t.amount],
         );
       }
       case OperationsHiveEngine.TOKEN_UNSTAKE_DONE: {
         const t = transaction as UnStakeTokenDoneTransaction;
-        return chrome.i18n.getMessage(
+        return I18nUtils.getMessage(
           'popup_html_token_wallet_info_unstake_done',
           [t.amount],
         );
       }
       case OperationsHiveEngine.TOKEN_ISSUE:
-        return chrome.i18n.getMessage('popup_html_token_wallet_info_issue', [
+        return I18nUtils.getMessage('popup_html_token_wallet_info_issue', [
           transaction.amount,
         ]);
       case OperationsHiveEngine.HIVE_PEGGED_BUY:
-        return chrome.i18n.getMessage(
+        return I18nUtils.getMessage(
           'popup_html_token_wallet_info_pegged_buy',
           [transaction.amount],
         );

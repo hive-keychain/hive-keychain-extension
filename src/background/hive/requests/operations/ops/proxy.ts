@@ -1,0 +1,81 @@
+import LedgerModule from '@background/hive/modules/ledger.module';
+import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
+import { createMessage, feedbackI18n } from '@background/hive/requests/operations/operations.utils';
+import {
+  KeychainKeyTypesLC,
+  RequestId,
+  RequestProxy,
+} from '@interfaces/keychain.interface';
+import { PrivateKeyType, TransactionOptions } from '@interfaces/keys.interface';
+import { KeychainError } from 'src/keychain-error';
+import { HiveTxUtils } from 'src/popup/hive/utils/hive-tx.utils';
+import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
+import ProxyUtils from 'src/popup/hive/utils/proxy.utils';
+import Logger from 'src/utils/logger.utils';
+
+import { I18nUtils } from 'src/utils/i18n.utils';
+export const broadcastProxy = async (
+  requestHandler: HiveRequestsHandler,
+  data: RequestProxy & RequestId,
+  options?: TransactionOptions,
+) => {
+  let result, err, err_message;
+  const request = requestHandler.getRequestData(data.request_id);
+
+  try {
+    let key = requestHandler.getRequestData(data.request_id)?.key;
+    if (!key) {
+      [key] = requestHandler.getUserKeyPair(
+        data.username!,
+        KeychainKeyTypesLC.active,
+      ) as [string, string];
+    }
+
+    switch (KeysUtils.getKeyType(key!)) {
+      case PrivateKeyType.LEDGER: {
+        const tx = await ProxyUtils.getSetProxyTransaction(
+          data.proxy,
+          data.username!,
+        );
+        LedgerModule.signTransactionFromLedger({
+          transaction: tx,
+          key: key!,
+        });
+        const signature = await LedgerModule.getSignatureFromLedger();
+        result = await HiveTxUtils.broadcastAndConfirmTransactionWithSignature(
+          tx,
+          signature,
+        );
+        break;
+      }
+      default: {
+        result = await ProxyUtils.setAsProxy(
+          data.proxy,
+          data.username!,
+          key,
+          options,
+        );
+        break;
+      }
+    }
+  } catch (e) {
+    Logger.error(e);
+    err = (e as KeychainError).trace || e;
+    err_message = feedbackI18n(
+      (e as KeychainError).message,
+      (e as KeychainError).messageParams,
+    );
+  } finally {
+    const message = await createMessage(
+      err,
+      result,
+      data,
+      request?.tab!,
+      data.proxy.length
+        ? feedbackI18n('popup_success_proxy', [data.proxy])
+        : feedbackI18n('bgd_ops_unproxy'),
+      err_message,
+    );
+    return message;
+  }
+};

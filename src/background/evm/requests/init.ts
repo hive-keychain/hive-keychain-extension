@@ -1,0 +1,443 @@
+import { EvmDeprecatedMethods } from '@background/evm/evm-methods/evm-deprecated-methods.list';
+import {
+  doesMethodExist,
+  EvmNeedPermissionMethods,
+  EvmRequestMethod,
+  EvmRestrictedMethods,
+  EvmUnrestrictedMethods,
+} from '@background/evm/evm-methods/evm-methods.list';
+import { EvmRequestPermission } from '@background/evm/evm-methods/evm-permission.list';
+import { EvmRequestAccountUtils } from '@background/evm/requests/evm-request-account.utils';
+import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
+import { evmRequestWithConfirmation } from '@background/evm/requests/logic/evm-request-with-confirmation.logic';
+import { evmRequestWithoutConfirmation } from '@background/evm/requests/logic/evm-request-without-confirmation.logic';
+import { handleDeprecatedMethods } from '@background/evm/requests/logic/handle-deprecated-methods.logic';
+import { handleEvmError } from '@background/evm/requests/logic/handle-evm-error.logic';
+import { handleNonExistingMethod } from '@background/evm/requests/logic/handle-non-existing-methods.logic';
+import { handleNonSupportedChain } from '@background/evm/requests/logic/handle-non-supported-chain.logic';
+import { requestAddEvmChain } from '@background/evm/requests/logic/request-add-evm-chain.logic';
+import { resolveRequestChainId } from '@background/evm/requests/logic/resolve-request-chain-id.logic';
+import { EvmWatchAssetUtils } from '@background/evm/utils/watch-asset.utils';
+import { EvmTransactionSubmissionModule } from '@background/evm/evm-transaction-submission.module';
+import MkModule from '@background/hive/modules/mk.module';
+import {
+  initializeWallet,
+  unlockWallet,
+} from '@background/hive/requests/logic';
+import {
+  EvmDappInfo,
+  EvmRequest,
+  getEvmProviderRpcFullError,
+  getUnrecognizedChainIdError,
+} from '@interfaces/evm-provider.interface';
+import {
+  hasUnsupportedTransactionPayload,
+  UNSUPPORTED_BLOB_OR_DELEGATION_TRANSACTION_MESSAGE,
+} from '@popup/evm/interfaces/evm-transactions.interface';
+import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
+import {
+  ChainType,
+  EvmChain,
+} from '@popup/multichain/interfaces/chains.interface';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { isChainWhitelistedForOrigin } from 'src/background/evm/evm-provider-state.utils';
+import { DappRequestUtils } from 'src/utils/dapp-request.utils';
+import { areEvmChainIdsEqual } from 'src/utils/evm-provider-value.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
+
+type ChainIdParam = { chainId?: unknown };
+
+const getRequestArgumentChainId = (request: EvmRequest): string | undefined => {
+  if (
+    request.method === EvmRequestMethod.WALLET_ADD_ETH_CHAIN ||
+    request.method === EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN
+  ) {
+    return undefined;
+  }
+
+  const chainId = (request.params?.[0] as ChainIdParam | undefined)?.chainId;
+  return typeof chainId === 'string' ? chainId : undefined;
+};
+
+export const initEvmRequestHandler = async (
+  request: EvmRequest,
+  tab: number | undefined,
+  dappInfo: EvmDappInfo,
+  requestHandler: EvmRequestHandler,
+) => {
+  Logger.info('Initializing EVM request logic');
+
+  // Capability discovery and batch IDs are independent of the currently selected chain.
+  if (
+    request.method === EvmRequestMethod.WALLET_GET_CAPABILITIES ||
+    request.method === EvmRequestMethod.WALLET_GET_CALLS_STATUS
+  ) {
+    await evmRequestWithoutConfirmation(
+      requestHandler,
+      tab!,
+      request,
+      dappInfo,
+    );
+    return;
+  }
+  if (request.method === EvmRequestMethod.WALLET_SHOW_CALLS_STATUS) {
+    try {
+      await EvmTransactionSubmissionModule.getBatch(
+        request.params[0],
+        dappInfo.origin,
+      );
+      await evmRequestWithConfirmation(requestHandler, tab!, request, dappInfo);
+    } catch {
+      const error = { code: 5730, message: 'Unknown batch identifier' };
+      await handleEvmError(
+        requestHandler,
+        tab!,
+        request,
+        error,
+        error.message,
+        [],
+        dappInfo.origin,
+        true,
+        dappInfo.requestSource,
+      );
+    }
+    return;
+  }
+
+  if (
+    request.method === EvmRequestMethod.SEND_TRANSACTION &&
+    hasUnsupportedTransactionPayload(request.params?.[0])
+  ) {
+    const providerError = {
+      code: 4200,
+      message: UNSUPPORTED_BLOB_OR_DELEGATION_TRANSACTION_MESSAGE,
+    };
+    await handleEvmError(
+      requestHandler,
+      tab!,
+      request,
+      providerError,
+      providerError.message,
+      [],
+      dappInfo.origin,
+      true,
+      dappInfo.requestSource,
+    );
+    return;
+  }
+
+  const isCallBatch = request.method === EvmRequestMethod.WALLET_SEND_CALLS;
+
+  const resolvedRequestChainId = resolveRequestChainId(request);
+  const currentProviderChainId = await EvmChainUtils.getLastEvmChainIdForOrigin(
+    dappInfo.origin,
+  );
+  const requestArgumentChainId = getRequestArgumentChainId(request);
+  const providerChainId = request.chainId ?? currentProviderChainId;
+
+  if (
+    !isCallBatch &&
+    request.chainId &&
+    currentProviderChainId &&
+    !areEvmChainIdsEqual(request.chainId, currentProviderChainId)
+  ) {
+    const providerError = getEvmProviderRpcFullError('mismatchedChainId');
+    await handleEvmError(
+      requestHandler,
+      tab!,
+      request,
+      providerError,
+      providerError.message,
+      [],
+      dappInfo.origin,
+      true,
+      dappInfo.requestSource,
+    );
+    return;
+  }
+
+  if (
+    !isCallBatch &&
+    requestArgumentChainId &&
+    providerChainId &&
+    !areEvmChainIdsEqual(requestArgumentChainId, providerChainId)
+  ) {
+    const providerError = getEvmProviderRpcFullError('mismatchedChainId');
+    await handleEvmError(
+      requestHandler,
+      tab!,
+      request,
+      providerError,
+      providerError.message,
+      [],
+      dappInfo.origin,
+      true,
+      dappInfo.requestSource,
+    );
+    return;
+  }
+
+  const allChains = await ChainUtils.getDefaultChains();
+  const setupChains = await ChainUtils.getAllSetupChainsForType<EvmChain>(
+    ChainType.EVM,
+  );
+  const chainId =
+    resolvedRequestChainId ?? currentProviderChainId;
+  let chain: EvmChain | null = null;
+  if (chainId) {
+    const normalizedChainId = chainId.toLowerCase();
+    chain =
+      (allChains.find(
+        (c) => c.chainId.toLowerCase() === normalizedChainId,
+      ) as EvmChain) ??
+      (setupChains.find(
+        (c) => c.chainId.toLowerCase() === normalizedChainId,
+      ) as EvmChain);
+  }
+
+  if (
+    isCallBatch &&
+    !setupChains.some((entry) => areEvmChainIdsEqual(entry.chainId, chainId!))
+  ) {
+    const error = { code: 5710, message: 'Unsupported batch chain' };
+    await handleEvmError(
+      requestHandler,
+      tab!,
+      request,
+      error,
+      error.message,
+      [],
+      dappInfo.origin,
+      true,
+      dappInfo.requestSource,
+    );
+    return;
+  }
+
+  if (EvmWatchAssetUtils.isWatchAssetRequest(request)) {
+    if (!EvmWatchAssetUtils.isValidWatchAssetRequest(request)) {
+      await EvmWatchAssetUtils.rejectWatchAssetRequest(
+        requestHandler,
+        tab!,
+        request,
+        dappInfo.origin,
+        EvmWatchAssetUtils.WATCH_ASSET_INVALID_PARAMS_ERROR,
+        dappInfo.requestSource,
+      );
+      return;
+    }
+  }
+
+  if (
+    chainId &&
+    !chain &&
+    request.method !== EvmRequestMethod.WALLET_ADD_ETH_CHAIN
+  ) {
+    if (request.method === EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN) {
+      const providerError = getUnrecognizedChainIdError(chainId);
+      await handleEvmError(
+        requestHandler,
+        tab!,
+        request,
+        providerError,
+        providerError.message,
+        [],
+        dappInfo.origin,
+        true,
+        dappInfo.requestSource,
+      );
+    } else {
+      await handleNonSupportedChain(
+        requestHandler,
+        tab!,
+        request,
+        chainId,
+        dappInfo.origin,
+        undefined,
+        dappInfo.requestSource,
+      );
+    }
+  } else if (EvmDeprecatedMethods.includes(request.method)) {
+    await handleDeprecatedMethods(requestHandler, tab!, request, dappInfo);
+  } else if (!doesMethodExist(request.method)) {
+    await handleNonExistingMethod(requestHandler, tab!, request, dappInfo);
+  } else if (
+    request.method === EvmRequestMethod.WALLET_SWITCH_ETHEREUM_CHAIN
+  ) {
+    const isSetupChain =
+      resolvedRequestChainId &&
+      setupChains.find(
+        (c: EvmChain) =>
+          c.chainId.toLowerCase() === resolvedRequestChainId.toLowerCase(),
+      );
+
+    if (resolvedRequestChainId && !isSetupChain) {
+      const providerError = getUnrecognizedChainIdError(resolvedRequestChainId);
+      await handleEvmError(
+        requestHandler,
+        tab!,
+        request,
+        providerError,
+        providerError.message,
+        [],
+        dappInfo.origin,
+        true,
+        dappInfo.requestSource,
+      );
+    } else if (
+      resolvedRequestChainId &&
+      (await isChainWhitelistedForOrigin(
+        dappInfo.origin,
+        resolvedRequestChainId,
+      ))
+    ) {
+      await evmRequestWithoutConfirmation(
+        requestHandler,
+        tab!,
+        request,
+        dappInfo,
+      );
+    } else {
+      await evmRequestWithConfirmation(
+        requestHandler,
+        tab!,
+        request,
+        dappInfo,
+      );
+    }
+  } else if (EvmUnrestrictedMethods.includes(request.method)) {
+    await evmRequestWithoutConfirmation(
+      requestHandler,
+      tab!,
+      request,
+      dappInfo,
+    );
+  } else if (
+    EvmRestrictedMethods.includes(request.method) ||
+    EvmNeedPermissionMethods.includes(request.method)
+  ) {
+    if (
+      EvmRequestAccountUtils.requiresAccountAuthorization(request) &&
+      !(await EvmRequestAccountUtils.isRequestedAccountAuthorizedForOrigin(
+        request,
+        dappInfo.origin,
+      ))
+    ) {
+      const providerError = getEvmProviderRpcFullError('unauthorized');
+      await handleEvmError(
+        requestHandler,
+        tab!,
+        request,
+        providerError,
+        providerError.message,
+        [],
+        dappInfo.origin,
+        true,
+        dappInfo.requestSource,
+      );
+      return;
+    }
+
+    if (
+      request.method !== EvmRequestMethod.REQUEST_ACCOUNTS &&
+      (await DappRequestUtils.isDappLocked(dappInfo.domain))
+    ) {
+      const providerError = getEvmProviderRpcFullError('userReject');
+      await handleEvmError(
+        requestHandler,
+        tab!,
+        request,
+        providerError,
+        providerError.message,
+        [],
+        dappInfo.origin,
+        true,
+        dappInfo.requestSource,
+      );
+      return;
+    }
+
+    const mk = await MkModule.getMk();
+    const accounts = await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_ACCOUNTS,
+    );
+    if (mk) {
+      const rebuiltAccounts =
+        await EvmWalletUtils.rebuildAccountsFromLocalStorage(mk);
+      requestHandler.accounts = rebuiltAccounts;
+    }
+    if (!accounts) {
+      initializeWallet(requestHandler, tab!, request);
+    } else if (!mk) {
+      await unlockWallet(
+        requestHandler,
+        tab!,
+        request,
+        dappInfo,
+        DialogCommand.UNLOCK_EVM,
+      );
+    } else if (
+      request.method !== EvmRequestMethod.WALLET_ADD_ETH_CHAIN &&
+      resolvedRequestChainId &&
+      !setupChains.find(
+        (c: EvmChain) =>
+          c.chainId.toLowerCase() === resolvedRequestChainId.toLowerCase(),
+      )
+    ) {
+      await requestAddEvmChain(requestHandler, tab!, request, dappInfo);
+    } else if (EvmNeedPermissionMethods.includes(request.method)) {
+      await evmRequestWithConfirmation(
+        requestHandler,
+        tab!,
+        request,
+        dappInfo,
+      );
+    } else if (EvmRestrictedMethods.includes(request.method)) {
+      if (request.method === EvmRequestMethod.REQUEST_ACCOUNTS) {
+        if (
+          await EvmWalletUtils.hasPermission(
+            dappInfo.origin,
+            EvmRequestPermission.ETH_ACCOUNTS,
+          )
+        ) {
+          await evmRequestWithoutConfirmation(
+            requestHandler,
+            tab!,
+            request,
+            dappInfo,
+          );
+        } else {
+          await evmRequestWithConfirmation(
+            requestHandler,
+            tab!,
+            request,
+            dappInfo,
+          );
+        }
+      } else if (
+        chain &&
+        EvmWatchAssetUtils.isWatchAssetRequest(request) &&
+        (await EvmWatchAssetUtils.isTokenAlreadyWatched(chain, request))
+      ) {
+        await EvmWatchAssetUtils.acceptWatchAssetRequest(
+          requestHandler,
+          tab!,
+          request,
+          dappInfo.origin,
+          dappInfo.requestSource,
+        );
+      } else {
+        await evmRequestWithConfirmation(
+          requestHandler,
+          tab!,
+          request,
+          dappInfo,
+        );
+      }
+    }
+  }
+};

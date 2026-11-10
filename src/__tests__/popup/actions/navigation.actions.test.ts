@@ -1,4 +1,4 @@
-import { Screen } from '@reference-data/screen.enum';
+import { Screen } from '@interfaces/screen.interface';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
 import * as navigationActions from 'src/popup/multichain/actions/navigation.actions';
@@ -117,6 +117,38 @@ describe('navigation.actions tests:\n', () => {
         params: params,
         stack: [{ currentPage: Screen.HOME_PAGE, params: params }],
       });
+    });
+  });
+
+  describe('replaceNavigationStack tests:\n', () => {
+    test('Must replace the stack and keep back history', async () => {
+      const fakeStore = getFakeStore({
+        ...initialEmptyStateStore,
+        navigation: {
+          stack: [{ currentPage: Screen.HOME_PAGE }],
+        },
+      });
+      await fakeStore.dispatch<any>(
+        navigationActions.replaceNavigationStack([
+          {
+            currentPage: Screen.CREATE_EVM_WALLET,
+            params: { selectedAccountType: 'EVM' },
+          },
+          { currentPage: Screen.ACCOUNT_PAGE_INIT_ACCOUNT },
+          { currentPage: Screen.HOME_PAGE },
+        ]),
+      );
+      expect(fakeStore.getState().navigation.stack).toEqual([
+        {
+          currentPage: Screen.CREATE_EVM_WALLET,
+          params: { selectedAccountType: 'EVM' },
+        },
+        {
+          currentPage: Screen.ACCOUNT_PAGE_INIT_ACCOUNT,
+          params: undefined,
+        },
+        { currentPage: Screen.HOME_PAGE, params: undefined },
+      ]);
     });
   });
 

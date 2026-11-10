@@ -5,6 +5,7 @@ import {
   KeychainKeyTypesLC,
 } from '@interfaces/keychain.interface';
 import { TransactionOptions } from '@interfaces/keys.interface';
+import { Screen } from '@interfaces/screen.interface';
 import { fetchRecurrentTransfers } from '@popup/hive/actions/recurrent-transfer.actions';
 import {
   addToLoadingList,
@@ -19,12 +20,14 @@ import {
   navigateToWithParams,
 } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { HiveChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import Joi from 'joi';
 import { capitalize } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { connect, ConnectedProps } from 'react-redux';
+import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import { BalanceSectionComponent } from 'src/common-ui/balance-section/balance-section.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { CheckboxFormComponent } from 'src/common-ui/checkbox/checkbox/form-checkbox.component';
@@ -32,30 +35,26 @@ import {
   ConfirmationPageFields,
   ConfirmationPageFieldType,
 } from 'src/common-ui/confirmation-page/confirmation-field.interface';
-import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
+import { HiveConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import {
   ComplexeCustomSelect,
   OptionItem,
 } from 'src/common-ui/custom-select/custom-select.component';
-import { FormContainer } from 'src/common-ui/form-container/form-container.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import { fetchPhishingAccounts } from 'src/popup/hive/actions/phishing.actions';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
-import CurrencyUtils, {
-  CurrencyLabels,
-} from 'src/popup/hive/utils/currency.utils';
+import { CurrencyLabels } from 'src/popup/hive/utils/currency.utils';
 import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import HiveUtils from 'src/popup/hive/utils/hive.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import TransferUtils from 'src/popup/hive/utils/transfer.utils';
-import { Screen } from 'src/reference-data/screen.enum';
-
 import { FormUtils } from 'src/utils/form.utils';
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface TransferForm {
   receiverUsername: string;
   selectedCurrency: keyof CurrencyLabels;
@@ -117,9 +116,9 @@ const TransferFunds = ({
       receiverUsername: formParams.receiverUsername
         ? formParams.receiverUsername
         : '',
-      selectedCurrency: formParams.selectedCurrency
-        ? formParams.selectedCurrency
-        : navParams.selectedCurrency,
+      selectedCurrency: formParams?.selectedCurrency
+        ? formParams?.selectedCurrency
+        : navParams?.selectedCurrency,
       amount: formParams.amount ? formParams.amount : '',
       memo: formParams.memo ? formParams.memo : '',
       encrypted: formParams.encrypted ? formParams.encrypted : false,
@@ -159,9 +158,19 @@ const TransferFunds = ({
     });
   }, []);
 
+  const selectedCurrency = watch('selectedCurrency');
+
   useEffect(() => {
-    setBalance(balances[watch('selectedCurrency')]);
-  }, [watch('selectedCurrency')]);
+    if (!selectedCurrency) setValue('selectedCurrency', 'hive');
+    else {
+      setBalance(balances[selectedCurrency as keyof CurrencyLabels]);
+      loadAutocompleteTransferUsernames();
+    }
+  }, [
+    selectedCurrency,
+    activeAccount.account.balance,
+    activeAccount.account.hbd_balance,
+  ]);
 
   useEffect(() => {
     const memo = watch('memo');
@@ -176,11 +185,13 @@ const TransferFunds = ({
   ];
 
   const loadAutocompleteTransferUsernames = async () => {
+    const selectedCurrency =
+      (watch('selectedCurrency') ?? 'hive') as keyof CurrencyLabels;
     const autoCompleteListByCategories: AutoCompleteValues =
       await FavoriteUserUtils.getAutocompleteListByCategories(
         activeAccount.name!,
         localAccounts,
-        { addExchanges: true, token: watch('selectedCurrency').toUpperCase() },
+        { addExchanges: true, token: selectedCurrency.toUpperCase() },
       );
     setAutocompleteFavoriteUsers(autoCompleteListByCategories);
   };
@@ -215,7 +226,7 @@ const TransferFunds = ({
     let memoField = form.memo;
     if (form.memo.length) {
       if (form.memo.startsWith('#') || form.encrypted) {
-        memoField = `${form.memo} (${chrome.i18n.getMessage(
+        memoField = `${form.memo} (${I18nUtils.getMessage(
           'popup_encrypted',
         )})`;
         if (!activeAccount.keys.memo) {
@@ -224,7 +235,7 @@ const TransferFunds = ({
         }
       }
     } else {
-      memoField = chrome.i18n.getMessage('popup_empty');
+      memoField = I18nUtils.getMessage('popup_empty');
     }
 
     let fields: ConfirmationPageFields[] = [
@@ -258,7 +269,7 @@ const TransferFunds = ({
     if (form.isRecurrent) {
       fields.push({
         label: 'popup_html_transfer_recurrence',
-        value: chrome.i18n.getMessage('popup_html_transfer_recurrence_value', [
+        value: I18nUtils.getMessage('popup_html_transfer_recurrence_value', [
           form.frequency.toString(),
           form.iteration.toString(),
         ]),
@@ -274,7 +285,7 @@ const TransferFunds = ({
     );
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
-      message: chrome.i18n.getMessage('popup_html_transfer_confirm_text'),
+      message: I18nUtils.getMessage('popup_html_transfer_confirm_text'),
       fields: fields,
       warningMessage: warningMessage,
       skipWarningTranslation: true,
@@ -329,8 +340,8 @@ const TransferFunds = ({
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
             await FavoriteUserUtils.saveFavoriteUser(
-              form.receiverUsername,
               activeAccount,
+              form.receiverUsername,
             );
 
             if (success.isUsingMultisig) {
@@ -358,7 +369,7 @@ const TransferFunds = ({
           removeFromLoadingList('html_popup_transfer_fund_operation');
         }
       },
-    } as ConfirmationPageParams);
+    } as HiveConfirmationPageParams);
   };
 
   return (
@@ -378,7 +389,7 @@ const TransferFunds = ({
               navigateTo(Screen.RECURRENT_TRANSFERS_PAGE);
             }}>
             <div className="pending-recurrent-transfer-text">
-              {`${recurrentTransfers?.length} ${chrome.i18n.getMessage(
+              {`${recurrentTransfers?.length} ${I18nUtils.getMessage(
                 'popup_html_active_recurrent_transfer',
               )}`}
             </div>
@@ -443,7 +454,7 @@ const TransferFunds = ({
               label="popup_html_transfer_memo"
               hint={
                 watch('encrypted') || watch('memo').startsWith('#')
-                  ? capitalize(chrome.i18n.getMessage('popup_encrypted'))
+                  ? capitalize(I18nUtils.getMessage('popup_encrypted'))
                   : undefined
               }
               skipHintTranslation
@@ -505,9 +516,7 @@ const TransferFunds = ({
 const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.hive.activeAccount,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(
-      state.hive.activeRpc?.testnet!,
-    ),
+    currencyLabels: (state.chain as HiveChain).mainTokens,
     navParams: state.navigation.stack[0].params,
     formParams: state.navigation.stack[0].previousParams?.formParams
       ? state.navigation.stack[0].previousParams?.formParams

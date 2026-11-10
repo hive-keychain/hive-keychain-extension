@@ -4,7 +4,8 @@ import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import QRCode from 'react-qr-code';
 
-type AddAccountQRProps = {
+import { I18nUtils } from 'src/utils/i18n.utils';
+export type AddAccountQRMessage = {
   command: DialogCommand;
   data: KeychainRequest;
   tab: number;
@@ -12,7 +13,7 @@ type AddAccountQRProps = {
 };
 
 type Props = {
-  data: AddAccountQRProps;
+  data: AddAccountQRMessage;
 };
 
 const AddAccountQR = (props: Props) => {
@@ -42,11 +43,11 @@ const AddAccountQR = (props: Props) => {
   return (
     <div className="add-account-qr">
       <div className="content-container">
-        <h3>{chrome.i18n.getMessage('popup_html_qr_title')}</h3>
+        <h3>{I18nUtils.getMessage('popup_html_qr_title')}</h3>
         <div className="qr-code-disclaimer">
-          <p>{chrome.i18n.getMessage('popup_html_qr_disclaimer1')}</p>
+          <p>{I18nUtils.getMessage('popup_html_qr_disclaimer1')}</p>
           <br />
-          <strong>{chrome.i18n.getMessage('popup_html_qr_disclaimer2')}</strong>
+          <strong>{I18nUtils.getMessage('popup_html_qr_disclaimer2')}</strong>
         </div>
         <div className="qr-code-container">
           {qrCode && (

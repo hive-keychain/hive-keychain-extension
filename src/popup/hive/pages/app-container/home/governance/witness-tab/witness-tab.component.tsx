@@ -22,7 +22,6 @@ import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
-import { CheckboxPanelComponent } from 'src/common-ui/checkbox/checkbox-panel/checkbox-panel.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -35,6 +34,7 @@ import ProxyUtils from 'src/popup/hive/utils/proxy.utils';
 import WitnessUtils from 'src/popup/hive/utils/witness.utils';
 import * as ValidUrl from 'valid-url';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const MAX_WITNESS_VOTE = 30;
 
 interface WitnessTabProps {
@@ -61,6 +61,7 @@ const WitnessTab = ({
   const [filteredRanking, setFilteredRanking] = useState<Witness[]>([]);
   const [filterValue, setFilterValue] = useState('');
   const [votedWitnesses, setVotedWitnesses] = useState<string[]>([]);
+  const [isFilterOpened, setIsFilterOpened] = useState(false);
 
   const [usingProxy, setUsingProxy] = useState<boolean>(false);
   const [keyType, setKeyType] = useState<PrivateKeyType>();
@@ -128,6 +129,11 @@ const WitnessTab = ({
   const initProxyVotes = async (proxy: string) => {
     const hiveAccounts = await AccountUtils.getAccount(proxy);
     setVotedWitnesses(hiveAccounts[0].witness_votes);
+  };
+
+  const getVotedWitnessesCount = () => {
+    if (typeof remainingVotes !== 'number') return '...';
+    return MAX_WITNESS_VOTE - remainingVotes;
   };
 
   const processClick = async (
@@ -293,72 +299,67 @@ const WitnessTab = ({
 
   return (
     <div data-testid="witness-tab" className="witness-tab">
-      {!usingProxy && (
-        <div className="remaining-votes">
-          {chrome.i18n.getMessage('popup_html_witness_remaining', [
-            remainingVotes + '',
-          ])}
-        </div>
-      )}
-      {usingProxy && (
-        <div className="using-proxy">
-          {chrome.i18n.getMessage('html_popup_currently_using_proxy', [
-            activeAccount.account.proxy,
-          ])}
-        </div>
-      )}
-
-      <div
-        data-testid="link-to-arcange"
-        onClick={() =>
-          chrome.tabs.create({ url: 'https://hive.arcange.eu/witnesses/' })
-        }
-        className="link-to-arcange">
-        <div>
-          {chrome.i18n.getMessage('html_popup_link_to_witness_website')}
-        </div>
-        {/* <SVGIcon
-          icon={NewIcons.GOVERNANCE_WITNESS_LINK}
-          className="outside-link"
-        /> */}
-      </div>
-
       {!hasError && (
         <div className="ranking-container">
           <div className="ranking-filter">
-            <InputComponent
-              dataTestId="input-ranking-filter"
-              type={InputType.TEXT}
-              logo={SVGIcons.INPUT_SEARCH}
-              logoPosition="left"
-              placeholder="popup_html_search"
-              value={filterValue}
-              onChange={setFilterValue}
-            />
-            <div className="switches-panel">
-              <CheckboxPanelComponent
-                dataTestId="switches-panel-witness-voted_only"
-                title="html_popup_witness_display_voted_only"
-                checked={displayVotedOnly}
-                onChange={() => {
-                  setDisplayVotedOnly(!displayVotedOnly);
-                }}></CheckboxPanelComponent>
-              <CheckboxPanelComponent
-                dataTestId="switches-panel-witness-hide_inactive"
-                title="html_popup_witness_hide_inactive"
-                checked={hideNonActive}
-                onChange={() => {
-                  setHideNonActive(!hideNonActive);
-                }}></CheckboxPanelComponent>
+            <div className="witness-toolbar">
+              <div className="search-panel">
+                <InputComponent
+                  dataTestId="input-ranking-filter"
+                  type={InputType.TEXT}
+                  logo={SVGIcons.INPUT_SEARCH}
+                  logoPosition="left"
+                  placeholder="popup_html_search"
+                  value={filterValue}
+                  onChange={setFilterValue}
+                />
+              </div>
+              {!usingProxy && (
+                <div className="witness-status-tag votes-tag">
+                  {getVotedWitnessesCount()}/{MAX_WITNESS_VOTE}
+                </div>
+              )}
+              {usingProxy && (
+                <div className="witness-status-tag proxy-tag">
+                  {I18nUtils.getMessage('popup_html_proxy')} @
+                  {activeAccount.account.proxy}
+                </div>
+              )}
+              <button
+                data-testid="witness-filter-button"
+                className={`witness-filter-button ${
+                  isFilterOpened ? 'selected' : ''
+                }`}
+                onClick={() => setIsFilterOpened(!isFilterOpened)}>
+                <SVGIcon icon={SVGIcons.WALLET_HISTORY_FILTER_BUTTON} />
+              </button>
+            </div>
+
+            <div
+              className={`witness-filters ${
+                isFilterOpened ? 'filter-opened' : 'filter-closed'
+              }`}>
+              <div
+                data-testid="switches-panel-witness-voted_only"
+                className={`filter-button ${
+                  displayVotedOnly ? 'selected' : 'not-selected'
+                }`}
+                onClick={() => setDisplayVotedOnly(!displayVotedOnly)}>
+                {I18nUtils.getMessage('html_popup_witness_display_voted_only')}
+              </div>
+              <div
+                data-testid="switches-panel-witness-hide_inactive"
+                className={`filter-button ${
+                  hideNonActive ? 'selected' : 'not-selected'
+                }`}
+                onClick={() => setHideNonActive(!hideNonActive)}>
+                {I18nUtils.getMessage('html_popup_witness_hide_inactive')}
+              </div>
             </div>
           </div>
 
           <div aria-label="ranking" className="ranking">
-            <FlatList
-              list={filteredRanking}
-              renderItem={renderWitnessItem}
-              renderOnScroll
-            />
+            <FlatList list={filteredRanking} renderItem={renderWitnessItem} />
           </div>
         </div>
       )}
@@ -367,7 +368,7 @@ const WitnessTab = ({
           <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
           <div className="text">
             <div>
-              {chrome.i18n.getMessage(
+              {I18nUtils.getMessage(
                 'popup_html_error_retrieving_witness_ranking',
               )}
             </div>

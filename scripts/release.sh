@@ -1,48 +1,22 @@
 #!/bin/sh
 
+set -eu
+
 rm -rf _releases
 find . -name .DS_Store -delete
 npm ci
 
-echo "Compiling chromium..."
-resultChromium=`npm run build:chromium | grep -o "compiled with .* error[s]* in"`
-echo "Checking errors"
-if [ ${#resultChromium} -gt 0 ]
-then
-    echo "Errors during Chrome compilation... Cannot create release"
-    exit
-else 
-    echo "No errors"    
-fi
-echo "Compiling firefox..."
-resultFirefox=`npm run build:firefox | grep -o "compiled with .* error[s]* in"`
-echo "Checking errors"
-if [ ${#resultFirefox} -gt 0 ]
-then
-    echo "Errors during Firefox compilation... Cannot create release"
-    exit
-else 
-    echo "No errors"    
-fi
+echo "Compiling Chromium..."
+npm run build:chromium:lavamoat
+
+echo "Compiling Firefox..."
+npm run build:firefox:lavamoat
 
 echo "Compiling beta..."
-resultBeta=`npm run build:beta | grep -o "compiled with .* error[s]* in"`
-echo "Checking errors"
-if [ ${#resultBeta} -gt 0 ]
-then
-    echo "Errors during Beta compilation... Cannot create release"
-    exit
-else 
-    echo "No errors"    
-fi
+npm run build:beta:lavamoat
 
 mkdir -p _releases
-manifestVersion=`cat manifests/chromium/manifest.json | grep '"version":'`
-
-version=${manifestVersion//'"'/''}
-version=${version//'version: '/''}
-version=${version//','/''}
-version=`echo ${version} | xargs` 
+version=$(node -p "require('./manifests/chromium/manifest.json').version")
 
 cd dist-prod-firefox
 zip -qr "../_releases/${version}-firefox.zip" *
@@ -51,5 +25,4 @@ zip -qr "../_releases/${version}-chromium.zip" *
 cd ../dist-beta
 zip -qr "../_releases/${version}-chromium-beta.zip" *
 cd ..
-zip -q -r "_releases/${version}-source.zip" . -x node_modules\* dist-*\* example\* coverage\* .github\* _releases\* .vscode\* scripts\* .env .DS_Store
-
+zip -q -r "_releases/${version}-source.zip" . -x node_modules\* dist-*\* example\* coverage\* .github\* _releases\* .vscode\* scripts\* .env .DS_Store .git/\*

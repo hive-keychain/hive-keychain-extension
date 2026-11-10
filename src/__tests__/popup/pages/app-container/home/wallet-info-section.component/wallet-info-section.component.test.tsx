@@ -9,6 +9,7 @@ import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import FormatUtils from 'src/utils/format.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('wallet-info-section.component tests:\n', () => {
   describe('Regular Data:\n', () => {
     afterEach(() => {
@@ -62,9 +63,9 @@ describe('wallet-info-section.component tests:\n', () => {
         /^dropdown-arrow-/,
       );
       expect(infoSectionRowListHTMLElements).toHaveLength(3);
-      const savingsLabel = chrome.i18n.getMessage('popup_html_wallet_savings');
+      const savingsLabel = I18nUtils.getMessage('popup_html_wallet_savings');
       const delegShort =
-        chrome.i18n.getMessage('popup_html_delegations').slice(0, 5) + '.';
+        I18nUtils.getMessage('popup_html_delegations').slice(0, 5) + '.';
       expect(infoSectionRowListHTMLElements[0].textContent).toBe(
         `${CurrencyUtils.getCurrencyLabels(false).hive}${hiveBalanceFormatted}+${hiveSavingsBalanceFormatted} (${savingsLabel})`,
       );

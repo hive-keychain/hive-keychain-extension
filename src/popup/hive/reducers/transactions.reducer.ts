@@ -1,7 +1,7 @@
 import { Transaction, Transactions } from '@interfaces/transaction.interface';
 import { ActionPayload } from '@popup/multichain/actions/interfaces';
 import { HiveActionType } from 'src/popup/hive/actions/action-type.enum';
-import ArrayUtils from 'src/utils/array.utils';
+import { ArrayUtils } from 'src/utils/array.utils';
 
 const TransactionReducer = (
   state: Transactions = { loading: false, list: [], lastUsedStart: -1 },

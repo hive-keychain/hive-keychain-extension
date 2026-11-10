@@ -29,6 +29,7 @@ import mocksImplementation from 'src/__tests__/utils-for-testing/implementations
 import { mockHiveTxCreateTransactionForLedger } from 'src/__tests__/utils-for-testing/mocks/hive-tx-ledger.helpers';
 import { KeychainError } from 'src/keychain-error';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('authority tests:\n', () => {
   const commonValues = {
     domain: 'domain',
@@ -79,7 +80,7 @@ describe('authority tests:\n', () => {
   });
   beforeEach(() => {
     jest.spyOn(chrome.i18n, 'getUILanguage').mockReturnValueOnce('en-US');
-    chrome.i18n.getMessage = jest
+    I18nUtils.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom);
   });
@@ -103,7 +104,7 @@ describe('authority tests:\n', () => {
       const localeMessageKey = 'already_has_authority_error';
       const error = new KeychainError(localeMessageKey);
       const message =
-        chrome.i18n.getMessage('bgd_ops_error') + ' : ' + localeMessageKey;
+        I18nUtils.getMessage('bgd_ops_error') + ' : ' + localeMessageKey;
       expect(result.msg.error).toEqual(error);
       expect(result.msg.message).toBe(message);
     });
@@ -120,7 +121,7 @@ describe('authority tests:\n', () => {
       );
       const error = new Error('html_popup_error_while_signing_transaction');
       const message =
-        chrome.i18n.getMessage('bgd_ops_error') +
+        I18nUtils.getMessage('bgd_ops_error') +
         ' : ' +
         'html_popup_error_while_signing_transaction';
       expect(resultOperation.msg.error).toEqual(error);
@@ -158,13 +159,20 @@ describe('authority tests:\n', () => {
             tx_id: 'tx_id',
           },
           data: datas,
-          message: chrome.i18n.getMessage('bgd_ops_add_auth', [
+          message: I18nUtils.getMessage('bgd_ops_add_auth', [
             KeychainKeyTypesLC.posting,
             'notAddedAccount',
             mk.user.one,
           ]),
+          messageKey: 'bgd_ops_add_auth',
+          messageParams: [
+            KeychainKeyTypesLC.posting,
+            'notAddedAccount',
+            mk.user.one,
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -200,13 +208,20 @@ describe('authority tests:\n', () => {
             tx_id: 'tx_id',
           },
           data: datas,
-          message: chrome.i18n.getMessage('bgd_ops_add_auth', [
+          message: I18nUtils.getMessage('bgd_ops_add_auth', [
             KeychainKeyTypesLC.posting,
             'notAddedAccount',
             mk.user.one,
           ]),
+          messageKey: 'bgd_ops_add_auth',
+          messageParams: [
+            KeychainKeyTypesLC.posting,
+            'notAddedAccount',
+            mk.user.one,
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -240,14 +255,15 @@ describe('authority tests:\n', () => {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          error: new Error('html_popup_error_while_signing_transaction'),
+          error: new KeychainError('html_popup_error_while_signing_transaction'),
           result: undefined,
           data: datas,
-          message: chrome.i18n.getMessage(
-            'html_popup_error_while_signing_transaction',
-          ),
+          message: I18nUtils.getMessage('html_popup_error_while_signing_transaction'),
+          messageKey: 'html_popup_error_while_signing_transaction',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -278,9 +294,12 @@ describe('authority tests:\n', () => {
           error: new Error(localeMessageKey),
           result: undefined,
           data: datas,
-          message: chrome.i18n.getMessage(localeMessageKey),
+          message: I18nUtils.getMessage(localeMessageKey),
+          messageKey: localeMessageKey,
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -326,13 +345,20 @@ describe('authority tests:\n', () => {
             tx_id: 'tx_id',
           },
           data: datas,
-          message: chrome.i18n.getMessage('bgd_ops_remove_auth', [
+          message: I18nUtils.getMessage('bgd_ops_remove_auth', [
             KeychainKeyTypesLC.active,
             'theghost1980',
             mk.user.one,
           ]),
+          messageKey: 'bgd_ops_remove_auth',
+          messageParams: [
+            KeychainKeyTypesLC.active,
+            'theghost1980',
+            mk.user.one,
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -378,13 +404,20 @@ describe('authority tests:\n', () => {
             tx_id: 'tx_id',
           },
           data: datas,
-          message: chrome.i18n.getMessage('bgd_ops_remove_auth', [
+          message: I18nUtils.getMessage('bgd_ops_remove_auth', [
             KeychainKeyTypesLC.active,
             'theghost1980',
             mk.user.one,
           ]),
+          messageKey: 'bgd_ops_remove_auth',
+          messageParams: [
+            KeychainKeyTypesLC.active,
+            'theghost1980',
+            mk.user.one,
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -433,13 +466,20 @@ describe('authority tests:\n', () => {
             tx_id: 'tx_id',
           },
           data: datas,
-          message: chrome.i18n.getMessage('bgd_ops_remove_auth', [
+          message: I18nUtils.getMessage('bgd_ops_remove_auth', [
             KeychainKeyTypesLC.active,
             'theghost1980',
             mk.user.one,
           ]),
+          messageKey: 'bgd_ops_remove_auth',
+          messageParams: [
+            KeychainKeyTypesLC.active,
+            'theghost1980',
+            mk.user.one,
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -463,9 +503,12 @@ describe('authority tests:\n', () => {
           error: new Error('already_has_authority_error'),
           result: undefined,
           data: datas,
-          message: chrome.i18n.getMessage('already_has_authority_error'),
+          message: I18nUtils.getMessage('already_has_authority_error'),
+          messageKey: 'already_has_authority_error',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -485,14 +528,15 @@ describe('authority tests:\n', () => {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          error: new Error('html_popup_error_while_signing_transaction'),
+          error: new KeychainError('html_popup_error_while_signing_transaction'),
           result: undefined,
           data: datas,
-          message: chrome.i18n.getMessage(
-            'html_popup_error_while_signing_transaction',
-          ),
+          message: I18nUtils.getMessage('html_popup_error_while_signing_transaction'),
+          messageKey: 'html_popup_error_while_signing_transaction',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -537,14 +581,22 @@ describe('authority tests:\n', () => {
             tx_id: 'tx_id',
           },
           data: datas,
-          message: chrome.i18n.getMessage('bgd_ops_add_key_auth', [
+          message: I18nUtils.getMessage('bgd_ops_add_key_auth', [
             userData.one.encryptKeys.active,
             KeychainKeyTypesLC.active,
             mk.user.one,
             cloneData.weight.toString(),
           ]),
+          messageKey: 'bgd_ops_add_key_auth',
+          messageParams: [
+            userData.one.encryptKeys.active,
+            KeychainKeyTypesLC.active,
+            mk.user.one,
+            cloneData.weight.toString(),
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -589,14 +641,22 @@ describe('authority tests:\n', () => {
             tx_id: 'tx_id',
           },
           data: datas,
-          message: chrome.i18n.getMessage('bgd_ops_add_key_auth', [
+          message: I18nUtils.getMessage('bgd_ops_add_key_auth', [
             userData.one.encryptKeys.posting,
             KeychainKeyTypesLC.active,
             mk.user.one,
             cloneData.weight.toString(),
           ]),
+          messageKey: 'bgd_ops_add_key_auth',
+          messageParams: [
+            userData.one.encryptKeys.posting,
+            KeychainKeyTypesLC.active,
+            mk.user.one,
+            cloneData.weight.toString(),
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -642,14 +702,22 @@ describe('authority tests:\n', () => {
             tx_id: 'tx_id',
           },
           data: datas,
-          message: chrome.i18n.getMessage('bgd_ops_add_key_auth', [
+          message: I18nUtils.getMessage('bgd_ops_add_key_auth', [
             userData.one.encryptKeys.posting,
             KeychainKeyTypesLC.active,
             mk.user.one,
             cloneData.weight.toString(),
           ]),
+          messageKey: 'bgd_ops_add_key_auth',
+          messageParams: [
+            userData.one.encryptKeys.posting,
+            KeychainKeyTypesLC.active,
+            mk.user.one,
+            cloneData.weight.toString(),
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -673,14 +741,15 @@ describe('authority tests:\n', () => {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          error: new Error('html_popup_error_while_signing_transaction'),
+          error: new KeychainError('html_popup_error_while_signing_transaction'),
           result: undefined,
           data: datas,
-          message: chrome.i18n.getMessage(
-            'html_popup_error_while_signing_transaction',
-          ),
+          message: I18nUtils.getMessage('html_popup_error_while_signing_transaction'),
+          messageKey: 'html_popup_error_while_signing_transaction',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -720,9 +789,12 @@ describe('authority tests:\n', () => {
           error: new KeychainError(localeMessageKey),
           result: undefined,
           data: datas,
-          message: chrome.i18n.getMessage('missing_authority_error'),
+          message: I18nUtils.getMessage('missing_authority_error'),
+          messageKey: 'missing_authority_error',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -763,13 +835,20 @@ describe('authority tests:\n', () => {
             tx_id: 'tx_id',
           },
           data: datas,
-          message: chrome.i18n.getMessage('bgd_ops_remove_key_auth', [
+          message: I18nUtils.getMessage('bgd_ops_remove_key_auth', [
             cloneData.authorizedKey,
             KeychainKeyTypesLC.posting,
             mk.user.one,
           ]),
+          messageKey: 'bgd_ops_remove_key_auth',
+          messageParams: [
+            cloneData.authorizedKey,
+            KeychainKeyTypesLC.posting,
+            mk.user.one,
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -813,13 +892,20 @@ describe('authority tests:\n', () => {
             tx_id: 'tx_id',
           },
           data: datas,
-          message: chrome.i18n.getMessage('bgd_ops_remove_key_auth', [
+          message: I18nUtils.getMessage('bgd_ops_remove_key_auth', [
             cloneData.authorizedKey,
             KeychainKeyTypesLC.active,
             mk.user.one,
           ]),
+          messageKey: 'bgd_ops_remove_key_auth',
+          messageParams: [
+            cloneData.authorizedKey,
+            KeychainKeyTypesLC.active,
+            mk.user.one,
+          ],
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });

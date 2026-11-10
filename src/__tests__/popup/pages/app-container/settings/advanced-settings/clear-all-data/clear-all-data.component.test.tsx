@@ -1,7 +1,7 @@
 import AccountUtils from '@hiveapp/utils/account.utils';
 import ActiveAccountUtils from '@hiveapp/utils/active-account.utils';
 import MkUtils from '@hiveapp/utils/mk.utils';
-import { Screen } from '@reference-data/screen.enum';
+import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -12,6 +12,7 @@ import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-l
 import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import VaultUtils from 'src/utils/vault.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('clear-all-data.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -39,7 +40,7 @@ describe('clear-all-data.component tests:\n', () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        chrome.i18n.getMessage('popup_html_clear_all_data_desc'),
+        I18nUtils.getMessage('popup_html_clear_all_data_desc'),
         { exact: true },
       ),
     ).toBeInTheDocument();

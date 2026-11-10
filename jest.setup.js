@@ -9,6 +9,16 @@ Object.assign(global, {
   TextEncoder,
   TextDecoder,
 });
+if (!global.self) {
+  Object.defineProperty(global, 'self', {
+    value: global,
+    configurable: true,
+  });
+}
+
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = jest.fn();
+}
 
 /** jest-chrome may omit `storage.local.onChanged` used by HiveAppComponent. */
 if (!global.chrome?.storage?.local?.onChanged?.addListener) {
@@ -39,7 +49,11 @@ global.chrome.runtime.connect = jest.fn((...args) => {
 Object.defineProperty(global.self, 'crypto', {
   value: {
     subtle: crypto.subtle,
-    getRandomValues: (arr) => crypto.randomBytes(arr.length),
+    getRandomValues: (arr) => {
+      const bytes = crypto.randomBytes(arr.length);
+      arr.set(bytes);
+      return arr;
+    },
     randomUUID: crypto.randomUUID,
   },
 });
@@ -78,6 +92,19 @@ const defaultFetchImpl = (_url, init) => {
     rpcMethod === 'condenser_api.get_open_orders'
   ) {
     return jsonRpc([]);
+  }
+  if (rpcMethod === 'rc_api.find_rc_accounts') {
+    return jsonRpc({
+      rc_accounts: [
+        {
+          max_rc: '1000000',
+          rc_manabar: {
+            current_mana: '1000000',
+            last_update_time: Math.floor(Date.now() / 1000),
+          },
+        },
+      ],
+    });
   }
   return jsonRpc({});
 };

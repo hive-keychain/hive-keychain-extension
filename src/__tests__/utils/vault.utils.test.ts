@@ -57,6 +57,9 @@ describe('vault.utils (vault port IPC)', () => {
   });
 
   it('saveValueInVault resolves true from port response', async () => {
+    const lockStateListener = jest.fn();
+    const removeListener =
+      VaultUtils.addWalletLockStateListener(lockStateListener);
     let onMsg: (r: unknown) => void = () => {};
     connectSpy = jest.spyOn(chrome.runtime, 'connect').mockImplementation(() => ({
       onMessage: {
@@ -78,9 +81,14 @@ describe('vault.utils (vault port IPC)', () => {
     await expect(
       VaultUtils.saveValueInVault(VaultKey.__MK, 'mk-value'),
     ).resolves.toBe(true);
+    expect(lockStateListener).toHaveBeenCalledTimes(1);
+    removeListener();
   });
 
   it('removeFromVault resolves true from port response', async () => {
+    const lockStateListener = jest.fn();
+    const removeListener =
+      VaultUtils.addWalletLockStateListener(lockStateListener);
     let onMsg: (r: unknown) => void = () => {};
     connectSpy = jest.spyOn(chrome.runtime, 'connect').mockImplementation(() => ({
       onMessage: {
@@ -100,6 +108,8 @@ describe('vault.utils (vault port IPC)', () => {
     })) as unknown as jest.SpyInstance;
 
     await expect(VaultUtils.removeFromVault(VaultKey.__MK)).resolves.toBe(true);
+    expect(lockStateListener).toHaveBeenCalledTimes(1);
+    removeListener();
   });
 });
 

@@ -1,0 +1,33 @@
+.request-add-chain-page {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: space-between;
+  .request-add-chain-card {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+    .title {
+      @include dmSans400(20px);
+    }
+    .caption {
+      @include caption();
+      padding: unset;
+    }
+    .requested-chain {
+      display: flex;
+      flex-direction: column;
+      row-gap: 16px;
+      align-items: stretch;
+      flex: 1;
+      width: 100%;
+      margin-top: 16px;
+    }
+  }
+  .bottom-panel {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    column-gap: 8px;
+  }
+}

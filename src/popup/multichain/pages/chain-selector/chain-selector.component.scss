@@ -3,4 +3,260 @@
   flex: 1;
   flex-direction: column;
   align-items: center;
+  height: calc(100% - 80px);
+  overflow: auto;
+  row-gap: 16px;
+
+  &.chain-selector-page--embedded {
+    height: 100%;
+  }
+
+  .search-container {
+    display: flex;
+    column-gap: 8px;
+    width: 85%;
+    align-items: center;
+    .custom-checkbox {
+      border-color: white;
+    }
+  }
+
+  .lists-container {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+    width: 100%;
+
+    &::after {
+      content: '';
+      display: block;
+      flex: 0 0 48px;
+    }
+
+    .chain-selector-empty {
+      margin: 0 24px;
+      font-size: 13px;
+      opacity: 0.85;
+      color: var(--main-font-color);
+    }
+
+    .chain-cards-container {
+      display: flex;
+      flex-direction: column;
+      row-gap: 8px;
+
+      .chain-cards-container-title {
+        @include poppins500(15px);
+        color: var(--main-font-color);
+        text-align: center;
+      }
+
+      .chain-cards-container-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr));
+        gap: 12px;
+        width: 100%;
+        padding: 0px 24px;
+        box-sizing: border-box;
+
+        --add-icon-color: #{$red};
+      }
+
+      .chain-card {
+        @include small-card();
+        display: flex;
+        flex-direction: column;
+        row-gap: 8px;
+        margin: 0;
+        min-width: 0;
+        @include poppins500(15px);
+        cursor: pointer;
+        color: var(--main-font-color);
+        text-align: center;
+        justify-content: space-between;
+        height: 130px;
+        position: relative;
+        outline: none;
+
+        .chain-name {
+          min-width: 0;
+          width: 100%;
+          line-height: 1.25;
+          overflow: hidden;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+        }
+
+        .svg-icon {
+          @include icon-size(24px);
+          svg {
+            @include icon-size(24px);
+          }
+        }
+        .chain-card__logo {
+          @include icon-size(45px);
+          border-radius: 50%;
+        }
+
+        .chain-card__logo.chain-logo-initials {
+          @include poppins600(14px);
+        }
+
+        .chain-card__meta-row {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          column-gap: 8px;
+          min-height: 24px;
+          position: relative;
+        }
+
+        .add-icon {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.9);
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transition:
+            opacity 120ms ease,
+            transform 120ms ease;
+        }
+
+        &.chain-card--disabled:hover .chain-card__badge,
+        &.chain-card--disabled:focus-within .chain-card__badge,
+        &.chain-card--disabled:focus-visible .chain-card__badge {
+          opacity: 0;
+        }
+
+        &:hover .add-icon,
+        &:focus-within .add-icon,
+        &:focus-visible .add-icon {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1);
+        }
+
+        .check-icon,
+        .custom-chain-delete-icon,
+        .custom-chain-settings-icon {
+          opacity: 1;
+        }
+
+        .check-icon {
+          @include icon-size(16px);
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          color: #35b779;
+
+          svg {
+            @include icon-size(16px);
+          }
+        }
+
+        .custom-chain-delete-icon,
+        .custom-chain-settings-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: absolute;
+          top: 8px;
+          margin: 0;
+          padding: 0;
+          border: none;
+          background: transparent;
+          color: var(--main-font-color);
+          cursor: pointer;
+
+          .svg-icon {
+            @include icon-size(16px);
+            svg {
+              @include icon-size(16px);
+            }
+          }
+        }
+
+        .custom-chain-delete-icon {
+          left: 8px;
+        }
+
+        .custom-chain-settings-icon {
+          right: 8px;
+        }
+
+        .chain-card__default-check-icon {
+          left: 8px;
+          right: auto;
+        }
+
+        &.chain-card--custom {
+          @media (hover: hover) and (pointer: fine) {
+            .custom-chain-delete-icon {
+              opacity: 0;
+              pointer-events: none;
+            }
+
+            &:hover .custom-chain-delete-icon,
+            &:focus-within .custom-chain-delete-icon {
+              opacity: 1;
+              pointer-events: auto;
+            }
+          }
+        }
+
+        &.add-custom-chain {
+          justify-content: center;
+          .svg-icon {
+            @include icon-size(36px);
+            svg {
+              @include icon-size(36px);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/* Delete confirmation modal (rendered at router level). */
+.modal-container .modal-content:has(.evm-delete-confirm-modal) {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-height: 0;
+  width: 100%;
+}
+
+.evm-delete-confirm-modal {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 260px;
+  min-height: 0;
+
+  .evm-delete-confirm-modal__message {
+    font-size: 13px;
+    line-height: 1.45;
+    margin: 0;
+    opacity: 0.9;
+    flex-shrink: 0;
+  }
+
+  .evm-delete-confirm-modal__actions {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    align-self: stretch;
+    gap: 8px;
+    margin-top: auto;
+    flex-shrink: 0;
+
+    .submit-button {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+  }
 }

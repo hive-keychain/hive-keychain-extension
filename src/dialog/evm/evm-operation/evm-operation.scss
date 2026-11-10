@@ -1,0 +1,98 @@
+.operation {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  margin: 0px;
+  row-gap: 16px;
+  overflow: hidden;
+
+  .scrollable {
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+
+    .evm-risk-alerts-stack {
+      padding: 0 12px;
+    }
+
+    // .dialog-caption {
+    //   @include small-card;
+    //   display: unset;
+    //   margin: unset;
+    //   margin-bottom: 8px;
+    // }
+
+    .operation-header {
+      padding: 0 12px 12px 12px;
+    }
+    .operation-body {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+      row-gap: 16px;
+    }
+
+    .fields {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      box-sizing: border-box;
+      row-gap: 4px;
+      overflow: auto;
+      padding: 16px;
+      color: var(--main-font-color);
+      background: var(--card-background);
+      border-radius: 20px;
+      border: 1px solid var(--card-border);
+
+      .transaction-operation-name {
+        text-align: center;
+        font-size: 20px;
+        text-transform: capitalize;
+        padding-bottom: 12px;
+      }
+
+      .account-chain-panel {
+        display: flex;
+        .chain-info {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          column-gap: 8px;
+          .chain-logo {
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+          }
+        }
+      }
+    }
+
+    .domain-panel {
+      min-height: 92px;
+    }
+
+    .balance-change-panel {
+      display: flex;
+      flex-direction: column;
+      row-gap: 8px;
+      align-items: flex-start;
+    }
+
+    &.has-caption {
+      .operation-body {
+        max-height: 275px;
+        overflow: hidden;
+      }
+    }
+  }
+
+  .operation-buttons {
+    display: flex;
+    align-items: center;
+    column-gap: 12px;
+  }
+}

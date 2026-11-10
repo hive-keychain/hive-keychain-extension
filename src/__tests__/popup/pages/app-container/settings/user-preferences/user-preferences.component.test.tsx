@@ -1,65 +1,21 @@
-import '@testing-library/jest-dom';
-import { act, cleanup, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import React from 'react';
-import dataTestIdButton from 'src/__tests__/utils-for-testing/data-testid/data-testid-button';
-import dataTestIdIcon from 'src/__tests__/utils-for-testing/data-testid/data-testid-icon';
-import accounts from 'src/__tests__/utils-for-testing/data/accounts';
-import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
-import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
-import { Icons } from 'src/common-ui/icons.enum';
-import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
-import UserPreferencesMenuItems from 'src/popup/hive/pages/app-container/settings/user-preferences/user-preferences-menu-items';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
-describe('user-preferences.component tests:\n', () => {
-  const userPreferencesMenuItems = UserPreferencesMenuItems(jest.fn());
+import { Screen } from '@interfaces/screen.interface';
+import { SettingsHiveMenuItems } from 'src/popup/multichain/pages/settings/settings-hive-menu-items';
 
-  beforeEach(async () => {
-    await reactTestingLibrary.renderWithConfiguration(
-      <HiveAppComponent />,
-      initialStates.iniStateAs.defaultExistent,
-      {
-        app: {
-          accountsRelated: {
-            AccountUtils: {
-              getAccountsFromLocalStorage: accounts.twoAccounts,
-            },
-          },
-        },
-      },
-    );
-    await act(async () => {
-      await userEvent.click(screen.getByTestId(dataTestIdButton.menu));
-      await userEvent.click(
-        screen.getByTestId(dataTestIdButton.menuPreFix + Icons.PREFERENCES),
-      );
-    });
+describe('settings-hive-menu-items tests:\n', () => {
+  it('does not expose export transactions from Hive settings', () => {
+    expect(
+      SettingsHiveMenuItems.some(
+        (item) => item.nextScreen === Screen.SETTINGS_EXPORT_TRANSACTIONS,
+      ),
+    ).toBe(false);
   });
-  afterEach(() => {
-    jest.clearAllMocks();
-    jest.resetModules();
-    cleanup();
-  });
-  it('Must load each menu items', () => {
-    userPreferencesMenuItems.forEach((item) => {
-      expect(screen.getByTestId(dataTestIdButton.menuPreFix + item.icon));
-    });
-  });
-  it('Must open each menu item', async () => {
-    LocalStorageUtils.getMultipleValueFromLocalStorage = jest
-      .fn()
-      .mockResolvedValue([]);
-    for (let i = 0; i < userPreferencesMenuItems.length; i++) {
-      const menuButtonAriaLabel =
-        dataTestIdButton.menuPreFix + userPreferencesMenuItems[i].icon;
-      const pageAriaLabel = userPreferencesMenuItems[i].nextScreen + '-page';
-      await act(async () => {
-        await userEvent.click(screen.getByTestId(menuButtonAriaLabel));
-      });
-      expect(await screen.findByTestId(pageAriaLabel)).toBeInTheDocument();
-      await act(async () => {
-        await userEvent.click(screen.getByTestId(dataTestIdIcon.arrowBack));
-      });
-    }
+
+  it('does not mark notifications as experimental', () => {
+    expect(
+      SettingsHiveMenuItems.find(
+        (item) =>
+          item.nextScreen === Screen.SETTINGS_NOTIFICATIONS_CONFIGURATION,
+      )?.experimental,
+    ).toBeUndefined();
   });
 });

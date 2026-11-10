@@ -19,8 +19,10 @@ const Config = {
   autoStakeTokens: {
     FREQUENCY: +(process.env.DEV_CLAIM_FREQUENCY || 10),
   },
-  analytics: {
-    frequency: +(process.env.DEV_ANALYTICS_FREQUENCY || 10),
+  paidAccountCreation: {
+    SYNC_FREQUENCY_MINUTES: +(
+      process.env.DEV_PAID_ACCOUNT_CREATION_SYNC_MINUTES || 1
+    ),
   },
   KEYCHAIN_PROPOSAL: 373,
   PROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP: 8 * 10 ** 6,
@@ -34,7 +36,7 @@ const Config = {
       process.env.TRANSAK_DEV_API_KEY || '716078e4-939c-445a-8c6d-534614cd31b1',
   },
   loader: {
-    minDuration: process.env.NODE_ENV === 'test' ? 0 : 1000,
+    minDuration: process.env.NODE_ENV === 'test' ? 0 : 250,
   },
   transactions: {
     expirationTimeInMinutes: 10,
@@ -64,10 +66,9 @@ const Config = {
     host: process.env.KEYLESS_HOST || 'https://hive-auth.arcange.eu/',
   },
   social: {
-    discord: 'https://discord.gg/tUHtyev2xF',
+    discord: 'https://discord.gg/BgNH8rRukz',
     peakd: 'https://peakd.com/@keychain',
     twitter: 'https://twitter.com/HiveKeychain',
-    medium: 'https://medium.com/@hivekeychain',
   },
   vault: {
     portName: 'vault-connection',

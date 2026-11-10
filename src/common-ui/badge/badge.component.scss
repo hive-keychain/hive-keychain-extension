@@ -1,0 +1,12 @@
+.badge {
+  &.experimental {
+    @include badge($dark-red);
+  }
+  &.pending,
+  &.testnet {
+    @include badge($light-grey);
+  }
+  &.mainnet {
+    @include badge($pale-red);
+  }
+}

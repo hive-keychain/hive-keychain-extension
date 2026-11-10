@@ -1,8 +1,12 @@
 import AccountModule from '@background/account';
 import MkModule from '@background/mk.module';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
+import { EvmAccountSource } from 'src/popup/evm/interfaces/wallet.interface';
+import { EvmWalletUtils } from 'src/popup/evm/utils/wallet.utils';
+import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 describe('account tests:\n', () => {
@@ -56,6 +60,295 @@ describe('account tests:\n', () => {
         ]),
         warning: null,
       }),
+    });
+  });
+
+  it('Must import v2 multichain accounts', async () => {
+    jest.spyOn(MkModule, 'getMk').mockResolvedValue(mk.user.one);
+    LocalStorageUtils.getValueFromLocalStorage = jest
+      .fn()
+      .mockResolvedValue(undefined);
+    const saveSpy = jest.spyOn(LocalStorageUtils, 'saveValueInLocalStorage');
+    const invalidateRebuildAccountsCacheSpy = jest.spyOn(
+      EvmWalletUtils,
+      'invalidateRebuildAccountsCache',
+    );
+    const sSendMessage = jest
+      .spyOn(chrome.runtime, 'sendMessage')
+      .mockResolvedValue(undefined);
+    const multichainPayload = await EncryptUtils.encryptJson(
+      {
+        v: 2,
+        hiveAccounts: [accounts.local.one],
+        evmAccounts: [
+          {
+            type: EvmAccountSource.IMPORTED,
+            nickname: 'Imported',
+            id: 1,
+            accounts: [
+              {
+                id: 0,
+                address: '0x1234567890123456789012345678901234567890',
+                privateKey:
+                  '0x1234567890123456789012345678901234567890123456789012345678901234',
+                path: '',
+                order: 0,
+                nickname: 'Main',
+              },
+            ],
+          },
+        ],
+      },
+      mk.user.one,
+    );
+
+    await AccountModule.sendBackImportedAccounts(multichainPayload);
+
+    expect(saveSpy).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.ACCOUNTS,
+      expect.any(String),
+    );
+    expect(saveSpy).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.EVM_ACCOUNTS,
+      expect.any(String),
+    );
+    expect(invalidateRebuildAccountsCacheSpy).toHaveBeenCalled();
+    expect(sSendMessage).toHaveBeenCalledWith({
+      command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
+      value: expect.objectContaining({
+        success: true,
+        message: 'import_html_success',
+        accountType: 'all',
+      }),
+    });
+  });
+
+  it('Must import settings from a v2 multichain backup', async () => {
+    jest.spyOn(MkModule, 'getMk').mockResolvedValue(mk.user.one);
+    LocalStorageUtils.getValueFromLocalStorage = jest
+      .fn()
+      .mockResolvedValue(undefined);
+    const saveSpy = jest.spyOn(LocalStorageUtils, 'saveValueInLocalStorage');
+    const sSendMessage = jest
+      .spyOn(chrome.runtime, 'sendMessage')
+      .mockResolvedValue(undefined);
+    const multichainPayload = await EncryptUtils.encryptJson(
+      {
+        v: 2,
+        hiveAccounts: [accounts.local.one],
+        evmAccounts: [],
+        settings: {
+          [LocalStorageKeyEnum.ACTIVE_THEME]: 'dark',
+          [LocalStorageKeyEnum.CLAIM_SAVINGS]: {
+            [accounts.local.one.name]: true,
+          },
+        },
+      },
+      mk.user.one,
+    );
+
+    await AccountModule.sendBackImportedAccounts(multichainPayload);
+
+    expect(saveSpy).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.ACTIVE_THEME,
+      'dark',
+    );
+    expect(saveSpy).toHaveBeenCalledWith(LocalStorageKeyEnum.CLAIM_SAVINGS, {
+      [accounts.local.one.name]: true,
+    });
+    expect(saveSpy).toHaveBeenCalledWith(
+      LocalStorageKeyEnum.HAS_FINISHED_SIGNUP,
+      true,
+    );
+    expect(sSendMessage).toHaveBeenCalledTimes(1);
+    expect(sSendMessage).toHaveBeenCalledWith({
+      command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
+      value: expect.objectContaining({
+        success: true,
+        accountType: 'all',
+      }),
+    });
+  });
+
+  it('Must use the detached Ledger route in the import warning link', async () => {
+    jest.spyOn(MkModule, 'getMk').mockResolvedValue(mk.user.one);
+    LocalStorageUtils.getValueFromLocalStorage = jest
+      .fn()
+      .mockImplementation((key: LocalStorageKeyEnum) =>
+        Promise.resolve(
+          key === LocalStorageKeyEnum.IS_LEDGER_SUPPORTED ? true : undefined,
+        ),
+      );
+    chrome.runtime.getURL = jest.fn(
+      (path: string) => `chrome-extension://test/${path}`,
+    );
+    const sSendMessage = jest
+      .spyOn(chrome.runtime, 'sendMessage')
+      .mockResolvedValue(undefined);
+    const multichainPayload = await EncryptUtils.encryptJson(
+      {
+        v: 2,
+        hiveAccounts: [
+          {
+            ...accounts.local.one,
+            keys: {
+              ...accounts.local.one.keys,
+              active: '#ledger',
+            },
+          },
+        ],
+        evmAccounts: [],
+      },
+      mk.user.one,
+    );
+
+    await AccountModule.sendBackImportedAccounts(multichainPayload);
+
+    expect(chrome.runtime.getURL).toHaveBeenCalledWith(
+      'detached_window.html#ledger/link-device',
+    );
+    expect(sSendMessage).toHaveBeenCalledWith({
+      command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
+      value: expect.objectContaining({
+        success: true,
+        message: 'import_html_success',
+        warning: {
+          message: 'ledger_import_account_has_ledger',
+          params: [
+            'chrome-extension://test/detached_window.html#ledger/link-device',
+          ],
+        },
+      }),
+    });
+  });
+
+  const importedEvmAccount = {
+    type: EvmAccountSource.IMPORTED,
+    nickname: 'Imported',
+    id: 1,
+    accounts: [
+      {
+        id: 0,
+        address: '0x1234567890123456789012345678901234567890',
+        privateKey:
+          '0x1234567890123456789012345678901234567890123456789012345678901234',
+        path: '',
+        order: 0,
+        nickname: 'Main',
+      },
+    ],
+  };
+
+  const importV2Accounts = async (
+    storage: Record<string, unknown>,
+    evmAccounts: unknown[],
+    settings?: Record<string, unknown>,
+  ) => {
+    jest.spyOn(MkModule, 'getMk').mockResolvedValue(mk.user.one);
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockImplementation(async (key: LocalStorageKeyEnum) => storage[key]);
+    jest
+      .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+      .mockImplementation(async (key: LocalStorageKeyEnum, value: unknown) => {
+        storage[key] = value;
+      });
+    jest.spyOn(chrome.runtime, 'sendMessage').mockResolvedValue(undefined);
+    const payload = await EncryptUtils.encryptJson(
+      {
+        v: 2,
+        hiveAccounts: [accounts.local.one],
+        evmAccounts,
+        ...(settings ? { settings } : {}),
+      },
+      mk.user.one,
+    );
+
+    await AccountModule.sendBackImportedAccounts(payload);
+  };
+
+  it('enables legacy preference when a full account restore has accounts and no stored value', async () => {
+    const storage: Record<string, unknown> = {};
+
+    await importV2Accounts(storage, [importedEvmAccount], {
+      [LocalStorageKeyEnum.EVM_SETTINGS]: {
+        smartContracts: {
+          displayPossibleSpam: true,
+          displayNonVerifiedContracts: false,
+        },
+      },
+    });
+
+    expect(storage[LocalStorageKeyEnum.EVM_SETTINGS]).toEqual({
+      smartContracts: {
+        displayPossibleSpam: true,
+        displayNonVerifiedContracts: false,
+      },
+      providerCompatibility: {
+        preferOnLegacyDapps: true,
+      },
+    });
+  });
+
+  it('keeps an explicit legacy preference during a full account restore', async () => {
+    const storage: Record<string, unknown> = {};
+
+    await importV2Accounts(storage, [importedEvmAccount], {
+      [LocalStorageKeyEnum.EVM_SETTINGS]: {
+        providerCompatibility: {
+          preferOnLegacyDapps: false,
+        },
+      },
+    });
+
+    expect(storage[LocalStorageKeyEnum.EVM_SETTINGS]).toEqual({
+      providerCompatibility: {
+        preferOnLegacyDapps: false,
+      },
+    });
+
+    await importV2Accounts(storage, [importedEvmAccount], {
+      [LocalStorageKeyEnum.EVM_SETTINGS]: {
+        providerCompatibility: {
+          preferOnLegacyDapps: null,
+        },
+      },
+    });
+
+    expect(storage[LocalStorageKeyEnum.EVM_SETTINGS]).toEqual({
+      providerCompatibility: {
+        preferOnLegacyDapps: null,
+      },
+    });
+  });
+
+  it('does not enable legacy preference when a full account restore has no EVM accounts', async () => {
+    const storage: Record<string, unknown> = {};
+
+    await importV2Accounts(storage, []);
+
+    expect(storage[LocalStorageKeyEnum.EVM_SETTINGS]).toBeUndefined();
+  });
+
+  it('Must reject malformed v2 payloads', async () => {
+    jest.spyOn(MkModule, 'getMk').mockResolvedValue(mk.user.one);
+    const malformedV2 = await EncryptUtils.encryptJson(
+      {
+        v: 2,
+        hiveAccounts: 'invalid',
+        evmAccounts: [],
+      },
+      mk.user.one,
+    );
+    const sSendMessage = jest
+      .spyOn(chrome.runtime, 'sendMessage')
+      .mockResolvedValue(undefined);
+
+    await AccountModule.sendBackImportedAccounts(malformedV2);
+
+    expect(sSendMessage).toHaveBeenCalledWith({
+      command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
+      value: { success: false, message: 'import_html_error' },
     });
   });
 });

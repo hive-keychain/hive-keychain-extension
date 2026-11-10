@@ -25,6 +25,7 @@ import ProposalUtils from 'src/popup/hive/utils/proposal.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const ProposalVotingSection = ({
   activeAccount,
   isMessageContainerDisplayed,
@@ -152,7 +153,7 @@ const ProposalVotingSection = ({
       dataTestId="proposal-voting-section"
       className="proposal-voting-section">
       <div className="popup-title">
-        {chrome.i18n.getMessage('popup_html_proposal_vote')}
+        {I18nUtils.getMessage('popup_html_proposal_vote')}
       </div>
       <img
         className="popup-icon"

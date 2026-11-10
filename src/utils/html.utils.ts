@@ -1,4 +1,5 @@
 import sanitizeHTML from 'sanitize-html';
+import { I18nUtils } from 'src/utils/i18n.utils';
 
 const HTML_ESCAPE_MAP: Record<string, string> = {
   '&': '&amp;',
@@ -23,15 +24,24 @@ const LINK_ENABLED_I18N_KEYS = new Set([
 
 const LIST_ENABLED_I18N_KEYS = new Set(['popup_html_about_text']);
 
+const TERMS_URL = 'https://hive-keychain.com/#/terms';
+const PRIVACY_URL = 'https://hive-keychain.com/#/privacy';
+const FEES_URL = 'https://hive-keychain.com/#/fees';
+const LEGAL_LINKS_I18N_KEY = 'accept_terms_and_condition';
+
 interface SanitizeHtmlOptions {
   allowLinks?: boolean;
   allowLists?: boolean;
 }
 
+type HtmlMessageParam = string | number | boolean | null | undefined;
+
 const escapeHtml = (value: unknown) =>
   String(value ?? '').replace(/[&<>"']/g, (char) => HTML_ESCAPE_MAP[char]);
 
-const escapeHtmlParams = (params?: unknown | unknown[]) => {
+const escapeHtmlParams = (
+  params?: HtmlMessageParam | HtmlMessageParam[],
+): string | string[] | undefined => {
   if (Array.isArray(params)) {
     return params.map((param) => escapeHtml(param));
   }
@@ -71,8 +81,45 @@ const sanitizeHtml = (html: string, options?: SanitizeHtmlOptions) => {
   });
 };
 
-const getSafeI18nHtml = (message: string, params?: unknown | unknown[]) =>
-  sanitizeHtml(chrome.i18n.getMessage(message, escapeHtmlParams(params)), {
+const replaceAllLiterals = (
+  html: string,
+  search: string,
+  replacement: string,
+) => html.split(search).join(replacement);
+
+const getLegalLinksHtml = (html: string) =>
+  replaceAllLiterals(
+    replaceAllLiterals(
+      replaceAllLiterals(
+        html,
+        TERMS_URL,
+        escapeHtml(process.env.KEYCHAIN_TERMS_URL || TERMS_URL),
+      ),
+      PRIVACY_URL,
+      escapeHtml(process.env.KEYCHAIN_PRIVACY_URL || PRIVACY_URL),
+    ),
+    FEES_URL,
+    escapeHtml(process.env.KEYCHAIN_FEES_URL || FEES_URL),
+  );
+
+const getI18nHtml = (
+  message: string,
+  params?: HtmlMessageParam | HtmlMessageParam[],
+) => {
+  const html = I18nUtils.getMessage(message, escapeHtmlParams(params));
+
+  if (message === LEGAL_LINKS_I18N_KEY) {
+    return getLegalLinksHtml(html);
+  }
+
+  return html;
+};
+
+const getSafeI18nHtml = (
+  message: string,
+  params?: HtmlMessageParam | HtmlMessageParam[],
+) =>
+  sanitizeHtml(getI18nHtml(message, params), {
     allowLinks: LINK_ENABLED_I18N_KEYS.has(message),
     allowLists: LIST_ENABLED_I18N_KEYS.has(message),
   });

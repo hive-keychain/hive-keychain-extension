@@ -10,6 +10,7 @@ import {
   initialStateWAccountsWActiveAccountStore,
   initialStateWOneKey,
 } from 'src/__tests__/utils-for-testing/initial-states';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import * as accountActions from 'src/popup/hive/actions/account.actions';
 import { setErrorMessage } from 'src/popup/multichain/actions/message.actions';
 
@@ -27,6 +28,9 @@ describe('account.actions tests:\n', () => {
       jest
         .spyOn(AccountUtils, 'getAccountsFromLocalStorage')
         .mockResolvedValueOnce([]);
+      jest
+        .spyOn(EvmWalletUtils, 'rebuildAccountsFromLocalStorage')
+        .mockResolvedValueOnce([]);
 
       await fakeStore.dispatch<any>(
         accountActions.retrieveAccounts(mk.user.one),
@@ -42,6 +46,9 @@ describe('account.actions tests:\n', () => {
         .mockResolvedValueOnce(
           initialStateWAccountsWActiveAccountStore.hive.accounts,
         );
+      jest
+        .spyOn(EvmWalletUtils, 'rebuildAccountsFromLocalStorage')
+        .mockResolvedValueOnce([]);
 
       await fakeStore.dispatch<any>(
         accountActions.retrieveAccounts(mk.user.one),

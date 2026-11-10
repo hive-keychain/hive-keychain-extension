@@ -1,0 +1,137 @@
+.nft-details {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
+  flex: 1;
+  min-height: 0;
+  box-sizing: border-box;
+  color: var(--main-font-color);
+
+  .nft-details-body {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .nft-media.nft-details-hero {
+    width: 100%;
+    height: 260px;
+    object-fit: contain;
+    border-radius: 16px;
+    display: block;
+  }
+
+  .nft-details-title-row {
+    margin-top: 14px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    column-gap: 12px;
+    min-width: 0;
+  }
+
+  .nft-details-name {
+    @include poppins600(20px);
+    color: var(--main-font-color);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .nft-details-standard {
+    flex-shrink: 0;
+    @include poppins400(12px);
+    opacity: 0.6;
+  }
+
+  .nft-details-collection {
+    margin-top: 2px;
+    @include poppins400(14px);
+    opacity: 0.75;
+  }
+
+  .nft-details-token-id {
+    margin-top: 2px;
+    @include poppins300(13px);
+    opacity: 0.65;
+  }
+
+  .nft-details-meta {
+    width: 100%;
+    margin-top: 16px;
+  }
+
+  .label-value {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    column-gap: 8px;
+    padding: 11px 0;
+    border-top: 1px solid var(--card-border);
+    box-sizing: border-box;
+
+    &:first-child {
+      border-top: 0;
+    }
+
+    .label {
+      @include poppins500(13px);
+      min-width: 90px;
+    }
+    .value {
+      @include poppins400(13px);
+      line-height: 20px;
+      overflow-wrap: anywhere;
+      text-align: right;
+      padding-right: 2px;
+    }
+
+    .contract-address-value {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      column-gap: 6px;
+      min-width: 0;
+    }
+
+    .contract-address-copy,
+    .contract-address-explorer {
+      flex-shrink: 0;
+      border: 0;
+      padding: 0;
+      background: transparent;
+      cursor: pointer;
+      color: var(--main-font-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .svg-icon,
+      svg {
+        @include icon-size(16px);
+      }
+
+      &:focus {
+        outline: none;
+      }
+
+      &:focus-visible {
+        outline: 2px solid $red;
+        outline-offset: 2px;
+        border-radius: 4px;
+      }
+    }
+  }
+
+  .nft-details-send {
+    margin-top: 12px;
+    width: 100%;
+    flex-shrink: 0;
+  }
+}

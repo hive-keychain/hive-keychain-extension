@@ -1,0 +1,74 @@
+import { EvmDappInfo, EvmRequest } from '@interfaces/evm-provider.interface';
+import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
+import { Rpc } from '@interfaces/rpc.interface';
+import { EvmAccountPublic } from '@popup/evm/interfaces/wallet.interface';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
+import { KeychainRequest } from 'hive-keychain-commons';
+
+export type DialogQueueMessage = HiveRequestMessage | EvmRequestMessage;
+
+export type HiveRequestMessage = {
+  command: DialogCommand.SEND_DIALOG_CONFIRM;
+  request: KeychainRequest;
+  rpc: Rpc;
+  tab: number;
+  domain: string;
+  requestSource?: PendingRequestSource;
+  accounts?: string[];
+  hiveEngineConfig: HiveEngineConfig;
+  queueSize?: number;
+  queuePosition?: number;
+  queue?: DialogQueueMessage[];
+};
+
+export type EvmRequestMessage = {
+  command: DialogCommand.SEND_DIALOG_CONFIRM_EVM;
+  request: EvmRequest;
+  tab: number;
+  dappInfo: EvmDappInfo;
+  accounts?: EvmAccountPublic[];
+  queueSize?: number;
+  queuePosition?: number;
+  queue?: DialogQueueMessage[];
+};
+
+export type RequestAddEvmChainMessage = {
+  command: DialogCommand.REQUEST_ADD_EVM_CHAIN;
+  chainId: string;
+  request: EvmRequest;
+  tab: number;
+  dappInfo: EvmDappInfo;
+};
+
+export type RequestAddCustomEvmChainMessage = {
+  command: DialogCommand.REQUEST_ADD_CUSTOM_EVM_CHAIN;
+  request: EvmRequest;
+  tab: number;
+  dappInfo: EvmDappInfo;
+  requestedChainId: string;
+  initialChain?: Partial<EvmChain>;
+};
+
+export type ErrorMessage = {
+  msg: { display_msg: string; tab?: number; request_id?: number };
+  command: DialogCommand.SEND_DIALOG_ERROR;
+  requestSource?: PendingRequestSource;
+};
+
+export type ResultMessage = {
+  msg: {
+    /** Resolved text for dapp responses; dialog prefers messageKey when set. */
+    message: string;
+    messageKey?: string;
+    messageParams?: string[];
+    success: boolean;
+    data: KeychainRequest;
+    tab?: number;
+  };
+  command: DialogCommand.ANSWER_REQUEST | DialogCommand.ANSWER_EVM_REQUEST;
+  requestSource?: PendingRequestSource;
+};
+
+export type FeedbackMessage = ResultMessage | ErrorMessage;

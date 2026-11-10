@@ -1,4 +1,3 @@
-import { setInfoMessage } from '@popup/multichain/actions/message.actions';
 import { RootState } from '@popup/multichain/store';
 import { ISwap, SwapStatus } from 'hive-keychain-commons';
 import moment from 'moment';
@@ -7,18 +6,22 @@ import { ConnectedProps, connect } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import {
+  COPY_GENERIC_MESSAGE_KEY,
+  copyTextWithToast,
+} from 'src/common-ui/toast/copy-toast.utils';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   swap: ISwap;
 }
 
-const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
+const TokenSwapsHistoryItem = ({ swap }: PropsFromRedux) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const copyIdToCliplboard = (id: string) => {
-    navigator.clipboard.writeText(id.toString());
-    setInfoMessage('swap_copied_to_clipboard');
+    void copyTextWithToast(id.toString(), COPY_GENERIC_MESSAGE_KEY);
   };
   const getStatusMessage = (
     status: ISwap['status'],
@@ -27,18 +30,18 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
     switch (status) {
       case SwapStatus.PENDING:
         return transferInitiated
-          ? chrome.i18n.getMessage('swap_status_pending')
-          : chrome.i18n.getMessage('swap_transfer_not_sent');
+          ? I18nUtils.getMessage('swap_status_pending')
+          : I18nUtils.getMessage('swap_transfer_not_sent');
       case SwapStatus.COMPLETED:
-        return chrome.i18n.getMessage('swap_status_completed');
+        return I18nUtils.getMessage('swap_status_completed');
       case SwapStatus.CANCELED_DUE_TO_ERROR:
-        return chrome.i18n.getMessage('swap_status_canceled_due_to_error');
+        return I18nUtils.getMessage('swap_status_canceled_due_to_error');
       case SwapStatus.FUNDS_RETURNED:
-        return chrome.i18n.getMessage('swap_status_returned');
+        return I18nUtils.getMessage('swap_status_returned');
       case SwapStatus.REFUNDED_SLIPPAGE:
-        return chrome.i18n.getMessage('swap_status_refunded');
+        return I18nUtils.getMessage('swap_status_refunded');
       case SwapStatus.STARTED:
-        return chrome.i18n.getMessage('swap_status_started');
+        return I18nUtils.getMessage('swap_status_started');
     }
   };
 
@@ -77,7 +80,7 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
     return `${getStatusMessage(swap.status, swap.transferInitiated)}
       <br/> ${
         [SwapStatus.PENDING, SwapStatus.STARTED].includes(swap.status)
-          ? chrome.i18n.getMessage('swap_last_update', [
+          ? I18nUtils.getMessage('swap_last_update', [
               moment(swap.updatedAt).format('YYYY-MM-DD HH:mm:ss'),
             ])
           : moment(swap.updatedAt).format('YYYY-MM-DD HH:mm:ss')
@@ -158,7 +161,7 @@ const TokenSwapsHistoryItem = ({ swap, setInfoMessage }: PropsFromRedux) => {
             {!!swap.fee && (
               <div className="step">
                 <div className="step-number">
-                  {chrome.i18n.getMessage('swap_fee')}
+                  {I18nUtils.getMessage('swap_fee')}
                 </div>{' '}
                 <div className="details">
                   <div className="description">
@@ -184,7 +187,7 @@ const mapStateToProps = (state: RootState) => {
   return {};
 };
 
-const connector = connect(mapStateToProps, { setInfoMessage });
+const connector = connect(mapStateToProps, {});
 type PropsFromRedux = ConnectedProps<typeof connector> & Props;
 
 export const TokenSwapsHistoryItemComponent = connector(TokenSwapsHistoryItem);

@@ -1,5 +1,5 @@
-import MkModule from '@background/mk.module';
-import BgdAccountsUtils from '@background/utils/accounts.utils';
+import MkModule from '@background/hive/modules/mk.module';
+import BgdAccountsUtils from '@background/hive/utils/accounts.utils';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { TokenBalance } from '@interfaces/tokens.interface';
 import { HiveEngineTransactionStatus } from '@interfaces/transaction-status.interface';

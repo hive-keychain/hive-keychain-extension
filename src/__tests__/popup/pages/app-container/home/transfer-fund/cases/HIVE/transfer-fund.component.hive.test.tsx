@@ -3,7 +3,7 @@ import { FavoriteUserUtils } from '@hiveapp/utils/favorite-user.utils';
 import TransferUtils from '@hiveapp/utils/transfer.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
-import { Screen } from '@reference-data/screen.enum';
+import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -13,7 +13,6 @@ import dataTestIdCheckbox from 'src/__tests__/utils-for-testing/data-testid/data
 import dataTestIdDiv from 'src/__tests__/utils-for-testing/data-testid/data-testid-div';
 import dataTestIdDropdown from 'src/__tests__/utils-for-testing/data-testid/data-testid-dropdown';
 import dataTestIdInput from 'src/__tests__/utils-for-testing/data-testid/data-testid-input';
-import dataTestIdSelect from 'src/__tests__/utils-for-testing/data-testid/data-testid-select';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
@@ -24,6 +23,25 @@ import { Icons } from 'src/common-ui/icons.enum';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import { BuyCoinType } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coin-type.enum';
 import { BuyCoinsListItem } from 'src/popup/hive/pages/app-container/home/buy-coins/buy-coins-list-item.list';
+import { I18nUtils } from 'src/utils/i18n.utils';
+
+const openHiveTransferPage = async () => {
+  const hiveDropdownArrow = await screen.findByTestId(
+    `${
+      dataTestIdDropdown.arrow.preFix
+    }${CurrencyUtils.getCurrencyLabels(false).hive.toLowerCase()}`,
+  );
+
+  await act(async () => {
+    await userEvent.click(hiveDropdownArrow);
+    await userEvent.click(
+      await screen.findByTestId(dataTestIdDropdown.itemPreFix + Icons.SEND),
+    );
+  });
+
+  await screen.findByTestId(`${Screen.TRANSFER_FUND_PAGE}-page`);
+};
+
 describe('transfer-fund.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -37,18 +55,7 @@ describe('transfer-fund.component tests:\n', () => {
           <HiveAppComponent />,
           initialStates.iniStateAs.defaultExistent,
         );
-        await act(async () => {
-          await userEvent.click(
-            screen.getByTestId(
-              `${
-                dataTestIdDropdown.arrow.preFix
-              }${CurrencyUtils.getCurrencyLabels(false).hive.toLowerCase()}`,
-            ),
-          );
-          await userEvent.click(
-            screen.getByTestId(dataTestIdDropdown.itemPreFix + Icons.SEND),
-          );
-        });
+        await openHiveTransferPage();
       });
       it('Must show transfer fund page with hive currency selected', async () => {
         expect(
@@ -56,7 +63,9 @@ describe('transfer-fund.component tests:\n', () => {
         ).toBeInTheDocument();
         //bellow the only element using an actual aria-label.
         expect(
-          await screen.findByLabelText(dataTestIdSelect.accountSelector),
+          await screen.findByRole('combobox', {
+            name: I18nUtils.getMessage('popup_html_currency'),
+          }),
         ).toHaveTextContent(CurrencyUtils.getCurrencyLabels(false).hive);
       });
 
@@ -72,7 +81,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('validation_error_mandatory'),
+            I18nUtils.getMessage('validation_error_mandatory'),
           ),
         );
       });
@@ -89,7 +98,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('validation_error_mandatory'),
+            I18nUtils.getMessage('validation_error_mandatory'),
           ),
         );
       });
@@ -110,7 +119,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('validation_error_mandatory'),
+            I18nUtils.getMessage('validation_error_mandatory'),
           ),
         );
       });
@@ -131,7 +140,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_html_need_positive_amount'),
+            I18nUtils.getMessage('popup_html_need_positive_amount'),
           ),
         );
       });
@@ -152,7 +161,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('validation_error_less_or_equal_value'),
+            I18nUtils.getMessage('validation_error_less_or_equal_value'),
           ),
         );
       });
@@ -176,7 +185,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('validation_error_mandatory'),
+            I18nUtils.getMessage('validation_error_mandatory'),
           ),
         );
       });
@@ -204,7 +213,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('validation_error_mandatory'),
+            I18nUtils.getMessage('validation_error_mandatory'),
           ),
         );
       });
@@ -232,7 +241,7 @@ describe('transfer-fund.component tests:\n', () => {
             dataTestIdDiv.warning.message,
           );
           expect(warningDivHTMLElement).toHaveTextContent(
-            chrome.i18n.getMessage('popup_warning_exchange_memo'),
+            I18nUtils.getMessage('popup_warning_exchange_memo'),
           );
         });
       });
@@ -256,7 +265,7 @@ describe('transfer-fund.component tests:\n', () => {
             dataTestIdDiv.warning.message,
           );
           expect(warningDivHTMLElement).toHaveTextContent(
-            chrome.i18n.getMessage('popup_warning_phishing', [
+            I18nUtils.getMessage('popup_warning_phishing', [
               phishing.accounts[0],
             ]),
           );
@@ -319,7 +328,7 @@ describe('transfer-fund.component tests:\n', () => {
           ).toBeInTheDocument();
           expect(
             await screen.findByText(
-              `${memoField} (${chrome.i18n.getMessage('popup_encrypted')})`,
+              `${memoField} (${I18nUtils.getMessage('popup_encrypted')})`,
             ),
           ).toBeInTheDocument();
         });
@@ -352,7 +361,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_html_transfer_successful', [
+            I18nUtils.getMessage('popup_html_transfer_successful', [
               `@${mk.user.two}`,
               '0.001 HIVE',
             ]),
@@ -398,7 +407,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_html_transfer_recurrent_successful', [
+            I18nUtils.getMessage('popup_html_transfer_recurrent_successful', [
               `@${mk.user.two}`,
               '0.001 HIVE',
               '24',
@@ -428,7 +437,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_html_transfer_failed'),
+            I18nUtils.getMessage('popup_html_transfer_failed'),
           ),
         ).toBeInTheDocument();
       });
@@ -477,18 +486,7 @@ describe('transfer-fund.component tests:\n', () => {
             },
           },
         );
-        await act(async () => {
-          await userEvent.click(
-            screen.getByTestId(
-              `${
-                dataTestIdDropdown.arrow.preFix
-              }${CurrencyUtils.getCurrencyLabels(false).hive.toLowerCase()}`,
-            ),
-          );
-          await userEvent.click(
-            screen.getByTestId(dataTestIdDropdown.itemPreFix + Icons.SEND),
-          );
-        });
+        await openHiveTransferPage();
       });
       it('Must show error if no memo key', async () => {
         const memoField = '#Private Message';
@@ -511,7 +509,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_html_memo_key_missing'),
+            I18nUtils.getMessage('popup_html_memo_key_missing'),
           ),
         ).toBeInTheDocument();
       });
@@ -537,18 +535,7 @@ describe('transfer-fund.component tests:\n', () => {
             },
           },
         );
-        await act(async () => {
-          await userEvent.click(
-            screen.getByTestId(
-              `${
-                dataTestIdDropdown.arrow.preFix
-              }${CurrencyUtils.getCurrencyLabels(false).hive.toLowerCase()}`,
-            ),
-          );
-          await userEvent.click(
-            screen.getByTestId(dataTestIdDropdown.itemPreFix + Icons.SEND),
-          );
-        });
+        await openHiveTransferPage();
       });
       it('Must show error making a transfer', async () => {
         await act(async () => {
@@ -566,7 +553,7 @@ describe('transfer-fund.component tests:\n', () => {
         });
         expect(
           await screen.findByText(
-            chrome.i18n.getMessage('popup_missing_key', ['active']),
+            I18nUtils.getMessage('popup_missing_key', ['active']),
           ),
         ).toBeInTheDocument();
       });

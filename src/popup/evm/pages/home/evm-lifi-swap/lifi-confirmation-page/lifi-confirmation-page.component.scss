@@ -1,0 +1,45 @@
+.lifi-confirmation-page {
+  @include pageLayoutRowGap;
+
+  .lifi-confirmation-page-content {
+    display: flex;
+    flex-direction: column;
+    row-gap: 12px;
+
+    .currency-icon-container {
+      display: flex;
+      position: relative;
+
+      .currency-icon {
+        @include icon-size(24px);
+        border-radius: 50%;
+      }
+
+      .currency-icon-chip {
+        @include icon-size(16px);
+        position: absolute;
+        bottom: -4px;
+        right: -4px;
+        border-radius: 50%;
+      }
+
+      .currency-icon-chip.chain-logo-initials {
+        @include poppins600(7px);
+      }
+    }
+
+    .lifi-operation-name {
+      text-align: center;
+      font-size: 20px;
+      text-transform: capitalize;
+    }
+  }
+
+  .lifi-confirmation-page-actions {
+    width: 100%;
+    display: flex;
+    column-gap: 16px;
+    padding-bottom: 16px;
+    box-sizing: border-box;
+  }
+}

@@ -1,17 +1,24 @@
 .title-section {
   display: flex;
+  // grid-template-columns: 18px 1fr 18px;
   column-gap: 16px;
   height: 48px;
   padding: 16px 24px;
   align-items: center;
-  .title {
-    user-select: none;
+
+  .fill-space {
     flex: 1;
+  }
+
+  .title {
+    position: absolute;
+    width: calc(100% - 48px);
+    text-align: center;
+    user-select: none;
     color: var(--main-font-color);
     pointer-events: none;
     height: 28px;
     overflow: hidden;
-    text-align: center;
     @include poppins500(20px);
   }
 

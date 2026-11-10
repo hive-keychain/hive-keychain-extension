@@ -1,0 +1,40 @@
+import { RequestId, RequestPowerDown } from '@interfaces/keychain.interface';
+import { Rpc } from '@interfaces/rpc.interface';
+import React from 'react';
+import AmountWithLogo from 'src/common-ui/amount-with-logo/amount-with-logo';
+import { SVGIcons } from 'src/common-ui/icons.enum';
+import { Separator } from 'src/common-ui/separator/separator.component';
+import UsernameWithAvatar from 'src/common-ui/username-with-avatar/username-with-avatar';
+import Operation from 'src/dialog/hive/operation/operation';
+import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
+import FormatUtils from 'src/utils/format.utils';
+
+import { I18nUtils } from 'src/utils/i18n.utils';
+type Props = {
+  data: RequestPowerDown & RequestId;
+  domain: string;
+  tab: number;
+  rpc: Rpc;
+  afterCancel: (requestId: number, tab: number) => void;
+};
+
+const PowerDown = (props: Props) => {
+  const { data, rpc } = props;
+
+  return (
+    <Operation
+      title={I18nUtils.getMessage('dialog_title_powerdown')}
+      {...props}>
+      <UsernameWithAvatar title="dialog_account" username={data.username} />
+      <Separator type={'horizontal'} fullSize />
+      <AmountWithLogo
+        title="dialog_amount"
+        amount={FormatUtils.formatCurrencyValue(data.hive_power)}
+        symbol={CurrencyUtils.getCurrencyLabel('HP', rpc.testnet)}
+        icon={SVGIcons.WALLET_HP_LOGO}
+      />
+    </Operation>
+  );
+};
+
+export default PowerDown;

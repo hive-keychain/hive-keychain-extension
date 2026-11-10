@@ -1,0 +1,146 @@
+.pending-account-creation-payment {
+  @include pageLayoutRowGap;
+  flex: 1;
+  color: var(--main-font-color);
+
+  &.confirmation-page .confirmation-top .fields {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .confirmation-top {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+    padding: 0 24px;
+    flex: 1;
+  }
+
+  .pending-disclaimer {
+    @include form-container-text;
+    padding: 0 24px;
+  }
+
+  .fields {
+    position: relative;
+
+    .fields-card-header {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      min-height: 32px;
+      margin: -4px 0 4px;
+      column-gap: 8px;
+
+      .status-badge {
+        margin-right: auto;
+        border-radius: 8px;
+        padding: 5px 10px;
+        background: var(--button-alternative-background-color);
+        border: 1px solid var(--card-border);
+        color: var(--main-font-color);
+        @include dmSans700(13px);
+      }
+    }
+  }
+
+  .pending-account-value {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    column-gap: 8px;
+    min-width: 0;
+
+    .username {
+      @include poppins400(14px);
+      overflow-wrap: anywhere;
+      text-align: right;
+    }
+
+    .user-avatar {
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+  }
+
+  .value.copyable-value {
+    overflow-wrap: anywhere;
+    text-align: right;
+    cursor: url('assets/images/global/copy-icon.png'), copy;
+  }
+
+  .value.value-with-logo {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    column-gap: 8px;
+    min-width: 0;
+
+    .value-label {
+      overflow-wrap: anywhere;
+      text-align: right;
+    }
+
+    .field-logo,
+    .currency-icon {
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .chain-logo-initials {
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      @include poppins600(10px);
+    }
+  }
+
+  .refresh-status-button {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    background: var(--button-alternative-background-color);
+    color: var(--main-font-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    &:disabled {
+      cursor: default;
+      opacity: 0.6;
+    }
+
+    .svg-icon,
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .evm-bottom-panel {
+    width: calc(100% - 48px);
+    display: flex;
+    column-gap: 16px;
+    padding: 0 24px 24px;
+  }
+
+  .empty-state,
+  .error-state {
+    @include form-panel;
+    margin: 0 24px 24px;
+    text-align: center;
+  }
+}

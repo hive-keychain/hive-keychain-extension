@@ -17,6 +17,7 @@
   .tokens-list {
     row-gap: 16px;
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     overflow: auto;
     margin-top: 4px;
 
@@ -24,9 +25,11 @@
       display: flex;
       column-gap: 16px;
       padding: 0px 30px;
+      min-width: 0;
 
       .checkbox-panel {
         width: 100%;
+        min-width: 0;
       }
 
       .switch-container {
@@ -36,6 +39,21 @@
       .description {
         display: flex;
         flex-direction: column;
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+
+        .token-filter-name-tooltip {
+          display: block;
+          max-width: 100%;
+          min-width: 0;
+
+          .tooltip-anchor {
+            min-width: 0;
+            overflow: hidden;
+          }
+        }
+
         .name {
           @include poppins600(14px);
           color: var(--main-font-color);
@@ -73,5 +91,12 @@
         }
       }
     }
+  }
+}
+
+.tooltip-container.token-filter-name-tooltip {
+  .tooltip {
+    width: max-content;
+    max-width: calc(100vw - 16px);
   }
 }

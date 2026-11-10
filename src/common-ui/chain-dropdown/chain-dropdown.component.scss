@@ -1,0 +1,89 @@
+.chain-selector {
+  .custom-select {
+    min-width: unset;
+    border: unset !important;
+  }
+
+  .react-dropdown-select {
+    height: 32px !important;
+  }
+
+  .react-dropdown-select-dropdown {
+    top: calc(100% + 4px) !important;
+    max-height: 300px !important;
+    right: 0;
+    left: unset;
+    width: max-content;
+    min-width: 100%;
+    background-color: var(--select-dropdown-bg-color);
+
+    .manage-chains-panel .text {
+      white-space: nowrap;
+    }
+
+    .left-image {
+      height: 20px !important;
+      width: 20px !important;
+      margin-left: unset !important;
+    }
+    .left-svg {
+      height: 20px !important;
+      width: 20px !important;
+
+      svg {
+        height: 20px !important;
+        width: 20px !important;
+      }
+    }
+
+    .custom-select-item.draggable {
+      .item-label {
+        flex: 1 1 auto;
+        min-width: max-content;
+      }
+    }
+  }
+
+  .manage-chains-panel {
+    display: flex;
+    flex-direction: row !important;
+    align-items: center;
+    column-gap: 12px;
+    padding: 10px 6px;
+    box-sizing: border-box;
+    @include poppins500(14px);
+    cursor: pointer;
+    width: 100%;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    --add-icon-color: #{$red};
+    .text {
+      color: var(--main-font-color);
+    }
+    &:hover,
+    &:focus-visible {
+      outline: none;
+      background: $red;
+      --add-icon-color: white;
+      --menu-icon-color: white;
+      .text {
+        color: white;
+      }
+      .svg-icon {
+        --menu-icon-color: white;
+      }
+    }
+    .svg-icon {
+      @include icon-size(32px);
+      --menu-icon-border-width: 0;
+      --menu-icon-color: #{$red};
+      svg {
+        @include icon-size(32px);
+        transform: scale(1.45);
+        transform-origin: center;
+      }
+    }
+  }
+}

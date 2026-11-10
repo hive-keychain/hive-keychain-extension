@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface WitnessInfoDataProps {
   label: string;
   skipLabelTranslation?: boolean;
@@ -26,7 +27,7 @@ export const WitnessInfoDataComponent = ({
   return (
     <div className="witness-info-data">
       <div className="label">
-        {skipLabelTranslation ? label : chrome.i18n.getMessage(label)}
+        {skipLabelTranslation ? label : I18nUtils.getMessage(label)}
       </div>
       <div
         className={`value ${valueOnClickAction ? 'clickable' : ''}`}

@@ -1,0 +1,67 @@
+import { EvmNFTMetadata } from '@popup/evm/interfaces/evm-ntf.interface';
+import { EvmUserHistory } from '@popup/evm/interfaces/evm-tokens-history.interface';
+import {
+  EvmSmartContractInfoErc1155,
+  EvmSmartContractInfoErc20,
+  EvmSmartContractInfoErc721,
+  EvmSmartContractInfoNative,
+} from '@popup/evm/interfaces/evm-tokens.interface';
+import { EvmWallet } from '@popup/evm/interfaces/wallet.interface';
+
+export type EvmActiveAccountDataSource = 'light-node' | 'cache' | 'fallback';
+
+export interface EvmActiveAccountLoadMetadata {
+  source?: EvmActiveAccountDataSource;
+  cacheUpdatedAt?: number;
+  lightNodeUnavailable?: boolean;
+}
+
+export interface EvmActiveAccount {
+  address: string;
+  nativeAndErc20Tokens: EvmActiveAccountLoadMetadata & {
+    value: NativeAndErc20Token[];
+    loading: boolean;
+    initialized?: boolean;
+  };
+  nfts: EvmActiveAccountLoadMetadata & {
+    value: (EvmErc721Token | EvmErc1155Token)[];
+    loading: boolean;
+    initialized: boolean;
+  };
+  history: EvmActiveAccountLoadMetadata & {
+    value: EvmUserHistory;
+    loading: boolean;
+    initialized: boolean;
+  };
+  wallet: EvmWallet;
+  isReady: boolean;
+}
+
+export interface NativeAndErc20Token {
+  formattedBalance: string;
+  shortFormattedBalance: string;
+  balance: bigint;
+  balanceInteger: number;
+  tokenInfo: EvmSmartContractInfoNative | EvmSmartContractInfoErc20;
+}
+
+export interface EvmErc721Token {
+  tokenInfo: EvmSmartContractInfoErc721;
+  collection: EvmErc721TokenCollectionItem[];
+}
+export interface EvmErc721TokenCollectionItem {
+  id: string;
+  metadata: EvmNFTMetadata;
+}
+export interface EvmErc1155TokenCollectionItem {
+  id: string;
+  balance: number;
+  metadata: EvmNFTMetadata;
+}
+
+export interface EvmErc1155Token {
+  tokenInfo: EvmSmartContractInfoErc1155;
+  collection: EvmErc1155TokenCollectionItem[];
+}
+
+export type EvmSavedActiveAccount = string;

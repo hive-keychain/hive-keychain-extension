@@ -1,4 +1,5 @@
 import LedgerModule from '@background/ledger.module';
+import { KeychainError } from 'src/keychain-error';
 import { signTx } from '@background/requests/operations/ops/sign-tx';
 import { RequestsHandler } from '@background/requests/request-handler';
 import { Operation, Transaction } from '@hiveio/dhive';
@@ -12,6 +13,7 @@ import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('sign-tx tests:\n', () => {
   const data = {
     domain: 'domain',
@@ -35,7 +37,7 @@ describe('sign-tx tests:\n', () => {
   });
   beforeEach(() => {
     jest.spyOn(chrome.i18n, 'getUILanguage').mockReturnValueOnce('en-US');
-    chrome.i18n.getMessage = jest
+    I18nUtils.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom);
   });
@@ -49,14 +51,15 @@ describe('sign-tx tests:\n', () => {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          error: new Error('html_popup_error_while_signing_transaction'),
+          error: new KeychainError('html_popup_error_while_signing_transaction'),
           result: undefined,
           data: datas,
-          message: chrome.i18n.getMessage(
-            'html_popup_error_while_signing_transaction',
-          ),
+          message: I18nUtils.getMessage('html_popup_error_while_signing_transaction'),
+          messageKey: 'html_popup_error_while_signing_transaction',
+          messageParams: undefined,
           request_id: request_id,
           publicKey: undefined,
+          tab: undefined,
         },
       });
     });
@@ -68,7 +71,7 @@ describe('sign-tx tests:\n', () => {
       expect(signedTx.msg.success).toBe(true);
       expect(signedTx.msg.error).toBeUndefined();
       expect(signedTx.msg.message).toBe(
-        chrome.i18n.getMessage('bgd_ops_sign_tx'),
+        I18nUtils.getMessage('bgd_ops_sign_tx'),
       );
     });
   });
@@ -84,7 +87,7 @@ describe('sign-tx tests:\n', () => {
       expect(signedTx.msg.success).toBe(true);
       expect(signedTx.msg.error).toBeUndefined();
       expect(signedTx.msg.message).toBe(
-        chrome.i18n.getMessage('bgd_ops_sign_tx'),
+        I18nUtils.getMessage('bgd_ops_sign_tx'),
       );
     });
   });

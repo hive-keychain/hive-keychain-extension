@@ -2,6 +2,7 @@ import React from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export enum ButtonType {
   IMPORTANT = 'important',
   ALTERNATIVE = 'alternative',
@@ -27,12 +28,14 @@ const ButtonComponent = (props: ButtonProps) => {
       data-testid={props.dataTestId}
       className={`submit-button ${
         props.type ? props.type : ButtonType.IMPORTANT
-      }  ${props.additionalClass ?? ''} ${props.height ?? 'medium'}`}
+      }  ${props.additionalClass ?? ''} ${props.height ?? 'medium'} ${
+        props.disabled ? 'disabled' : ''
+      }`}
       onClick={props.onClick}>
       <div className="button-label">
         {props.skipLabelTranslation
           ? props.label
-          : chrome.i18n.getMessage(props.label, props.labelParams)}{' '}
+          : I18nUtils.getMessage(props.label, props.labelParams)}{' '}
       </div>
       {props.logo && <SVGIcon icon={props.logo} className="logo" />}
     </button>

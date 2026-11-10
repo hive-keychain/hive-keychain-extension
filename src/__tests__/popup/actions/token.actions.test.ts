@@ -51,6 +51,17 @@ describe('token.actions tests:\n', () => {
         expect(error).toBeInstanceOf(SyntaxError);
       }
     });
+
+    test('Must not show timeout message when Hive Engine RPC times out', async () => {
+      const timeoutError = new Error('html_popup_tokens_timeout');
+      TokensUtils.getAllTokens = jest.fn().mockRejectedValue(timeoutError);
+      const fakeStore = getFakeStore(initialEmptyStateStore);
+
+      await expect(
+        fakeStore.dispatch<any>(tokenActions.loadTokens()),
+      ).rejects.toEqual(timeoutError);
+      expect(fakeStore.getState().message.key).toBe('');
+    });
   });
 
   describe('loadTokensMarket tests:\n', () => {

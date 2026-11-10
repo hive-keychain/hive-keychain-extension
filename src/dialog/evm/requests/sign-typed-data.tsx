@@ -1,0 +1,456 @@
+import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
+import { EvmRequestMessage } from '@dialog/interfaces/messages.interface';
+import { EvmRequest } from '@interfaces/evm-provider.interface';
+import {
+  EvmTransactionWarningLevel,
+  EvmTransactionWarningType,
+  TransactionConfirmationField,
+  TransactionConfirmationFields,
+} from '@popup/evm/interfaces/evm-transactions.interface';
+import { EvmAccountPublic } from '@popup/evm/interfaces/wallet.interface';
+import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import {
+  ClassifiedSpendingPermission,
+  EvmSpendingPermissionUtils,
+  SpendingPermissionEntry,
+} from '@popup/evm/utils/evm-spending-permission.utils';
+import { EvmFormatUtils } from '@popup/evm/utils/evm-format.utils';
+import {
+  EvmInputDisplayType,
+  EvmTransactionParserUtils,
+} from '@popup/evm/utils/evm-transaction-parser.utils';
+import React, { useEffect, useState } from 'react';
+import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
+import { EvmAccountImage } from 'src/common-ui/evm/evm-account-image/evm-account-image.component';
+import { EvmLedgerDialogUtils } from 'src/dialog/evm/evm-ledger-dialog.utils';
+import { EvmOperation } from 'src/dialog/evm/evm-operation/evm-operation';
+import { reorderEvmConfirmationFields } from 'src/dialog/evm/requests/transaction-warnings/transaction-field-order.utils';
+import { EvmTransactionWarningsComponent } from 'src/dialog/evm/requests/transaction-warnings/transaction-warning.component';
+import { useTransactionHook } from 'src/dialog/evm/requests/transaction-warnings/transaction.hook';
+import FormatUtils from 'src/utils/format.utils';
+import { EvmSignatureBindingUtils } from 'src/utils/evm/evm-signature-binding.utils';
+import Logger from 'src/utils/logger.utils';
+
+import { I18nUtils } from 'src/utils/i18n.utils';
+interface Props {
+  request: EvmRequest;
+  accounts: EvmAccountPublic[];
+  data: EvmRequestMessage;
+  afterCancel: (requestId: number, tab: number) => void;
+}
+
+interface SignTypedDataMessage {
+  domain: {
+    chainId?: string | number;
+    name?: string;
+    verifyingContract?: string;
+    version?: string;
+    salt?: string;
+  };
+  message: any;
+  primaryType: string;
+  types: any;
+}
+
+export const SignTypedData = (props: Props) => {
+  const { accounts, data, request, afterCancel } = props;
+
+  const MESSAGE_INDEX =
+    request.method === EvmRequestMethod.ETH_SIGN_DATA ? 0 : 1;
+  const TARGET_INDEX =
+    request.method === EvmRequestMethod.ETH_SIGN_DATA ? 1 : 0;
+  const [message, setMessage] = useState<SignTypedDataMessage>(
+    typeof request.params[MESSAGE_INDEX] === 'string'
+      ? JSON.parse(request.params[MESSAGE_INDEX])
+      : request.params[MESSAGE_INDEX],
+  );
+  const [target, setTarget] = useState<string>(request.params[TARGET_INDEX]);
+
+  const transactionHook = useTransactionHook(data, request);
+
+  const buildSpendingPermissionFields = (
+    permission: ClassifiedSpendingPermission,
+  ): TransactionConfirmationField[] => {
+    const summary: TransactionConfirmationField[] = [];
+    for (const entry of permission.entries) {
+      summary.push(...buildSpendingPermissionEntryFields(entry));
+    }
+    return summary;
+  };
+
+  useEffect(() => {
+    init();
+  }, [request]);
+
+  const init = async () => {
+    transactionHook.setLoading(true);
+    transactionHook.setReady(false);
+    let transactionConfirmationFields = {
+      otherFields: [transactionHook.buildInitialDomainField()],
+      operationName: I18nUtils.getMessage('dialog_evm_sign_data_title'),
+    } as TransactionConfirmationFields;
+    transactionConfirmationFields.otherFields = reorderEvmConfirmationFields(
+      transactionConfirmationFields.otherFields,
+    );
+    transactionHook.setFields(transactionConfirmationFields);
+
+    const lastChain = await EvmChainUtils.getLastEvmChain();
+
+    const transactionInfo =
+      await EvmTransactionParserUtils.verifyTransactionInformation({
+        domain: data.dappInfo.domain,
+        origin: data.dappInfo.origin,
+        chainId: lastChain.chainId,
+        tokenContract: message.domain?.verifyingContract,
+      });
+    transactionHook.setUnableToReachBackend(
+      !!(transactionInfo && transactionInfo.unableToReach),
+    );
+
+    const connectedChainId = await EvmChainUtils.getLastEvmChainIdForOrigin(
+      data.dappInfo.origin,
+    );
+    const requestedChainId = message.domain?.chainId;
+    const hasRequestedChainId =
+      requestedChainId !== undefined &&
+      requestedChainId !== null &&
+      `${requestedChainId}`.trim() !== '';
+    const chainBinding = EvmSignatureBindingUtils.compareChainIds(
+      requestedChainId,
+      connectedChainId,
+    );
+
+    if (hasRequestedChainId) {
+      const chainField: TransactionConfirmationField = {
+        type: EvmInputDisplayType.STRING,
+        name: 'evm_chain_id',
+        value: formatValue(requestedChainId, EvmInputDisplayType.STRING),
+      };
+      if (chainBinding === 'mismatch') {
+        chainField.warnings = [
+          {
+            ignored: false,
+            level: EvmTransactionWarningLevel.HIGH,
+            type: EvmTransactionWarningType.BASE,
+            message: 'evm_warning_typed_data_chain_mismatch',
+            messageParams: [
+              await EvmChainUtils.formatSignatureChainLabel(requestedChainId),
+              await EvmChainUtils.formatSignatureChainLabel(connectedChainId),
+            ],
+          },
+        ];
+      }
+      transactionConfirmationFields.otherFields.push(chainField);
+    } else if (
+      EvmSignatureBindingUtils.isSpendingPermitPrimaryType(message.primaryType)
+    ) {
+      transactionConfirmationFields.otherFields.push({
+        name: 'evm_chain_id',
+        type: EvmInputDisplayType.STRING,
+        value: I18nUtils.getMessage('evm_chain_not_specified'),
+        warnings: [
+          {
+            ignored: false,
+            level: EvmTransactionWarningLevel.HIGH,
+            type: EvmTransactionWarningType.BASE,
+            message: 'evm_warning_permit_missing_chain',
+          },
+        ],
+      });
+    }
+
+    if (message.domain?.verifyingContract)
+      transactionConfirmationFields.otherFields.push({
+        type: EvmInputDisplayType.CONTRACT_ADDRESS,
+        name: 'dialog_evm_sign_request_interacting_with',
+        value: formatValue(
+          message.domain.verifyingContract,
+          EvmInputDisplayType.CONTRACT_ADDRESS,
+        ),
+      });
+
+    if (message.domain?.name)
+      transactionConfirmationFields.otherFields.push({
+        type: EvmInputDisplayType.STRING,
+        name: 'evm_domain_name',
+        value: formatValue(message.domain.name, EvmInputDisplayType.STRING),
+      });
+
+    if (message.domain?.version)
+      transactionConfirmationFields.otherFields.push({
+        type: EvmInputDisplayType.STRING,
+        name: 'evm_domain_version',
+        value: formatValue(message.domain.version, EvmInputDisplayType.STRING),
+      });
+
+    const accountDisplay = await transactionHook.getWalletAddressInput(
+      target,
+      lastChain.chainId,
+      transactionInfo,
+      accounts,
+      'evm_target_account',
+    );
+
+    transactionConfirmationFields.otherFields.push({
+      type: EvmInputDisplayType.WALLET_ADDRESS,
+      name: 'evm_target_account',
+      value: accountDisplay.value,
+    } as TransactionConfirmationField);
+
+    transactionConfirmationFields.otherFields.push({
+      name: '',
+      type: EvmInputDisplayType.STRING_CENTERED,
+      value: I18nUtils.getMessage('evm_sign_typed_data_message'),
+    });
+
+    const spendingPermission =
+      EvmSpendingPermissionUtils.classifyTypedData(message);
+    if (spendingPermission) {
+      transactionConfirmationFields.operationName = I18nUtils.getMessage(
+        spendingPermission.operationNameKey,
+      );
+    }
+
+    const summaryFields = spendingPermission
+      ? buildSpendingPermissionFields(spendingPermission)
+      : [];
+    const parsedFields: TransactionConfirmationField[] = [
+      {
+        type: EvmInputDisplayType.STRING,
+        name: I18nUtils.getMessage('evm_sign_typed_data_message_primary_type'),
+        value: message.primaryType,
+      },
+    ];
+
+    try {
+      const baseType = message.types[message.primaryType];
+      if (baseType) {
+        parseTypes(baseType, message.message, parsedFields, 0);
+        transactionConfirmationFields.otherFields = [
+          ...transactionConfirmationFields.otherFields,
+          ...summaryFields,
+          ...parsedFields,
+        ];
+      } else {
+        transactionConfirmationFields.otherFields.push(...summaryFields, {
+          type: EvmInputDisplayType.LONG_TEXT,
+          name: 'evm_raw_data',
+          value: JSON.stringify(message),
+        });
+      }
+    } catch (e) {
+      transactionConfirmationFields.otherFields.push(...summaryFields, {
+        type: EvmInputDisplayType.LONG_TEXT,
+        name: 'evm_raw_data',
+        value: JSON.stringify(message),
+      });
+    }
+
+    transactionConfirmationFields.otherFields = reorderEvmConfirmationFields(
+      transactionConfirmationFields.otherFields,
+    );
+    transactionHook.setFields(transactionConfirmationFields);
+    void transactionHook.hydrateDomainFieldWarnings(transactionInfo);
+    setTimeout(() => {
+      transactionHook.setReady(true);
+      transactionHook.setLoading(false);
+    }, 250);
+  };
+
+  const parseTypes = (
+    baseType: any,
+    data: any,
+    otherFields: TransactionConfirmationField[],
+    level: number,
+  ) => {
+    for (const field of baseType) {
+      const isArray = field.type.includes('[]');
+
+      let type = field.type;
+      if (isArray) {
+        type = field.type.replace('[]', '');
+      }
+
+      if (Object.keys(message.types).includes(type)) {
+        otherFields.push({
+          type: EvmInputDisplayType.STRING,
+          value: '',
+          name: field.name,
+          style: { paddingLeft: 12 * level },
+        });
+        if (isArray) {
+          for (const d of data[field.name]) {
+            parseTypes(message.types[type], d, otherFields, level + 1);
+          }
+        } else {
+          parseTypes(
+            message.types[type],
+            data[field.name],
+            otherFields,
+            level + 1,
+          );
+        }
+      } else {
+        otherFields.push({
+          type: type,
+          name: field.name,
+          value: isArray ? (
+            <div className="list">
+              {data[field.name].map((item: any) => (
+                <span>{formatValue(item, type)}</span>
+              ))}
+            </div>
+          ) : (
+            formatValue(data[field.name], type)
+          ),
+          style: { paddingLeft: 12 * level },
+        });
+      }
+    }
+  };
+
+  const buildSpendingPermissionEntryFields = (
+    entry: SpendingPermissionEntry,
+  ): TransactionConfirmationField[] => {
+    const fields: TransactionConfirmationField[] = [];
+    if (entry.tokenAddress) {
+      fields.push({
+        type: EvmInputDisplayType.STRING,
+        name: 'evm_spending_permission_token',
+        value: entry.tokenSymbol
+          ? `${entry.tokenSymbol} (${entry.tokenAddress})`
+          : entry.tokenAddress,
+        address: entry.tokenAddress,
+      });
+    }
+    if (entry.spender) {
+      fields.push({
+        type: EvmInputDisplayType.STRING,
+        name: 'evm_operation_spender',
+        value: entry.spender,
+        address: entry.spender,
+      });
+    }
+    if (entry.tokenId) {
+      fields.push({
+        type: EvmInputDisplayType.STRING,
+        name: 'evm_nft_token_id',
+        value: entry.tokenId,
+      });
+    }
+    if (
+      entry.kind === 'erc20-allowance' &&
+      (entry.unlimited || entry.amountRaw !== undefined)
+    ) {
+      const warning = EvmSpendingPermissionUtils.buildWarning(entry);
+      const amountLabel = entry.tokenSymbol || entry.tokenAddress || '';
+      fields.push({
+        type: EvmInputDisplayType.STRING,
+        name: 'evm_operation_amount',
+        value: entry.unlimited
+          ? I18nUtils.getMessage('evm_history_unlimited_approval_value', [
+              amountLabel,
+            ])
+          : FormatUtils.withCommas(entry.amountRaw!.toString(), 0),
+        warnings: warning ? [warning] : undefined,
+      });
+    }
+    if (
+      entry.kind === 'operator-approval' ||
+      entry.kind === 'operator-revoke'
+    ) {
+      const warning = EvmSpendingPermissionUtils.buildWarning(entry);
+      fields.push({
+        type: EvmInputDisplayType.STRING,
+        name: 'evm_nft_approve_all',
+        value: entry.kind === 'operator-approval' ? 'true' : 'false',
+        warnings: warning ? [warning] : undefined,
+      });
+    }
+    return fields;
+  };
+
+  const formatValue = (value: any, inputDisplayType: EvmInputDisplayType) => {
+    let formatedValue;
+    switch (inputDisplayType) {
+      case EvmInputDisplayType.ADDRESS:
+      case EvmInputDisplayType.CONTRACT_ADDRESS:
+      case EvmInputDisplayType.WALLET_ADDRESS: {
+        if (typeof value !== 'string') {
+          value = value.toString();
+          let newValue = value;
+          for (let i = 0; i < 42 - value.length; i++) {
+            newValue = 0 + newValue;
+          }
+          value = '0x' + newValue;
+        }
+        const formattedAddress = EvmFormatUtils.formatAddress(value);
+
+        formatedValue = (
+          <div className="value-content-horizontal">
+            <EvmAccountImage address={value} small />
+            <CustomTooltip
+              message={value}
+              skipTranslation
+              additionalClassName="evm-address-tooltip"
+            >
+              <span>{formattedAddress}</span>
+            </CustomTooltip>
+          </div>
+        );
+        break;
+      }
+      case EvmInputDisplayType.UINT256: {
+        formatedValue = FormatUtils.withCommas(value, 0);
+        break;
+      }
+      case EvmInputDisplayType.NUMBER: {
+        formatedValue = FormatUtils.withCommas(value);
+        break;
+      }
+      case EvmInputDisplayType.BYTES:
+      case EvmInputDisplayType.STRING: {
+        formatedValue = String(value);
+        break;
+      }
+      default: {
+        const displayType = String(inputDisplayType);
+        if (displayType.startsWith('uint')) {
+          formatedValue = FormatUtils.withCommas(String(value), 0);
+          break;
+        }
+        if (displayType === 'bool' || displayType === 'boolean') {
+          formatedValue = String(value);
+          break;
+        }
+        Logger.error('Type is not correct');
+        throw new Error();
+      }
+    }
+    return formatedValue;
+  };
+
+  const handleCancel = () => {
+    afterCancel(request.request_id, data.tab);
+  };
+  const loadingCaption =
+    EvmLedgerDialogUtils.getLedgerConfirmationCaptionForAddress(
+      accounts,
+      target,
+    );
+
+  return (
+    <EvmOperation
+      request={request}
+      domain={data.dappInfo.domain}
+      origin={data.dappInfo.origin}
+      requestSource={data.dappInfo.requestSource}
+      tab={data.tab}
+      title={I18nUtils.getMessage('dialog_evm_sign_data_title')}
+      fields={<EvmTransactionWarningsComponent warningHook={transactionHook} />}
+      transactionHook={transactionHook}
+      loadingCaption={loadingCaption}
+      afterCancel={handleCancel}
+    ></EvmOperation>
+  );
+};

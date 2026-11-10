@@ -9,9 +9,10 @@ import { ActionCardComponent } from 'src/common-ui/action-card/action-card.compo
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
-import { Screen } from 'src/reference-data/screen.enum';
+import { Screen } from 'src/interfaces/screen.interface';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const KeylessKeychain = ({ navigateTo }: PropsFromRedux) => {
   const [sessions, setSessions] = useState<NamedKeylessAuthData[]>([]);
   const handleLeaveKeylessKeychain = async () => {
@@ -51,13 +52,13 @@ const KeylessKeychain = ({ navigateTo }: PropsFromRedux) => {
         isCloseButtonDisabled={true}></PageTitleComponent>
       <div className="content">
         <div className="caption">
-          {chrome.i18n.getMessage('popup_html_keyless_keychain_setup')}
+          {I18nUtils.getMessage('popup_html_keyless_keychain_setup')}
         </div>
       </div>
       {sessions.length && (
         <div className="keyless-sessions">
           <div className="sessions-title">
-            {chrome.i18n.getMessage('popup_html_keyless_sessions')}
+            {I18nUtils.getMessage('popup_html_keyless_sessions')}
           </div>
           {sessions.map((session) => (
             <div className="keyless-session">

@@ -1,24 +1,17 @@
-import { setHasFinishedSignup } from '@popup/multichain/actions/has-finished-signup.actions';
-import { forgetMk } from '@popup/multichain/actions/mk.actions';
+import { Screen } from '@interfaces/screen.interface';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import { resetKeychain } from '@popup/multichain/actions/reset-keychain.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
-import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import { resetAccount } from 'src/popup/hive/actions/account.actions';
-import { resetActiveAccount } from 'src/popup/hive/actions/active-account.actions';
-import { HtmlUtils } from 'src/utils/html.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { HtmlUtils } from 'src/utils/html.utils';
 const ResetPasswordPage = ({
   setTitleContainerProperties,
   navigateTo,
-  resetAccount,
-  forgetMk,
-  resetActiveAccount,
-  setHasFinishedSignup,
+  resetKeychain,
 }: PropsFromRedux) => {
   useEffect(() => {
     setTitleContainerProperties({
@@ -28,11 +21,7 @@ const ResetPasswordPage = ({
   }, []);
 
   const reset = async () => {
-    resetAccount();
-    setHasFinishedSignup(false);
-    forgetMk();
-    resetActiveAccount();
-    await LocalStorageUtils.clearLocalStorage();
+    await resetKeychain();
     navigateTo(Screen.SIGN_UP_PAGE, true);
   };
 
@@ -64,10 +53,7 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   navigateTo,
-  resetAccount,
-  forgetMk,
-  resetActiveAccount,
-  setHasFinishedSignup,
+  resetKeychain,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

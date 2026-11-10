@@ -9,6 +9,7 @@
     "moduleResolution": "node",
     "noEmit": false,
     "strict": true,
+    "skipLibCheck": true,
     "target": "ES6",
     "resolveJsonModule": true,
     "baseUrl": ".",
@@ -19,10 +20,13 @@
       "@background/*": ["./src/background/*"],
       "@interfaces/*": ["./src/interfaces/*"],
       "@reference-data/*": ["./src/reference-data/*"],
-      "@api/*": ["./src/api/*"],
+      "@api/*": ["src/api/*"],
+      "@dialog/*": ["src/dialog/*"],
+      "@common-ui/*": ["./src/common-ui/*"],
       "react": ["./node_modules/@types/react"]
-    }
+    },
+    "types": ["chrome"]
   },
   "include": ["src/**/*"],
-  "exclude": ["src/__tests__/*"] // TODO Comment when working on tests
+  "exclude": ["src/__tests__/*"] // Comment when working on tests
 }

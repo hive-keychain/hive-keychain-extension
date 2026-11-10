@@ -5,6 +5,7 @@ import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.compo
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface ResourceItemProps {
   icon: SVGIcons;
   label: string;
@@ -48,7 +49,7 @@ const ResourceItem = ({
         <SVGIcon className="icon" icon={icon} />
         <div className="right-panel">
           <div className="top">
-            <div className="label">{chrome.i18n.getMessage(label)}</div>
+            <div className="label">{I18nUtils.getMessage(label)}</div>
           </div>
           <div className="bottom">
             {value}{' '}

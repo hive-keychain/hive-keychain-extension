@@ -18,6 +18,37 @@ enum HiveEngineErrorType {
   USER_NOT_EXISTING = 'invalid to',
 }
 
+const formatChainMessage = (stack: {
+  format?: string;
+  data?: Record<string, unknown>;
+}) => {
+  const format = stack.format ?? '';
+  const data = stack.data;
+  if (!data) {
+    return format;
+  }
+
+  return format.replace(/\$\{([^}]+)\}/g, (match, key: string) => {
+    if (!Object.prototype.hasOwnProperty.call(data, key)) {
+      return match;
+    }
+
+    const value = data[key];
+    if (value === null || value === undefined) {
+      return match;
+    }
+    if (
+      typeof value === 'string' ||
+      typeof value === 'number' ||
+      typeof value === 'boolean'
+    ) {
+      return String(value);
+    }
+
+    return JSON.stringify(value);
+  });
+};
+
 const parse = (error: any) => {
   Logger.log(error);
   const stack = error?.data?.stack[0];
@@ -116,7 +147,11 @@ const parse = (error: any) => {
     return new KeychainError('not_enough_rc', [], error);
   }
   if (stack && stack.format && !stack.format.includes('${what}')) {
-    return new KeychainError('error_while_broadcasting', [stack.format], error);
+    return new KeychainError(
+      'error_while_broadcasting',
+      [formatChainMessage(stack)],
+      error,
+    );
   }
   return new KeychainError('html_popup_error_while_broadcasting', [], error);
 };
@@ -138,6 +173,12 @@ const parseHiveEngine = (error: string, payload: any) => {
     ]);
   }
   return new KeychainError('bgd_ops_hive_engine_confirmation_error', [error]);
+};
+
+const isLedgerDevicePickerDismissed = (error: any) => {
+  const name = typeof error?.name === 'string' ? error.name : '';
+  const message = typeof error?.message === 'string' ? error.message : '';
+  return `${name} ${message}`.toLowerCase().includes('no device selected');
 };
 
 const parseLedger = (error: any) => {
@@ -171,13 +212,17 @@ const parseLedger = (error: any) => {
     case '0x6e01':
       return new KeychainError('error_ledger_hive_app_not_opened');
     default: {
-      Logger.log(error);
+      if (isLedgerDevicePickerDismissed(error)) {
+        return new KeychainError('html_ledger_no_device_selected');
+      }
       if (
-        error.name === 'DisconnectedDeviceDuringOperation' ||
-        error.name === 'TransportOpenUserCancelled'
+        error?.name === 'DisconnectedDeviceDuringOperation' ||
+        error?.name === 'TransportOpenUserCancelled'
       ) {
         return new KeychainError('popup_html_ledger_not_detected');
-      } else if (
+      }
+      Logger.log(error);
+      if (
         error.toString().includes('Ledger error: Unable to claim interface')
       ) {
         return new KeychainError('ledger_reboot_with_ledger_live_error');

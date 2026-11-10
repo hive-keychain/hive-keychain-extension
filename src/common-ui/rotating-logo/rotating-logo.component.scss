@@ -1,11 +1,32 @@
 .rotating-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
   width: 80px;
   height: 80px;
+  margin: 0 auto;
   animation: rotate-stop 2s infinite linear;
   transform: rotate();
+  transform-origin: center center;
+
+  div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
 }
 
 .rotating-logo-wrapper {
+  box-sizing: border-box;
   height: 100%;
   width: 100%;
   display: flex;

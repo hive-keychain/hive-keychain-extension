@@ -1,0 +1,98 @@
+import { AccountValueType } from '@reference-data/account-value-type.enum';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import React, { useEffect, useState } from 'react';
+import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
+import { SVGIcons } from 'src/common-ui/icons.enum';
+import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
+
+import { I18nUtils } from 'src/utils/i18n.utils';
+export interface DisplayedAccountValues {
+  [AccountValueType.DOLLARS]: string;
+  [AccountValueType.TOKEN]: string;
+}
+
+interface EstimatedAccountValueSectionProps {
+  hasPortofolio?: boolean;
+  accountValues: DisplayedAccountValues;
+  mainTokenSymbol: string;
+  onPortfolioClick?: () => void;
+}
+
+const EstimatedAccountValueSection = ({
+  hasPortofolio,
+  accountValues,
+  mainTokenSymbol,
+  onPortfolioClick,
+}: EstimatedAccountValueSectionProps) => {
+  const [accountValueType, setAccountValueType] = useState<AccountValueType>(
+    AccountValueType.DOLLARS,
+  );
+
+  useEffect(() => {
+    initAccountValueType();
+  }, []);
+
+  const initAccountValueType = async () => {
+    setAccountValueType(
+      (await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.ACCOUNT_VALUE_TYPE,
+      )) || AccountValueType.DOLLARS,
+    );
+  };
+
+  const onClickEstimatedValue = () => {
+    const newAccountValueType =
+      accountValueType === AccountValueType.DOLLARS
+        ? AccountValueType.TOKEN
+        : accountValueType === AccountValueType.TOKEN
+        ? AccountValueType.HIDDEN
+        : AccountValueType.DOLLARS;
+    setAccountValueType(newAccountValueType);
+    LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.ACCOUNT_VALUE_TYPE,
+      newAccountValueType,
+    );
+  };
+
+  return (
+    <>
+      <div className="estimated-account-value-section">
+        <div className="label-panel">
+          <CustomTooltip
+            dataTestId="custom-tool-tip-estimated-value-section"
+            message="popup_html_estimation_info_text"
+            messageParams={[mainTokenSymbol]}
+            delayShow={500}
+            position="bottom">
+            <div className="label">
+              {I18nUtils.getMessage('popup_html_estimation')}
+            </div>
+          </CustomTooltip>
+        </div>
+        <div className="estimated-value-button-container">
+          <div
+            data-testid="estimated-account-div-value"
+            className={`value ${
+              accountValueType === AccountValueType.HIDDEN ? 'with-margin' : ''
+            }`}
+            onClick={onClickEstimatedValue}>
+            {accountValueType !== AccountValueType.HIDDEN
+              ? `${accountValues[accountValueType]}`
+              : '...'}
+          </div>
+          {hasPortofolio && (
+            <SVGIcon
+              className={`portfolio-icon `}
+              icon={SVGIcons.PORTOLIO}
+              onClick={onPortfolioClick}
+            />
+          )}
+        </div>
+      </div>
+    </>
+  );
+};
+
+export const EstimatedAccountValueSectionComponent =
+  EstimatedAccountValueSection;

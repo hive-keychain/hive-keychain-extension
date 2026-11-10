@@ -1,0 +1,85 @@
+.wallet-token-holdings {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  row-gap: 16px;
+
+  &__balance,
+  &__contract {
+    display: flex;
+    flex-direction: column;
+    row-gap: 2px;
+    min-width: 0;
+  }
+
+  &__label {
+    @include poppins400(12px);
+    color: var(--main-font-color);
+    opacity: 0.7;
+  }
+
+  &__amount {
+    @include poppins600(18px);
+    color: var(--main-font-color);
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+
+  &__usd {
+    @include poppins500(13px);
+    color: var(--main-font-color);
+    opacity: 0.7;
+  }
+
+  &__contract-row {
+    display: flex;
+    align-items: flex-start;
+    column-gap: 8px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  &__contract-address {
+    @include poppins500(13px);
+    flex: 1;
+    min-width: 0;
+    color: var(--main-font-color);
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+    user-select: text;
+  }
+
+  &__contract-actions {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    column-gap: 8px;
+    margin-top: 1px;
+  }
+
+  &__contract-action {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+    color: var(--main-font-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .svg-icon,
+    svg {
+      @include icon-size(16px);
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $red;
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+  }
+}

@@ -1,4 +1,7 @@
 import { Rpc } from '@interfaces/rpc.interface';
+import { Screen } from '@interfaces/screen.interface';
+import { setEvmAccounts } from '@popup/evm/actions/accounts.actions';
+import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import {
   retrieveAccounts,
   setAccounts,
@@ -10,16 +13,26 @@ import {
 import { setActiveRpc } from '@popup/hive/actions/active-rpc.actions';
 import { loadCurrencyPrices } from '@popup/hive/actions/currency-prices.actions';
 import { loadGlobalProperties } from '@popup/hive/actions/global-properties.actions';
-import { initHiveEngineConfigFromStorage } from '@popup/hive/actions/hive-engine-config.actions';
+import {
+  initHiveEngineConfigFromStorage,
+  setHEActiveRpc,
+} from '@popup/hive/actions/hive-engine-config.actions';
 import {
   setDisplayChangeRpcPopup,
   setSwitchToRpc,
 } from '@popup/hive/actions/rpc-switcher';
 import { KeylessKeychainComponent } from '@popup/hive/pages/add-account/keyless-keychain/keyless-keychain.component';
+import { AppRouterComponent } from '@popup/hive/pages/app-container/hive-router.component';
+import { AccountCreationMode } from '@popup/hive/utils/account-creation.utils';
 import { setMk } from '@popup/multichain/actions/mk.actions';
-import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import {
+  navigateTo,
+  navigateToWithParams,
+} from '@popup/multichain/actions/navigation.actions';
 import { SignInRouterComponent } from '@popup/multichain/pages/sign-in/sign-in-router.component';
 import { RootState } from '@popup/multichain/store';
+import { LedgerRouteUtils } from '@popup/multichain/utils/ledger-route.utils';
+import { stackHasAccountSetupPage } from '@popup/multichain/utils/account-setup-screens.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect, useStore } from 'react-redux';
@@ -29,30 +42,35 @@ import { SplashscreenComponent } from 'src/common-ui/splashscreen/splashscreen.c
 import Config from 'src/config';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { AddAccountRouterComponent } from 'src/popup/hive/pages/add-account/add-account-router/add-account-router.component';
-import { AppRouterComponent } from 'src/popup/hive/pages/app-container/app-router.component';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import ActiveAccountUtils from 'src/popup/hive/utils/active-account.utils';
+import { HiveEngineConfigUtils } from 'src/popup/hive/utils/hive-engine-config.utils';
 import RpcUtils from 'src/popup/hive/utils/rpc.utils';
-import { Screen } from 'src/reference-data/screen.enum';
-import { AsyncUtils } from 'src/utils/async.utils';
 import { ColorsUtils } from 'src/utils/colors.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import { useWorkingRPC } from 'src/utils/rpc-switcher.utils';
+import {
+  useWorkingHiveEngineRPC,
+  useWorkingRPC,
+} from 'src/utils/rpc-switcher.utils';
 
-/** Same screens as the HiveApp `useEffect` that calls `selectComponent` after adding the first account(s). */
-const stackHasAccountSetupPage = (
-  stack: { currentPage: Screen }[],
+import { I18nUtils } from 'src/utils/i18n.utils';
+
+const stackHasPaidAccountCreationPage = (
+  stack: { currentPage: Screen; params?: { mode?: AccountCreationMode } }[],
+  navParams?: { mode?: AccountCreationMode },
 ): boolean =>
-  stack.some(
-    (navigation) =>
-      navigation.currentPage === Screen.ACCOUNT_PAGE_INIT_ACCOUNT ||
-      navigation.currentPage === Screen.SIGN_IN_PAGE ||
-      navigation.currentPage === Screen.ACCOUNT_PAGE_ADD_BY_KEYS ||
-      navigation.currentPage === Screen.ACCOUNT_PAGE_ADD_BY_AUTH ||
-      navigation.currentPage === Screen.ACCOUNT_PAGE_SELECT_KEYS ||
-      navigation.currentPage === Screen.ACCOUNT_PAGE_IMPORT_KEYS ||
-      navigation.currentPage === Screen.ACCOUNT_PAGE_KEYLESS_KEYCHAIN,
-  );
+  stack.some((navigation) => {
+    if (navigation.currentPage === Screen.PENDING_ACCOUNT_CREATION_PAYMENT) {
+      return true;
+    }
+
+    const mode = navigation.params?.mode ?? navParams?.mode;
+    return (
+      mode === AccountCreationMode.PAID_BACKEND_CREATION &&
+      (navigation.currentPage === Screen.CREATE_ACCOUNT_PAGE_STEP_ONE ||
+        navigation.currentPage === Screen.CREATE_ACCOUNT_PAGE_STEP_TWO)
+    );
+  });
 
 let rpc: string | undefined = '';
 const HiveApp = ({
@@ -68,23 +86,32 @@ const HiveApp = ({
   appStatus,
   setMk,
   navigateTo,
+  navigateToWithParams,
   loadActiveAccount,
   switchToRpc,
+  switchToHiveEngineRpc,
   displayChangeRpcPopup,
   initHiveEngineConfigFromStorage,
   setAccounts,
+  setEvmAccounts,
   loadGlobalProperties,
   setActiveRpc,
+  setHEActiveRpc,
   setDisplayChangeRpcPopup,
   loadCurrencyPrices,
   hasFinishedSignup,
+  navParams,
 }: PropsFromRedux) => {
   const store = useStore<RootState>();
   const [isAppReady, setAppReady] = useState(false);
   const [initialRpc, setInitialRpc] = useState<Rpc>();
+  const [initialHiveEngineRpc, setInitialHiveEngineRpc] = useState<string>();
   const [displaySplashscreen, setDisplaySplashscreen] = useState(true);
   const [isKeylessKeychainEnabled, setIsKeylessKeychainEnabled] =
     useState<boolean>(false);
+  const previousAccountsCountRef = React.useRef<number | undefined>(
+    undefined,
+  );
 
   useEffect(() => {
     initApplication();
@@ -128,10 +155,15 @@ const HiveApp = ({
 
   useEffect(() => {
     const isOnAccountSetupFlow = stackHasAccountSetupPage(navigationStack);
+    const previousAccountsCount = previousAccountsCountRef.current;
+    const didAddFirstAccount =
+      previousAccountsCount === 0 && accounts.length > 0;
+
     if (
       isAppReady &&
-      (navigationStack.length === 0 || isOnAccountSetupFlow) &&
-      hasFinishedSignup
+      (navigationStack.length === 0 ||
+        (isOnAccountSetupFlow && didAddFirstAccount)) &&
+      (hasFinishedSignup || accounts.length > 0)
     ) {
       if (accounts.length > 0) {
         initActiveAccount(accounts);
@@ -140,23 +172,39 @@ const HiveApp = ({
         selectComponent(mk, accounts);
       }
     }
+    previousAccountsCountRef.current = accounts.length;
   }, [
     isAppReady,
     mk,
     accounts,
     hasFinishedSignup,
     appStatus.processingDecryptAccount,
+    navigationStack,
   ]);
 
   useEffect(() => {
-    if (displaySplashscreen) {
-      if (appStatus.priceLoaded && appStatus.globalPropertiesLoaded) {
-        setTimeout(() => {
-          setDisplaySplashscreen(false);
-        }, Config.loader.minDuration);
-      }
+    if (
+      !displaySplashscreen ||
+      !isAppReady ||
+      !appStatus.priceLoaded ||
+      !appStatus.globalPropertiesLoaded
+    ) {
+      return;
     }
-  }, [appStatus, displaySplashscreen]);
+
+    const timeoutId = window.setTimeout(() => {
+      setDisplaySplashscreen(false);
+    }, Config.loader.minDuration);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [
+    appStatus.globalPropertiesLoaded,
+    appStatus.priceLoaded,
+    displaySplashscreen,
+    isAppReady,
+  ]);
 
   const initActiveRpc = async (rpc: Rpc) => {
     const rpcStatusOk = await RpcUtils.checkRpcStatus(rpc.uri);
@@ -168,6 +216,15 @@ const HiveApp = ({
     }
   };
 
+  const initActiveHiveEngineRpc = async (rpc: string) => {
+    const rpcStatusOk = await HiveEngineConfigUtils.checkRpcStatus(rpc);
+    if (rpcStatusOk) {
+      setHEActiveRpc(rpc);
+    } else {
+      useWorkingHiveEngineRPC(rpc);
+    }
+  };
+
   const initApplication = async () => {
     ColorsUtils.downloadColors();
     loadCurrencyPrices();
@@ -175,19 +232,29 @@ const HiveApp = ({
 
     let accountsFromStorage: LocalAccount[] = [];
     if (storedAccounts && mk) {
-      await AsyncUtils.sleep(500);
-      accountsFromStorage = await AccountUtils.getAccountsFromLocalStorage(mk);
+      const [hiveAccountsFromStorage, evmAccountsFromStorage] =
+        await Promise.all([
+          AccountUtils.getAccountsFromLocalStorage(mk),
+          EvmWalletUtils.rebuildAccountsFromLocalStorage(mk),
+        ]);
+      accountsFromStorage = hiveAccountsFromStorage ?? [];
       setAccounts(accountsFromStorage);
+      if (evmAccountsFromStorage.length > 0) {
+        setEvmAccounts(evmAccountsFromStorage);
+      }
     }
 
-    setAppReady(true);
     await selectComponent(mk, accountsFromStorage);
+    setAppReady(true);
 
     const rpc = await RpcUtils.getCurrentRpc();
     setInitialRpc(rpc);
     await initActiveRpc(rpc);
     loadGlobalProperties();
-    initHiveEngineConfigFromStorage();
+    await initHiveEngineConfigFromStorage();
+    const hiveEngineRpc = HiveEngineConfigUtils.getApi();
+    setInitialHiveEngineRpc(hiveEngineRpc);
+    await initActiveHiveEngineRpc(hiveEngineRpc);
 
     if (accountsFromStorage.length > 0) {
       initActiveAccount(accountsFromStorage);
@@ -215,9 +282,28 @@ const HiveApp = ({
       // on a setup screen but accounts are now non-empty; go to home.
       const navStack = store.getState().navigation.stack;
       if (navStack.length === 0 || stackHasAccountSetupPage(navStack)) {
+        const ledgerRoute = LedgerRouteUtils.parseHash(window.location.hash);
+        if (ledgerRoute) {
+          LedgerRouteUtils.clearHash();
+          if (ledgerRoute.params) {
+            navigateToWithParams(ledgerRoute.screen, ledgerRoute.params, true);
+          } else {
+            navigateTo(ledgerRoute.screen, true);
+          }
+          return;
+        }
         navigateTo(Screen.HOME_PAGE, true);
       }
     } else if (mk && mk.length > 0) {
+      const navStack = store.getState().navigation.stack;
+      if (
+        stackHasPaidAccountCreationPage(
+          navStack,
+          store.getState().navigation.params,
+        )
+      ) {
+        return;
+      }
       navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, true);
     } else if (
       mk &&
@@ -235,7 +321,11 @@ const HiveApp = ({
     if (!mk || mk.length === 0) {
       return <SignInRouterComponent />;
     } else {
-      if (accounts && accounts.length === 0) {
+      if (
+        accounts &&
+        accounts.length === 0 &&
+        !stackHasPaidAccountCreationPage(navigationStack, navParams)
+      ) {
         return isKeylessKeychainEnabled ? (
           <KeylessKeychainComponent />
         ) : (
@@ -253,8 +343,9 @@ const HiveApp = ({
     displayProxySuggestion: boolean,
     displayChangeRpcPopup: boolean,
     switchToRpc: Rpc | undefined,
+    switchToHiveEngineRpc: string | undefined,
   ) => {
-    if (loading || !activeRpc) {
+    if (loading) {
       return (
         <LoadingComponent
           operations={loadingState.loadingOperations}
@@ -271,7 +362,7 @@ const HiveApp = ({
       return (
         <div className="change-rpc-popup">
           <div className="message">
-            {chrome.i18n.getMessage('popup_html_rpc_not_responding_error', [
+            {I18nUtils.getMessage('popup_html_rpc_not_responding_error', [
               initialRpc?.uri!,
               switchToRpc?.uri!,
             ])}
@@ -279,6 +370,20 @@ const HiveApp = ({
           <ButtonComponent
             label="popup_html_switch_rpc"
             onClick={tryNewRpc}></ButtonComponent>
+        </div>
+      );
+    } else if (displayChangeRpcPopup && switchToHiveEngineRpc) {
+      return (
+        <div className="change-rpc-popup">
+          <div className="message">
+            {I18nUtils.getMessage('popup_html_rpc_not_responding_error', [
+              initialHiveEngineRpc!,
+              switchToHiveEngineRpc,
+            ])}
+          </div>
+          <ButtonComponent
+            label="popup_html_switch_rpc"
+            onClick={tryNewHiveEngineRpc}></ButtonComponent>
         </div>
       );
     }
@@ -291,19 +396,38 @@ const HiveApp = ({
     }, 1000);
   };
 
+  const tryNewHiveEngineRpc = () => {
+    setDisplayChangeRpcPopup(false);
+    setTimeout(() => {
+      setHEActiveRpc(switchToHiveEngineRpc!);
+    }, 1000);
+  };
+
+  const showStartupSplash =
+    !isAppReady ||
+    displaySplashscreen ||
+    (!activeRpc && !displayChangeRpcPopup);
+
+  if (showStartupSplash) {
+    return (
+      <div className={`App ${isCurrentPageHomePage ? 'homepage' : ''}`}>
+        <SplashscreenComponent />
+      </div>
+    );
+  }
+
   return (
     <div className={`App ${isCurrentPageHomePage ? 'homepage' : ''}`}>
-      {displaySplashscreen && <SplashscreenComponent />}
-
       {renderPopup(
         loading,
         activeRpc,
         displayProxySuggestion,
         displayChangeRpcPopup,
         switchToRpc,
+        switchToHiveEngineRpc,
       )}
 
-      {isAppReady && renderMainLayoutNav()}
+      {renderMainLayoutNav()}
     </div>
   );
 };
@@ -314,6 +438,7 @@ const mapStateToProps = (state: RootState) => {
     accounts: state.hive.accounts as LocalAccount[],
     activeRpc: state.hive.activeRpc,
     switchToRpc: state.hive.rpcSwitcher.rpc,
+    switchToHiveEngineRpc: state.hive.rpcSwitcher.hiveEngineRpc,
     displayChangeRpcPopup: state.hive.rpcSwitcher.display,
     loading: state.loading.loadingOperations.length,
     loadingState: state.loading,
@@ -326,6 +451,7 @@ const mapStateToProps = (state: RootState) => {
       state.hive.activeAccount.account.proxy === '' &&
       state.hive.activeAccount.account.witnesses_voted_for === 0,
     navigationStack: state.navigation.stack,
+    navParams: state.navigation.params,
     appStatus: state.hive.appStatus,
     hasFinishedSignup: state.hasFinishedSignup,
   };
@@ -335,12 +461,15 @@ const connector = connect(mapStateToProps, {
   setMk,
   retrieveAccounts,
   navigateTo,
+  navigateToWithParams,
   refreshActiveAccount,
   setAccounts,
+  setEvmAccounts,
   loadActiveAccount,
   loadGlobalProperties,
   setSwitchToRpc,
   setActiveRpc,
+  setHEActiveRpc,
   setDisplayChangeRpcPopup,
   initHiveEngineConfigFromStorage,
   loadCurrencyPrices,

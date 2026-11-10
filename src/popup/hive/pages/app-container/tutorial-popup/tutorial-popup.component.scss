@@ -27,3 +27,24 @@
     }
   }
 }
+
+html.sidepanel-page {
+  .tutorial {
+    .popup-content {
+      height: auto;
+      max-height: min(480px, 85%);
+      width: min(350px, 90%);
+      justify-content: flex-start;
+      row-gap: 20px;
+      padding: 24px;
+    }
+
+    .svg-icon svg {
+      width: 180px;
+    }
+
+    .popup-footer {
+      margin-top: 8px;
+    }
+  }
+}

@@ -1,0 +1,236 @@
+import { Card } from '@common-ui/card/card.component';
+import { EvmRiskStaticAlert } from '@common-ui/evm/evm-risk-warning/evm-risk-alert-banner.component';
+import RotatingLogoComponent from '@common-ui/rotating-logo/rotating-logo.component';
+import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
+import {
+  EvmActiveAccount,
+  EvmErc1155Token,
+  EvmErc721Token,
+} from '@popup/evm/interfaces/active-account.interface';
+import { EvmTransactionWarningLevel } from '@popup/evm/interfaces/evm-transactions.interface';
+import { EvmWalletNftPreviewComponent } from '@popup/evm/pages/home/evm-wallet-info-section/evm-wallet-nft-gallery/evm-wallet-nft-preview/evm-wallet-nft-preview.component';
+import { EvmScreen } from '@popup/evm/reference-data/evm-screen.enum';
+import {
+  isCustomNftEmptyCardHiddenForChain,
+  setCustomNftEmptyCardHiddenForChain,
+} from '@popup/evm/utils/evm-custom-nft-empty-card.utils';
+import { EvmTokensUtils } from '@popup/evm/utils/evm-tokens.utils';
+import { navigateTo } from '@popup/multichain/actions/navigation.actions';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import FlatList from 'flatlist-react';
+import React, { useEffect, useState } from 'react';
+import { connect, ConnectedProps } from 'react-redux';
+import { SVGIcons } from 'src/common-ui/icons.enum';
+import { InputType } from 'src/common-ui/input/input-type.enum';
+import InputComponent from 'src/common-ui/input/input.component';
+
+import { HtmlUtils } from 'src/utils/html.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
+interface Props {
+  activeAccount: EvmActiveAccount;
+  onClickOnNftPreview: (
+    params: EvmErc721Token | EvmErc721Token[],
+    screen: EvmScreen,
+  ) => void;
+  chain: EvmChain;
+}
+
+const EvmWalletNftGallery = ({
+  activeAccount,
+  chain,
+  onClickOnNftPreview,
+  navigateTo,
+}: Props & PropsFromRedux) => {
+  const [displayedCollections, setDisplayedCollections] =
+    useState<(EvmErc721Token | EvmErc1155Token)[]>();
+  const [filteredCollections, setFilteredCollections] =
+    useState<(EvmErc721Token | EvmErc1155Token)[]>();
+
+  const [filterValue, setFilterValue] = useState('');
+  const isCustomChainSelected = chain.isCustom === true;
+
+  const [emptyCardState, setEmptyCardState] = useState<{
+    ready: boolean;
+    showCard: boolean;
+  }>({ ready: false, showCard: false });
+
+  useEffect(() => {
+    if (!activeAccount.nfts.loading) {
+      init();
+    }
+  }, [activeAccount.nfts]);
+
+  useEffect(() => {
+    if (filteredCollections) {
+      setDisplayedCollections(
+        filteredCollections.filter((collection) => {
+          const query = filterValue.trim().toLowerCase();
+          if (!query) {
+            return true;
+          }
+          return (
+            collection.tokenInfo.name?.toLowerCase().includes(query) ||
+            collection.tokenInfo.symbol?.toLowerCase().includes(query) ||
+            collection.tokenInfo.contractAddress.toLowerCase().includes(query)
+          );
+        }),
+      );
+    }
+  }, [filterValue, filteredCollections]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const refreshEmptyCard = async () => {
+      if (!isCustomChainSelected) {
+        if (!cancelled) {
+          setEmptyCardState({ ready: true, showCard: false });
+        }
+        return;
+      }
+
+      const [customNfts, hidden] = await Promise.all([
+        EvmTokensUtils.getCustomNfts(chain, activeAccount.wallet.address),
+        isCustomNftEmptyCardHiddenForChain(chain.chainId),
+      ]);
+
+      if (cancelled) {
+        return;
+      }
+
+      setEmptyCardState({
+        ready: true,
+        showCard: customNfts.length === 0 && !hidden,
+      });
+    };
+
+    void refreshEmptyCard();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    chain,
+    chain.chainId,
+    isCustomChainSelected,
+    activeAccount.wallet.address,
+    activeAccount.nfts.loading,
+  ]);
+
+  const init = async () => {
+    const acceptedTokens = (await EvmTokensUtils.filterTokensBasedOnSettings(
+      activeAccount.nfts.value,
+    )) as (EvmErc721Token | EvmErc1155Token)[];
+    setFilteredCollections(acceptedTokens);
+    setDisplayedCollections(acceptedTokens);
+  };
+
+  const openAddCustomTokenPanel = () => {
+    navigateTo(EvmScreen.EVM_CUSTOM_NFTS_PAGE);
+  };
+
+  const showCollectionFilter = (filteredCollections?.length ?? 0) > 0;
+
+  const handleHideEmptyCard = async () => {
+    await setCustomNftEmptyCardHiddenForChain(chain.chainId);
+    setEmptyCardState((prev) => ({ ...prev, showCard: false }));
+  };
+
+  return (
+    <div className="nft-gallery">
+      {!activeAccount.nfts.loading && (
+        <>
+          {activeAccount.nfts.lightNodeUnavailable && (
+            <EvmRiskStaticAlert
+              message="evm_light_node_assets_cache_warning"
+              level={EvmTransactionWarningLevel.LOW}
+              dataTestId="evm-nft-stale-alert"
+            />
+          )}
+          {(showCollectionFilter || isCustomChainSelected) && (
+            <div className="nft-gallery-toolbar">
+              {showCollectionFilter && (
+                <InputComponent
+                  value={filterValue}
+                  type={InputType.TEXT}
+                  onChange={setFilterValue}
+                  placeholder="evm_nft_search_collection"
+                  logo={SVGIcons.INPUT_SEARCH}
+                  dataTestId="nft-collection-search"
+                />
+              )}
+              {isCustomChainSelected && (
+                <button
+                  type="button"
+                  className="nft-gallery-settings"
+                  onClick={openAddCustomTokenPanel}>
+                  <SVGIcon icon={SVGIcons.WALLET_SETTINGS} />
+                </button>
+              )}
+            </div>
+          )}
+          {emptyCardState.ready && emptyCardState.showCard && (
+            <Card className="evm-custom-erc20-empty-card">
+              <p
+                className="evm-custom-erc20-empty-card__message"
+                dangerouslySetInnerHTML={{
+                  __html: HtmlUtils.getSafeI18nHtml(
+                    'evm_custom_nft_empty_card_message',
+                  ),
+                }}></p>
+              <button
+                type="button"
+                className="evm-custom-erc20-empty-card__hide"
+                onClick={() => void handleHideEmptyCard()}>
+                {I18nUtils.getMessage('evm_custom_erc20_empty_card_hide')}
+              </button>
+            </Card>
+          )}
+          <FlatList
+            list={displayedCollections ?? []}
+            renderItem={(
+              token: EvmErc721Token | EvmErc1155Token,
+              index: number,
+            ) => (
+              <EvmWalletNftPreviewComponent
+                token={token}
+                isLast={
+                  index === (displayedCollections?.length ?? 0) - 1
+                }
+                onClick={() =>
+                  onClickOnNftPreview(token, EvmScreen.EVM_NFT_COLLECTION_PAGE)
+                }
+                key={`${token.tokenInfo.contractAddress}`}
+              />
+            )}
+            renderWhenEmpty={() => {
+              if (emptyCardState.ready && emptyCardState.showCard) {
+                return <></>;
+              }
+              return (
+                <div className="no-nfts-found">
+                  <SVGIcon icon={SVGIcons.MESSAGE_ERROR} />
+                  <span className="text">
+                    {I18nUtils.getMessage('evm_no_nfts_found')}
+                  </span>
+                </div>
+              );
+            }}
+            renderOnScroll
+          />
+        </>
+      )}
+
+      {activeAccount.nfts.loading && (
+        <div className="rotating-logo-container">
+          <RotatingLogoComponent />
+        </div>
+      )}
+    </div>
+  );
+};
+
+const connector = connect(null, { navigateTo });
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+export const EvmWalletNftGalleryComponent = connector(EvmWalletNftGallery);

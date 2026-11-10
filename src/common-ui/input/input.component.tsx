@@ -3,19 +3,24 @@ import React, { useEffect, useState } from 'react';
 import { FieldError } from 'react-hook-form';
 import { AutocompleteBox } from 'src/common-ui/autocomplete/autocomplete-box.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
+import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { FormUtils } from 'src/utils/form.utils';
 import { InputType } from './input-type.enum';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 export interface InputProps {
+  id?: string;
   value: any;
   logo?: string | SVGIcons;
+  imageLogoUrl?: string;
+  imageLogoAlt?: string;
   logoPosition?: 'left' | 'right';
   label?: string;
   placeholder?: string;
   type: InputType;
-  step?: number;
+  step?: number | 'any';
   min?: number;
   max?: number;
   skipLabelTranslation?: boolean;
@@ -35,13 +40,28 @@ export interface InputProps {
   rightActionClicked?(): any;
   rightActionIcon?: SVGIcons;
   rightActionIconClassname?: string;
+  size?: 'small';
   autocompletePrefix?: string;
+  onBlur?(): any;
 }
 
-const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
+let inputIdCounter = 0;
+
+const InputComponent = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordDisplay, setPasswordDisplayed] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [inputId] = useState(
+    () => props.id ?? `keychain-input-${++inputIdCounter}`,
+  );
+  const hintId = `${inputId}-hint`;
+  const errorId = `${inputId}-error`;
+  const describedBy = [
+    props.hint ? hintId : undefined,
+    props.error ? errorId : undefined,
+  ]
+    .filter((id): id is string => !!id)
+    .join(' ');
 
   useEffect(() => {
     setMounted(true);
@@ -54,24 +74,34 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
     if (mounted) {
       setTimeout(() => setIsFocused(false), 200);
     }
+    if (props.onBlur) {
+      props.onBlur();
+    }
   };
   const handleOnFocus = () => {
     setIsFocused(true);
   };
 
   return (
-    <div className={`custom-input ${props.classname ?? ''}`}>
-      {props.label && (
+    <div
+      className={`custom-input ${props.classname ?? ''} ${
+        props.size ? props.size : ''
+      } ${props.disabled ? 'disabled' : ''}`}>
+      {(props.label || props.hint) && (
         <div className="label">
-          {props.skipLabelTranslation
-            ? props.label
-            : chrome.i18n.getMessage(props.label)}{' '}
-          {props.required ? '*' : ''}
+          {props.label && (
+            <label htmlFor={inputId}>
+              {props.skipLabelTranslation
+                ? props.label
+                : I18nUtils.getMessage(props.label)}{' '}
+              {props.required ? '*' : ''}
+            </label>
+          )}
           {props.hint && (
-            <div className="hint">
+            <div className="hint" id={hintId}>
               {props.skipHintTranslation
                 ? props.hint
-                : chrome.i18n.getMessage(props.hint)}
+                : I18nUtils.getMessage(props.hint)}
             </div>
           )}
         </div>
@@ -79,11 +109,21 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
       <div className={`custom-input-content ${props.error ? 'has-error' : ''}`}>
         <div
           className={`input-container ${
-            props.logo ? `has-${props.logoPosition ?? 'left'}-logo` : 'no-logo'
+            props.logo || props.imageLogoUrl
+              ? `has-${props.logoPosition ?? 'left'}-logo`
+              : 'no-logo'
           } ${props.type === InputType.PASSWORD ? 'password-type' : ''} ${
             isFocused ? 'focused' : ''
+          } ${
+            !props.disabled &&
+            ![InputType.PASSWORD, InputType.DATE].includes(props.type) &&
+            !!props.value &&
+            props.value.length > 0
+              ? 'has-value'
+              : ''
           }`}>
           <input
+            id={inputId}
             disabled={props.disabled}
             readOnly={props.readOnly}
             data-testid={props.dataTestId}
@@ -93,11 +133,13 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
                 : props.type
             }
             ref={ref}
+            aria-describedby={describedBy || undefined}
+            aria-invalid={props.error ? true : undefined}
             placeholder={`${
               props.placeholder
                 ? props.skipPlaceholderTranslation
                   ? props.placeholder
-                  : chrome.i18n.getMessage(props.placeholder)
+                  : I18nUtils.getMessage(props.placeholder)
                 : ''
             } ${props.required ? '*' : ''}`}
             value={props.value}
@@ -120,6 +162,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
               <SVGIcon
                 icon={SVGIcons.INPUT_SHOW}
                 className="input-img display-password right"
+                ariaLabel={I18nUtils.getMessage('accessibility_show_password')}
                 onClick={() => setPasswordDisplayed(true)}
               />
             )}
@@ -129,12 +172,13 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
               <SVGIcon
                 icon={SVGIcons.INPUT_HIDE}
                 className="input-img display-password right"
+                ariaLabel={I18nUtils.getMessage('accessibility_hide_password')}
                 onClick={() => setPasswordDisplayed(false)}
               />
             )}
           {!props.disabled &&
             ![InputType.PASSWORD, InputType.DATE].includes(props.type) &&
-            props.value &&
+            !!props.value &&
             props.value.length > 0 && (
               <SVGIcon
                 dataTestId="input-clear"
@@ -142,6 +186,7 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
                 className={`input-img erase right ${
                   props.logoPosition === 'right' ? 'has-right-logo' : ''
                 }`}
+                ariaLabel={I18nUtils.getMessage('accessibility_clear_input')}
                 onClick={() => props.onChange('')}
               />
             )}
@@ -153,11 +198,20 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
               prefix={props.autocompletePrefix}
             />
           )}
-          {props.logo && (
-            <SVGIcon
-              icon={props.logo as SVGIcons}
+          {props.imageLogoUrl ? (
+            <PreloadedImage
               className={`input-img ${props.logoPosition ?? 'left'}`}
+              src={props.imageLogoUrl}
+              alt={props.imageLogoAlt ?? ''}
+              placeholder="/assets/images/wallet/hive-engine.svg"
             />
+          ) : (
+            props.logo && (
+              <SVGIcon
+                icon={props.logo as SVGIcons}
+                className={`input-img ${props.logoPosition ?? 'left'}`}
+              />
+            )
           )}
         </div>
 
@@ -189,7 +243,9 @@ const InputComponent = React.forwardRef((props: InputProps, ref: any) => {
         )}
       </div>
       {props.error && (
-        <div className="error">{FormUtils.parseJoiError(props.error)}</div>
+        <div className="error" id={errorId} role="alert">
+          {FormUtils.parseJoiError(props.error)}
+        </div>
       )}
     </div>
   );

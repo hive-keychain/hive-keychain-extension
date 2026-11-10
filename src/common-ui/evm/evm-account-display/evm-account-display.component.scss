@@ -1,0 +1,126 @@
+.evm-account-display {
+  display: grid;
+  grid-template-columns: 40px 1fr 20px;
+  align-items: center;
+  width: 100%;
+  .account-info {
+    flex-direction: column;
+    margin-left: 20px;
+
+    .top-line {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      .account-name {
+        @include poppins600(14px);
+        color: var(--main-font-color);
+        .edit-account-name {
+          cursor: pointer;
+          margin-left: 6px;
+        }
+      }
+      .hide-token {
+        justify-content: flex-end;
+        cursor: pointer;
+        color: var(--main-font-color);
+      }
+      .edit-icon {
+        display: none;
+        flex-shrink: 0;
+        margin-top: -9px;
+        margin-right: 8px;
+        cursor: pointer;
+        svg {
+          height: 20px;
+          width: 20px;
+          * {
+            stroke-width: 1.27;
+          }
+        }
+      }
+    }
+    .bottom-line {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      .account-address {
+        @include poppins400(14px);
+        color: var(--main-font-color);
+        flex-direction: row;
+        display: flex;
+        column-gap: 6px;
+        align-items: center;
+        &.full-address {
+          @include poppins400(11px);
+        }
+      }
+    }
+  }
+  .action-panel {
+    display: flex;
+    flex-direction: column;
+    row-gap: 5px;
+
+    .copy-icon {
+      visibility: hidden;
+      justify-content: flex-end;
+      cursor: pointer;
+      color: var(--main-font-color);
+      svg path {
+        stroke: var(--main-font-color);
+      }
+    }
+    .hide-token {
+      visibility: visible;
+    }
+    .delete-account {
+      visibility: hidden;
+      color: $red;
+      svg path {
+        stroke: $red;
+      }
+      svg * {
+        stroke-width: 1;
+      }
+    }
+  }
+
+  &:hover {
+    .action-panel {
+      .copy-icon {
+        visibility: visible !important;
+      }
+      .delete-account {
+        visibility: visible !important;
+      }
+    }
+    .edit-icon {
+      display: block !important;
+    }
+  }
+}
+
+@media (max-width: 434px) {
+  html.sidepanel-page {
+    .evm-accounts-page {
+      .evm-account-display {
+        grid-template-columns: 36px minmax(0, 1fr) 20px;
+
+        .account-info {
+          min-width: 0;
+          margin-left: 12px;
+
+          .bottom-line {
+            min-width: 0;
+
+            .account-address.full-address {
+              @include poppins400(9px);
+              min-width: 0;
+              overflow-wrap: anywhere;
+            }
+          }
+        }
+      }
+    }
+  }
+}

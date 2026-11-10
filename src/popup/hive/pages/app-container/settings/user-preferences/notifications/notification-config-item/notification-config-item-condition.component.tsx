@@ -12,6 +12,7 @@ import {
 } from 'src/common-ui/custom-select/custom-select.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import { I18nUtils } from 'src/utils/i18n.utils';
 
 interface Props {
   configForm: NotificationConfigForm;
@@ -97,6 +98,10 @@ export const NotificationConfigItemConditionComponent = ({
             ConfigFormUpdateAction.UPDATE_DATA,
           )
         }
+        placeholder="html_popup_settings_notifications_condition_field_placeholder"
+        ariaLabel={I18nUtils.getMessage(
+          'html_popup_settings_notifications_condition_field_placeholder',
+        )}
       />
       {
         <>
@@ -119,11 +124,16 @@ export const NotificationConfigItemConditionComponent = ({
                 ConfigFormUpdateAction.UPDATE_DATA,
               )
             }
+            placeholder="html_popup_settings_notifications_condition_operand_placeholder"
+            ariaLabel={I18nUtils.getMessage(
+              'html_popup_settings_notifications_condition_operand_placeholder',
+            )}
           />
 
           <InputComponent
             type={InputType.TEXT}
             value={configFormItemCondition.value}
+            placeholder="html_popup_settings_notifications_condition_value_placeholder"
             onChange={(value) =>
               updateConfig(
                 configFormItemIndex,

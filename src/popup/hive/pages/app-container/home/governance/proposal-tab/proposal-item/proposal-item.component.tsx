@@ -29,6 +29,7 @@ import ProposalUtils from 'src/popup/hive/utils/proposal.utils';
 import ProxyUtils from 'src/popup/hive/utils/proxy.utils';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface ProposalItemProps {
   proposal: Proposal;
   onVoteUnvoteSuccessful: () => void;
@@ -199,7 +200,7 @@ const ProposalItem = ({
             <span
               data-testid={`proposal-item-span-go-to-creator-${proposal.creator}`}
               onClick={() => goToCreator(proposal.creator)}>
-              {chrome.i18n.getMessage('popup_html_proposal_by', [
+              {I18nUtils.getMessage('popup_html_proposal_by', [
                 proposal.creator,
               ])}
             </span>
@@ -249,7 +250,7 @@ const ProposalItem = ({
               <div>
                 <SVGIcon icon={SVGIcons.GOVERNANCE_PROPOSAL_DURATION} />
                 <div>
-                  {chrome.i18n.getMessage('popup_html_days_remaining', [
+                  {I18nUtils.getMessage('popup_html_days_remaining', [
                     FormatUtils.withCommas(
                       proposal.endDate
                         .diff(moment(new Date()), 'days')
@@ -263,7 +264,7 @@ const ProposalItem = ({
                 <SVGIcon icon={SVGIcons.GOVERNANCE_PROPOSAL_BUDGET} />
                 <div>
                   {FormatUtils.withCommas(proposal.dailyPay.toString())}/
-                  {chrome.i18n.getMessage('day')}
+                  {I18nUtils.getMessage('day')}
                 </div>
               </div>
             </div>
@@ -271,7 +272,7 @@ const ProposalItem = ({
           <div
             data-testid={`proposal-item-extra-info-funded-${proposal.creator}`}
             className={`funded-chip ${proposal.funded}`}>
-            {chrome.i18n.getMessage(
+            {I18nUtils.getMessage(
               `popup_html_proposal_funded_option_${proposal.funded}`,
             )}
           </div>

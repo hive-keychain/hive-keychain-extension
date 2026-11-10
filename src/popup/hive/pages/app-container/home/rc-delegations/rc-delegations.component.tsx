@@ -8,6 +8,7 @@ import {
   RCDelegationValue,
   RcDelegation,
 } from '@interfaces/rc-delegation.interface';
+import { Screen } from '@interfaces/screen.interface';
 import { ResourceItemComponent } from '@popup/hive/pages/app-container/home/resources-section/resource-item/resource-item.component';
 import {
   addToLoadingList,
@@ -22,29 +23,29 @@ import {
   navigateToWithParams,
 } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { HiveChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { Screen } from '@reference-data/screen.enum';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ConnectedProps, connect } from 'react-redux';
+import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { ConfirmationPageFieldType } from 'src/common-ui/confirmation-page/confirmation-field.interface';
-import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
-import { FormContainer } from 'src/common-ui/form-container/form-container.component';
+import { HiveConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { DelegationType } from 'src/popup/hive/pages/app-container/home/delegations/delegation-type.enum';
-import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import { RcDelegationsUtils } from 'src/popup/hive/utils/rc-delegations.utils';
 import { FormUtils } from 'src/utils/form.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface DelegationForm {
   delegator: string;
   delegatee: string;
@@ -64,7 +65,7 @@ const rules = FormUtils.createRules<DelegationForm>({
   gigaRcValue: Joi.number().required().min(0).max(Joi.ref('$maxAmount')),
 });
 
-const RCDelegations = ({
+export const RCDelegations = ({
   activeAccount,
   currencyLabels,
   properties,
@@ -194,7 +195,7 @@ const RCDelegations = ({
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.posting,
-      message: chrome.i18n.getMessage(
+      message: I18nUtils.getMessage(
         isCancel
           ? 'popup_html_cancel_rc_delegation_confirm_text'
           : 'popup_html_rc_delegation_confirm_text',
@@ -230,8 +231,8 @@ const RCDelegations = ({
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
             await FavoriteUserUtils.saveFavoriteUser(
-              form.delegatee,
               activeAccount,
+              form.delegatee,
             );
             if (success.isUsingMultisig) {
               setSuccessMessage('multisig_transaction_sent_to_signers');
@@ -257,7 +258,7 @@ const RCDelegations = ({
           );
         }
       },
-    } as ConfirmationPageParams);
+    } as HiveConfirmationPageParams);
   };
 
   const loadAutocompleteTransferUsernames = async () => {
@@ -314,7 +315,7 @@ const RCDelegations = ({
       {available?.gigaRcValue && (
         <div className="available-panel">
           <div className="label">
-            {chrome.i18n.getMessage('popup_html_available')}
+            {I18nUtils.getMessage('popup_html_available')}
           </div>
           <div className="value">
             {FormatUtils.formatCurrencyValue(available?.gigaRcValue)} G RC
@@ -324,7 +325,7 @@ const RCDelegations = ({
 
       <FormContainer onSubmit={handleSubmit(handleButtonClick)}>
         <div className="text">
-          {chrome.i18n.getMessage('popup_html_rc_delegations_text')}
+          {I18nUtils.getMessage('popup_html_rc_delegations_text')}
         </div>
         <Separator type="horizontal" />
         <div className="form-fields">
@@ -370,20 +371,30 @@ const RCDelegations = ({
           </div>
 
           <div className="preset-button-panels">
-            <div className="preset-button" onClick={() => setToPresetValue(5)}>
+            <button
+              type="button"
+              className="preset-button"
+              onClick={() => setToPresetValue(5)}>
               5 {currencyLabels.hp}
-            </div>
-            <div className="preset-button" onClick={() => setToPresetValue(10)}>
+            </button>
+            <button
+              type="button"
+              className="preset-button"
+              onClick={() => setToPresetValue(10)}>
               10 {currencyLabels.hp}
-            </div>
-            <div className="preset-button" onClick={() => setToPresetValue(50)}>
+            </button>
+            <button
+              type="button"
+              className="preset-button"
+              onClick={() => setToPresetValue(50)}>
               50 {currencyLabels.hp}
-            </div>
-            <div
+            </button>
+            <button
+              type="button"
               className="preset-button"
               onClick={() => setToPresetValue(100)}>
               100 {currencyLabels.hp}
-            </div>
+            </button>
           </div>
         </div>
         <OperationButtonComponent
@@ -400,9 +411,7 @@ const RCDelegations = ({
 const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.hive.activeAccount,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(
-      state.hive.activeRpc?.testnet!,
-    ),
+    currencyLabels: (state.chain as HiveChain).mainTokens,
     properties: state.hive.globalProperties,
     formParams:
       state.navigation.stack[0].params?.formParams ||

@@ -1,0 +1,285 @@
+import {
+  decrypt,
+  getEncryptionPublicKey,
+  personalSign,
+  recoverPersonalSignature,
+  signTypedData,
+  SignTypedDataVersion,
+} from '@metamask/eth-sig-util';
+import { EvmAccount } from '@popup/evm/interfaces/wallet.interface';
+import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmChainUtils } from '@popup/evm/utils/evm-chain.utils';
+import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
+import { Chain, EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { BlockTag, ethers } from 'ethers';
+import { EvmEncryptedMessageUtils } from 'src/utils/evm/evm-encrypted-message.utils';
+import Logger from 'src/utils/logger.utils';
+
+const instanciateProvider = async (chain?: EvmChain) => {
+  if (!chain) chain = (await EvmChainUtils.getLastEvmChain()) as EvmChain;
+  const provider = await EthersUtils.getProvider(chain);
+  return provider;
+};
+
+const getEthProvider = async () => {
+  const defaultChains = await ChainUtils.getDefaultChains();
+  const ethChain = defaultChains.find(
+    (chain: Chain) => chain.chainId === '0x1',
+  );
+
+  const provider = new ethers.JsonRpcProvider(
+    ethChain!.rpcs[0].url,
+    undefined,
+    {
+      staticNetwork: ethers.Network.from(Number(ethChain!.chainId)),
+    },
+  );
+  return provider;
+};
+
+const getBlock = async (blockTag: BlockTag, hydrated: boolean) => {
+  const provider = await instanciateProvider();
+  return provider.getBlock(blockTag, hydrated);
+};
+
+const getBlockNumber = async () => {
+  const provider = await instanciateProvider();
+  return provider.getBlockNumber();
+};
+
+const estimateGasFee = async () => {
+  const activeChain = await EvmChainUtils.getLastEvmChain();
+  return 2;
+  //   return await GasFeeUtils.estimate(activeChain);
+};
+
+const getGasPrice = async () => {
+  let res: any;
+  try {
+    res = await call('eth_gasPrice', []);
+  } catch (err) {
+    res = 0;
+  }
+
+  return parseInt(res, 16);
+};
+
+const getMaxPriorityFeePerGas = async () => {
+  let res: any;
+  try {
+    res = await call('eth_maxPriorityFeePerGas', []);
+  } catch (err) {
+    res = 0;
+  }
+
+  return parseInt(res, 16);
+};
+
+const getBaseFee = async () => {
+  let res: any;
+  try {
+    res = await call('eth_baseFee', []);
+  } catch (err) {
+    res = 0;
+  }
+
+  return Number(res);
+};
+
+const getBalance = async (walletAddress: string, blockTag: BlockTag) => {
+  const provider = await instanciateProvider();
+  const balance = await provider.getBalance(walletAddress, blockTag);
+  return `0x${Number(balance).toString(16)}`;
+};
+
+const getTransactionByBlockAndIndex = async (
+  blockTag: BlockTag,
+  index: number,
+) => {
+  const block = await getBlock(blockTag, true);
+  const transaction = await block?.getTransaction(Number(index));
+  return transaction;
+};
+const getTransactionCountByBlock = async (
+  blockTag: BlockTag,
+  hydrated: boolean,
+) => {
+  const block = await getBlock(blockTag, hydrated);
+  return `0x${Number(block?.transactions.length).toString(16)}`;
+};
+
+const getCode = async (address: string, blockTag: BlockTag) => {
+  const provider = await instanciateProvider();
+  return provider.getCode(address);
+  // return provider.getCode(address, blockTag);
+};
+
+const getTransactionByHash = async (transactionHash: string) => {
+  const provider = await instanciateProvider();
+  return provider.getTransactionResult(transactionHash);
+};
+
+const getTransactionCountForAddress = async (
+  walletAddress: string,
+  blockTag?: BlockTag,
+) => {
+  const provider = await instanciateProvider();
+  const count = await provider.getTransactionCount(walletAddress, blockTag);
+
+  return Number(count).toString(16);
+};
+
+const getTransactionReceipt = async (transactionHash: string) => {
+  const provider = await instanciateProvider();
+  return provider.getTransactionReceipt(transactionHash);
+};
+
+const call = async (method: string, params: any[]) => {
+  const provider = await instanciateProvider();
+  const response = await provider.send(method, params);
+  return response;
+};
+
+const signMessage = async (privateKey: string, message: string) => {
+  return personalSign({
+    privateKey: Buffer.from(privateKey.substring(2), 'hex'),
+    data: message,
+  });
+};
+
+const signData = async (
+  privateKey: string,
+  message: any,
+  version: SignTypedDataVersion,
+) => {
+  try {
+    return signTypedData({
+      privateKey: Buffer.from(privateKey.substring(2), 'hex'),
+      data: JSON.parse(message),
+      version,
+    });
+  } catch (err) {
+    Logger.error('Error in signData', err);
+    return null;
+  }
+};
+
+const personalRecover = async (digest: string, signature: string) => {
+  return recoverPersonalSignature({
+    data: digest,
+    signature: signature,
+  });
+};
+
+const getEncryptionKey = async (account: EvmAccount) => {
+  if (EvmSignerUtils.isLedgerWallet(account.wallet)) {
+    throw new Error('Ledger wallet does not expose a private key');
+  }
+
+  return getEncryptionPublicKey(account.wallet.privateKey.substring(2)!);
+};
+
+const decryptMessage = (account: EvmAccount, message: string) => {
+  if (EvmSignerUtils.isLedgerWallet(account.wallet)) {
+    throw new Error('Ledger wallet does not expose a private key');
+  }
+
+  const encryptedData = EvmEncryptedMessageUtils.parseEncryptedMessage(message);
+
+  try {
+    return decrypt({
+      encryptedData: encryptedData,
+      privateKey: account.wallet.signingKey.privateKey.substring(2),
+    });
+  } catch (err) {
+    Logger.error('Error in decryptMessage', err);
+    throw new Error('Unable to decrypt message');
+  }
+};
+
+const getNonce = async (
+  fromAddress: string,
+  chain: EvmChain,
+  blocktag: string = 'pending',
+) => {
+  const provider = await instanciateProvider(chain);
+  const nonce = await provider.getTransactionCount(fromAddress, blocktag);
+
+  return nonce;
+};
+
+const getEnsResolver = async (ensAddress: string) => {
+  const ethProvider = await getEthProvider();
+  return ethProvider.getResolver(ensAddress);
+};
+
+const resolveEns = async (ensAddress: string) => {
+  const ensResolver = await getEnsResolver(ensAddress);
+  return ensResolver ? ensResolver.getAddress() : '';
+};
+
+const getEnsForAddress = async (address: string) => {
+  try {
+    const ethProvider = await getEthProvider();
+    return await ethProvider.lookupAddress(address);
+  } catch (err) {
+    return null;
+  }
+};
+
+const getDataForEns = async (ensAddress: string) => {
+  try {
+    const ensResolver = await getEnsResolver(ensAddress);
+    if (ensResolver) {
+      const [address, avatar] = await Promise.all([
+        ensResolver.getAddress(),
+        ensResolver.getAvatar(),
+      ]);
+
+      return {
+        address,
+        avatar,
+      };
+    }
+  } catch (err) {
+    Logger.warn(`Cannot resolve address ${ensAddress}`);
+  }
+  return null;
+};
+
+const getWalletCapabilities = async () => {
+  const chain = await EvmChainUtils.getLastEvmChain();
+  return {
+    [chain.chainId]: {},
+  };
+};
+
+export const EvmRequestsUtils = {
+  getBalance,
+  getBlockNumber,
+  getBlock,
+  estimateGasFee,
+  getTransactionByBlockAndIndex,
+  getTransactionCountByBlock,
+  getCode,
+  getTransactionByHash,
+  getTransactionCountForAddress,
+  getTransactionReceipt,
+  call,
+  signMessage,
+  signData,
+  personalRecover,
+  getEncryptionKey,
+  decryptMessage,
+  getGasPrice,
+  getNonce,
+  resolveEns,
+  getEnsForAddress,
+  getEnsResolver,
+  getDataForEns,
+  getMaxPriorityFeePerGas,
+  getBaseFee,
+  instanciateProvider,
+  getWalletCapabilities,
+};

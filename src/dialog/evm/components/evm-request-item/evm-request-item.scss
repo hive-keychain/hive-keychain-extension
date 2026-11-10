@@ -1,0 +1,350 @@
+.field-container {
+  display: flex;
+  flex-direction: column;
+  row-gap: 4px;
+
+  .field-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    column-gap: 8px;
+    .field {
+      flex: 1;
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      column-gap: 16px;
+      user-select: auto;
+      pre {
+        user-select: all;
+      }
+      .label {
+        @include poppins500(14px);
+        display: flex;
+        align-items: center;
+        column-gap: 6px;
+        text-transform: capitalize;
+      }
+      .label,
+      .title,
+      .value.value--leading-warning-icon {
+        .warning-icon {
+          height: 16px;
+          width: 16px;
+          flex-shrink: 0;
+          svg {
+            height: 16px;
+            width: 16px;
+          }
+          &.high {
+            --warning-color: #{$red};
+          }
+          &.medium {
+            --warning-color: #{$orange};
+          }
+          &.low {
+            --warning-color: #{$yellow};
+
+            svg path {
+              stroke: var(--warning-color);
+            }
+          }
+        }
+      }
+      .value {
+        @include poppins400(14px);
+        overflow-wrap: anywhere;
+        max-width: 70%;
+        text-align: right;
+        user-select: text;
+
+        &.value--collapsible {
+          max-width: 100%;
+          flex: 1;
+          min-width: 0;
+          text-align: left;
+
+          .long-text-container {
+            width: 100%;
+          }
+
+          .header.header--value-only {
+            justify-content: flex-end;
+          }
+
+          .expandable-panel-content {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+              'Liberation Mono', 'Courier New', monospace;
+            font-size: 12px;
+          }
+        }
+        ul {
+          margin: 0;
+        }
+        &.xs-font {
+          font-size: 11px;
+        }
+
+        &.value--leading-warning-icon {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          column-gap: 8px;
+          max-width: 100%;
+          flex: 1;
+          min-width: 0;
+          text-align: left;
+
+          .value__body {
+            flex: 1;
+            min-width: 0;
+          }
+        }
+
+        .value-content {
+          display: flex;
+          align-items: center;
+          column-gap: 8px;
+
+          img,
+          .chain-logo {
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+          }
+          .chain-logo.chain-logo-initials {
+            @include poppins600(10px);
+          }
+          .shimmer {
+            @include icon-size(24px);
+            border-radius: 50%;
+          }
+          .chain-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            .chain-name {
+            }
+            .chain-id {
+              opacity: 0.8;
+              font-style: italic;
+              align-self: start;
+              font-size: 12px;
+            }
+          }
+          &.address-content {
+            cursor: url('assets/images/global/copy-icon.png'), copy;
+          }
+        }
+        // .value-content-vertical {
+        //   display: flex;
+        //   flex-direction: column;
+        //   padding: 4px;
+        //   border: 1px solid var(--card-border);
+        //   border-radius: 4px;
+        //   .label {
+        //     font-style: italic;
+        //     color: $light-grey;
+        //   }
+
+        // }
+      }
+
+      &.string-centered {
+        justify-content: center;
+        .value {
+          font-weight: 600;
+        }
+      }
+
+      &.html-element {
+        display: flex;
+        flex-direction: column;
+        .label {
+          text-align: center;
+        }
+        .value {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+
+      &.tuple {
+        align-items: stretch;
+        flex-direction: column;
+
+        > .long-text-container {
+          width: 100%;
+
+          > .header {
+            @include poppins500(14px);
+            width: 100%;
+          }
+
+          > .expandable-panel {
+            padding-left: 8px;
+            padding-right: 8px;
+          }
+        }
+
+        .expandable-panel-content {
+          justify-content: flex-start !important;
+          align-items: stretch !important;
+          width: 100%;
+        }
+
+        .decoded-tuple-rows {
+          display: flex;
+          flex-direction: column;
+          row-gap: 10px;
+          width: 100%;
+        }
+
+        .decoded-tuple-row {
+          display: grid;
+          grid-template-columns: minmax(120px, 34%) minmax(0, 1fr);
+          column-gap: 12px;
+          align-items: start;
+          width: 100%;
+
+          &.decoded-tuple-row--collapsible {
+            display: block;
+            padding-left: 0;
+            padding-right: 8px;
+
+            .long-text-container {
+              width: 100%;
+            }
+
+            > .long-text-container > .header {
+              @include poppins500(13px);
+              width: 100%;
+            }
+
+            > .long-text-container > .expandable-panel {
+              padding-left: 0;
+              padding-right: 0;
+              padding-top: 8px;
+
+              > .expandable-panel-content {
+                display: block;
+              }
+            }
+          }
+        }
+
+        .decoded-tuple-row__label {
+          @include poppins500(13px);
+          color: var(--main-font-color);
+          opacity: 0.9;
+          overflow-wrap: anywhere;
+        }
+
+        .decoded-tuple-row__value {
+          display: flex;
+          justify-content: flex-end;
+          align-items: flex-start;
+          min-width: 0;
+          overflow-wrap: anywhere;
+          text-align: right;
+          @include poppins400(13px);
+
+          .value-content-horizontal,
+          .long-text-container {
+            max-width: 100%;
+            justify-content: flex-end;
+          }
+        }
+
+        .decoded-tuple-array {
+          display: flex;
+          flex-direction: column;
+          row-gap: 14px;
+          width: 100%;
+        }
+
+        .decoded-tuple-array__item {
+          padding-bottom: 10px;
+          border-bottom: 1px solid var(--card-border, rgba(255, 255, 255, 0.08));
+
+          &:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+          }
+        }
+
+        .decoded-tuple-array__heading {
+          @include poppins600(12px);
+          margin-bottom: 6px;
+          opacity: 0.85;
+        }
+
+        .decoded-tuple--top .long-text-container {
+          width: 100%;
+        }
+
+        .decoded-tuple--top {
+          width: 100%;
+        }
+      }
+
+      .long-text-container {
+        @include expandable-panel();
+
+        .header[role='button'] {
+          &:focus {
+            outline: none;
+          }
+
+          &:focus-visible {
+            outline: 2px solid $red;
+            outline-offset: 2px;
+            border-radius: 4px;
+          }
+        }
+
+        .expandable-panel-content {
+          word-wrap: break-word;
+          word-break: break-word;
+          font-size: 13px;
+        }
+        .title {
+          display: flex;
+          align-items: center;
+          column-gap: 6px;
+          font-weight: 500;
+        }
+      }
+
+      .list {
+        display: flex;
+        flex-direction: column;
+        row-gap: 4px;
+      }
+
+      &.image {
+        .value {
+          width: 100%;
+          max-width: unset;
+          display: flex;
+          justify-content: center;
+          img {
+            width: 100%;
+            max-width: 300px;
+            height: 260px;
+            object-fit: contain;
+          }
+        }
+      }
+
+      &.warning-only {
+        .value {
+          max-width: unset;
+          @include poppins400(12px);
+          text-align: left;
+        }
+      }
+    }
+  }
+}

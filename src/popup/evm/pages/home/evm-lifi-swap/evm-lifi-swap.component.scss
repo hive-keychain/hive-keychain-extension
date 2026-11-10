@@ -1,0 +1,150 @@
+.evm-lifi-swap-page {
+  @include pageLayoutRowGap;
+  row-gap: 4px;
+  overflow: hidden;
+  flex: 1;
+  flex-flow: column wrap;
+
+  > .rotating-logo-wrapper,
+  > .service-unavailable-page,
+  > .maintenance-mode {
+    min-height: 0;
+  }
+
+  .maintenance-mode {
+    @include no-data-panel();
+  }
+
+  .form-container {
+    align-items: center;
+    justify-content: center;
+  }
+
+  .top-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    .swap-history-button {
+      cursor: pointer;
+      margin-right: 16px;
+    }
+
+    .swap-history-button:hover {
+      --swap-history-button-icon-color: white;
+      --swap-history-button-border-color: #{$red};
+      --swap-history-button-background: #{$red};
+    }
+  }
+
+  .evm-lifi-swap-page-content {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+    flex: 1;
+    width: 100%;
+
+    .countdown {
+      font-size: 12px;
+      font-style: italic;
+      color: $red;
+      text-align: right;
+      margin-right: 18px;
+    }
+
+    .swap-label {
+      @include input-label;
+    }
+
+    .swap-icon {
+      align-self: center;
+      margin-top: 16px;
+    }
+
+    .evm-lifi-swap-chain-token-selectors {
+      display: flex;
+      flex-direction: column;
+      column-gap: 8px;
+      .custom-select-container {
+        flex: 1;
+      }
+
+      .selectors-panel {
+        display: flex;
+        column-gap: 8px;
+      }
+      .available-balance {
+        font-size: 12px;
+        font-style: italic;
+        color: var(--main-font-color);
+        opacity: 0.7;
+        text-align: right;
+        margin-right: 18px;
+        cursor: pointer;
+      }
+    }
+    .evm-lifi-swap-page-content-buttons {
+      display: flex;
+      flex-direction: row;
+      column-gap: 8px;
+    }
+
+    .link-to-other-receiver {
+      @include link;
+      align-self: center;
+      margin-top: 16px;
+    }
+
+    .tool-details-card {
+      .tool-details-title {
+        display: flex;
+        flex-direction: row;
+        column-gap: 8px;
+        align-items: center;
+
+        .tool-logo {
+          @include user-avatar-small;
+        }
+        .tool-name {
+          @include poppins500(14px);
+          color: var(--main-font-color);
+        }
+        .tool-key {
+          @include poppins400(12px);
+          color: var(--main-font-color);
+          opacity: 0.7;
+        }
+      }
+    }
+
+    .advanced-parameters {
+      margin-top: 5px;
+      color: var(--main-font-color);
+      @include poppins500(18);
+      .title-panel {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        user-select: none;
+        column-gap: 8px;
+        align-items: center;
+
+        .advanced-parameters-toggle {
+          @include open-close-rotate();
+        }
+      }
+      .advanced-parameters-container {
+        padding-top: 8px;
+        padding-bottom: 8px;
+        display: flex;
+        flex-direction: column;
+        row-gap: 8px;
+      }
+    }
+    .current-allowance {
+      @include poppins400(12px);
+      color: var(--main-font-color);
+      opacity: 0.7;
+    }
+  }
+}

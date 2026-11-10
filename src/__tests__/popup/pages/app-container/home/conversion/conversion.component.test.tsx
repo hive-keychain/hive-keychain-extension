@@ -1,6 +1,6 @@
 import { ConversionUtils } from '@hiveapp/utils/conversion.utils';
 import { TransactionResult } from '@interfaces/hive-tx.interface';
-import { Screen } from '@reference-data/screen.enum';
+import { Screen } from '@interfaces/screen.interface';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -12,9 +12,11 @@ import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/react-testing-library-render/react-testing-library-render-functions';
 import { Icons } from 'src/common-ui/icons.enum';
+import { KeychainError } from 'src/keychain-error';
 import { HiveAppComponent } from 'src/popup/hive/hive-app.component';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('conversion.component tests:\n', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -45,7 +47,7 @@ describe('conversion.component tests:\n', () => {
       ).toBeInTheDocument();
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_convert_hive_intro'),
+          I18nUtils.getMessage('popup_html_convert_hive_intro'),
         ),
       ).toBeInTheDocument();
     });
@@ -77,7 +79,7 @@ describe('conversion.component tests:\n', () => {
       ).toBeInTheDocument();
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_confirm_hive_to_hbd_conversion'),
+          I18nUtils.getMessage('popup_html_confirm_hive_to_hbd_conversion'),
         ),
       ).toBeInTheDocument();
       await act(async () => {
@@ -87,7 +89,7 @@ describe('conversion.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_hive_to_hbd_conversion_success'),
+          I18nUtils.getMessage('popup_html_hive_to_hbd_conversion_success'),
         ),
       ).toBeInTheDocument();
     });
@@ -111,7 +113,7 @@ describe('conversion.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_hive_to_hbd_conversion_fail'),
+          I18nUtils.getMessage('popup_html_hive_to_hbd_conversion_fail'),
         ),
       ).toBeInTheDocument();
     });
@@ -137,6 +139,34 @@ describe('conversion.component tests:\n', () => {
       });
       expect(await screen.findByText('Error HIVE to HBD')).toBeInTheDocument();
     });
+
+    it('Must show the chain reason when HIVE to HBD conversion is rejected', async () => {
+      const chainError = 'Account does not have sufficient funds';
+      ConversionUtils.sendConvert = jest
+        .fn()
+        .mockRejectedValue(
+          new KeychainError('error_while_broadcasting', [chainError]),
+        );
+      await act(async () => {
+        await userEvent.clear(screen.getByTestId(dataTestIdInput.amount));
+        await userEvent.type(
+          screen.getByTestId(dataTestIdInput.amount),
+          parseFloat(
+            accounts.extended.balance.toString().split(' ')[0],
+          ).toString(),
+        );
+        await userEvent.click(
+          await screen.findByTestId(dataTestIdButton.submit),
+        );
+        await userEvent.click(
+          await screen.findByTestId(dataTestIdButton.dialog.confirm),
+        );
+      });
+      expect(
+        await screen.findByText(new RegExp(chainError)),
+      ).toBeInTheDocument();
+      expect(screen.queryByText(/keychainParam1/)).not.toBeInTheDocument();
+    });
   });
 
   describe('HBD to HIVE:\n', () => {
@@ -155,7 +185,7 @@ describe('conversion.component tests:\n', () => {
       ).toBeInTheDocument();
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_convert_hbd_intro'),
+          I18nUtils.getMessage('popup_html_convert_hbd_intro'),
         ),
       ).toBeInTheDocument();
     });
@@ -187,7 +217,7 @@ describe('conversion.component tests:\n', () => {
       ).toBeInTheDocument();
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_confirm_hbd_to_hive_conversion'),
+          I18nUtils.getMessage('popup_html_confirm_hbd_to_hive_conversion'),
         ),
       ).toBeInTheDocument();
       await act(async () => {
@@ -197,7 +227,7 @@ describe('conversion.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_hbd_to_hive_conversion_success'),
+          I18nUtils.getMessage('popup_html_hbd_to_hive_conversion_success'),
         ),
       ).toBeInTheDocument();
     });
@@ -221,7 +251,7 @@ describe('conversion.component tests:\n', () => {
       });
       expect(
         await screen.findByText(
-          chrome.i18n.getMessage('popup_html_hbd_to_hive_conversion_fail'),
+          I18nUtils.getMessage('popup_html_hbd_to_hive_conversion_fail'),
         ),
       ).toBeInTheDocument();
     });

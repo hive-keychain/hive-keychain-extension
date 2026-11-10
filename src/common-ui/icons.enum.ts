@@ -1,6 +1,13 @@
 export enum SVGIcons {
-  BOTTOM_BAR_BUY = 'bottom-bar/buy',
+  BLOCKCHAIN_AVALANCHE = 'blockchains/avalanche',
+  BLOCKCHAIN_BNB = 'blockchains/bnb',
+  BLOCKCHAIN_ETHEREUM = 'blockchains/ethereum',
+  BLOCKCHAIN_POLYGON = 'blockchains/polygon',
+  BLOCKCHAIN_HIVE = 'blockchains/hive',
+
+  BOTTOM_BAR_BUY = 'portfolio/buy',
   BOTTOM_BAR_ECOSYSTEM = 'bottom-bar/ecosystem',
+  BOTTOM_BAR_RECEIVE = 'bottom-bar/receive',
   BOTTOM_BAR_SEND = 'bottom-bar/send',
   BOTTOM_BAR_SWAPS = 'bottom-bar/swaps',
 
@@ -14,6 +21,36 @@ export enum SVGIcons {
 
   CHECKBOX_CHECKED = 'checkbox/checked',
 
+  EVM_ACCOUNT_ADD = 'evm-account/add-circle',
+  EVM_ACCOUNT_COPY = 'evm-account/copy-circle',
+  EVM_ACCOUNT_DELETE = 'evm-account/delete-circle',
+  EVM_ACCOUNT_EDIT = 'evm-account/edit-circle',
+  EVM_ACCOUNT_IMPORT = 'evm-account/import-circle',
+  EVM_ACCOUNT_KEY = 'evm-account/key-circle',
+  EVM_ACCOUNT_LEDGER = 'evm-account/ledger-circle',
+
+  EVM_CHAIN_TESTNET = 'evm-chains/testnet',
+
+  EVM_GAS_FEE_DETAILS = 'evm-gas-fee/gas-fee-details',
+  EVM_GAS_FEE_LOW = 'evm-gas-fee/gas-fee-low',
+  EVM_GAS_FEE_MEDIUM = 'evm-gas-fee/gas-fee-medium',
+  EVM_GAS_FEE_HIGH = 'evm-gas-fee/gas-fee-high',
+  EVM_GAS_FEE_CUSTOM = 'evm-gas-fee/gas-fee-custom',
+  EVM_GAS_FEE_SUGGESTED = 'evm-gas-fee/gas-fee-suggested',
+
+  EVM_SMART_CONTRACT = 'evm-history/smart-contract',
+  EVM_SMART_CONTRACT_CREATION = 'evm-history/smart-contract-creation',
+  EVM_BASE_TRANSACTION = 'evm-history/base-transaction',
+
+  EVM_TRANSACTION_STATUS_PROCESSING = 'evm-tx-status/processing',
+  EVM_TRANSACTION_STATUS_FINISHED = 'evm-tx-status/finished',
+  EVM_TRANSACTION_STATUS_CANCELED = 'evm-tx-status/canceled',
+
+  EVM_SETUP_IMAGE = 'evm-setup/coin-img',
+  EVM_SETUP_DISPLAY_MNEMONIC = 'evm-setup/display-mnemonic',
+  EVM_SETUP_COPY_MNEMONIC = 'evm-setup/copy-mnemonic',
+  EVM_SETUP_HIDE_MNEMONIC = 'evm-setup/hide-mnemonic',
+
   FAVORITE_ACCOUNTS_EDIT = 'favorite-accounts/edit',
   FAVORITE_ACCOUNTS_DELETE = 'favorite-accounts/delete',
   FAVORITE_ACCOUNTS_CANCEL = 'favorite-accounts/cancel',
@@ -21,10 +58,17 @@ export enum SVGIcons {
 
   GLOBAL_ARROW = 'global/arrow',
   GLOBAL_ARROW_RIGHT = 'global/arrow-right',
+  GLOBAL_EXTERNAL_LINK = 'global/external-link',
   GLOBAL_DELETE = 'global/delete',
   GLOBAL_ERROR = 'global/error',
   GLOBAL_ADD_CIRCLE = 'global/add-circle',
   GLOBAL_EXPAND_COLLAPSE = 'global/expand-collapse',
+  GLOBAL_WARNING = 'global/warning',
+  GLOBAL_INFO = 'global/info',
+  GLOBAL_CHECK = 'global/check',
+  GLOBAL_TRIANGLE_ARROW = 'global/triangle-arrow',
+  GLOBAL_EDIT = 'global/edit',
+  GLOBAL_MENU_DOTS = 'global/menu-dots',
 
   GOVERNANCE_MY_WITNESS_DEACTIVATED = 'governance/my-witness/deactivated',
   GOVERNANCE_WITNESS_LINK = 'governance/witness-link',
@@ -38,6 +82,7 @@ export enum SVGIcons {
   HIVE_ENGINE = 'wallet/hive-engine',
   WALLET_SETTINGS = 'wallet/settings',
   WALLET_SEARCH = 'wallet/search',
+  WALLET_ADD = 'wallet/add',
 
   INPUT_SHOW = 'input/show',
   INPUT_HIDE = 'input/hide',
@@ -53,22 +98,34 @@ export enum SVGIcons {
   KEYCHAIN_LOGO_ROUND_SMALL = 'keychain-round-logo-small',
   KEYCHAIN_FULL_LOGO = 'keychain-full-logo',
 
-  MENU_BUTTON = 'top-bar/menu-button',
+  MENU_BUTTON = 'top-bar/menu-button2',
   MENU_ABOUT = 'menu/about',
 
   MENU_THEME_DARK = 'menu/theme/dark-theme',
   MENU_THEME_LIGHT = 'menu/theme/light-theme',
 
+  THEME_TOGGLE_SUN = 'theme-toggle/sun',
+  THEME_TOGGLE_MOON = 'theme-toggle/moon',
+
+  DISPLAY_MODE_POPUP = 'display-mode/popup',
+
+  SIDE_PANEL_DETACH = 'side-panel/detach',
+
   MENU_ACCOUNTS = 'menu/accounts',
   MENU_ACCOUNTS_ADD_ACCOUNT = 'menu/accounts/add-account',
   MENU_ACCOUNTS_CREATE_ACCOUNT = 'menu/accounts/create-account',
   MENU_ACCOUNTS_EXPORT = 'menu/accounts/export',
+  MENU_ACCOUNTS_IMPORT = 'menu/accounts/import',
+  MENU_ACCOUNTS_IMPORT_KEY = 'menu/accounts/import-key',
+  MENU_ACCOUNTS_KEYLESS_KEYCHAIN = 'menu/accounts/keyless-keychain',
+  MENU_ACCOUNTS_ADD_BY_AUTHORIZED_ACCOUNT = 'menu/accounts/add-account-by-authority',
   MENU_EXPORT_ACCOUNTS_QR = 'menu/accounts/qr_code',
   MENU_ACCOUNTS_MANAGE_ACCOUNTS = 'menu/accounts/manage-accounts',
   MENU_ACCOUNTS_MANAGE_AUTHORITIES = 'menu/accounts/manage-authorities',
 
+  MENU_CONTACTS = 'menu/contacts',
+
   MENU_ADVANCED_SETTINGS = 'menu/advanced-settings',
-  MENU_ADVANCED_SETTINGS_ANALYTICS = 'menu/advanced-settings/analytics',
   MENU_ADVANCED_SETTINGS_AUTO_LOCK = 'menu/advanced-settings/auto-lock',
   MENU_ADVANCED_SETTINGS_CHANGE_PASSWORD = 'menu/advanced-settings/change-password',
   MENU_ADVANCED_SETTINGS_CLEAR_ALL = 'menu/advanced-settings/clear-all',
@@ -79,10 +136,15 @@ export enum SVGIcons {
   MENU_ADVANCED_SETTINGS_SHORTCUTS = 'menu/advanced-settings/shortcuts',
   MENU_ADVANCED_SETTINGS_IMPORT_SETTINGS = 'menu/advanced-settings/import-settings',
   MENU_ADVANCED_SETTINGS_EXPORT_SETTINGS = 'menu/advanced-settings/export-settings',
+  MENU_ADVANCED_SETTINGS_SECURITY = 'menu/advanced-settings/security',
+  MENU_ADVANCED_SETTINGS_PROVIDER_COMPATIBILITY = 'menu/advanced-settings/provider-compatibility',
 
   MENU_TOKENS = 'menu/tokens',
 
   MENU_GOVERNANCE = 'menu/governance',
+  MENU_HIVE_SETTINGS = 'menu/hive-settings',
+  MENU_EVM_SETTINGS = 'menu/evm-settings',
+  MENU_CHAIN_SETTINGS = 'menu/chain-settings',
   MENU_LOGOUT = 'menu/logout',
   MENU_PLUGINS = 'menu/plugins',
   MENU_HELP = 'menu/help',
@@ -102,7 +164,6 @@ export enum SVGIcons {
   MENU_BOTTOM_BAR_DISCORD = 'menu/bottom-bar/discord',
   MENU_BOTTOM_BAR_HIVE = 'menu/bottom-bar/hive',
   MENU_BOTTOM_BAR_TWITTER = 'menu/bottom-bar/twitter',
-  MENU_BOTTOM_BAR_MEDIUM = 'menu/bottom-bar/medium',
 
   MENU_RPC_ADD_BUTTON = 'menu/rpc/add-button',
   MENU_RPC_CLOSE_BUTTON = 'menu/rpc/close-button',
@@ -114,6 +175,10 @@ export enum SVGIcons {
 
   NOTIFICATIONS_ADD = 'notifications/add',
   PORTOLIO = 'portfolio/portfolio',
+  PORTFOLIO_BUY = 'portfolio/buy',
+  PORTFOLIO_SELL = 'portfolio/sell',
+  PORTFOLIO_SWAP = 'portfolio/swap',
+  PORTFOLIO_HISTORY = 'portfolio/history',
 
   RESOURCE_ITEM_MANA = 'resources/mana',
   RESOURCE_ITEM_RC = 'resources/rc',
@@ -133,7 +198,9 @@ export enum SVGIcons {
   SELECT_ACTIVE = 'select/active',
   SELECT_COPY = 'select/copy',
   SELECT_DRAG = 'select/drag',
+  SELECT_MANAGE_ACCOUNT = 'select/manage-account',
   SELECT_DELETE = 'select/delete',
+  SELECT_ADD = 'select/add-circle',
 
   SWAPS_SWITCH = 'swaps/swap-switch',
   SWAPS_HISTORY = 'swaps/history',
@@ -145,6 +212,7 @@ export enum SVGIcons {
   SWAPS_STATUS_PROCESSING = 'swaps/swap-status/processing',
   SWAPS_STATUS_FINISHED = 'swaps/swap-status/finished',
   SWAPS_STATUS_CANCELED = 'swaps/swap-status/canceled',
+  SWAPS_STATUS_WARNING = 'swaps/swap-status/warning',
 
   WALLET_HBD_LOGO = 'wallet/hbd-logo',
   WALLET_HIVE_LOGO = 'wallet/hive-logo',
@@ -182,6 +250,7 @@ export enum SVGIcons {
   WALLET_HISTORY_TOP = 'wallet/history/back-to-top',
 
   WALLET_HISTORY_ESCROW = 'wallet/history/escrow',
+  WALLET_HISTORY_HIVE = 'wallet/history/hive',
 
   // LOGOS
   BINANCE = 'binance',

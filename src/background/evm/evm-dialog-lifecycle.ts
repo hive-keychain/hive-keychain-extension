@@ -1,0 +1,49 @@
+import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
+import { isEvmDialogVisibleRequest } from '@background/multichain/dialog-request.utils';
+import {
+  ProviderRpcError,
+  ProviderRpcErrorList,
+} from '@interfaces/evm-provider.interface';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { CommunicationUtils } from 'src/utils/communication.utils';
+import { getPendingRequestMessageOptions } from '@background/multichain/pending-request.interface';
+
+/* istanbul ignore next */
+export const onRemoveEvm = async (winId: number) => {
+  const requestHandler = await EvmRequestHandler.getFromLocalStorage();
+  if (!requestHandler || winId !== requestHandler.windowId) {
+    return;
+  }
+
+  for (const requestData of [...requestHandler.requestsData]) {
+    if (
+      requestData.tab &&
+      requestData.request &&
+      (await isEvmDialogVisibleRequest(requestData))
+    ) {
+      CommunicationUtils.tabsSendMessage(
+        requestData.tab,
+        {
+          command: BackgroundCommand.SEND_EVM_ERROR,
+          value: {
+            requestId: requestData.request.request_id,
+            error: ProviderRpcErrorList.userReject as ProviderRpcError,
+          },
+        },
+        getPendingRequestMessageOptions(requestData.dappInfo?.requestSource),
+      );
+      if (requestData.dappInfo?.origin) {
+        await requestHandler.removeRequestByLocator(
+          {
+            requestId: requestData.request.request_id,
+            tab: requestData.tab,
+            origin: requestData.dappInfo.origin,
+            frameId: requestData.dappInfo?.requestSource?.frameId,
+            documentId: requestData.dappInfo?.requestSource?.documentId,
+          },
+          false,
+        );
+      }
+    }
+  }
+};

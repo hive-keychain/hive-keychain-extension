@@ -1,0 +1,106 @@
+.portfolio-coming-soon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: calc(var(--kc-space-8) * 11);
+  padding: var(--kc-space-6) var(--kc-space-5);
+  text-align: center;
+
+  @media (min-width: 768px) {
+    padding: var(--kc-space-8) var(--kc-space-6);
+  }
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(var(--kc-space-8) * 3);
+    height: calc(var(--kc-space-8) * 3);
+    margin-bottom: var(--kc-space-5);
+    border: 1px solid var(--kc-color-accent-muted);
+    border-radius: 50%;
+    background: var(--kc-color-accent-muted);
+    box-shadow: var(--kc-shadow-accent-glow);
+    --wallet-icon-color: var(--kc-color-accent);
+    --bottom-bar-icon-color: var(--kc-color-accent);
+
+    .svg-icon {
+      width: 2.75rem;
+      height: 2.75rem;
+      flex-shrink: 0;
+
+      div,
+      svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      animation: portfolio-coming-soon-glow 2.2s ease-in-out infinite;
+    }
+  }
+
+  &__title {
+    margin: 0 0 var(--kc-space-2);
+    color: var(--kc-color-text-primary);
+    font-size: var(--kc-font-size-2xl);
+    font-weight: var(--kc-font-weight-semibold);
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+  }
+
+  &__status {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: var(--kc-space-4);
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    background: var(--kc-color-accent-muted);
+    color: var(--kc-color-accent);
+    font-size: var(--kc-font-size-xs);
+    font-weight: var(--kc-font-weight-semibold);
+    letter-spacing: 0.1em;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+
+  &__description {
+    max-width: min(26rem, 100%);
+    margin: 0;
+    color: var(--kc-color-text-secondary);
+    font-size: var(--kc-font-size-sm);
+    line-height: 1.55;
+  }
+
+  &__hint,
+  &__eta {
+    max-width: min(26rem, 100%);
+    margin: var(--kc-space-3) 0 0;
+    color: var(--kc-color-text-muted);
+    font-size: var(--kc-font-size-xs);
+    line-height: 1.5;
+  }
+
+  &__action {
+    margin-top: var(--kc-space-5);
+    width: auto;
+    min-width: 10rem;
+  }
+}
+
+@keyframes portfolio-coming-soon-glow {
+  0%,
+  100% {
+    box-shadow: var(--kc-shadow-accent-glow);
+  }
+
+  50% {
+    box-shadow: 0 0 36px var(--kc-color-accent);
+  }
+}

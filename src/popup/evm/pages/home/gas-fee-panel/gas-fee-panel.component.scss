@@ -1,0 +1,203 @@
+.gas-fee-panel {
+  @include small-card();
+  flex-direction: column;
+  margin: unset;
+  cursor: pointer;
+  align-items: unset;
+  row-gap: 8px;
+
+  .expand-collapse {
+    @include icon-size(18px);
+    @include open-close-rotate();
+  }
+
+  .title-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    column-gap: 8px;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    .svg-icon {
+      height: 24px;
+      width: 24px;
+    }
+
+    .title {
+      @include poppins500(14px);
+      color: var(--main-font-color);
+      display: inline-flex;
+      align-items: center;
+      column-gap: 6px;
+
+      .gas-fee-refresh-spinner {
+        width: 10px;
+        height: 10px;
+        border: 2px solid rgba(128, 128, 128, 0.35);
+        border-top-color: var(--main-font-color);
+        border-radius: 50%;
+        animation: gas-fee-refresh-spin 0.75s linear infinite;
+        flex: 0 0 auto;
+      }
+    }
+
+    .gas-fee-estimate {
+      display: flex;
+      flex-direction: column;
+      .gas-fee-value {
+        @include poppins400(14px);
+        color: var(--main-font-color);
+        text-align: right;
+        &.usd-value {
+          font-style: italic;
+          opacity: 0.7;
+          font-size: 13px;
+          text-align: right;
+        }
+      }
+    }
+  }
+
+  &.expandable {
+    .title-row {
+      grid-template-columns: auto 1fr auto auto;
+    }
+  }
+
+  .gas-fee-warning {
+    @include poppins400(12px);
+    color: var(--main-font-color);
+    font-style: italic;
+  }
+
+  .details {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+    padding-top: 12px;
+    .gas-fee-top-row,
+    .gas-fee-bottom-row {
+      display: flex;
+      justify-content: space-between;
+      .label {
+        @include poppins400(14px);
+        color: var(--main-font-color);
+        text-align: right;
+        &.duration {
+          color: $red;
+        }
+        &.usd-value {
+          font-style: italic;
+          opacity: 0.7;
+          font-size: 13px;
+          text-align: right;
+        }
+      }
+    }
+  }
+}
+
+@keyframes gas-fee-refresh-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.edit-gas-fee-popup {
+  width: 100%;
+  margin: unset !important;
+  padding: 24px;
+
+  .overlay {
+    margin: -24px;
+  }
+
+  .edit-gas-fee-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    row-gap: 8px;
+    .title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      @include poppins500(15px);
+      color: var(--main-font-color);
+    }
+    .custom-fee-row {
+      @include small-card-no-padding;
+      margin: 0;
+      padding: 4px 12px;
+      display: grid;
+      grid-template-columns: 1fr 2fr 3fr 2fr;
+      cursor: pointer;
+
+      &.no-duration {
+        grid-template-columns: 1fr 5fr 2fr;
+      }
+
+      .svg-icon {
+        width: 20px;
+        height: 20px;
+      }
+
+      .label {
+        @include poppins400(13px);
+        color: var(--main-font-color);
+      }
+      .duration {
+        color: $red;
+        text-align: center;
+      }
+      .gas-fee {
+        text-align: right;
+      }
+      &.deactivated {
+        pointer-events: none;
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+    }
+  }
+  .custom-gas-fee-panel {
+    display: flex;
+    align-items: stretch;
+    flex-direction: column;
+    row-gap: 16px;
+
+    .gas-fee-warning {
+      @include poppins400(12px);
+      color: var(--main-font-color);
+      font-style: italic;
+    }
+
+    .data-panel {
+      margin-top: 4px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      .data-block {
+        @include poppins400(10px);
+        .label {
+          font-weight: 500;
+        }
+        .value {
+          &.up {
+            color: $green-success;
+          }
+          &.down {
+            color: $red;
+          }
+        }
+      }
+    }
+
+    .button-panel {
+      width: 100%;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      column-gap: 8px;
+    }
+  }
+}

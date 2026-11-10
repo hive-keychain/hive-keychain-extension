@@ -1,9 +1,11 @@
+import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
 import { KeychainRequest, KeychainRequestTypes } from 'hive-keychain-commons';
 import Joi from 'joi';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import * as ResponseLogicModule from 'src/content-scripts/web-interface/response.logic';
 import {
   cancelPreviousRequest,
+  sendEvmRequestToBackground,
   sendIncompleteDataResponse,
   sendRequestToBackground,
   sendResponse,
@@ -57,6 +59,59 @@ describe('response.logic tests:\n', () => {
         request: req,
         domain: window.location.hostname,
         request_id: req.request_id,
+      });
+    });
+
+    it('returns incomplete when the request cannot be serialized', () => {
+      const cyclicRequest = {
+        request_id: 3,
+        type: KeychainRequestTypes.convert,
+      } as KeychainRequest & { self?: unknown };
+      cyclicRequest.self = cyclicRequest;
+      const sendMessage = jest.spyOn(chrome.runtime, 'sendMessage');
+      const postMessage = jest
+        .spyOn(window, 'postMessage')
+        .mockImplementation(() => {});
+
+      sendRequestToBackground(cyclicRequest, chrome);
+
+      expect(sendMessage).not.toHaveBeenCalled();
+      expect(postMessage).toHaveBeenCalledWith(
+        {
+          type: 'hive_keychain_response',
+          response: expect.objectContaining({
+            error: 'incomplete',
+            message: 'Invalid request.',
+            request_id: 3,
+          }),
+        },
+        window.location.origin,
+      );
+    });
+  });
+  describe('sendEvmRequestToBackground cases:\n', () => {
+    it('Must include the page origin and hostname in dappInfo', async () => {
+      const sSendMessage = jest
+        .spyOn(chrome.runtime, 'sendMessage')
+        .mockImplementation(async () => undefined);
+      const evmReq = {
+        request_id: 2,
+        method: EvmRequestMethod.GET_CHAIN,
+        params: [],
+      };
+
+      await sendEvmRequestToBackground(evmReq, chrome);
+
+      expect(sSendMessage).toHaveBeenCalledWith({
+        command: 'sendEvmRequest',
+        request: evmReq,
+        dappInfo: {
+          origin: window.location.origin,
+          domain: window.location.hostname,
+          protocol: window.location.protocol,
+          logo: undefined,
+        },
+        request_id: evmReq.request_id,
       });
     });
   });

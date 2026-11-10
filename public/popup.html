@@ -8,7 +8,6 @@
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
 
-    <link rel="preconnect" href="https://fonts.gstatic.com" />
     <link href="assets/fonts/googleFonts.css" rel="stylesheet" />
 
     <!-- <link rel="stylesheet" href="https://unpkg.com/@djthoms/pretty-checkbox" /> -->
@@ -20,6 +19,18 @@
         margin: 0;
         padding: 0;
         overflow: hidden;
+        background: #e5edf5;
+        color-scheme: light;
+      }
+      html.popup-theme-dark,
+      html.popup-theme-dark body {
+        background: #212838;
+        color-scheme: dark;
+      }
+      html.popup-theme-light,
+      html.popup-theme-light body {
+        background: #e5edf5;
+        color-scheme: light;
       }
       #root {
         overflow: hidden;
@@ -28,6 +39,13 @@
         padding: 0;
         height: 600px;
         width: 435px;
+        background: #e5edf5;
+      }
+      html.popup-theme-dark #root {
+        background: #212838;
+      }
+      html.popup-theme-light #root {
+        background: #e5edf5;
       }
 
       @-moz-document url-prefix() {
@@ -36,12 +54,15 @@
         }
       }
     </style>
+    <script src="popup-preload.js"></script>
   </head>
 
   <body>
     <div id="root"></div>
     <noscript> You need to enable JavaScript to run this app. </noscript>
     <script src="hiveTxBundle.js"></script>
+    <script src="extensionAppBundle.js"></script>
     <script src="popupBundle.js"></script>
+    <script src="assets/extra-styles/sidepanel.js"></script>
   </body>
 </html>

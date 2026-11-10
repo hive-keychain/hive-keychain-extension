@@ -1,14 +1,19 @@
 import { Token } from '@interfaces/tokens.interface';
 import TokensUtils from '@popup/hive/utils/tokens.utils';
 import React, { useEffect, useState } from 'react';
+import { ChainLogo } from 'src/common-ui/chain-logo/chain-logo.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
 import { ColorsUtils } from 'src/utils/colors.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 type Props = {
   amount: string | number;
   icon?: SVGIcons;
   symbol?: string;
+  logoUrl?: string;
+  network?: string;
+  networkLogoUrl?: string | null;
   className?: string;
   title?: string;
   tokens?: Token[];
@@ -18,6 +23,9 @@ const AmountWithLogo = ({
   amount,
   icon,
   symbol,
+  logoUrl,
+  network,
+  networkLogoUrl,
   className = '',
   title,
   tokens,
@@ -26,7 +34,7 @@ const AmountWithLogo = ({
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (!icon && symbol) {
+    if (!icon && !logoUrl && symbol) {
       setIsLoading(true);
       ColorsUtils.downloadColors().then(async () => {
         let tokensList = tokens;
@@ -60,10 +68,11 @@ const AmountWithLogo = ({
       className="amount-logo"
       symbol={symbol}
       addBackground
-      src={tokenIcon || ''}
+      src={logoUrl || tokenIcon || ''}
     />
   );
 
+  const showNetworkBadge = Boolean(networkLogoUrl || network);
   const amountElement = (
     <span className="amount">
       {typeof amount === 'string' ? amount.split(' ')[0] : amount} {symbol}
@@ -72,11 +81,20 @@ const AmountWithLogo = ({
 
   return (
     <div className={`amount-with-logo ${className}`}>
-      {title && <span className="title">{chrome.i18n.getMessage(title)}</span>}
+      {title && <span className="title">{I18nUtils.getMessage(title)}</span>}
       <div className="amount-logo-container">
         <>
           {amountElement}
-          {iconElement}
+          <div className="amount-logo-wrap">
+            {iconElement}
+            {showNetworkBadge ? (
+              <ChainLogo
+                chainName={network ?? ''}
+                logoUri={networkLogoUrl}
+                className="amount-network-badge"
+              />
+            ) : null}
+          </div>
         </>
       </div>
     </div>

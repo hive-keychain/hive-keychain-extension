@@ -16,6 +16,7 @@ import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import { ResultOperation } from 'src/__tests__/utils-for-testing/interfaces/assertions';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 describe('encode-memo tests:\n', () => {
   const data = {
     domain: 'domain',
@@ -34,7 +35,7 @@ describe('encode-memo tests:\n', () => {
   });
   beforeEach(() => {
     jest.spyOn(chrome.i18n, 'getUILanguage').mockReturnValueOnce('em-US');
-    chrome.i18n.getMessage = jest
+    I18nUtils.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom);
   });
@@ -123,9 +124,14 @@ describe('encode-memo tests:\n', () => {
         error: null,
         result: '#mock-encoded-memo',
         data: datas,
-        message: chrome.i18n.getMessage('bgd_ops_encode'),
+        message: I18nUtils.getMessage('bgd_ops_encode'),
+          messageKey: 'bgd_ops_encode',
+          messageParams: undefined,
+          messageKey: 'bgd_ops_encode',
+          messageParams: undefined,
         request_id: request_id,
         publicKey: undefined,
+          tab: undefined,
       },
     });
   });

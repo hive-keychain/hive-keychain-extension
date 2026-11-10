@@ -1,4 +1,4 @@
-import { RequestsHandler } from '@background/requests/request-handler';
+import { HiveRequestsHandler } from '@background/hive/requests/hive-request-handler';
 import { AuthPayloadUri } from '@interfaces/has.interface';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { KeylessRequest } from '@interfaces/keyless-keychain.interface';
@@ -8,12 +8,13 @@ import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import QRCode from 'react-qr-code';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
-import DialogHeader from 'src/dialog/components/dialog-header/dialog-header.component';
-import { HtmlUtils } from 'src/utils/html.utils';
+import { DialogHeader } from 'src/dialog/components/dialog-header/dialog-header.component';
 
+import { HtmlUtils } from 'src/utils/html.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
 type RegisterKeylessProps = {
   command: DialogCommand;
-  requestHandler: RequestsHandler;
+  requestHandler: HiveRequestsHandler;
   data: KeychainRequest | KeylessRequest;
   tab: number;
   domain: string;
@@ -31,7 +32,7 @@ const RegisterKeyless = (props: Props) => {
     tab,
     requestHandler: initialRequestHandler,
   } = props.data;
-  const [requestHandler] = useState<RequestsHandler>(initialRequestHandler);
+  const [requestHandler] = useState<HiveRequestsHandler>(initialRequestHandler);
   const [loadingOperations, setLoadingOperations] = useState<
     LoadingOperation[]
   >([{ name: '', done: false }]);
@@ -95,7 +96,7 @@ const RegisterKeyless = (props: Props) => {
       data-testid={`${DialogCommand.REGISTER_KEYLESS_KEYCHAIN}-dialog`}
       className="register-keyless-dialog">
       <DialogHeader
-        title={chrome.i18n.getMessage('dialog_register_keyless_title')}
+        title={I18nUtils.getMessage('dialog_register_keyless_title')}
       />
       <div className="content">
         <div
@@ -114,12 +115,12 @@ const RegisterKeyless = (props: Props) => {
             </div>
           ) : (
             <div>
-              <p>{chrome.i18n.getMessage('dialog_keyless_expired')}</p>
+              <p>{I18nUtils.getMessage('dialog_keyless_expired')}</p>
             </div>
           )}
           {expireSeconds > 0 && !isExpired && (
             <div className="expire-seconds">
-              {chrome.i18n.getMessage('dialog_keyless_expire_in', [
+              {I18nUtils.getMessage('dialog_keyless_expire_in', [
                 expireSeconds + '',
               ])}
             </div>

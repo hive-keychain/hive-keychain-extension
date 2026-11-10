@@ -1,0 +1,87 @@
+import { EvmRequestMethod } from '@background/evm/evm-methods/evm-methods.list';
+import { EvmRequestHandler } from '@background/evm/requests/evm-request-handler';
+import { BackgroundMessage } from '@background/multichain/background-message.interface';
+import { createOrUpdateDialog } from '@background/multichain/dialog-lifecycle';
+import {
+  getRequestHandlers,
+  willCloseDialogWindowAfterRemovingRequest,
+} from '@background/multichain/dialog-request.utils';
+import {
+  EvmRequest,
+  ProviderRpcErrorList,
+} from '@interfaces/evm-provider.interface';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import {
+  DIALOG_FEEDBACK_DISPLAY_MS,
+  delayMs,
+} from '@reference-data/dialog-feedback.constants';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { CommunicationUtils } from 'src/utils/communication.utils';
+import Logger from 'src/utils/logger.utils';
+import { PendingRequestSource } from '@interfaces/pending-request.interface';
+import { getPendingRequestMessageOptions } from '@background/multichain/pending-request.interface';
+
+import { I18nUtils } from 'src/utils/i18n.utils';
+export const handleNonAuthorizedMethods = async (
+  requestHandler: EvmRequestHandler,
+  tab: number,
+  request: EvmRequest,
+  domain: string,
+  origin: string,
+  source?: PendingRequestSource,
+) => {
+  Logger.warn(`${request.method} doesn't have authorization`);
+
+  let shouldCreatePopup = false;
+
+  switch (request.method) {
+    case EvmRequestMethod.GET_ACCOUNTS: {
+    }
+  }
+
+  const message: BackgroundMessage = {
+    command: BackgroundCommand.SEND_EVM_ERROR,
+    value: {
+      requestId: request.request_id,
+      result: ProviderRpcErrorList.nonExistingMethod,
+    },
+  };
+  CommunicationUtils.tabsSendMessage(
+    tab,
+    message,
+    getPendingRequestMessageOptions(source),
+  );
+
+  const callback = async () => {
+    CommunicationUtils.runtimeSendMessage({
+      command: DialogCommand.SEND_DIALOG_ERROR,
+      msg: {
+        display_msg: await I18nUtils.getMessage(
+          'dialog_evm_non_existing_method',
+          [request.method],
+        ),
+        tab,
+        request_id: request.request_id,
+      },
+      ...(source ? { requestSource: source } : {}),
+    });
+    const handlers = await getRequestHandlers();
+    if (
+      await willCloseDialogWindowAfterRemovingRequest(
+        handlers,
+        request.request_id,
+        tab,
+      )
+    ) {
+      await delayMs(DIALOG_FEEDBACK_DISPLAY_MS);
+    }
+    await requestHandler.removeRequestByLocator({
+      requestId: request.request_id,
+      tab,
+      origin,
+      frameId: source?.frameId,
+      documentId: source?.documentId,
+    });
+  };
+  createOrUpdateDialog(callback, requestHandler);
+};

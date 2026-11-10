@@ -1,7 +1,7 @@
 import {
   BackgroundMessage,
   MultisigDialogMessage,
-} from '@background/background-message.interface';
+} from '@background/multichain/background-message.interface';
 import {
   MultisigAcceptRejectTxData,
   MultisigData,
@@ -11,7 +11,10 @@ import {
 } from '@interfaces/multisig.interface';
 import { Theme } from '@popup/theme.context';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
-import { MultisigDialogCommand } from '@reference-data/dialog-message-key.enum';
+import {
+  DialogCommand,
+  MultisigDialogCommand,
+} from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
@@ -22,16 +25,19 @@ import { SVGIcons } from 'src/common-ui/icons.enum';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { Separator } from 'src/common-ui/separator/separator.component';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
+import { I18nProviderComponent } from 'src/common-ui/i18n/i18n-provider.component';
 import CollaspsibleItem from 'src/dialog/components/collapsible-item/collapsible-item';
 import RequestItem from 'src/dialog/components/request-item/request-item';
-import DialogError from 'src/dialog/pages/error';
+import { DialogError } from 'src/dialog/multichain/error/error';
 import { UnlockWalletComponent } from 'src/multisig/unlock-wallet/unlock-wallet.component';
 import BrowserUtils from 'src/utils/browser.utils';
-import { HtmlUtils } from 'src/utils/html.utils';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import './multisig-dialog.scss';
 
+import { HtmlUtils } from 'src/utils/html.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
 const MultisigDialog = () => {
   const [theme, setTheme] = useState<Theme>();
 
@@ -113,7 +119,7 @@ const MultisigDialog = () => {
     accepted: boolean,
     multisigData: MultisigData,
   ) => {
-    chrome.runtime.sendMessage({
+    CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.MULTISIG_ACCEPT_RESPONSE,
       value: { accepted, multisigData },
     } as BackgroundMessage);
@@ -137,7 +143,7 @@ const MultisigDialog = () => {
                 data.success ? SVGIcons.MESSAGE_SUCCESS : SVGIcons.MESSAGE_ERROR
               }></SVGIcon>
             <div className="message">
-              {chrome.i18n.getMessage(data.message)}
+              {I18nUtils.getMessage(data.message)}
             </div>
             <div className="fill-space"></div>
             <ButtonComponent
@@ -218,7 +224,7 @@ const MultisigDialog = () => {
                 data.success ? SVGIcons.MESSAGE_SUCCESS : SVGIcons.MESSAGE_ERROR
               }></SVGIcon>
             <div className="message">
-              {chrome.i18n.getMessage(data.message)}
+              {I18nUtils.getMessage(data.message)}
             </div>
             <a href={`https://hivehub.dev/tx/${data.txId}`} target="__blank">
               {data.txId}
@@ -247,7 +253,8 @@ const MultisigDialog = () => {
         return (
           <DialogError
             data={{
-              msg: { display_msg: chrome.i18n.getMessage(data.message) },
+              msg: { display_msg: I18nUtils.getMessage(data.message) },
+              command: DialogCommand.SEND_DIALOG_ERROR,
             }}
           />
         );
@@ -266,7 +273,7 @@ const MultisigDialog = () => {
     <div className={`theme ${theme} multisig-dialog`}>
       <div className="title-panel">
         <img className="multisig-logo" src="/assets/images/multisig/logo.png" />
-        <div className="title">{chrome.i18n.getMessage('multisig')} </div>
+        <div className="title">{I18nUtils.getMessage('multisig')} </div>
       </div>
       {content && (
         <>
@@ -283,6 +290,11 @@ const MultisigDialog = () => {
   );
 };
 
-ReactDOM.render(<MultisigDialog />, document.getElementById('root'));
+ReactDOM.render(
+  <I18nProviderComponent>
+    <MultisigDialog />
+  </I18nProviderComponent>,
+  document.getElementById('root'),
+);
 
 export {};

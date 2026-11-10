@@ -28,9 +28,11 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { MetadataPopup } from 'src/common-ui/metadata-popup/metadata-popup.component';
 import { refreshActiveAccount } from 'src/popup/hive/actions/active-account.actions';
+import BlockchainTransactionUtils from 'src/popup/hive/utils/blockchain.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import ProxyUtils from 'src/popup/hive/utils/proxy.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 const ProxyTab = ({
   activeAccount,
   refreshActiveAccount,
@@ -72,8 +74,9 @@ const ProxyTab = ({
         if (success.isUsingMultisig) {
           setSuccessMessage('multisig_transaction_sent_to_signers');
         } else {
-          setSuccessMessage('popup_success_proxy', [proxyUsername]);
+          await BlockchainTransactionUtils.delayRefresh();
           refreshActiveAccount();
+          setSuccessMessage('popup_success_proxy', [proxyUsername]);
         }
       } else {
         setErrorMessage('html_popup_set_as_proxy_error');
@@ -133,6 +136,7 @@ const ProxyTab = ({
         if (success.isUsingMultisig) {
           setSuccessMessage('multisig_transaction_sent_to_signers');
         } else {
+          await BlockchainTransactionUtils.delayRefresh();
           refreshActiveAccount();
           setSuccessMessage('bgd_ops_unproxy', [`@${proxyUsername}`]);
         }
@@ -185,7 +189,7 @@ const ProxyTab = ({
   return (
     <div data-testid="proxy-tab" className="proxy-tab">
       <div className="introduction">
-        {chrome.i18n.getMessage(
+        {I18nUtils.getMessage(
           activeAccount.account.proxy.length > 0
             ? 'html_popup_witness_has_proxy'
             : 'html_popup_witness_proxy_definition',
@@ -194,7 +198,7 @@ const ProxyTab = ({
 
       {activeAccount.account.proxy.length > 0 && (
         <div data-testid="proxy-name" className="proxy-name">
-          {chrome.i18n.getMessage('html_popup_currently_using_proxy', [
+          {I18nUtils.getMessage('html_popup_currently_using_proxy', [
             activeAccount.account.proxy,
           ])}
         </div>

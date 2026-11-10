@@ -1,0 +1,775 @@
+import { EvmActiveAccount } from '@popup/evm/interfaces/active-account.interface';
+import {
+  EvmPendingTransaction,
+  EvmSmartContractInfo,
+} from '@popup/evm/interfaces/evm-tokens.interface';
+import {
+  CanceledTransactionData,
+  EvmPendingTransactionDetails,
+  EvmTransactionDisplayContext,
+  EvmTransactionType,
+  hasBlobOrDelegationFields,
+  isBlobOrDelegationTransactionType,
+  ProviderTransactionData,
+  UNSUPPORTED_BLOB_OR_DELEGATION_TRANSACTION_MESSAGE,
+  UserCanceledTransactions,
+} from '@popup/evm/interfaces/evm-transactions.interface';
+import { GasFeeEstimationBase } from '@popup/evm/interfaces/gas-fee.interface';
+import { EvmWallet } from '@popup/evm/interfaces/wallet.interface';
+import { EthersUtils } from '@popup/evm/utils/ethers.utils';
+import { EvmPendingTransactionsNotifications } from '@popup/evm/utils/evm-pending-transactions-notifications.utils';
+import { EvmRequestsUtils } from '@popup/evm/utils/evm-requests.utils';
+import { EvmSignerUtils } from '@popup/evm/utils/evm-signer.utils';
+import { EvmTransactionDisplayUtils } from '@popup/evm/utils/evm-transaction-display.utils';
+import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
+import { ChainUtils } from '@popup/multichain/utils/chain.utils';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { ContextType } from '@reference-data/context-type.enum';
+import { EvmSubmissionClientUtils } from 'src/utils/evm/evm-submission-client.utils';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import Decimal from 'decimal.js';
+import {
+  ethers,
+  Provider,
+  TransactionRequest,
+  TransactionResponse,
+} from 'ethers';
+import { CommunicationUtils } from 'src/utils/communication.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
+
+import { I18nUtils } from 'src/utils/i18n.utils';
+const normalizePendingTransactions = (
+  transactions: unknown,
+): EvmPendingTransaction[] => {
+  return Array.isArray(transactions) ? transactions : [];
+};
+
+const getPendingTransactionNonce = (transaction: EvmPendingTransaction) =>
+  Number(transaction.txResponseParams.nonce);
+
+const getBlockingLocalPendingTransaction = (
+  localPendingTransactions: EvmPendingTransaction[],
+): EvmPendingTransaction | undefined => {
+  if (localPendingTransactions.length === 0) {
+    return undefined;
+  }
+
+  return localPendingTransactions.reduce((blocking, current) =>
+    getPendingTransactionNonce(current) < getPendingTransactionNonce(blocking)
+      ? current
+      : blocking,
+  );
+};
+
+const isUnconfirmedLocalPending = async (
+  provider: Provider,
+  pendingTransaction: EvmPendingTransaction,
+  latestNonce: number,
+): Promise<boolean> => {
+  if (latestNonce > getPendingTransactionNonce(pendingTransaction)) {
+    return false;
+  }
+
+  const txHash = pendingTransaction.txResponseParams.hash;
+  const transactionReceipt = await provider.getTransactionReceipt(txHash);
+  if (transactionReceipt) {
+    return false;
+  }
+
+  const transaction = await provider.getTransaction(txHash);
+  if (transaction?.blockHash || transaction?.blockNumber != null) {
+    return false;
+  }
+
+  return true;
+};
+
+const getUnconfirmedLocalPendingTransactions = async (
+  provider: Provider,
+  latestNonce: number,
+  localPendingTransactions: EvmPendingTransaction[],
+): Promise<EvmPendingTransaction[]> => {
+  const unconfirmedLocalPendingTransactions: EvmPendingTransaction[] = [];
+
+  for (const pendingTransaction of localPendingTransactions) {
+    if (
+      await isUnconfirmedLocalPending(
+        provider,
+        pendingTransaction,
+        latestNonce,
+      )
+    ) {
+      unconfirmedLocalPendingTransactions.push(pendingTransaction);
+    }
+  }
+
+  return unconfirmedLocalPendingTransactions;
+};
+
+const pruneStaleLocalPendingTransactions = async (
+  walletAddress: string,
+  chainId: string,
+  localPendingTransactions: EvmPendingTransaction[],
+  unconfirmedLocalPendingTransactions: EvmPendingTransaction[],
+  provider: Provider,
+) => {
+  const unconfirmedHashes = new Set(
+    unconfirmedLocalPendingTransactions.map((transaction) =>
+      transaction.txResponseParams.hash.toLowerCase(),
+    ),
+  );
+  const staleLocalPendingTransactions = localPendingTransactions.filter(
+    (transaction) =>
+      !unconfirmedHashes.has(transaction.txResponseParams.hash.toLowerCase()),
+  );
+
+  for (const staleTransaction of staleLocalPendingTransactions) {
+    await EvmPendingTransactionsNotifications.finalizeConfirmedPendingTransaction(
+      staleTransaction,
+      provider,
+    );
+  }
+
+  const allTransactions = await getAllPendingTransactions();
+  const nextTransactions = allTransactions.filter((transaction) => {
+    if (
+      transaction.walletAddress.toLowerCase() !== walletAddress.toLowerCase() ||
+      transaction.chainId !== chainId
+    ) {
+      return true;
+    }
+
+    return unconfirmedHashes.has(
+      transaction.txResponseParams.hash.toLowerCase(),
+    );
+  });
+
+  if (nextTransactions.length !== allTransactions.length) {
+    await persistPendingTransactions(nextTransactions);
+  }
+};
+
+const persistPendingTransactions = async (
+  transactions: EvmPendingTransaction[],
+) => {
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS,
+    transactions,
+  );
+};
+
+const coerceSignedTransactionType = (type: number | undefined) => {
+  if (isBlobOrDelegationTransactionType(type)) {
+    return Number(EvmTransactionType.EIP_1559);
+  }
+  return type;
+};
+
+const getTransactionType = (
+  requestType: TransactionRequest['type'],
+  gasFee?: GasFeeEstimationBase,
+) => {
+  if (gasFee?.type !== undefined) {
+    return coerceSignedTransactionType(Number(gasFee.type));
+  }
+
+  if (requestType != null) {
+    return coerceSignedTransactionType(Number(requestType));
+  }
+
+  return undefined;
+};
+
+const getTransactionData = (data: TransactionRequest['data']) => {
+  if (data == null) {
+    return undefined;
+  }
+
+  if (data === '') {
+    return '0x';
+  }
+
+  return data;
+};
+
+const getWeiFromGwei = (value: Decimal.Value) => {
+  const wei = new Decimal(value).mul('1000000000');
+
+  if (wei.lte(0)) {
+    return BigInt(0);
+  }
+
+  return BigInt(wei.ceil().toFixed(0));
+};
+
+/** For cancel/speed-up fee UI: GasFeePanel only runs estimates when `transactionData` is set. */
+const providerTransactionDataFromResponse = (
+  tx: TransactionResponse,
+): ProviderTransactionData => {
+  const rawData = tx.data;
+  let data = '';
+  if (rawData != null && rawData !== '0x') {
+    data = typeof rawData === 'string' ? rawData : ethers.hexlify(rawData);
+  }
+
+  const txType = tx.type;
+  const isEip1559 =
+    txType === 2 ||
+    (tx.maxFeePerGas != null && tx.maxPriorityFeePerGas != null);
+
+  const out: ProviderTransactionData = {
+    from: tx.from,
+    data,
+    type: isEip1559 ? EvmTransactionType.EIP_1559 : EvmTransactionType.LEGACY,
+    value: tx.value != null ? ethers.toBeHex(tx.value) : '0x0',
+    nonce: Number(tx.nonce),
+  };
+
+  if (tx.to) {
+    out.to = tx.to;
+  }
+  if (tx.gasLimit != null) {
+    out.gasLimit = Number(tx.gasLimit);
+  }
+  if (tx.maxFeePerGas != null) {
+    out.maxFeePerGas = ethers.toBeHex(tx.maxFeePerGas);
+  }
+  if (tx.maxPriorityFeePerGas != null) {
+    out.maxPriorityFeePerGas = ethers.toBeHex(tx.maxPriorityFeePerGas);
+  }
+  if (tx.gasPrice != null && tx.maxFeePerGas == null) {
+    out.gasPrice = ethers.toBeHex(tx.gasPrice);
+  }
+
+  return out;
+};
+
+const trackPendingTransactionConfirmation = (
+  transactionResponse: TransactionResponse,
+  chain: EvmChain,
+): void => {
+  switch ((global as any).contextType) {
+    case ContextType.POPUP: {
+      void CommunicationUtils.runtimeSendMessage({
+        command: BackgroundCommand.WAIT_FOR_EVM_TRANSACTION_CONFIRMATION,
+        value: { transactionResponse, chain },
+      });
+      break;
+    }
+    case ContextType.SERVICE_WORKER: {
+      void EvmPendingTransactionsNotifications.waitForTransaction(
+        transactionResponse,
+      );
+      break;
+    }
+  }
+};
+
+const send = async (
+  wallet: EvmWallet,
+  request: Partial<TransactionRequest>,
+  gasFee: GasFeeEstimationBase,
+  chainId: string,
+  forceNounce?: number,
+  displayContext?: EvmTransactionDisplayContext,
+) => {
+  if (hasBlobOrDelegationFields(request)) {
+    throw new Error(UNSUPPORTED_BLOB_OR_DELEGATION_TRANSACTION_MESSAGE);
+  }
+  const transactionType = getTransactionType(request.type, gasFee);
+  if (isBlobOrDelegationTransactionType(transactionType)) {
+    throw new Error(UNSUPPORTED_BLOB_OR_DELEGATION_TRANSACTION_MESSAGE);
+  }
+  const chain = await ChainUtils.getChain<EvmChain>(chainId);
+  const walletAddress = EvmSignerUtils.getWalletAddress(wallet);
+  let feeData = {};
+  if (gasFee)
+    switch (
+      isBlobOrDelegationTransactionType(gasFee.type)
+        ? EvmTransactionType.EIP_1559
+        : gasFee.type
+    ) {
+      case EvmTransactionType.EIP_1559: {
+        feeData = {
+          maxPriorityFeePerGas: getWeiFromGwei(gasFee.priorityFeeInGwei!),
+          maxFeePerGas: getWeiFromGwei(gasFee.maxFeePerGasInGwei!),
+        };
+        break;
+      }
+      case EvmTransactionType.EIP_155:
+      case EvmTransactionType.LEGACY: {
+        feeData = {
+          gasPrice: getWeiFromGwei(gasFee.gasPriceInGwei!),
+        };
+        break;
+      }
+    }
+
+  const provider = await EthersUtils.getProvider(chain as EvmChain);
+  const reservation = await EvmSubmissionClientUtils.reserve(
+    walletAddress,
+    chainId,
+    forceNounce,
+  );
+  let transactionRequest: TransactionRequest;
+  transactionRequest = {
+    value: request.value ?? '0x0',
+    data: getTransactionData(request.data),
+    to: request.to,
+    from: walletAddress,
+    nonce: reservation.nonce,
+    gasLimit: gasFee ? BigInt(gasFee.gasLimit.toFixed(0)) : null,
+    chainId: chain.chainId,
+    type: transactionType,
+    ...feeData,
+  };
+
+  if (
+    gasFee?.type === EvmTransactionType.EIP_155 ||
+    getTransactionType(request.type) === Number(EvmTransactionType.EIP_155)
+  ) {
+    if (request.accessList) {
+      transactionRequest.accessList = request.accessList;
+    }
+  }
+
+  let raw: string;
+  try {
+    raw = await EvmSignerUtils.signTransaction(wallet, transactionRequest);
+    await EvmSubmissionClientUtils.send({
+      action: 'commit',
+      token: reservation.token,
+      raw: [raw],
+    });
+  } catch (error) {
+    await EvmSubmissionClientUtils.send({
+      action: 'release',
+      token: reservation.token,
+    });
+    throw error;
+  }
+  // Keep committed bytes on ambiguous RPC failure; recovery rebroadcasts this exact hash.
+  let transactionResponse: TransactionResponse;
+  try {
+    transactionResponse = await provider.broadcastTransaction(raw);
+  } catch (error) {
+    await EvmSubmissionClientUtils.send({ action: 'reconcile' });
+    throw error;
+  }
+  await EvmSubmissionClientUtils.send({
+    action: 'broadcast',
+    token: reservation.token,
+  });
+  if (transactionResponse) {
+    const displayItem =
+      await EvmTransactionDisplayUtils.buildDisplayItemFromBroadcast(
+        transactionResponse,
+        chain,
+        walletAddress,
+        displayContext,
+      );
+    await addPendingTransaction(
+      walletAddress,
+      transactionResponse,
+      chain,
+      displayItem,
+    );
+  }
+  return transactionResponse;
+};
+
+const cancel = async (
+  activeAccount: EvmActiveAccount,
+  nounce: number,
+  gasFee: any,
+  chainId: string,
+  transactionResponse: TransactionResponse,
+) => {
+  // addCanceledTransaction()
+
+  // TODO add cancel transaction to history
+
+  return await send(
+    activeAccount.wallet,
+    {
+      to: ethers.ZeroAddress,
+      value: 0,
+      data: ethers.ZeroHash,
+      from: activeAccount.wallet.address,
+      nonce: nounce,
+      chainId: chainId,
+    },
+    gasFee,
+    chainId,
+    nounce,
+  );
+};
+
+const addPendingTransaction = async (
+  walletAddress: string,
+  transactionResponse: TransactionResponse,
+  chain: EvmChain,
+  displayItem?: EvmPendingTransaction['displayItem'],
+) => {
+  let transactions = await getAllPendingTransactions();
+
+  if (
+    transactions.some(
+      (transaction) =>
+        transaction.txResponseParams.hash === transactionResponse.hash,
+    )
+  )
+    return;
+  transactions.push({
+    txResponseParams: transactionResponse.toJSON(),
+    walletAddress: walletAddress,
+    chainId: chain.chainId,
+    broadcastDate: Date.now(),
+    displayItem,
+  });
+
+  await persistPendingTransactions(transactions);
+  trackPendingTransactionConfirmation(transactionResponse, chain);
+};
+
+const deleteFromPendingTransactions = async (txHash: string) => {
+  let transactions = await getAllPendingTransactions();
+  transactions = transactions.filter(
+    (transaction: EvmPendingTransaction) =>
+      transaction.txResponseParams.hash.toLowerCase() !== txHash.toLowerCase(),
+  );
+  await persistPendingTransactions(transactions);
+};
+
+const hasPendingTransaction = async (fromAddress: string, chain: EvmChain) => {
+  if (Array.isArray(chain?.rpcs) && chain.rpcs.length === 0) {
+    return;
+  }
+  try {
+    const provider = await EthersUtils.getProvider(chain);
+    const [[pendingNonce, latestNonce], localPendingTransactions] =
+      await Promise.all([
+        Promise.all([
+          provider.getTransactionCount(fromAddress, 'pending'),
+          provider.getTransactionCount(fromAddress, 'latest'),
+        ]),
+        getPendingTransactionsForWallet(fromAddress, chain.chainId),
+      ]);
+
+    let hasPending = pendingNonce > latestNonce;
+    let hasPendingFromLocal = false;
+    const unconfirmedLocalPendingTransactions =
+      await getUnconfirmedLocalPendingTransactions(
+        provider,
+        latestNonce,
+        localPendingTransactions,
+      );
+
+    if (
+      unconfirmedLocalPendingTransactions.length <
+      localPendingTransactions.length
+    ) {
+      await pruneStaleLocalPendingTransactions(
+        fromAddress,
+        chain.chainId,
+        localPendingTransactions,
+        unconfirmedLocalPendingTransactions,
+        provider,
+      );
+    }
+
+    const blockingLocalPendingTransaction = getBlockingLocalPendingTransaction(
+      unconfirmedLocalPendingTransactions,
+    );
+
+    if (!hasPending && blockingLocalPendingTransaction) {
+      hasPending = true;
+      hasPendingFromLocal = true;
+    }
+
+    let queuedTransactionsCount = 0;
+    if (hasPendingFromLocal) {
+      queuedTransactionsCount = unconfirmedLocalPendingTransactions.length - 1;
+    } else if (hasPending) {
+      queuedTransactionsCount = pendingNonce - latestNonce - 1;
+    }
+
+    const detailsNonce = hasPending
+      ? hasPendingFromLocal && blockingLocalPendingTransaction
+        ? getPendingTransactionNonce(blockingLocalPendingTransaction)
+        : latestNonce
+      : undefined;
+
+    const pendingTransactionDetails = await getPendingTransactionsDetails(
+      fromAddress,
+      chain,
+      detailsNonce,
+      {
+        provider,
+        localPendingTransactions: hasPendingFromLocal
+          ? unconfirmedLocalPendingTransactions
+          : localPendingTransactions,
+      },
+    );
+
+    return {
+      hasPending,
+      pendingTransactionsCount: hasPending ? 1 : 0,
+      queuedTransactionsCount: queuedTransactionsCount,
+      pendingTransactionDetails: {
+        ...pendingTransactionDetails,
+        title:
+          queuedTransactionsCount > 0
+            ? 'evm_pending_queued_transactions'
+            : 'evm_one_pending_transaction',
+      },
+    };
+  } catch (error) {
+    Logger.error('Error in hasPendingTransaction', error);
+  }
+};
+
+const getAllPendingTransactions = async () => {
+  const transactions = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.EVM_PENDING_TRANSACTIONS,
+  );
+  return normalizePendingTransactions(transactions);
+};
+
+const getPendingTransactionsForWallet = async (
+  walletAddress: string,
+  chainId: EvmChain['chainId'],
+) => {
+  let transactions = await getAllPendingTransactions();
+  return transactions.filter(
+    (transaction) =>
+      transaction.walletAddress.toLowerCase() === walletAddress.toLowerCase() &&
+      transaction.chainId === chainId,
+  );
+};
+
+const getPendingTransactionsDetails = async (
+  walletAddress: string,
+  chain: EvmChain,
+  nonce?: number,
+  preloaded?: {
+    provider: Provider;
+    localPendingTransactions: EvmPendingTransaction[];
+  },
+): Promise<EvmPendingTransactionDetails> => {
+  let pendingTransactionDetail: EvmPendingTransactionDetails = {
+    label: I18nUtils.getMessage('evm_unknown_pending_transaction'),
+    title: 'evm_pending_queued_transactions',
+    nonce: nonce,
+  };
+
+  let pendingTx: any;
+  let pendingTransaction: EvmPendingTransaction | undefined;
+
+  const provider =
+    preloaded?.provider ?? (await EthersUtils.getProvider(chain));
+  const localPendingTransactions =
+    preloaded?.localPendingTransactions ??
+    (await getPendingTransactionsForWallet(walletAddress, chain.chainId));
+
+  if (nonce !== undefined) {
+    pendingTransaction = localPendingTransactions.find(
+      (transaction) => getPendingTransactionNonce(transaction) === nonce,
+    );
+    if (pendingTransaction) {
+      pendingTx = new TransactionResponse(
+        pendingTransaction.txResponseParams,
+        provider,
+      );
+    }
+  }
+
+  if (pendingTx) {
+    const item =
+      pendingTransaction?.displayItem ??
+      (await EvmTransactionDisplayUtils.buildDisplayItemFromBroadcast(
+        pendingTx,
+        chain,
+        walletAddress,
+      ));
+
+    pendingTransactionDetail = {
+      label:
+        item?.label ??
+        I18nUtils.getMessage('evm_unknown_pending_transaction'),
+      title: 'evm_pending_queued_transactions',
+      transactionResponse: pendingTx,
+      nonce: pendingTx.nonce,
+      displayItem: item,
+    };
+  }
+
+  return pendingTransactionDetail;
+};
+
+const getPendingTransaction = async (
+  txHash: string,
+  chainId: EvmChain['chainId'],
+) => {
+  let transactions = await getAllPendingTransactions();
+  return transactions.find(
+    (transaction: EvmPendingTransaction) =>
+      transaction.txResponseParams.hash.toLowerCase() ===
+        txHash.toLowerCase() && transaction.chainId === chainId,
+  );
+};
+
+const getHighestNonceInPendingTransaction = async (
+  chainId: string,
+  walletAddress: string,
+) => {
+  const transactions = await getPendingTransactionsForWallet(
+    walletAddress,
+    chainId,
+  );
+
+  return transactions.length > 0
+    ? Math.max(
+        ...transactions.map((pendingTx) =>
+          getPendingTransactionNonce(pendingTx),
+        ),
+      )
+    : 0;
+};
+
+const getCanceledTransactions = async (
+  chain: EvmChain,
+  address: string,
+  tokenInfo: EvmSmartContractInfo,
+): Promise<CanceledTransactionData[]> => {
+  const data = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.EVM_CANCELED_TRANSACTIONS,
+  );
+
+  if (!data) return [];
+  if (!data[chain.chainId]) return [];
+  if (!data[chain.chainId][address]) return [];
+  return data[chain.chainId][address].filter(
+    (canceledTransactions: CanceledTransactionData) =>
+      canceledTransactions.tokenInfo.symbol === tokenInfo.symbol &&
+      canceledTransactions.tokenInfo.coingeckoId === tokenInfo.coingeckoId,
+  );
+};
+
+const getAllCanceledTransactions = async (
+  chain: EvmChain,
+  address: string,
+): Promise<CanceledTransactionData[]> => {
+  const data = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.EVM_CANCELED_TRANSACTIONS,
+  );
+  if (!data) return [];
+  if (!data[chain.chainId]) return [];
+  return data[chain.chainId][address] ?? [];
+};
+
+const addCanceledTransaction = async (
+  transactionResponse: TransactionResponse,
+  address: string,
+  tokenInfo: EvmSmartContractInfo,
+  amount: number,
+  receiverAddress: string,
+  chain: EvmChain,
+) => {
+  let transactions: UserCanceledTransactions =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.EVM_CANCELED_TRANSACTIONS,
+    );
+  if (!transactions) {
+    transactions = {};
+  }
+  if (!transactions[chain.chainId]) {
+    transactions[chain.chainId] = {};
+  }
+  if (!transactions[chain.chainId][address]) {
+    transactions[chain.chainId][address] = [];
+  }
+  transactions[chain.chainId][address].push({
+    nonce: transactionResponse.nonce,
+    amount,
+    tokenInfo,
+    from: address,
+    to: receiverAddress,
+  });
+
+  LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.EVM_CANCELED_TRANSACTIONS,
+    transactions,
+  );
+};
+
+const rehydratePendingTransactions = async () => {
+  const pendingTransactions = await getAllPendingTransactions();
+
+  for (const pendingTransaction of pendingTransactions) {
+    try {
+      const chain = await ChainUtils.getChain<EvmChain>(
+        pendingTransaction.chainId,
+      );
+      const provider = await EthersUtils.getProvider(chain);
+      const transactionResponse = new TransactionResponse(
+        pendingTransaction.txResponseParams,
+        provider,
+      );
+
+      const transactionReceipt = await provider.getTransactionReceipt(
+        transactionResponse.hash,
+      );
+      if (transactionReceipt) {
+        await EvmPendingTransactionsNotifications.finalizeConfirmedPendingTransaction(
+          pendingTransaction,
+          provider,
+          transactionReceipt,
+        );
+        continue;
+      }
+
+      const latestNonce = await provider.getTransactionCount(
+        pendingTransaction.walletAddress,
+        'latest',
+      );
+      if (latestNonce > getPendingTransactionNonce(pendingTransaction)) {
+        const finalized =
+          await EvmPendingTransactionsNotifications.finalizeConfirmedPendingTransaction(
+            pendingTransaction,
+            provider,
+          );
+        if (!finalized) {
+          await deleteFromPendingTransactions(transactionResponse.hash);
+        }
+        continue;
+      }
+
+      void EvmPendingTransactionsNotifications.waitForTransaction(
+        transactionResponse,
+      );
+    } catch (error) {
+      Logger.error('Error in rehydratePendingTransactions', error);
+    }
+  }
+};
+
+export const EvmTransactionsUtils = {
+  getWeiFromGwei,
+  cancel,
+  getHighestNonceInPendingTransaction,
+  getPendingTransaction,
+  getAllPendingTransactions,
+  getPendingTransactionsForWallet,
+  addPendingTransaction,
+  deleteFromPendingTransactions,
+  getCanceledTransactions,
+  addCanceledTransaction,
+  getAllCanceledTransactions,
+  send,
+  hasPendingTransaction,
+  getPendingTransactionsDetails,
+  providerTransactionDataFromResponse,
+  rehydratePendingTransactions,
+};

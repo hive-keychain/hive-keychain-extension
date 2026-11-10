@@ -5,6 +5,7 @@ import {
   KeychainKeyTypesLC,
 } from '@interfaces/keychain.interface';
 import { TransactionOptions } from '@interfaces/keys.interface';
+import { Screen } from '@interfaces/screen.interface';
 import { Token, TokenBalance } from '@interfaces/tokens.interface';
 import {
   addToLoadingList,
@@ -19,35 +20,35 @@ import {
   navigateToWithParams,
 } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import { HiveChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import Joi from 'joi';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { connect, ConnectedProps } from 'react-redux';
+import { FormContainer } from 'src/common-ui/_containers/form-container/form-container.component';
 import { BalanceSectionComponent } from 'src/common-ui/balance-section/balance-section.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import {
   ConfirmationPageFields,
   ConfirmationPageFieldType,
 } from 'src/common-ui/confirmation-page/confirmation-field.interface';
-import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
-import { FormContainer } from 'src/common-ui/form-container/form-container.component';
+import { HiveConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { FormInputComponent } from 'src/common-ui/input/form-input.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import { fetchPhishingAccounts } from 'src/popup/hive/actions/phishing.actions';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
-import CurrencyUtils from 'src/popup/hive/utils/currency.utils';
 import { FavoriteUserUtils } from 'src/popup/hive/utils/favorite-user.utils';
 import HiveUtils from 'src/popup/hive/utils/hive.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import TokensUtils from 'src/popup/hive/utils/tokens.utils';
 import TransferUtils from 'src/popup/hive/utils/transfer.utils';
-import { Screen } from 'src/reference-data/screen.enum';
 import { FormUtils } from 'src/utils/form.utils';
 import FormatUtils from 'src/utils/format.utils';
 import PhishingUtils from 'src/utils/phishing.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface TokenTransferForm {
   receiverUsername: string;
   symbol: string;
@@ -167,7 +168,7 @@ const TokensTransfer = ({
     let memoField = form.memo;
     if (form.memo.length) {
       if (form.memo.startsWith('#')) {
-        memoField = `${form.memo} (${chrome.i18n.getMessage(
+        memoField = `${form.memo} (${I18nUtils.getMessage(
           'popup_encrypted',
         )})`;
         if (!activeAccount.keys.memo) {
@@ -176,7 +177,7 @@ const TokensTransfer = ({
         }
       }
     } else {
-      memoField = chrome.i18n.getMessage('popup_empty');
+      memoField = I18nUtils.getMessage('popup_empty');
     }
 
     const fields: ConfirmationPageFields[] = [
@@ -212,7 +213,7 @@ const TokensTransfer = ({
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
-      message: chrome.i18n.getMessage('popup_html_token_confirm_text'),
+      message: I18nUtils.getMessage('popup_html_token_confirm_text'),
       fields: fields,
       skipWarningTranslation: true,
       warningMessage: warningMessage,
@@ -263,8 +264,8 @@ const TokensTransfer = ({
             if (transactionStatus.confirmed) {
               navigateTo(Screen.HOME_PAGE, true);
               await FavoriteUserUtils.saveFavoriteUser(
-                form.receiverUsername,
                 activeAccount,
+                form.receiverUsername,
               );
 
               setSuccessMessage('popup_html_transfer_successful', [
@@ -284,7 +285,7 @@ const TokensTransfer = ({
           removeFromLoadingList('html_popup_confirm_transaction_operation');
         }
       },
-    } as ConfirmationPageParams);
+    } as HiveConfirmationPageParams);
   };
 
   return (
@@ -299,7 +300,7 @@ const TokensTransfer = ({
       />
 
       <div className="caption">
-        {chrome.i18n.getMessage('popup_html_tokens_send_text')}
+        {I18nUtils.getMessage('popup_html_tokens_send_text')}
       </div>
 
       <FormContainer onSubmit={handleSubmit(handleClickOnSend)}>
@@ -360,9 +361,7 @@ const TokensTransfer = ({
 const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.hive.activeAccount,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(
-      state.hive.activeRpc?.testnet!,
-    ),
+    currencyLabels: (state.chain as HiveChain).mainTokens,
     tokenBalance: state.navigation.stack[0].params
       ?.tokenBalance as TokenBalance,
     tokenInfo: state.navigation.stack[0].params?.tokenInfo as Token,

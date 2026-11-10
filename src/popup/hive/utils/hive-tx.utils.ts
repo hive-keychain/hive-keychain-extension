@@ -1,6 +1,5 @@
-import { KeychainApi } from '@api/keychain';
-import { BackgroundMessage } from '@background/background-message.interface';
-import { MultisigModule } from '@background/multisig.module';
+import { MultisigModule } from '@background/hive/modules/multisig.module';
+import { BackgroundMessage } from '@background/multichain/background-message.interface';
 import Hive from '@engrave/ledger-app-hive';
 import type { ExtendedAccount, Operation, Transaction } from '@hiveio/dhive';
 import {
@@ -28,16 +27,19 @@ import {
   PrivateKey,
   call,
 } from 'hive-tx';
+import { KeychainApi } from 'src/api/keychain';
 import Config from 'src/config';
 import { KeychainError } from 'src/keychain-error';
 import { ErrorUtils } from 'src/popup/hive/utils/error.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
 import { AsyncUtils } from 'src/utils/async.utils';
+import { CommunicationUtils } from 'src/utils/communication.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import Logger from 'src/utils/logger.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
 const MINUTE = 60;
+const HIVE_RPC_TIMEOUT_SECONDS = 3;
 
 const setRpc = async (rpc: Rpc) => {
   HiveTxConfig.node =
@@ -353,7 +355,6 @@ const broadcastAndConfirmTransactionWithSignatureOnCurrentRpc = async (
   }
   let response;
   try {
-    Logger.log(hiveTransaction);
     response = await hiveTransaction.broadcast();
     if ((response as HiveTxBroadcastSuccessResponse).result) {
       const transactionResult: HiveTxBroadcastResult = (
@@ -387,7 +388,9 @@ const getData = async (
   key?: string,
 ) => {
   try {
-    const response = await withRpcFailover(() => call(method, params, 3000));
+    const response = await withRpcFailover(() =>
+      call(method, params, HIVE_RPC_TIMEOUT_SECONDS),
+    );
     if (response?.result) {
       return key ? response.result[key] : response.result;
     }
@@ -459,7 +462,7 @@ const useMultisig = async (
     };
     chrome.runtime.onMessage.addListener(handleResponseFromBackground);
 
-    chrome.runtime.sendMessage({
+    CommunicationUtils.runtimeSendMessage({
       command: BackgroundCommand.MULTISIG_REQUEST_SIGNATURES,
       value: {
         transaction: transaction,

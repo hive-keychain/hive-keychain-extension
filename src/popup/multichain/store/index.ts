@@ -1,5 +1,7 @@
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { EvmActiveAccountUtils } from '@popup/evm/utils/evm-active-account.utils';
 import { setHasFinishedSignup } from '@popup/multichain/actions/has-finished-signup.actions';
+import { Chain, ChainType } from '@popup/multichain/interfaces/chains.interface';
 import reducers from '@popup/multichain/reducers';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { VaultKey } from '@reference-data/vault-message-key.enum';
@@ -21,6 +23,7 @@ if (store.getState().hive) {
   let previousAccounts = store.getState().hive.accounts as LocalAccount[];
   let previousRpc = store.getState().hive.activeRpc;
   let previousActiveAccountName = store.getState().hive.activeAccount?.name;
+  let previousActiveAccountType = store.getState().activeAccountType;
   let previousMk = store.getState().mk;
   let previousHiveEngineConfig = store.getState().hive.hiveEngineConfig;
 
@@ -43,7 +46,6 @@ if (store.getState().hive) {
           true,
         );
         store.dispatch(setHasFinishedSignup(true));
-        // AnalyticsUtils.sendAddFirstAccountEvent();
       }
       previousAccounts = accounts;
       if (accounts.length !== 0) {
@@ -58,6 +60,13 @@ if (store.getState().hive) {
       previousActiveAccountName = activeAccount.name;
       ActiveAccountUtils.saveActiveAccountNameInLocalStorage(
         activeAccount.name as string,
+      );
+    }
+    if (previousActiveAccountType !== store.getState().activeAccountType) {
+      previousActiveAccountType = store.getState().activeAccountType;
+      LocalStorageUtils.saveValueInLocalStorage(
+        LocalStorageKeyEnum.ACTIVE_ACCOUNT_TYPE,
+        previousActiveAccountType,
       );
     }
     if (previousMk !== mk) {
@@ -77,6 +86,44 @@ if (store.getState().hive) {
         hiveEngineConfig,
       );
     }
+  });
+}
+
+if (store.getState().evm) {
+  let previousAccounts = store.getState().evm.accounts;
+  let previousActiveAccountAddress =
+    store.getState().evm.activeAccount?.address;
+
+  /* istanbul ignore next */
+
+  store.subscribe(() => {
+    const {
+      chain,
+      evm: { accounts, activeAccount },
+      hasFinishedSignup,
+    } = store.getState();
+    if (JSON.stringify(previousAccounts) !== JSON.stringify(accounts)) {
+      if (
+        previousAccounts.length === 0 &&
+        previousAccounts.length !== accounts.length &&
+        !hasFinishedSignup
+      ) {
+        LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.HAS_FINISHED_SIGNUP,
+          true,
+        );
+        store.dispatch(setHasFinishedSignup(true));
+      }
+      previousAccounts = accounts;
+    }
+    if (
+      chain?.type === ChainType.EVM &&
+      activeAccount?.address &&
+      previousActiveAccountAddress !== activeAccount.address
+    ) {
+      EvmActiveAccountUtils.saveActiveAccountWallet(activeAccount.address);
+    }
+    previousActiveAccountAddress = activeAccount?.address;
   });
 }
 

@@ -4,6 +4,7 @@ import { RequestsHandler } from '@background/requests/request-handler';
 import { KeychainRequestTypes } from '@interfaces/keychain.interface';
 import HiveAuthUtils from 'src/utils/hive-auth.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 jest.mock('src/utils/hive-auth.utils', () => ({
   __esModule: true,
   default: {
@@ -105,6 +106,7 @@ describe('KeylessKeychainModule', () => {
         expect.any(Object),
         'd',
         2,
+        undefined,
       );
     });
 
@@ -139,14 +141,16 @@ describe('KeylessKeychainModule', () => {
         expect.any(Object),
         'd',
         2,
+        undefined,
       );
     });
 
     it('answers with failure for unsupported swap / encodeWithKeys', async () => {
-      (chrome.i18n.getMessage as jest.Mock).mockImplementation(
-        (_key: string, subs?: string[]) =>
+      jest
+        .spyOn(I18nUtils, 'getMessage')
+        .mockImplementation((_key: string, subs?: string[]) =>
           subs ? `unsupported:${subs[0]}` : 'unsupported',
-      );
+        );
 
       await KeylessKeychainModule.handleOperation(
         handler,
@@ -236,6 +240,7 @@ describe('KeylessKeychainModule', () => {
         'alice',
         expect.any(Object),
         7,
+        undefined,
       );
     });
 

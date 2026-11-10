@@ -1,4 +1,5 @@
 import { TransactionOptions } from '@interfaces/keys.interface';
+import { Screen } from '@interfaces/screen.interface';
 import {
   Witness,
   WitnessInfo,
@@ -17,14 +18,13 @@ import {
   navigateToWithParams,
 } from '@popup/multichain/actions/navigation.actions';
 import { RootState } from '@popup/multichain/store';
-import { Screen } from '@reference-data/screen.enum';
 import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { ButtonType } from 'src/common-ui/button/button.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
-import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
+import { HiveConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.interface';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { SlidingBarComponent } from 'src/common-ui/switch-bar/sliding-bar.component';
@@ -37,10 +37,12 @@ import WitnessUtils, {
 } from 'src/popup/hive/utils/witness.utils';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface WitnessInformationProps {
   witnessInfo: WitnessInfo;
   ranking: Witness[];
   setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
+  openOnParameters?: boolean;
 }
 
 enum WitnessInfoScreen {
@@ -53,6 +55,7 @@ const WitnessInformation = ({
   witnessInfo,
   ranking,
   setEditMode,
+  openOnParameters = false,
   navigateToWithParams,
   addToLoadingList,
   setErrorMessage,
@@ -62,7 +65,7 @@ const WitnessInformation = ({
   goBack,
 }: PropsFromRedux & WitnessInformationProps) => {
   const [selectedScreen, setSelectedScreen] = useState<WitnessInfoScreen>(
-    WitnessInfoScreen.INFO,
+    openOnParameters ? WitnessInfoScreen.PARAMS : WitnessInfoScreen.INFO,
   );
   const [witnessRanking, setWitnessRanking] = useState<Witness>();
   const [lastSigningKey, setLastSigningKey] = useState<string | null>(null);
@@ -90,7 +93,7 @@ const WitnessInformation = ({
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
       fields: [],
-      message: chrome.i18n.getMessage(
+      message: I18nUtils.getMessage(
         'popup_html_disable_witness_account_confirmation_message',
         [activeAccount.name!],
       ),
@@ -140,12 +143,12 @@ const WitnessInformation = ({
           removeFromLoadingList('html_popup_confirm_transaction_operation');
         }
       },
-    } as ConfirmationPageParams);
+    } as HiveConfirmationPageParams);
   };
   const enableWitness = () => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       method: KeychainKeyTypes.active,
-      message: chrome.i18n.getMessage(
+      message: I18nUtils.getMessage(
         'popup_html_disable_witness_account_confirmation_message',
         [activeAccount.name!],
       ),
@@ -196,7 +199,7 @@ const WitnessInformation = ({
           removeFromLoadingList('html_popup_confirm_transaction_operation');
         }
       },
-    } as ConfirmationPageParams);
+    } as HiveConfirmationPageParams);
   };
 
   const changeSelectedScreen = (selectedValue: WitnessInfoScreen) => {
@@ -205,69 +208,71 @@ const WitnessInformation = ({
 
   return (
     <div className="witness-information">
-      <div className="top-panel">
-        <SlidingBarComponent
-          dataTestId="witness"
-          id="witness"
-          onChange={changeSelectedScreen}
-          selectedValue={selectedScreen}
-          values={[
-            {
-              value: WitnessInfoScreen.INFO,
-              label: 'html_popup_witness_information_info_label',
-            },
-            {
-              value: WitnessInfoScreen.PARAMS,
-              label: 'html_popup_witness_information_params_label',
-            },
-          ]}
-        />
-      </div>
-      <div className="witness-profile-container">
-        <div className="witness-profile">
-          <img
-            className="witness-image"
-            src={`https://images.hive.blog/u/${activeAccount.name!}/avatar`}
-            onError={(e: any) => {
-              e.target.onError = null;
-              e.target.src = '/assets/images/accounts.png';
-            }}
+      <div className="witness-information-header">
+        <div className="top-panel">
+          <SlidingBarComponent
+            dataTestId="witness"
+            id="witness"
+            onChange={changeSelectedScreen}
+            selectedValue={selectedScreen}
+            values={[
+              {
+                value: WitnessInfoScreen.INFO,
+                label: 'html_popup_witness_information_info_label',
+              },
+              {
+                value: WitnessInfoScreen.PARAMS,
+                label: 'html_popup_witness_information_params_label',
+              },
+            ]}
           />
-          <div className="info-container">
-            <div className="witness-name">@{activeAccount.name!}</div>
-            {witnessRanking && (
-              <div className="witness-ranking">
-                {witnessRanking.active_rank && (
-                  <>
-                    {witnessRanking?.active_rank}
-                    {chrome.i18n.getMessage(
-                      FormatUtils.getOrdinalLabelTranslation(
-                        witnessRanking?.active_rank!,
-                      ),
-                    )}{' '}
-                  </>
-                )}
-                {/* {chrome.i18n.getMessage('popup_html_witness_rank_label')}{' '} */}
-                {(witnessRanking?.active_rank as any)?.toString() !==
-                  (witnessRanking?.rank as any)?.toString() && (
-                  <div>
-                    {'('}
-                    {witnessRanking?.rank}
-                    {')'}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
         </div>
-        {witnessInfo.isDisabled && (
-          <SVGIcon
-            className="witness-disabled"
-            icon={SVGIcons.GOVERNANCE_MY_WITNESS_DEACTIVATED}
-            tooltipMessage="popup_html_witness_information_witness_disabled_text"
-            tooltipPosition="right"
-          />
-        )}
+        <div className="witness-profile-container">
+          <div className="witness-profile">
+            <img
+              className="witness-image"
+              src={`https://images.hive.blog/u/${activeAccount.name!}/avatar`}
+              onError={(e: any) => {
+                e.target.onError = null;
+                e.target.src = '/assets/images/accounts.png';
+              }}
+            />
+            <div className="info-container">
+              <div className="witness-name">@{activeAccount.name!}</div>
+              {witnessRanking && (
+                <div className="witness-ranking">
+                  {witnessRanking.active_rank && (
+                    <>
+                      {witnessRanking?.active_rank}
+                      {I18nUtils.getMessage(
+                        FormatUtils.getOrdinalLabelTranslation(
+                          witnessRanking?.active_rank!,
+                        ),
+                      )}{' '}
+                    </>
+                  )}
+                  {/* {I18nUtils.getMessage('popup_html_witness_rank_label')}{' '} */}
+                  {(witnessRanking?.active_rank as any)?.toString() !==
+                    (witnessRanking?.rank as any)?.toString() && (
+                    <div>
+                      {'('}
+                      {witnessRanking?.rank}
+                      {')'}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+          {witnessInfo.isDisabled && (
+            <SVGIcon
+              className="witness-disabled"
+              icon={SVGIcons.GOVERNANCE_MY_WITNESS_DEACTIVATED}
+              tooltipMessage="popup_html_witness_information_witness_disabled_text"
+              tooltipPosition="right"
+            />
+          )}
+        </div>
       </div>
       {selectedScreen === WitnessInfoScreen.INFO && witnessRanking && (
         <WitnessGlobalInformationComponent witnessInfo={witnessInfo} />

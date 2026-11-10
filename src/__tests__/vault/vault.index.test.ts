@@ -5,6 +5,16 @@ import Config from 'src/config';
 describe('vault index', () => {
   const originalConnect = chrome.runtime.connect;
 
+  beforeEach(() => {
+    Object.defineProperty(chrome.runtime, 'id', {
+      configurable: true,
+      value: 'keychain-test-extension',
+    });
+    (chrome.runtime.getURL as jest.Mock).mockImplementation(
+      (path: string) => `chrome-extension://keychain-test-extension/${path}`,
+    );
+  });
+
   afterEach(() => {
     jest.resetModules();
     chrome.runtime.connect = originalConnect;
@@ -27,9 +37,14 @@ describe('vault index', () => {
     const messageListeners: Array<(msg: any) => void> = [];
     const port = {
       name: Config.vault.portName,
+      sender: {
+        id: chrome.runtime.id,
+        url: chrome.runtime.getURL('popup.html'),
+      },
       onMessage: {
         addListener: (fn: (msg: any) => void) => messageListeners.push(fn),
       },
+      disconnect: jest.fn(),
       postMessage,
     };
 
@@ -63,5 +78,29 @@ describe('vault index', () => {
 
     portHandler(port);
     expect(messageListeners.length).toBe(0);
+  });
+
+  it('rejects vault connections from content scripts', () => {
+    const addListener = jest.spyOn(chrome.runtime.onConnect, 'addListener');
+    require('src/vault/index');
+
+    const portHandler = addListener.mock.calls[0][0] as (port: any) => void;
+    const disconnect = jest.fn();
+    const messageListeners: Array<(msg: any) => void> = [];
+
+    portHandler({
+      name: Config.vault.portName,
+      sender: {
+        id: chrome.runtime.id,
+        url: 'https://malicious.example/',
+      },
+      onMessage: {
+        addListener: (fn: (msg: any) => void) => messageListeners.push(fn),
+      },
+      disconnect,
+    });
+
+    expect(disconnect).toHaveBeenCalled();
+    expect(messageListeners).toHaveLength(0);
   });
 });

@@ -1,20 +1,11 @@
 import React from 'react';
+import { SafeImage } from 'src/common-ui/safe-image/safe-image.component';
+import {
+  DApp,
+  DAppCategory,
+} from 'src/interfaces/ecosystem-dapps.interface';
 
-export interface DApp {
-  id: number;
-  name: string;
-  description: string;
-  icon: string;
-  url: string;
-  appendUsername?: boolean;
-  categories: string[];
-  order: number;
-}
-
-export interface DAppCategory {
-  category: string;
-  dapps: DApp[];
-}
+export type { DApp, DAppCategory };
 
 export interface EcosystemCategoryProps {
   category: DAppCategory;
@@ -27,16 +18,25 @@ export const EcosystemCategory = ({ category }: EcosystemCategoryProps) => {
 
   return (
     <div className="ecosystem-category">
-      {category.dapps.map((dapp, index) => (
-        <div
-          className="dapp"
-          onClick={() => navigateToDapp(dapp)}
-          key={`${dapp.name}-${index}`}>
-          <img className="logo" src={dapp.icon} />
-          <div className="label">{dapp.name}</div>
-          <div className="description">{dapp.description}</div>
-        </div>
-      ))}
+      {(category.dapps ?? []).map((dapp, index) => {
+        return (
+          <div
+            className="dapp"
+            onClick={() => navigateToDapp(dapp)}
+            key={`${dapp.name}-${index}`}>
+            {!!dapp.chainLogo && (
+              <SafeImage
+                className="corner-logo"
+                src={dapp.chainLogo}
+                alt={`${dapp.name} chain logo`}
+              />
+            )}
+            <SafeImage className="logo" src={dapp.icon} alt={dapp.name} />
+            <div className="label">{dapp.name}</div>
+            <div className="description">{dapp.description}</div>
+          </div>
+        );
+      })}
     </div>
   );
 };

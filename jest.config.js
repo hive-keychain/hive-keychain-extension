@@ -25,9 +25,66 @@ module.exports = {
   ],
   transform: {
     '^.+\\.(ts|tsx)?$': 'ts-jest',
+    // sanitize-html 2.18 depends on an ESM-only htmlparser2 tree.
+    'node_modules[\\\\/](htmlparser2|dom-serializer|domelementtype|domhandler|domutils|entities)[\\\\/].+\\.js$':
+      [
+        'ts-jest',
+        {
+          isolatedModules: true,
+          tsconfig: {
+            allowJs: true,
+            esModuleInterop: true,
+            module: 'commonjs',
+          },
+        },
+      ],
   },
+  transformIgnorePatterns: [
+    '/node_modules/(?!.*(htmlparser2|dom-serializer|domelementtype|domhandler|domutils|entities)/)',
+  ],
   moduleDirectories: ['node_modules', 'src'],
   moduleNameMapper: {
+    '^@background/index$': '<rootDir>/src/background/test-compat/index.ts',
+    '^@background/account$':
+      '<rootDir>/src/background/hive/modules/account.module.ts',
+    '^@background/(mk|ledger|claim|hive-engine-config|local-storage|autolock|rpc|settings|multisig)\\.module$':
+      '<rootDir>/src/background/hive/modules/$1.module.ts',
+    '^@background/utils/accounts\\.utils$':
+      '<rootDir>/src/background/hive/utils/accounts.utils.ts',
+    '^@background/requests/request-handler$':
+      '<rootDir>/src/background/test-compat/requests/request-handler.ts',
+    '^src/background/requests/request-handler(?:\\.ts)?$':
+      '<rootDir>/src/background/test-compat/requests/request-handler.ts',
+    '^@background/requests/dialog-lifecycle$':
+      '<rootDir>/src/background/test-compat/requests/dialog-lifecycle.ts',
+    '^src/background/requests/dialog-lifecycle(?:\\.ts)?$':
+      '<rootDir>/src/background/test-compat/requests/dialog-lifecycle.ts',
+    '^@background/requests/init$':
+      '<rootDir>/src/background/test-compat/requests/init.ts',
+    '^src/background/requests/init(?:\\.ts)?$':
+      '<rootDir>/src/background/test-compat/requests/init.ts',
+    '^@background/requests/logic(?:/.*)?$':
+      '<rootDir>/src/background/test-compat/requests/logic.ts',
+    '^src/background/requests/logic(?:/.*)?(?:\\.ts)?$':
+      '<rootDir>/src/background/test-compat/requests/logic.ts',
+    '^@background/requests/operations$':
+      '<rootDir>/src/background/test-compat/requests/operations.ts',
+    '^@background/requests/operations/index$':
+      '<rootDir>/src/background/test-compat/requests/operations.ts',
+    '^src/background/requests/operations/index(?:\\.ts)?$':
+      '<rootDir>/src/background/test-compat/requests/operations.ts',
+    '^@background/requests/operations/operations\\.utils$':
+      '<rootDir>/src/background/hive/requests/operations/operations.utils.ts',
+    '^src/background/requests/operations/operations\\.utils(?:\\.ts)?$':
+      '<rootDir>/src/background/hive/requests/operations/operations.utils.ts',
+    '^@background/requests/operations/ops/(.*)$':
+      '<rootDir>/src/background/hive/requests/operations/ops/$1.ts',
+    '^src/background/requests/operations/ops/(.*)\\.ts$':
+      '<rootDir>/src/background/hive/requests/operations/ops/$1.ts',
+    '^src/content-scripts/web-interface/response\\.logic(?:\\.ts)?$':
+      '<rootDir>/src/content-scripts/hive/web-interface/response.logic.ts',
+    '^src/content-scripts/keychainify/keychainify(?:\\.ts)?$':
+      '<rootDir>/src/content-scripts/hive/keychainify/keychainify.ts',
     ...fromTsconfigPaths,
     '^axios$': 'axios/dist/node/axios.cjs',
     '\\.(css|less|scss)$': 'identity-obj-proxy',
@@ -36,6 +93,7 @@ module.exports = {
   modulePaths: ['<rootDir>'],
   collectCoverageFrom: ['<rootDir>/**/*.{ts, tsx}'],
   collectCoverage: false,
+  testPathIgnorePatterns: ['/node_modules/', 'lavamoat-runtime.test'],
   modulePathIgnorePatterns: [
     '<rootDir>/src/__tests__/utils-for-testing/',
     'mocks',
@@ -46,5 +104,9 @@ module.exports = {
 
   //added new config for background section
   setupFilesAfterEnv: ['./jest.setup.js'], //only for jest-chrome
+  // Recycle a worker before the next file starts. The check runs only while
+  // idle, and the default heap is about 4GB, so the limit has to leave room
+  // for a heavy popup render such as wallet history.
+  workerIdleMemoryLimit: '512MB',
   //end added
 };

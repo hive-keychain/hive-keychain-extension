@@ -6,6 +6,7 @@ import 'react-tabs/style/react-tabs.scss';
 import { GenericTransactionComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/generic-transaction/generic-transaction.component';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface PowerUpTransactionProps {
   transaction: PowerUp;
 }
@@ -16,7 +17,7 @@ const PowerUpTransaction = ({
 }: PropsFromRedux & PowerUpTransactionProps) => {
   const getDetail = () => {
     if (transaction.to !== activeAccountName) {
-      return chrome.i18n.getMessage(
+      return I18nUtils.getMessage(
         'popup_html_wallet_info_power_up_other_account',
         [
           transaction.from,
@@ -25,7 +26,7 @@ const PowerUpTransaction = ({
         ],
       );
     }
-    return chrome.i18n.getMessage('popup_html_wallet_info_power_up', [
+    return I18nUtils.getMessage('popup_html_wallet_info_power_up', [
       FormatUtils.withCommas(transaction.amount, 3),
     ]);
   };

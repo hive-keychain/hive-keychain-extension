@@ -6,6 +6,7 @@ import 'react-tabs/style/react-tabs.scss';
 import { GenericTransactionComponent } from 'src/popup/hive/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/generic-transaction/generic-transaction.component';
 import FormatUtils from 'src/utils/format.utils';
 
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface ReceivedInterestsTransactionProps {
   transaction: ReceivedInterests;
 }
@@ -15,7 +16,7 @@ const ReceivedInterestsTransaction = ({
   activeAccountName,
 }: PropsFromRedux & ReceivedInterestsTransactionProps) => {
   const getDetail = () => {
-    return chrome.i18n.getMessage('popup_html_wallet_info_received_interests', [
+    return I18nUtils.getMessage('popup_html_wallet_info_received_interests', [
       FormatUtils.withCommas(transaction.interest, 3),
     ]);
   };

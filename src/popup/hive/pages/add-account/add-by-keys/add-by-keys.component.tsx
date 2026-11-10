@@ -1,7 +1,14 @@
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { Screen } from '@interfaces/screen.interface';
 import { setErrorMessage } from '@popup/multichain/actions/message.actions';
-import { navigateToWithParams } from '@popup/multichain/actions/navigation.actions';
-import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
+import {
+  navigateTo,
+  navigateToWithParams,
+} from '@popup/multichain/actions/navigation.actions';
+import {
+  resetTitleContainerProperties,
+  setTitleContainerProperties,
+} from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -9,18 +16,22 @@ import ButtonComponent from 'src/common-ui/button/button.component';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import { activateHiveAccount } from 'src/popup/hive/actions/active-account.actions';
 import { addAccount } from 'src/popup/hive/actions/account.actions';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { KeysUtils } from 'src/popup/hive/utils/keys.utils';
-import { Screen } from 'src/reference-data/screen.enum';
-import { HtmlUtils } from 'src/utils/html.utils';
 
+import { HtmlUtils } from 'src/utils/html.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
 const AddByKeys = ({
+  navigateTo,
   navigateToWithParams,
   localAccounts,
   addAccount,
   setTitleContainerProperties,
+  resetTitleContainerProperties,
   setErrorMessage,
+  activateHiveAccount,
 }: PropsType) => {
   const [username, setUsername] = useState('');
   const [privateKey, setPrivateKey] = useState('');
@@ -60,7 +71,11 @@ const AddByKeys = ({
     if (KeysUtils.keysCount(keys) > 2) {
       navigateToWithParams(Screen.ACCOUNT_PAGE_SELECT_KEYS, { keys, username });
     } else {
-      addAccount({ name: username, keys: keys });
+      const account = { name: username, keys: keys };
+      addAccount(account);
+      resetTitleContainerProperties();
+      await activateHiveAccount(account);
+      navigateTo(Screen.HOME_PAGE, true);
     }
   };
 
@@ -110,10 +125,13 @@ const mapStateToProps = (state: RootState) => {
 };
 
 const connector = connect(mapStateToProps, {
+  navigateTo,
   navigateToWithParams,
   addAccount,
   setTitleContainerProperties,
+  resetTitleContainerProperties,
   setErrorMessage,
+  activateHiveAccount,
 });
 type PropsType = ConnectedProps<typeof connector>;
 

@@ -1,0 +1,104 @@
+.create-new-wallet-page {
+  display: flex;
+  flex-direction: column;
+  row-gap: 6px;
+  height: 100%;
+
+  .title {
+    @include poppins200(18px);
+    color: var(--main-font-color);
+    width: 100%;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+
+  .form-container {
+    @include pageLayoutRowGap;
+
+    .caption {
+      @include caption();
+    }
+
+    .tips {
+      color: var(--main-font-color);
+      @include poppins400(14px);
+    }
+    .mnemonic-container {
+      @include small-card();
+      position: relative;
+      padding: 8px;
+      margin: 0;
+      margin-top: 24px;
+      .mnemonic-overlay {
+        background: black;
+        opacity: 0.7;
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 20px;
+        z-index: 6;
+        .mnemonic-overlay-text {
+          color: white;
+        }
+      }
+      .words-container {
+        display: flex;
+        flex-wrap: wrap;
+        row-gap: 8px;
+        column-gap: 8px;
+        justify-content: center;
+
+        &.hidden {
+          filter: blur(3px);
+        }
+        .word-card {
+          @include small-card();
+          margin: 0;
+          color: var(--main-font-color);
+          padding: 4px 8px;
+          border-radius: 12px;
+          width: 100px;
+          justify-content: flex-start;
+          .number {
+            line-height: 16px;
+            border: 1px solid var(--main-font-color);
+            border-radius: 50%;
+            margin-right: 8px;
+            width: 16px;
+            height: 16px;
+            font-size: 11px;
+            text-align: center;
+          }
+        }
+      }
+    }
+    .mnemonic-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0px 24px;
+      .hide-seed-phrase,
+      .copy-seed-phrase {
+        display: flex;
+        align-items: center;
+        @include poppins400(13px);
+        color: $red;
+        cursor: pointer;
+        .svg-icon {
+          @include icon-size(18px);
+          svg {
+            @include icon-size(18px);
+          }
+        }
+        span {
+          margin-left: 4px;
+        }
+      }
+    }
+  }
+}

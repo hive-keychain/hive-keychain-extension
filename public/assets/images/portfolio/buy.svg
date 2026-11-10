@@ -1,0 +1,37 @@
+<svg
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <path
+    d="M12 1.75V9.75"
+    stroke="var(--wallet-icon-color)"
+    stroke-width="1.27"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <path
+    d="M8.75 6.75L12 10L15.25 6.75"
+    stroke="var(--wallet-icon-color)"
+    stroke-width="1.27"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <ellipse
+    cx="12"
+    cy="15.75"
+    rx="6.5"
+    ry="2.5"
+    stroke="var(--wallet-icon-color)"
+    stroke-width="1.27"
+  />
+  <path
+    d="M5.5 15.75V18.75C5.5 20.13 8.41 21.25 12 21.25C15.59 21.25 18.5 20.13 18.5 18.75V15.75"
+    stroke="var(--wallet-icon-color)"
+    stroke-width="1.27"
+    stroke-linecap="round"
+  />
+</svg>

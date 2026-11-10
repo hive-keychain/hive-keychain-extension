@@ -1,7 +1,7 @@
 .popup-container {
   height: 100%;
   width: 100%;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   padding: 36px;
@@ -23,6 +23,7 @@
     @include small-card();
     flex-direction: column;
     row-gap: 24px;
+    width: 100%;
     overflow-y: auto;
     max-height: 90%;
 
@@ -36,6 +37,11 @@
       padding: 0 24px;
     }
 
+    .error-message {
+      color: $red;
+      margin-top: -16px;
+    }
+
     .popup-footer {
       display: flex;
       align-items: center;
@@ -43,6 +49,13 @@
       column-gap: 8px;
       flex: 1;
       width: 100%;
+    }
+  }
+
+  html.detached-window-page &.dapp-status-details,
+  html.sidepanel-page &.dapp-status-details {
+    .popup-content {
+      margin: 0 !important;
     }
   }
 }

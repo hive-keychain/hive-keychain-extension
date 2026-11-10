@@ -1,6 +1,8 @@
+import { SVGIcon } from '@common-ui/svg-icon/svg-icon.component';
 import { navigateTo } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
+import { LedgerRouteUtils } from '@popup/multichain/utils/ledger-route.utils';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { SVGIcons } from 'src/common-ui/icons.enum';
@@ -16,6 +18,8 @@ interface MenuProps {
     icon: SVGIcons;
     callback: () => void;
     className: string;
+    dataTestId?: string;
+    tooltipMessage?: string;
   };
   showDetachWindowOption?: boolean;
 }
@@ -40,7 +44,16 @@ const Menu = ({
     });
   }, [rightAction]);
 
-  const handleMenuItemClick = (menuItem: MenuItem) => {
+  const handleMenuItemClick = async (menuItem: MenuItem) => {
+    if (
+      menuItem.sidePanelHash &&
+      (await LedgerRouteUtils.openInSidePanelFromToolbarPopup(
+        menuItem.sidePanelHash,
+      ))
+    ) {
+      return;
+    }
+
     if (menuItem.nextScreen) {
       navigateTo(menuItem.nextScreen);
     } else if (menuItem.action) {
@@ -48,19 +61,54 @@ const Menu = ({
     }
   };
 
+  const goToDiscord = () => {
+    chrome.tabs.create({ url: 'https://discord.gg/BgNH8rRukz' });
+  };
+  const goToPeakD = () => {
+    chrome.tabs.create({ url: 'https://peakd.com/@keychain' });
+  };
+  const goToTwitter = () => {
+    chrome.tabs.create({ url: 'https://twitter.com/HiveKeychain' });
+  };
+
   return (
-    <div className="menu-page">
-      <div className="menu">
-        {menuItems.map((menuItem, index) => (
-          <MenuItemComponent
-            menuItem={menuItem}
-            key={index}
-            handleMenuItemClick={handleMenuItemClick}
-            isLast={menuItems.length - 1 === index}
-          />
-        ))}
+    <>
+      <div className="menu-page">
+        <div className="menu">
+          {menuItems.map((menuItem, index) => (
+            <MenuItemComponent
+              menuItem={menuItem}
+              key={index}
+              handleMenuItemClick={handleMenuItemClick}
+              isLast={menuItems.length - 1 === index}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+      <div className="link-panel">
+        <SVGIcon
+          className="network-icon"
+          icon={SVGIcons.MENU_BOTTOM_BAR_HIVE}
+          ariaLabel="PeakD"
+          onClick={goToPeakD}
+          hoverable
+        />
+        <SVGIcon
+          className="network-icon"
+          icon={SVGIcons.MENU_BOTTOM_BAR_DISCORD}
+          ariaLabel="Discord"
+          onClick={goToDiscord}
+          hoverable
+        />
+        <SVGIcon
+          className="network-icon"
+          icon={SVGIcons.MENU_BOTTOM_BAR_TWITTER}
+          ariaLabel="X (Twitter)"
+          onClick={goToTwitter}
+          hoverable
+        />
+      </div>
+    </>
   );
 };
 

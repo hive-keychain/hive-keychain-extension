@@ -12,6 +12,7 @@ import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { PopupContainer } from 'src/common-ui/popup-container/popup-container.component';
 import { HtmlUtils } from 'src/utils/html.utils';
+import { I18nUtils } from 'src/utils/i18n.utils';
 interface Props {
   vestingRoutesDifferences: AccountVestingRoutesDifferences[];
   closePopup: () => void;
@@ -35,7 +36,7 @@ const VestingRoutesPopup = ({
         operations={loadingState.loadingOperations}
       />
       <div className="popup-title">
-        {chrome.i18n.getMessage('popup_html_vesting_routes_title')}
+        {I18nUtils.getMessage('popup_html_vesting_routes_title')}
       </div>
       <div
         className="caption"

@@ -1,0 +1,14 @@
+.coming-soon-panel {
+  @include small-card();
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  row-gap: 8px;
+  .title {
+    @include poppins500(14px);
+  }
+  .description {
+    @include poppins400(12px);
+  }
+}
