@@ -1,0 +1,60 @@
+diff --git a/node_modules/ses/dist/ses.cjs b/node_modules/ses/dist/ses.cjs
+index c10f41b..513ee2e 100644
+--- a/node_modules/ses/dist/ses.cjs
++++ b/node_modules/ses/dist/ses.cjs
+@@ -4477,6 +4477,11 @@ const freezeTypedArray = array => {
+  * set the value of that bogus `.prototype` property to `undefined`,
+  * we do so, issuing a warning, rather than failing to initialize ses.
+  *
++ * Chrome 128 keeps non-configurable `arguments` and `caller` on native
++ * functions such as TextEncoder. Reading them throws, and `delete` throws
++ * in strict mode. Tolerate that the same way as an undeletable prototype so
++ * lockdown can finish. A successful delete still removes the property.
++ *
+  * @param {object} obj
+  * @param {PropertyKey} prop
+  * @param {boolean} known If deletion is expected, don't warn
+@@ -4514,6 +4519,13 @@ const freezeTypedArray = array => {
+           return;
+         }
+       }
++      if (
++        typeof obj === 'function' &&
++        (prop === 'arguments' || prop === 'caller')
++      ) {
++        warn(`Tolerating undeletable ${subPath}`);
++        return;
++      }
+       error(`failed to delete ${subPath}`, reason);
+     } else {
+       error(`deleting ${subPath} threw`, reason);
+diff --git a/node_modules/ses/src/cauterize-property.js b/node_modules/ses/src/cauterize-property.js
+index 0c54ac3..a50db93 100644
+--- a/node_modules/ses/src/cauterize-property.js
++++ b/node_modules/ses/src/cauterize-property.js
+@@ -24,6 +24,11 @@ import { hasOwn } from './commons.js';
+  * set the value of that bogus `.prototype` property to `undefined`,
+  * we do so, issuing a warning, rather than failing to initialize ses.
+  *
++ * Chrome 128 keeps non-configurable `arguments` and `caller` on native
++ * functions such as TextEncoder. Reading them throws, and `delete` throws
++ * in strict mode. Tolerate that the same way as an undeletable prototype so
++ * lockdown can finish. A successful delete still removes the property.
++ *
+  * @param {object} obj
+  * @param {PropertyKey} prop
+  * @param {boolean} known If deletion is expected, don't warn
+@@ -61,6 +66,13 @@ export const cauterizeProperty = (
+           return;
+         }
+       }
++      if (
++        typeof obj === 'function' &&
++        (prop === 'arguments' || prop === 'caller')
++      ) {
++        warn(`Tolerating undeletable ${subPath}`);
++        return;
++      }
+       error(`failed to delete ${subPath}`, reason);
+     } else {
+       error(`deleting ${subPath} threw`, reason);

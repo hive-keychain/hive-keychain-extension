@@ -7,6 +7,7 @@
     "example": "example"
   },
   "scripts": {
+    "postinstall": "patch-package",
     "dev": "npm outdated; concurrently \"npm:dev:chromium\" \"npm:dev:firefox\"",
     "dev:chromium": "WEBPACK_FS_CACHE=true webpack --config webpack/chromium/webpack.dev.js -w",
     "dev:firefox": "WEBPACK_FS_CACHE=true webpack --config webpack/firefox/webpack.dev.js -w",
