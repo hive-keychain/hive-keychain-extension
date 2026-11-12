@@ -163,6 +163,7 @@ const UnlockedApp = ({
     undefined,
   );
   const previousNavigationPageRef = useRef<Screen | undefined>(undefined);
+  const didRunInitialEvmAccountLoadRef = useRef(false);
 
   const getCompletePaidHiveAccountCreationOptions = () => {
     const isOnPendingAccountCreationStatusPage =
@@ -338,6 +339,14 @@ const UnlockedApp = ({
         chain.chainId,
       )
     ) {
+      didRunInitialEvmAccountLoadRef.current = true;
+      return;
+    }
+    // The first ready load reads the saved wallet. Later chain changes keep
+    // the wallet already in memory. Startup does not load this account again.
+    if (!didRunInitialEvmAccountLoadRef.current) {
+      didRunInitialEvmAccountLoadRef.current = true;
+      void initActiveEvmAccount(evmAccounts, chain as EvmChain);
       return;
     }
     if (activeEvmAccount.wallet?.address) {
@@ -578,27 +587,13 @@ const UnlockedApp = ({
 
   const initActiveAccountsForStartup = async (
     hiveAccountsFromStorage: LocalAccount[],
-    evmAccountsFromStorage: EvmAccount[],
     nextAccountType: ChainType.HIVE | ChainType.EVM,
-    targetChain: Chain | undefined,
   ) => {
     if (
       nextAccountType === ChainType.HIVE &&
       hiveAccountsFromStorage.length > 0
     ) {
       await initActiveHiveAccount(hiveAccountsFromStorage);
-      return;
-    }
-
-    if (
-      nextAccountType === ChainType.EVM &&
-      targetChain?.type === ChainType.EVM &&
-      evmAccountsFromStorage.length > 0
-    ) {
-      await initActiveEvmAccount(
-        evmAccountsFromStorage,
-        targetChain as EvmChain,
-      );
     }
   };
 
@@ -629,7 +624,6 @@ const UnlockedApp = ({
     }
 
     let nextAccountType = store.getState().activeAccountType;
-    let targetChain = store.getState().chain as Chain | undefined;
 
     if (!startupChainResolvedRef.current) {
       const startupResolution = await resolveStartupChainAndAccountType(
@@ -637,7 +631,6 @@ const UnlockedApp = ({
         evmAccountsFromStorage,
       );
       nextAccountType = startupResolution.accountType;
-      targetChain = startupResolution.targetChain;
       setActiveAccountType(nextAccountType);
       startupChainResolvedRef.current = true;
     }
@@ -656,9 +649,7 @@ const UnlockedApp = ({
 
     await initActiveAccountsForStartup(
       hiveAccountsFromStorage,
-      evmAccountsFromStorage,
       nextAccountType,
-      targetChain,
     );
     const syncResults = await synchronizePendingHiveAccountCreations();
     await handleCompletedPaidHiveAccountCreations(

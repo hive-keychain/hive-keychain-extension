@@ -25,6 +25,7 @@ import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { PendingHiveAccountCreationUtils } from 'src/utils/pending-hive-account-creation.utils';
 
+import { loadEvmActiveAccount } from '@popup/evm/actions/active-account.actions';
 import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import RpcUtils from 'src/popup/hive/utils/rpc.utils';
@@ -132,7 +133,7 @@ jest.mock('src/popup/hive/actions/active-account.actions', () => ({
 }));
 
 jest.mock('@popup/evm/actions/active-account.actions', () => ({
-  loadEvmActiveAccount: () => () => undefined,
+  loadEvmActiveAccount: jest.fn(() => () => undefined),
 }));
 
 jest.mock('src/popup/hive/utils/account.utils', () => ({
@@ -297,6 +298,7 @@ describe('UnlockedAppComponent', () => {
       defaultEvmAccounts(),
     );
     (EvmWalletUtils.invalidateRebuildAccountsCache as jest.Mock).mockClear();
+    (loadEvmActiveAccount as jest.Mock).mockClear();
     jest
       .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
       .mockImplementation(async (key) => {
@@ -348,6 +350,52 @@ describe('UnlockedAppComponent', () => {
       currentPage: HiveScreen.SETTINGS_MANAGE_ACCOUNTS,
       params: { username: localAccounts.user2.name },
     });
+  });
+
+  it('loads the saved EVM wallet once when startup opens on an EVM chain', async () => {
+    const savedWallet = defaultEvmAccounts()[0].wallet;
+    const staleWalletAddress = '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+
+    const { store } = customRender(<UnlockedAppComponent />, {
+      initialState: {
+        ...initialEmptyStateStore,
+        mk: mkData.user.one,
+        activeAccountType: ChainType.EVM,
+        chain: evmChain,
+        navigation: {
+          stack: [{ currentPage: Screen.HOME_PAGE }],
+        },
+        hive: {
+          ...initialEmptyStateStore.hive,
+          appStatus: {
+            ...initialEmptyStateStore.hive.appStatus,
+            priceLoaded: true,
+            globalPropertiesLoaded: true,
+          },
+        },
+        evm: {
+          ...initialEmptyStateStore.evm,
+          activeAccount: {
+            ...initialEmptyStateStore.evm.activeAccount,
+            address: staleWalletAddress,
+            wallet: { address: staleWalletAddress },
+          },
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(
+        PaidAccountCreationActions.synchronizePendingHiveAccountCreations,
+      ).toHaveBeenCalled();
+      expect(store.getState().activeAccountType).toBe(ChainType.EVM);
+    });
+
+    expect(loadEvmActiveAccount).toHaveBeenCalledTimes(1);
+    expect(loadEvmActiveAccount).toHaveBeenCalledWith(
+      expect.objectContaining({ chainId: '0x1', type: ChainType.EVM }),
+      savedWallet,
+    );
   });
 
   it('refreshes EVM accounts when EVM account storage changes', async () => {
