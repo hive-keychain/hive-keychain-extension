@@ -6,6 +6,11 @@ const { DefinePlugin } = require('webpack');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const { toDefinePluginEnv } = require('../env');
 const { applyLavaMoat } = require('../lavamoat');
+const {
+  FIREFOX_JS_MAX_CHUNK_BYTES,
+  FirefoxAmoBundleSizePlugin,
+  isSplittableChunk,
+} = require('./firefox-amo-bundle-size');
 
 module.exports = applyLavaMoat(merge(common, {
   mode: 'production',
@@ -13,6 +18,17 @@ module.exports = applyLavaMoat(merge(common, {
   output: {
     path: path.join(__dirname, '../../dist-prod-firefox'),
     filename: '[name]Bundle.js',
+  },
+  // Firefox rejects JavaScript files over 5MB. Keep every emitted chunk smaller
+  // than that, including after the SES lockdown prefix is prepended.
+  optimization: {
+    concatenateModules: false,
+    splitChunks: {
+      chunks: isSplittableChunk,
+      maxSize: FIREFOX_JS_MAX_CHUNK_BYTES,
+      maxInitialRequests: Infinity,
+      maxAsyncRequests: Infinity,
+    },
   },
   plugins: [
     // new WebpackBundleAnalyzer.BundleAnalyzerPlugin(),
@@ -26,6 +42,7 @@ module.exports = applyLavaMoat(merge(common, {
       failOnWarning: true,
       exclude: ['../../node_modules', '../../src/utils/logger.utils.ts'],
     }),
+    new FirefoxAmoBundleSizePlugin(),
   ],
 }),
   'firefox',

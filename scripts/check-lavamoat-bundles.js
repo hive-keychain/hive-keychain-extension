@@ -15,7 +15,6 @@ const LOCKDOWN_BUNDLES = [
 ];
 
 const UNPREFIXED_BUNDLES = [
-  'extensionAppBundle.js',
   'popupBundle.js',
   'portfolioBundle.js',
   'keychainifyBundle.js',
@@ -73,6 +72,59 @@ UNPREFIXED_BUNDLES.forEach((fileName) => {
       `${fileName} should not include the SES lockdown prefix, found ${count}`,
     );
   }
+});
+
+const extensionAppBundles = fs
+  .readdirSync(resolvedOutputDir)
+  .filter(
+    (fileName) =>
+      fileName === 'extensionAppBundle.js' ||
+      /^extensionApp-.+Bundle\.js$/.test(fileName),
+  );
+if (extensionAppBundles.length === 0) {
+  throw new Error(`Missing extensionApp bundle in ${resolvedOutputDir}`);
+}
+extensionAppBundles.forEach((fileName) => {
+  const count = countBanner(readBundle(resolvedOutputDir, fileName));
+  if (count !== 0) {
+    throw new Error(
+      `${fileName} should not include the SES lockdown prefix, found ${count}`,
+    );
+  }
+});
+
+const assertScriptExists = (sourceFile, scriptPath) => {
+  const fileName = scriptPath.replace(/^\//, '');
+  if (fileName.startsWith('assets/')) {
+    return;
+  }
+  if (!fs.existsSync(path.join(resolvedOutputDir, fileName))) {
+    throw new Error(`${sourceFile} references missing script ${fileName}`);
+  }
+};
+
+fs.readdirSync(resolvedOutputDir)
+  .filter((fileName) => fileName.endsWith('.html'))
+  .forEach((fileName) => {
+    const html = fs.readFileSync(
+      path.join(resolvedOutputDir, fileName),
+      'utf8',
+    );
+    for (const match of html.matchAll(/src="([^"]+\.js)"/g)) {
+      assertScriptExists(fileName, match[1]);
+    }
+  });
+
+const builtManifest = JSON.parse(
+  fs.readFileSync(path.join(resolvedOutputDir, 'manifest.json'), 'utf8'),
+);
+(builtManifest.background?.scripts || []).forEach((scriptPath) => {
+  assertScriptExists('manifest.json background', scriptPath);
+});
+(builtManifest.content_scripts || []).forEach((script) => {
+  (script.js || []).forEach((scriptPath) => {
+    assertScriptExists('manifest.json content script', scriptPath);
+  });
 });
 
 CONTENT_SCRIPT_DEPENDENT_BUNDLES.forEach((fileName) => {
