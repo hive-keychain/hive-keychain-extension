@@ -44,7 +44,10 @@ export const sendRequestToBackground = (
     domain: getWindowHostname(),
     request_id: req.request_id,
   } as const;
-  const payloadSize = RequestPayloadUtils.getRequestPayloadSize(message);
+  const payloadSize = RequestPayloadUtils.getRequestPayloadSize(
+    message,
+    RequestPayloadUtils.getMaxRequestBytes('hive', req.type),
+  );
   if (payloadSize.byteSize === null) {
     sendIncompleteDataResponse(req, 'Invalid request.');
     return;
@@ -86,7 +89,12 @@ export const sendEvmRequestToBackground = async (
     },
     request_id: req.request_id,
   } as KeychainEvmRequestWrapper;
-  if (!RequestPayloadUtils.getRequestPayloadSize(message).isValid) {
+  if (
+    !RequestPayloadUtils.getRequestPayloadSize(
+      message,
+      RequestPayloadUtils.getMaxRequestBytes('evm', req.method),
+    ).isValid
+  ) {
     sendErrorToEvm({
       requestId: req.request_id,
       request_id: req.request_id,

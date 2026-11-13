@@ -13,6 +13,8 @@ export const PENDING_REQUEST_LIMITS = {
   perOriginAndMethod: 5,
 } as const;
 
+export const MAX_PENDING_PAYLOAD_BYTES = 2 * 1024 * 1024;
+
 export type PendingRequestAdmissionReason =
   | 'request_pending'
   | 'request_limit';
@@ -74,7 +76,8 @@ const getStoredPendingRequests = async (): Promise<StoredPendingRequest[]> => {
           frameId: 0,
           origin: getLegacyOrigin('hive', requestData.domain),
         } as PendingRequestSource),
-      byteSize: null,
+      byteSize:
+        typeof requestData.byteSize === 'number' ? requestData.byteSize : 0,
       arrivalOrder: requestData.arrivalOrder ?? requestData.request_id,
     })),
     ...evmRequests.map((requestData: any) => ({
@@ -90,10 +93,36 @@ const getStoredPendingRequests = async (): Promise<StoredPendingRequest[]> => {
             requestData.dappInfo?.origin ??
             getLegacyOrigin('evm', requestData.dappInfo?.domain),
         } as PendingRequestSource),
-      byteSize: null,
+      byteSize:
+        typeof requestData.byteSize === 'number' ? requestData.byteSize : 0,
       arrivalOrder: requestData.arrivalOrder ?? requestData.request_id,
     })),
   ];
+};
+
+const countsTowardPendingPayloadBudget = (
+  chain: PendingRequestChain,
+  method: string,
+) => !(chain === 'hive' && method === 'signBuffer');
+
+const hasExceededPendingPayloadBudget = (
+  requests: StoredPendingRequest[],
+  candidate: PendingRequestCandidate,
+) => {
+  if (
+    candidate.byteSize === null ||
+    !countsTowardPendingPayloadBudget(candidate.chain, candidate.method)
+  ) {
+    return false;
+  }
+
+  const storedBytes = requests.reduce((sum, request) => {
+    if (!countsTowardPendingPayloadBudget(request.chain, request.method)) {
+      return sum;
+    }
+    return sum + (request.byteSize ?? 0);
+  }, 0);
+  return storedBytes + candidate.byteSize > MAX_PENDING_PAYLOAD_BYTES;
 };
 
 const getNextArrivalOrder = (requests: StoredPendingRequest[]) =>
@@ -139,9 +168,13 @@ const admit = async (
   persist: (arrivalOrder: number) => Promise<void>,
 ): Promise<PendingRequestAdmissionResult> =>
   enqueueAdmission(async () => {
+    const maxBytes = RequestPayloadUtils.getMaxRequestBytes(
+      candidate.chain,
+      candidate.method,
+    );
     if (
       candidate.byteSize === null ||
-      candidate.byteSize > RequestPayloadUtils.MAX_REQUEST_BYTES
+      (maxBytes !== null && candidate.byteSize > maxBytes)
     ) {
       return { accepted: false, reason: 'request_limit' };
     }
@@ -150,7 +183,10 @@ const admit = async (
     if (requests.some((request) => isDuplicate(request, candidate))) {
       return { accepted: false, reason: 'request_pending' };
     }
-    if (hasReachedLimit(requests, candidate)) {
+    if (
+      hasReachedLimit(requests, candidate) ||
+      hasExceededPendingPayloadBudget(requests, candidate)
+    ) {
       return { accepted: false, reason: 'request_limit' };
     }
 

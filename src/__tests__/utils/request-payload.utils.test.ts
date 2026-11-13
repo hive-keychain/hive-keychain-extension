@@ -38,4 +38,29 @@ describe('RequestPayloadUtils', () => {
       ).isValid,
     ).toBe(false);
   });
+
+  it('leaves signBuffer uncapped and caps hive and evm transactions', () => {
+    expect(
+      RequestPayloadUtils.getMaxRequestBytes('hive', 'signBuffer'),
+    ).toBeNull();
+    expect(
+      RequestPayloadUtils.getRequestPayloadSize(
+        'a'.repeat(RequestPayloadUtils.MAX_REQUEST_BYTES),
+        null,
+      ).isValid,
+    ).toBe(true);
+
+    expect(
+      RequestPayloadUtils.getRequestPayloadSize(
+        'a'.repeat(RequestPayloadUtils.HIVE_TRANSACTION_BYTES),
+        RequestPayloadUtils.getMaxRequestBytes('hive', 'transfer'),
+      ).isValid,
+    ).toBe(false);
+    expect(
+      RequestPayloadUtils.getRequestPayloadSize(
+        'a'.repeat(RequestPayloadUtils.EVM_TRANSACTION_BYTES),
+        RequestPayloadUtils.getMaxRequestBytes('evm', 'eth_sendTransaction'),
+      ).isValid,
+    ).toBe(false);
+  });
 });

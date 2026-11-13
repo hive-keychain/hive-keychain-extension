@@ -1,4 +1,7 @@
-import { PendingRequestAdmission } from '@background/multichain/pending-request-admission';
+import {
+  MAX_PENDING_PAYLOAD_BYTES,
+  PendingRequestAdmission,
+} from '@background/multichain/pending-request-admission';
 import { PendingRequestSource } from '@interfaces/pending-request.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 
@@ -41,6 +44,7 @@ const persistCandidate = (candidate: Candidate) => async (arrivalOrder: number) 
           domain: new URL(candidate.source.origin).hostname,
           source: candidate.source,
           arrivalOrder,
+          byteSize: candidate.byteSize ?? undefined,
         }
       : {
           tab: candidate.source.tab,
@@ -51,6 +55,7 @@ const persistCandidate = (candidate: Candidate) => async (arrivalOrder: number) 
             requestSource: candidate.source,
           },
           arrivalOrder,
+          byteSize: candidate.byteSize ?? undefined,
         };
   storage[storageKey] = {
     ...current,
@@ -162,6 +167,48 @@ describe('PendingRequestAdmission', () => {
       accepted: false,
       reason: 'request_limit',
     });
+  });
+
+  it('keeps signBuffer out of the pending payload budget', async () => {
+    const messageBytes = 1024 * 1024;
+    await admit(
+      getCandidate({
+        chain: 'evm',
+        requestId: 1,
+        method: 'personal_sign',
+        byteSize: messageBytes,
+      }),
+    );
+    await admit(
+      getCandidate({
+        chain: 'evm',
+        requestId: 2,
+        method: 'personal_sign',
+        byteSize: messageBytes,
+      }),
+    );
+
+    await expect(
+      admit(
+        getCandidate({
+          requestId: 3,
+          method: 'signBuffer',
+          byteSize: messageBytes * 5,
+        }),
+      ),
+    ).resolves.toEqual({ accepted: true, arrivalOrder: 3 });
+
+    await expect(
+      admit(
+        getCandidate({
+          chain: 'evm',
+          requestId: 4,
+          method: 'personal_sign',
+          byteSize: messageBytes,
+        }),
+      ),
+    ).resolves.toEqual({ accepted: false, reason: 'request_limit' });
+    expect(messageBytes * 2).toBe(MAX_PENDING_PAYLOAD_BYTES);
   });
 
   it('does not swallow persistence failures', async () => {

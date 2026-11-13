@@ -49,6 +49,7 @@ export type EvmRequestData = {
   arrivalOrder?: number;
   dialogCommand?: DialogCommand;
   dialogData?: Record<string, unknown>;
+  byteSize?: number;
 };
 
 export type EvmRequestLocator = PendingRequestLocator;
@@ -118,10 +119,13 @@ export class EvmRequestHandler {
         ) ?? '',
       requestSource: source,
     };
-    const payloadSize = RequestPayloadUtils.getRequestPayloadSize({
-      ...msg,
-      dappInfo: canonicalDappInfo,
-    });
+    const payloadSize = RequestPayloadUtils.getRequestPayloadSize(
+      {
+        ...msg,
+        dappInfo: canonicalDappInfo,
+      },
+      RequestPayloadUtils.getMaxRequestBytes('evm', msg.request.method),
+    );
 
     if (!payloadSize.isValid) {
       await this.sendAdmissionError(
@@ -168,6 +172,7 @@ export class EvmRequestHandler {
                 request_id: msg.request_id,
                 dappInfo: canonicalDappInfo,
                 arrivalOrder,
+                byteSize: payloadSize.byteSize ?? undefined,
               },
             ],
           );

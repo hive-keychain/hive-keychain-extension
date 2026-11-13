@@ -64,6 +64,7 @@ export type HiveRequestData = {
   domain?: string;
   arrivalOrder?: number;
   source?: PendingRequestSource;
+  byteSize?: number;
 };
 
 export type HiveRequestLocator = PendingRequestLocator;
@@ -248,10 +249,13 @@ export class HiveRequestsHandler {
       return;
     }
 
-    const payloadSize = RequestPayloadUtils.getRequestPayloadSize({
-      ...msg,
-      domain,
-    });
+    const payloadSize = RequestPayloadUtils.getRequestPayloadSize(
+      {
+        ...msg,
+        domain,
+      },
+      RequestPayloadUtils.getMaxRequestBytes('hive', msg.request.type),
+    );
     if (payloadSize.byteSize === null) {
       await rejectRequest('incomplete', 'Invalid request.');
       return;
@@ -281,6 +285,7 @@ export class HiveRequestsHandler {
             domain,
             source,
             arrivalOrder,
+            byteSize: payloadSize.byteSize ?? undefined,
           };
           if (msg.request.rpc) {
             requestData.rpc = { uri: msg.request.rpc, testnet: false };
