@@ -30,8 +30,10 @@ describe('SVGIcon', () => {
 
     fireEvent.keyDown(icon, { key: 'Enter' });
     fireEvent.keyDown(icon, { key: ' ' });
+    fireEvent.click(icon);
 
-    expect(onClick).toHaveBeenCalledTimes(2);
+    expect(onClick).toHaveBeenCalledTimes(3);
+    expect(icon.querySelector('[src]')).not.toHaveAttribute('onclick');
   });
 
   it('keeps decorative icons out of the tab order', () => {

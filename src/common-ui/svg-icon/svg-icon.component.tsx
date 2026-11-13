@@ -1,4 +1,4 @@
-import React, { BaseSyntheticEvent, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { ReactSVG } from 'react-svg';
 import {
   CustomTooltip,
@@ -34,56 +34,31 @@ export const SVGIcon = ({
   tooltipMessage,
   tooltipPosition,
   tooltipDelayShow,
+  background,
   svgViewBox,
   ariaLabel,
 }: ISVGIconProps) => {
   const [hovered, setHovered] = useState(false);
+  const isClickable = Boolean(onClick);
+  const applyViewBox = useCallback(
+    (svg: SVGSVGElement) => {
+      if (svgViewBox) {
+        svg.setAttribute('viewBox', svgViewBox);
+      }
+    },
+    [svgViewBox],
+  );
 
-  const handleClick = (event: BaseSyntheticEvent) => {
-    if (onClick) {
-      onClick(event);
-    }
+  const handleClick = (event: React.SyntheticEvent) => {
+    onClick?.(event);
   };
 
-  const getIconTemplate = ({
-    dataTestId,
-    onClick,
-    className,
-    icon,
-    hoverable,
-    forceHover,
-    background,
-    svgViewBox,
-    ariaLabel,
-  }: ISVGIconProps) => {
-    return (
-      <ReactSVG
-        data-testid={dataTestId}
-        onMouseOver={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        onClick={($event) => {
-          handleClick($event);
-        }}
-        onKeyDown={(event) => {
-          if (!onClick || (event.key !== 'Enter' && event.key !== ' ')) return;
-          event.preventDefault();
-          handleClick(event);
-        }}
-        role={onClick ? 'button' : undefined}
-        tabIndex={onClick ? 0 : undefined}
-        aria-label={onClick ? ariaLabel : undefined}
-        className={`svg-icon ${className ?? ''} ${onClick ? 'clickable' : ''} ${
-          (hoverable && hovered) || forceHover ? 'hovered' : ''
-        }`}
-        src={`/assets/images/${icon}.svg`}
-        style={{ background: background }}
-        afterInjection={(svg) => {
-          if (svgViewBox) {
-            svg.setAttribute('viewBox', svgViewBox);
-          }
-        }}
-      />
-    );
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (!onClick || (event.key !== 'Enter' && event.key !== ' ')) {
+      return;
+    }
+    event.preventDefault();
+    handleClick(event);
   };
 
   const accessibleLabel =
@@ -94,6 +69,27 @@ export const SVGIcon = ({
         : I18nUtils.getMessage(tooltipMessage)
       : undefined);
 
+  const iconElement = (
+    <div
+      data-testid={dataTestId}
+      className={`svg-icon ${className ?? ''} ${isClickable ? 'clickable' : ''} ${
+        (hoverable && hovered) || forceHover ? 'hovered' : ''
+      }`}
+      style={background ? { background } : undefined}
+      onMouseOver={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onClick={isClickable ? handleClick : undefined}
+      onKeyDown={isClickable ? handleKeyDown : undefined}
+      role={isClickable ? 'button' : undefined}
+      tabIndex={isClickable ? 0 : undefined}
+      aria-label={isClickable ? accessibleLabel : undefined}>
+      <ReactSVG
+        src={`/assets/images/${icon}.svg`}
+        afterInjection={svgViewBox ? applyViewBox : undefined}
+      />
+    </div>
+  );
+
   if (tooltipMessage && tooltipPosition) {
     return (
       <CustomTooltip
@@ -101,28 +97,10 @@ export const SVGIcon = ({
         position={tooltipPosition}
         delayShow={tooltipDelayShow ?? 500}
         skipTranslation={skipTooltipTranslation}>
-        {getIconTemplate({
-          dataTestId,
-          onClick,
-          className,
-          icon,
-          hoverable,
-          forceHover,
-          svgViewBox,
-          ariaLabel: accessibleLabel,
-        })}
+        {iconElement}
       </CustomTooltip>
     );
-  } else {
-    return getIconTemplate({
-      dataTestId,
-      onClick,
-      className,
-      icon,
-      hoverable,
-      forceHover,
-      svgViewBox,
-      ariaLabel: accessibleLabel,
-    });
   }
+
+  return iconElement;
 };
