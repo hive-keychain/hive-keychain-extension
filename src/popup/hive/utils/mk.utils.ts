@@ -1,5 +1,5 @@
 import { KeylessKeychainUtils } from '@background/utils/keyless-keychain.utils';
-import { EvmWalletUtils } from '@popup/evm/utils/wallet.utils';
+import EncryptUtils from '@popup/hive/utils/encrypt.utils';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import AccountUtils from 'src/popup/hive/utils/account.utils';
 import { isPasswordValid } from 'src/popup/hive/utils/password.utils';
@@ -14,11 +14,20 @@ const safelyLoadAccounts = async <T>(loader: () => Promise<T>) => {
 };
 
 const login = async (password: string): Promise<boolean> => {
-  const [accounts, evmAccounts] = await Promise.all([
+  const [hiveAccounts, hasValidEvmPassword] = await Promise.all([
     safelyLoadAccounts(() => AccountUtils.getAccountsFromLocalStorage(password)),
-    safelyLoadAccounts(() => EvmWalletUtils.getAccountsFromLocalStorage(password)),
+    safelyLoadAccounts(async () => {
+      const encryptedAccounts = await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.EVM_ACCOUNTS,
+      );
+      const accounts = await EncryptUtils.decryptToJson(
+        encryptedAccounts,
+        password,
+      );
+      return Array.isArray(accounts?.list);
+    }),
   ]);
-  if (!!accounts || !!evmAccounts) return true;
+  if (Array.isArray(hiveAccounts) || hasValidEvmPassword) return true;
   const storage = await LocalStorageUtils.getMultipleValueFromLocalStorage([
     LocalStorageKeyEnum.KEYLESS_KEYCHAIN_ENABLED,
     LocalStorageKeyEnum.KEYLESS_KEYCHAIN_AUTH_DATA_USER_DICT,

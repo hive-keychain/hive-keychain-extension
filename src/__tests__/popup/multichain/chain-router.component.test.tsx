@@ -1,13 +1,23 @@
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { act, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, waitFor } from '@testing-library/react';
 import React from 'react';
-import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/fake-store';
+import { Provider } from 'react-redux';
+import { localAccounts } from 'src/__tests__/utils-for-testing/data/local-accounts';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
+import {
+  getFakeStore,
+  initialEmptyStateStore,
+} from 'src/__tests__/utils-for-testing/fake-store';
 import {
   LoadingValuesConfiguration,
 } from 'src/__tests__/utils-for-testing/loading-values-configuration/loading-values-configuration';
 import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
+import EncryptUtils from 'src/popup/hive/utils/encrypt.utils';
 import { ChainRouterComponent } from 'src/popup/multichain/chain-router.component';
+import { SignUpScreen } from 'src/popup/multichain/sign-up.context';
+import { I18nUtils } from 'src/utils/i18n.utils';
+import LegalDocumentsUtils from 'src/utils/legal-documents.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import VaultUtils from 'src/utils/vault.utils';
 
@@ -17,6 +27,57 @@ jest.mock('@popup/multichain/unlocked-app.component', () => {
     UnlockedAppComponent: () =>
       React.createElement('div', { 'data-testid': 'unlocked-app' }),
   };
+});
+
+describe('ChainRouter sign-in', () => {
+  afterEach(() => {
+    EncryptUtils.clearDerivedKeyCache();
+    jest.restoreAllMocks();
+  });
+
+  it('shows the wrong-password error and stays locked with one Hive account and no EVM accounts', async () => {
+    const encryptedAccounts = await EncryptUtils.encryptJson(
+      { list: [localAccounts.user1] },
+      mk.user.one,
+    );
+    jest
+      .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
+      .mockImplementation(async (key) => {
+        if (key === LocalStorageKeyEnum.HAS_FINISHED_SIGNUP) return true;
+        if (key === LocalStorageKeyEnum.ACCOUNTS) return encryptedAccounts;
+        return undefined;
+      });
+    jest
+      .spyOn(LocalStorageUtils, 'getMultipleValueFromLocalStorage')
+      .mockResolvedValue({});
+    jest
+      .spyOn(LocalStorageUtils, 'saveValueInLocalStorage')
+      .mockResolvedValue(undefined);
+    jest
+      .spyOn(LegalDocumentsUtils, 'needsLegalDocumentAcceptance')
+      .mockResolvedValue(false);
+    jest.spyOn(VaultUtils, 'getValueFromVault').mockResolvedValue('');
+    const saveVault = jest
+      .spyOn(VaultUtils, 'saveValueInVault')
+      .mockResolvedValue(true);
+    const store = getFakeStore();
+    const { findByTestId, findByText, getByTestId, queryByTestId } = render(
+      <Provider store={store}>
+        <ChainRouterComponent screen={SignUpScreen.SIGN_UP} />
+      </Provider>,
+    );
+
+    fireEvent.change(await findByTestId('password-input'), {
+      target: { value: mk.user.two },
+    });
+    fireEvent.click(getByTestId('login-button'));
+
+    await findByText(I18nUtils.getMessage('wrong_password'));
+    expect(getByTestId('sign-in-page')).toBeTruthy();
+    expect(queryByTestId('unlocked-app')).toBeNull();
+    expect(store.getState().mk).toBe('');
+    expect(saveVault).not.toHaveBeenCalled();
+  });
 });
 
 describe('ChainRouter startup', () => {
