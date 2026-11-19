@@ -2549,14 +2549,18 @@ export const Portfolio = ({
       return;
     }
 
+    const hasInMemoryCatalog =
+      hasLoadedSwapAvailableAssets && swapAvailableAssets.length > 0;
     isSwapAvailableAssetsLoadInFlightRef.current = true;
-    setIsSwapAvailableAssetsLoading(true);
-    let hasCachedCatalog = false;
+    if (!hasInMemoryCatalog) {
+      setIsSwapAvailableAssetsLoading(true);
+    }
+    let hasUsableCatalog = hasInMemoryCatalog;
     try {
       const cached =
         await PortfolioSwapCatalogCacheUtils.getCachedSwapCatalog();
       if (cached) {
-        hasCachedCatalog = true;
+        hasUsableCatalog = true;
         setSwapAvailableAssets(cached.response.assets);
         setPortfolioChains((current) =>
           mergePortfolioChainRecords(current, cached.response.chains),
@@ -2578,7 +2582,7 @@ export const Portfolio = ({
       );
     } catch (error) {
       Logger.error('Unable to load swap available assets', error);
-      if (!hasCachedCatalog) {
+      if (!hasUsableCatalog) {
         setSwapAvailableAssets([]);
       }
     } finally {
@@ -3352,6 +3356,7 @@ export const Portfolio = ({
   }, [section]);
 
   const showHistoryAfterSubmission = () => {
+    loadedPortfolioAccountKeyRef.current = '';
     loadedHistoryAddressFiltersKeyRef.current = null;
     setSelectedHistoryAccountKey(selectedAccountKey);
     setHistory([]);
@@ -4034,6 +4039,15 @@ export const Portfolio = ({
     );
   };
 
+  const isSwapFormInitializing =
+    section === 'swap' &&
+    (!hasResolvedInitialAccountSelection ||
+      !selectedAccountKey ||
+      isSwapAvailableAssetsLoading ||
+      !hasLoadedSwapAvailableAssets ||
+      !isSwapFromTokenReady ||
+      (fromAssetOptions.length > 0 && !fromAssetId));
+
   const renderFlow = () => {
     const mode = flowMode;
     const selectedQuote = quoteResponse?.quotes.find(
@@ -4399,7 +4413,7 @@ export const Portfolio = ({
           }}
           renderOption={renderFromAssetIdentity}
           renderDisplay={renderFromAssetIdentity}
-          disabled={fromAssetOptions.length === 0}
+          disabled={isSwapFormInitializing || fromAssetOptions.length === 0}
           error={
             shouldShowEmptyFromAssetError
               ? I18nUtils.getMessage(
@@ -4418,7 +4432,7 @@ export const Portfolio = ({
       ) : null;
 
     const toAssetSelect =
-      mode !== 'sell' && toAssetOptions.length > 0 ? (
+      mode !== 'sell' && (mode === 'swap' || toAssetOptions.length > 0) ? (
         <PortfolioOverlayListSelect
           id="portfolio-to-asset"
           label={I18nUtils.getMessage('portfolio_to_asset')}
@@ -4427,6 +4441,7 @@ export const Portfolio = ({
           onChange={setToAssetId}
           renderOption={renderToAssetIdentity}
           renderDisplay={renderToAssetIdentity}
+          disabled={isSwapFormInitializing || toAssetOptions.length === 0}
           listHeader={
             <PortfolioToAssetFilter
               textFilter={toAssetFilter}
@@ -4461,6 +4476,7 @@ export const Portfolio = ({
         value={amount}
         min={0}
         onChange={setAmount}
+        disabled={isSwapFormInitializing}
         classname={
           amountQuoteError || hasInsufficientFromBalance
             ? 'portfolio-amount-input--error'
@@ -4558,6 +4574,15 @@ export const Portfolio = ({
 
     return (
       <div className="portfolio-flow">
+        {isSwapFormInitializing ? (
+          <div
+            className="portfolio-flow-initializing"
+            data-testid="portfolio-swap-initializing"
+            role="status">
+            <RotatingLogoComponent />
+            <span>{I18nUtils.getMessage('popup_html_loading')}</span>
+          </div>
+        ) : null}
         {shouldShowFlowAccountSelectUpFront ? flowAccountSelect : null}
         {mode === 'buy' ? (
           <>
@@ -4617,11 +4642,15 @@ export const Portfolio = ({
               </div>
             </div>
             <SVGIcon
-              className="portfolio-swap-switch"
+              className={`portfolio-swap-switch ${
+                isSwapFormInitializing ? 'is-disabled' : ''
+              }`}
               dataTestId="portfolio-swap-switch"
               icon={SVGIcons.SWAPS_SWITCH}
               ariaLabel={I18nUtils.getMessage('portfolio_swap_switch_tokens')}
-              onClick={handleSwitchSwapAssets}
+              onClick={
+                isSwapFormInitializing ? undefined : handleSwitchSwapAssets
+              }
             />
             <div className="portfolio-flow-group">
               {toAssetOptions.length > 0 ? (
@@ -4865,17 +4894,10 @@ export const Portfolio = ({
           ? isRampAvailableAssetsLoading || isFiatRampOptionsLoading
           : false;
 
-    // Wait for last-used or the active chain so the from token is stable,
-    // without blocking on every other chain's discovery retries.
-    const isSwapFormDataLoading =
-      section === 'swap' &&
-      (!hasResolvedInitialAccountSelection ||
-        !isSwapFromTokenReady ||
-        (fromAssetOptions.length > 0 && !fromAssetId));
-
     const showFlowLoadingSpinner =
       isQuoteAutoFetchSection(section) &&
-      (!selectedAccountKey || isFlowCatalogLoading || isSwapFormDataLoading);
+      section !== 'swap' &&
+      (!selectedAccountKey || isFlowCatalogLoading);
 
     if (pendingInAppConfirmation) {
       return (

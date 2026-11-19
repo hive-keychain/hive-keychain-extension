@@ -963,6 +963,21 @@
   }
 }
 
+.portfolio-flow-initializing {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--kc-space-2);
+  color: var(--kc-color-text-secondary);
+  font-size: var(--kc-font-size-sm);
+
+  .rotating-logo {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin: 0;
+  }
+}
+
 .portfolio-flow-group {
   display: flex;
   flex-direction: column;
@@ -976,6 +991,11 @@
   width: 1.5rem;
   height: 1.5rem;
   margin-block: calc(var(--kc-space-5) / -2);
+
+  &.is-disabled {
+    opacity: 0.45;
+    pointer-events: none;
+  }
 
   svg {
     display: block;
