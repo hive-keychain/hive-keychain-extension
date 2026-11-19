@@ -4268,6 +4268,9 @@
   "portfolio_confirmation_to": {
     "message": "To"
   },
+  "portfolio_confirmation_estimated": {
+    "message": "估算"
+  },
   "portfolio_confirmation_to_account": {
     "message": "到账户"
   },

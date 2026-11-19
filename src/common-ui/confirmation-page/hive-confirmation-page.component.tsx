@@ -236,6 +236,11 @@ export const HiveConfirmationPageContent = ({
                 className="label"
                 style={{ display: 'flex', alignItems: 'center' }}>
                 {I18nUtils.getMessage(field.label as string)}
+                {field.labelTag && (
+                  <span className="confirmation-label-tag">
+                    {I18nUtils.getMessage(field.labelTag)}
+                  </span>
+                )}
               </div>
               {getFieldComponent(field)}
             </div>

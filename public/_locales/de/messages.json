@@ -4268,6 +4268,9 @@
   "portfolio_confirmation_to": {
     "message": "An"
   },
+  "portfolio_confirmation_estimated": {
+    "message": "Geschätzt"
+  },
   "portfolio_confirmation_to_account": {
     "message": "An Konto"
   },

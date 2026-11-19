@@ -4268,6 +4268,9 @@
   "portfolio_confirmation_to": {
     "message": "Ke"
   },
+  "portfolio_confirmation_estimated": {
+    "message": "Perkiraan"
+  },
   "portfolio_confirmation_to_account": {
     "message": "Ke akun"
   },

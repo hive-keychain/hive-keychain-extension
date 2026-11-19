@@ -4268,6 +4268,9 @@
   "portfolio_confirmation_to": {
     "message": "Vers"
   },
+  "portfolio_confirmation_estimated": {
+    "message": "Estimé"
+  },
   "portfolio_confirmation_to_account": {
     "message": "Vers le compte"
   },

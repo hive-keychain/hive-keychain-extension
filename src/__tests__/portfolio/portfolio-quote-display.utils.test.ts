@@ -180,6 +180,7 @@ describe('PortfolioQuoteDisplayUtils', () => {
       },
       {
         label: 'portfolio_confirmation_to',
+        labelTag: 'portfolio_confirmation_estimated',
         value: '3,200',
         tag: ConfirmationPageFieldType.AMOUNT,
         tokenSymbol: 'USDC',
@@ -189,6 +190,61 @@ describe('PortfolioQuoteDisplayUtils', () => {
       },
     ]);
     expectProviderField(fields[fields.length - 1], 'LI.FI', 'https://example.com/lifi.png');
+  });
+
+  it('formats confirmation amounts with each asset precision', () => {
+    const fields = PortfolioQuoteDisplayUtils.buildPortfolioInAppConfirmationFields(
+      {
+        quote: createQuote({
+          fromAsset: {
+            assetId: 'hive:native:hive',
+            ecosystem: 'hive',
+            symbol: 'HIVE',
+            name: 'Hive',
+            chainId: 'hive',
+            address: null,
+            decimals: 3,
+            isNative: true,
+            familyId: 'hive',
+            logoUrl: null,
+            priceUsd: 0,
+            rankScore: 0,
+          },
+          toAsset: {
+            assetId: 'hive:native:hbd',
+            ecosystem: 'hive',
+            symbol: 'HBD',
+            name: 'Hive Backed Dollar',
+            chainId: 'hive',
+            address: null,
+            decimals: 3,
+            isNative: true,
+            familyId: 'hbd',
+            logoUrl: null,
+            priceUsd: 0,
+            rankScore: 0,
+          },
+          fromAmount: '1.23456',
+          estimatedToAmount: '0.29999999999999993',
+        }),
+        fromAddress: 'alice',
+        toAddress: 'alice',
+      },
+    );
+
+    expect(fields[1]).toEqual(
+      expect.objectContaining({
+        label: 'portfolio_confirmation_from',
+        value: '1.235',
+      }),
+    );
+    expect(fields[2]).toEqual(
+      expect.objectContaining({
+        label: 'portfolio_confirmation_to',
+        labelTag: 'portfolio_confirmation_estimated',
+        value: '0.3',
+      }),
+    );
   });
 
   it('includes resolved chain badge data on from/to amount fields', () => {
@@ -254,6 +310,7 @@ describe('PortfolioQuoteDisplayUtils', () => {
     expect(fields[2]).toEqual(
       expect.objectContaining({
         label: 'portfolio_confirmation_to',
+        labelTag: 'portfolio_confirmation_estimated',
         tokenSymbol: 'ETH',
         tokenNetwork: 'Ethereum',
         tokenNetworkLogoUrl: 'https://example.com/ethereum.png',
@@ -316,6 +373,7 @@ describe('PortfolioQuoteDisplayUtils', () => {
       },
       {
         label: 'portfolio_confirmation_to',
+        labelTag: 'portfolio_confirmation_estimated',
         value: '3,200',
         tag: ConfirmationPageFieldType.AMOUNT,
         tokenSymbol: 'ETH',
@@ -383,6 +441,7 @@ describe('PortfolioQuoteDisplayUtils', () => {
       },
       {
         label: 'portfolio_confirmation_to',
+        labelTag: 'portfolio_confirmation_estimated',
         value: '3,200',
         tag: ConfirmationPageFieldType.AMOUNT,
         tokenSymbol: 'HIVE',
@@ -479,6 +538,7 @@ describe('PortfolioQuoteDisplayUtils', () => {
       },
       {
         label: 'portfolio_confirmation_to',
+        labelTag: 'portfolio_confirmation_estimated',
         value: '0.5',
         tag: ConfirmationPageFieldType.AMOUNT,
         tokenSymbol: 'SWAP.HIVE',

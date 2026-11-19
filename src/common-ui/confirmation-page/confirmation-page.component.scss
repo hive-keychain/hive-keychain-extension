@@ -65,6 +65,17 @@
           flex: 1;
           min-width: 0;
           line-height: 18px;
+
+          .confirmation-label-tag {
+            flex: 0 0 auto;
+            margin-left: 6px;
+            padding: 1px 6px;
+            border-radius: var(--kc-radius-pill, 999px);
+            color: var(--secondary-font-color);
+            background: var(--card-border);
+            @include poppins500(10px);
+            line-height: 16px;
+          }
         }
         .value {
           max-width: 70%;

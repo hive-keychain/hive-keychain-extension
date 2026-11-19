@@ -246,6 +246,26 @@ describe('EVMConfirmationPageComponent', () => {
     );
   });
 
+  it('renders a field label tag separately from the label', () => {
+    renderConfirmationPage({
+      fields: [
+        {
+          label: 'portfolio_confirmation_to',
+          labelTag: 'portfolio_confirmation_estimated',
+          name: 'to',
+          value: '1 HIVE',
+        },
+      ],
+    });
+
+    expect(screen.getByText('portfolio_confirmation_to')).toBeTruthy();
+    expect(
+      screen
+        .getByText('portfolio_confirmation_estimated')
+        .classList.contains('confirmation-label-tag'),
+    ).toBe(true);
+  });
+
   it('shows confirm when balance is sufficient', async () => {
     const afterConfirmAction = jest.fn();
     jest.spyOn(EvmTokensUtils, 'getBalanceInfo').mockResolvedValue({

@@ -324,6 +324,11 @@ export const EvmConfirmationPageContent = ({
                   {field.label && (
                     <div className="label">
                       {I18nUtils.getMessage(field.label)}
+                      {field.labelTag && (
+                        <span className="confirmation-label-tag">
+                          {I18nUtils.getMessage(field.labelTag)}
+                        </span>
+                      )}
                       {field.warnings && field.warnings.length > 0 && (
                         <ConfirmationFieldWarningIcon
                           warnings={field.warnings}

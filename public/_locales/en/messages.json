@@ -4304,6 +4304,7 @@
   "portfolio_confirmation_account": { "message": "Account" },
   "portfolio_confirmation_from": { "message": "From" },
   "portfolio_confirmation_to": { "message": "To" },
+  "portfolio_confirmation_estimated": { "message": "Estimated" },
   "portfolio_confirmation_to_account": { "message": "To account" },
   "portfolio_confirmation_provider_account": { "message": "Provider account" },
   "portfolio_confirmation_evm_destination": { "message": "Provider address" },

@@ -46,6 +46,7 @@ export type EmbeddedConfirmationPageProps = {
 
 export interface ConfirmationPageFields {
   label?: string;
+  labelTag?: string;
   value: string | JSX.Element;
   labelParams?: string[];
   valueParams?: string[];

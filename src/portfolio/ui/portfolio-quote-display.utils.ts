@@ -63,7 +63,10 @@ const buildPortfolioConfirmationAmountField = (
 
   return {
     label,
-    value: PortfolioFlowUtils.formatPortfolioTokenBalance(amount),
+    value: PortfolioFlowUtils.formatPortfolioTokenBalance(
+      amount,
+      asset?.decimals,
+    ),
     tag: ConfirmationPageFieldType.AMOUNT,
     tokenSymbol: symbol || undefined,
     tokenLogoUrl: asset?.logoUrl ?? undefined,
@@ -214,13 +217,16 @@ const buildPortfolioInAppConfirmationFields = (
       chains,
       portfolioChains,
     ),
-    buildPortfolioConfirmationAmountField(
-      'portfolio_confirmation_to',
-      quote.estimatedToAmount,
-      resolvedToAsset,
-      chains,
-      portfolioChains,
-    ),
+    {
+      ...buildPortfolioConfirmationAmountField(
+        'portfolio_confirmation_to',
+        quote.estimatedToAmount,
+        resolvedToAsset,
+        chains,
+        portfolioChains,
+      ),
+      labelTag: 'portfolio_confirmation_estimated',
+    },
   );
 
   const showsRecipient = Boolean(
