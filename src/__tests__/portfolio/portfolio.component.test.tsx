@@ -217,6 +217,8 @@ jest.mock('src/portfolio/portfolio-api.utils', () => {
         sell: 'activated',
       }),
       getQuotes: jest.fn().mockResolvedValue({ quotes: [] }),
+      createExecution: jest.fn(),
+      resolvePortfolioExecutionRedirectUrl: jest.fn().mockReturnValue(null),
       resolveExecutablePortfolioQuoteId: jest.fn().mockReturnValue(''),
       canExecutePortfolioQuote: jest.fn().mockReturnValue(true),
       resolvePortfolioAmountQuoteError:
@@ -304,6 +306,8 @@ describe('Portfolio', () => {
       buy: 'activated',
       sell: 'activated',
     });
+    (PortfolioApiUtils.resolvePortfolioExecutionRedirectUrl as jest.Mock)
+      .mockReturnValue(null);
     (
       PortfolioSwapCatalogCacheUtils.getCachedSwapCatalog as jest.Mock
     ).mockResolvedValue(null);
@@ -1400,7 +1404,14 @@ describe('Portfolio', () => {
     });
   });
 
-  it('hides load more when the first history page is complete', async () => {
+  it('renders complete history without waiting for compliance history', async () => {
+    let resolveComplianceHistory!: (items: never[]) => void;
+    const complianceHistoryPromise = new Promise<never[]>((resolve) => {
+      resolveComplianceHistory = resolve;
+    });
+    (PortfolioApiUtils.listComplianceReviewHistory as jest.Mock).mockReturnValue(
+      complianceHistoryPromise,
+    );
     (PortfolioApiUtils.listHistory as jest.Mock).mockResolvedValue(
       createPortfolioHistoryResponse([createPortfolioHistoryItem()]),
     );
@@ -1439,6 +1450,11 @@ describe('Portfolio', () => {
     expect(
       container.querySelector('[data-testid="portfolio-history-load-more"]'),
     ).toBeNull();
+
+    await act(async () => {
+      resolveComplianceHistory([]);
+      await complianceHistoryPromise;
+    });
   });
 
   it('loads the next history page and appends cards', async () => {
@@ -2963,7 +2979,10 @@ describe('Portfolio', () => {
     expect(queryByText('Get quotes')).toBeNull();
   });
 
-  const renderSwapPortfolio = async (options?: { amount?: string }) => {
+  const renderSwapPortfolio = async (options?: {
+    amount?: string;
+    evmAccounts?: React.ComponentProps<typeof Portfolio>['evmAccounts'];
+  }) => {
     (PortfolioApiUtils.listAssets as jest.Mock).mockResolvedValue({
       assets: swapAssetsFixture,
       chains: {},
@@ -2973,12 +2992,14 @@ describe('Portfolio', () => {
     const view = render(
       <Portfolio
         hiveAccounts={[]}
-        evmAccounts={[
-          {
-            id: 1,
-            wallet: { address: '0xabc' },
-          } as never,
-        ]}
+        evmAccounts={
+          options?.evmAccounts ?? [
+            {
+              id: 1,
+              wallet: { address: '0xabc' },
+            } as never,
+          ]
+        }
         activeAccountType={ChainType.EVM}
         activeEvmAccountAddress="0xabc"
         activeHiveAccountName={undefined}
@@ -3024,6 +3045,85 @@ describe('Portfolio', () => {
     await new Promise((resolve) => setTimeout(resolve, 900));
 
     expect(PortfolioApiUtils.getQuotes).not.toHaveBeenCalled();
+  });
+
+  it('shows History loading immediately after submitting a swap', async () => {
+    let resolveHistory!: (
+      response: ReturnType<typeof createPortfolioHistoryResponse>,
+    ) => void;
+    const historyPromise = new Promise<
+      ReturnType<typeof createPortfolioHistoryResponse>
+    >((resolve) => {
+      resolveHistory = resolve;
+    });
+    (PortfolioApiUtils.listHistory as jest.Mock).mockReturnValue(historyPromise);
+    (PortfolioApiUtils.getQuotes as jest.Mock).mockResolvedValue({
+      quotes: [
+        {
+          quoteId: 'redirect-swap',
+          provider: 'simpleswap',
+          providerName: 'SimpleSwap',
+          providerLogoUrl: null,
+          fromAsset: swapAssetsFixture[0],
+          toAsset: swapAssetsFixture[1],
+          estimatedToAmount: '1',
+          executionType: 'redirect',
+        },
+      ],
+      request: { mode: 'swap' },
+    });
+    (
+      PortfolioApiUtils.resolveExecutablePortfolioQuoteId as jest.Mock
+    ).mockReturnValue('redirect-swap');
+    (PortfolioApiUtils.createExecution as jest.Mock).mockResolvedValue({
+      id: 'execution-1',
+    });
+    (
+      PortfolioApiUtils.resolvePortfolioExecutionRedirectUrl as jest.Mock
+    ).mockReturnValue('https://example.com/swap');
+
+    const { container } = await renderSwapPortfolio({
+      evmAccounts: [
+        {
+          id: 1,
+          wallet: { address: '0xabc' },
+        } as never,
+        {
+          id: 2,
+          wallet: { address: '0xdef' },
+        } as never,
+      ],
+    });
+
+    await waitFor(() => {
+      expect(
+        container.querySelector('.portfolio-flow-actions button'),
+      ).not.toBeNull();
+    });
+
+    fireEvent.click(
+      container.querySelector(
+        '.portfolio-flow-actions button',
+      ) as HTMLButtonElement,
+    );
+
+    await waitFor(() => {
+      expect(
+        container
+          .querySelector('[data-testid="portfolio-nav-history"]')
+          ?.classList.contains('active'),
+      ).toBe(true);
+      expect(container.querySelector('.portfolio-flow')).toBeNull();
+      expect(container.querySelector('.rotating-logo-wrapper')).not.toBeNull();
+      expect(PortfolioApiUtils.listHistory).toHaveBeenCalledWith(1, {
+        addresses: ['0xabc'],
+      });
+    });
+
+    await act(async () => {
+      resolveHistory(createPortfolioHistoryResponse([]));
+      await historyPromise;
+    });
   });
 
   it('sets the swap amount to the selected source balance', async () => {

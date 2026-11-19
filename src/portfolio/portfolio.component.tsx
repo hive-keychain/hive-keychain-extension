@@ -2403,6 +2403,16 @@ export const Portfolio = ({
 
   const historyRefreshDeadlineRef = useRef(0);
 
+  const refreshComplianceReviewHistory = useCallback(() => {
+    void PortfolioApiUtils.listComplianceReviewHistory(
+      allWalletHistoryAddressFilters,
+    )
+      .then(setComplianceReviewItems)
+      .catch((error) => {
+        Logger.error('Unable to load compliance review items', error);
+      });
+  }, [allWalletHistoryAddressFilters]);
+
   const applyHistoryPageOne = useCallback(
     (
       pageOneItems: PortfolioHistoryItem[],
@@ -2434,12 +2444,11 @@ export const Portfolio = ({
   const refreshPortfolioTransactionalHistory = useCallback(
     async (options?: { replaceHistory?: boolean }) => {
       const requestId = ++historyLoadRequestIdRef.current;
-      const [historyResponse, complianceItems] = await Promise.all([
-        PortfolioApiUtils.listHistory(1, historyAddressFilters),
-        PortfolioApiUtils.listComplianceReviewHistory(
-          allWalletHistoryAddressFilters,
-        ),
-      ]);
+      refreshComplianceReviewHistory();
+      const historyResponse = await PortfolioApiUtils.listHistory(
+        1,
+        historyAddressFilters,
+      );
       if (requestId !== historyLoadRequestIdRef.current) {
         return;
       }
@@ -2448,9 +2457,12 @@ export const Portfolio = ({
         historyResponse.hasMore,
         options?.replaceHistory === true,
       );
-      setComplianceReviewItems(complianceItems);
     },
-    [allWalletHistoryAddressFilters, applyHistoryPageOne, historyAddressFilters],
+    [
+      applyHistoryPageOne,
+      historyAddressFilters,
+      refreshComplianceReviewHistory,
+    ],
   );
 
   const refreshHistorySilently = useCallback(() => {
@@ -3071,17 +3083,10 @@ export const Portfolio = ({
       return;
     }
 
-    void PortfolioApiUtils.listComplianceReviewHistory(
-      allWalletHistoryAddressFilters,
-    )
-      .then(setComplianceReviewItems)
-      .catch((error) => {
-        Logger.error('Unable to load compliance review items', error);
-        setComplianceReviewItems([]);
-      });
+    refreshComplianceReviewHistory();
   }, [
-    allWalletHistoryAddressFilters,
     hasResolvedInitialAccountSelection,
+    refreshComplianceReviewHistory,
     selectedAccountKey,
   ]);
 
@@ -3346,6 +3351,16 @@ export const Portfolio = ({
     setPendingInAppConfirmation(null);
   }, [section]);
 
+  const showHistoryAfterSubmission = () => {
+    loadedHistoryAddressFiltersKeyRef.current = null;
+    setSelectedHistoryAccountKey(selectedAccountKey);
+    setHistory([]);
+    setHistoryHasMore(false);
+    setIsHistoryLoading(true);
+    setSection('history');
+    setPendingInAppConfirmation(null);
+  };
+
   const buildEvmInAppConfirmationContext = async (
     account: EvmAccount,
     executionId: string,
@@ -3534,7 +3549,6 @@ export const Portfolio = ({
             chain.chainId,
             nextNonce,
           );
-          removeFromLoadingList('portfolio_sending_transaction');
           await PortfolioApiUtils.markSubmitted(
             executionId,
             transactionResponse.hash,
@@ -3543,9 +3557,8 @@ export const Portfolio = ({
             quote.fromAsset?.assetId,
             quote.toAsset?.assetId,
           );
-          setPendingInAppConfirmation(null);
-          await refreshPortfolioTransactionalHistory();
-          setSection('history');
+          showHistoryAfterSubmission();
+          removeFromLoadingList('portfolio_sending_transaction');
         } catch (error) {
           resetLoading();
           Logger.error('Portfolio transaction failed', error);
@@ -3620,9 +3633,7 @@ export const Portfolio = ({
             quote.fromAsset?.assetId,
             quote.toAsset?.assetId,
           );
-          setPendingInAppConfirmation(null);
-          await refreshPortfolioTransactionalHistory();
-          setSection('history');
+          showHistoryAfterSubmission();
         } catch (error) {
           Logger.error('Portfolio transaction failed', error);
           setErrorMessage('portfolio_execution_error');
@@ -3723,8 +3734,7 @@ export const Portfolio = ({
           );
           setStatusMessage('portfolio_provider_opened');
         }
-        await refreshPortfolioTransactionalHistory();
-        setSection('history');
+        showHistoryAfterSubmission();
         return;
       }
 
