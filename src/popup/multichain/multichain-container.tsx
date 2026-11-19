@@ -153,6 +153,8 @@ const MultichainContainer = ({
         [
           LocalStorageKeyEnum.ACTIVE_THEME,
           LocalStorageKeyEnum.ACTIVE_CHAIN,
+          LocalStorageKeyEnum.DEFAULT_CHAINS,
+          LocalStorageKeyEnum.CUSTOM_CHAINS,
           LocalStorageKeyEnum.SHORTCUTS,
           LocalStorageKeyEnum.SHORTCUT_PRESETS_MIGRATED,
         ],
@@ -193,25 +195,51 @@ const MultichainContainer = ({
       registerShortcuts(shortcutsRef.current);
       setHasHydratedSettings(true);
 
-      const storedChain = res.ACTIVE_CHAIN
-        ? await ChainUtils.getChain<Chain>(res.ACTIVE_CHAIN)
-        : null;
+      const storedChainId =
+        typeof res.ACTIVE_CHAIN === 'string' ? res.ACTIVE_CHAIN : undefined;
+      const currentChain = store.getState().chain as Chain | null;
+      const cachedChains = [
+        ...(Array.isArray(res.DEFAULT_CHAINS) ? res.DEFAULT_CHAINS : []),
+        ...(Array.isArray(res.CUSTOM_CHAINS) ? res.CUSTOM_CHAINS : []),
+      ] as Chain[];
+      let cachedStoredChain: Chain | null = null;
+      if (storedChainId) {
+        if (
+          currentChain?.chainId?.toLowerCase() === storedChainId.toLowerCase()
+        ) {
+          cachedStoredChain = currentChain;
+        } else {
+          cachedStoredChain =
+            cachedChains.find(
+              (cachedChain) =>
+                typeof cachedChain?.chainId === 'string' &&
+                cachedChain.chainId.toLowerCase() ===
+                  storedChainId.toLowerCase(),
+            ) ?? null;
+        }
+      }
 
       if (!isMounted) return;
 
-      // Fast path: apply stored chain and unblock rendering immediately.
-      if (storedChain) {
-        setChain(storedChain);
+      if (cachedStoredChain) {
+        setChain(cachedStoredChain);
       }
       setIsBootstrapping(false);
 
       // Refine chain selection in background without blocking popup first paint.
       void (async () => {
         try {
-          const [tabOrigin, categories] = await Promise.all([
-            tabOriginPromise,
-            ecosystemPromise,
-          ]);
+          const storedChainPromise = storedChainId
+            ? ChainUtils.getChain<Chain>(storedChainId).catch(
+                () => cachedStoredChain,
+              )
+            : Promise.resolve(cachedStoredChain);
+          const [tabOrigin, categories, refreshedStoredChain] =
+            await Promise.all([
+              tabOriginPromise,
+              ecosystemPromise,
+              storedChainPromise,
+            ]);
           if (!isMounted) return;
 
           const connectedEvmWallets = tabOrigin
@@ -239,7 +267,7 @@ const MultichainContainer = ({
               providerChain: providerBootstrap.resolvedChain,
               hasRequestedProviderChain,
               ecosystemChain,
-              storedChain,
+              storedChain: refreshedStoredChain ?? cachedStoredChain,
             });
 
           if (!refinedChain) return;

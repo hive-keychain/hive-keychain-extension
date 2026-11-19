@@ -58,7 +58,6 @@ import { ConnectedProps, connect, useStore } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { SplashscreenComponent } from 'src/common-ui/splashscreen/splashscreen.component';
-import Config from 'src/config';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { buildAddAccountSetupTitleProperties } from 'src/popup/hive/pages/add-account/add-account-setup-title.utils';
 import { KeylessKeychainComponent } from 'src/popup/hive/pages/add-account/keyless-keychain/keyless-keychain.component';
@@ -151,7 +150,6 @@ const UnlockedApp = ({
   const [isAppReady, setAppReady] = useState(false);
   const [initialRpc, setInitialRpc] = useState<Rpc>();
   const [initialHiveEngineRpc, setInitialHiveEngineRpc] = useState<string>();
-  const [displaySplashscreen, setDisplaySplashscreen] = useState(true);
   const [isKeylessKeychainEnabled, setIsKeylessKeychainEnabled] =
     useState<boolean>(false);
   const previousAccountsCountRef = useRef<number | undefined>(undefined);
@@ -487,30 +485,6 @@ const UnlockedApp = ({
     }
   }, [isAppReady, mk, navigationStack[0]?.currentPage]);
 
-  useEffect(() => {
-    if (
-      !displaySplashscreen ||
-      !isAppReady ||
-      !appStatus.priceLoaded ||
-      !appStatus.globalPropertiesLoaded
-    ) {
-      return;
-    }
-
-    const timeoutId = window.setTimeout(() => {
-      setDisplaySplashscreen(false);
-    }, Config.loader.minDuration);
-
-    return () => {
-      window.clearTimeout(timeoutId);
-    };
-  }, [
-    appStatus.globalPropertiesLoaded,
-    appStatus.priceLoaded,
-    displaySplashscreen,
-    isAppReady,
-  ]);
-
   const refreshActiveEvmAccountAfterResolvedTransaction = async () => {
     if (chain?.type !== ChainType.EVM || !activeEvmAccount.wallet) {
       return;
@@ -708,7 +682,6 @@ const UnlockedApp = ({
     }
 
     if (mk && mk.length > 0 && hasAccounts) {
-      setDisplaySplashscreen(true);
       const navStack = store.getState().navigation.stack;
       // Seed navigation on an empty stack, or when replacing sign-in / account-setup.
       // Deep links (portfolio, ledger, etc.) must run in both cases — after unlock the
@@ -862,8 +835,12 @@ const UnlockedApp = ({
     }, 1000);
   };
 
+  const isPortfolioStartup =
+    navigationStack[0]?.currentPage === Screen.PORTFOLIO_PAGE;
+  const needsHiveStartupData =
+    activeAccountType === ChainType.HIVE && !isPortfolioStartup;
   const needsHiveActiveAccount =
-    activeAccountType === ChainType.HIVE && hiveAccounts.length > 0;
+    needsHiveStartupData && hiveAccounts.length > 0;
   const hasRpcSwitchPrompt =
     displayChangeRpcPopup && Boolean(switchToRpc || switchToHiveEngineRpc);
   const hasHiveRpcSwitchPrompt = displayChangeRpcPopup && Boolean(switchToRpc);
@@ -872,11 +849,17 @@ const UnlockedApp = ({
     !needsHiveActiveAccount ||
     !!activeHiveAccount?.name;
   const isActiveRpcReady = !!activeRpc?.uri && activeRpc.uri !== 'NULL';
+  const isStartupRpcReady =
+    !needsHiveStartupData || hasHiveRpcSwitchPrompt || isActiveRpcReady;
+  const isStartupHiveReferenceDataReady =
+    !needsHiveStartupData ||
+    hasRpcSwitchPrompt ||
+    (appStatus.priceLoaded && appStatus.globalPropertiesLoaded);
 
   const showStartupSplash =
     !isAppReady ||
-    (displaySplashscreen && !hasRpcSwitchPrompt) ||
-    (!isActiveRpcReady && !hasHiveRpcSwitchPrompt) ||
+    !isStartupRpcReady ||
+    !isStartupHiveReferenceDataReady ||
     !isStartupActiveAccountReady;
 
   if (showStartupSplash) {

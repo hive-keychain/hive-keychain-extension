@@ -299,6 +299,11 @@ describe('UnlockedAppComponent', () => {
     );
     (EvmWalletUtils.invalidateRebuildAccountsCache as jest.Mock).mockClear();
     (loadEvmActiveAccount as jest.Mock).mockClear();
+    (RpcUtils.getCurrentRpc as jest.Mock).mockResolvedValue({
+      uri: 'https://api.hive.blog',
+      testnet: false,
+    });
+    (RpcUtils.checkRpcStatus as jest.Mock).mockResolvedValue(true);
     jest
       .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
       .mockImplementation(async (key) => {
@@ -668,6 +673,95 @@ describe('UnlockedAppComponent', () => {
     });
 
     window.location.hash = previousHash;
+  });
+
+  it('renders the portfolio while Hive startup network data is pending', async () => {
+    const previousHash = window.location.hash;
+    window.location.hash = '#swap';
+    jest
+      .spyOn(ExtensionSurfaceUtils, 'isPortfolioPage')
+      .mockReturnValue(true);
+    (EvmWalletUtils.rebuildAccountsFromLocalStorage as jest.Mock).mockResolvedValue(
+      [],
+    );
+    (loadCurrencyPrices as jest.Mock).mockImplementation(
+      () => () => undefined,
+    );
+    (loadGlobalProperties as jest.Mock).mockImplementation(
+      () => () => undefined,
+    );
+    (RpcUtils.checkRpcStatus as jest.Mock).mockImplementation(
+      () => new Promise(() => undefined),
+    );
+
+    const { container, getByTestId, store } = customRender(
+      <UnlockedAppComponent />,
+      {
+        initialState: {
+          ...initialEmptyStateStore,
+          mk: mkData.user.one,
+          activeAccountType: ChainType.HIVE,
+          chain: hiveChain,
+          navigation: { stack: [] },
+          hive: {
+            ...initialEmptyStateStore.hive,
+            activeRpc: { uri: 'NULL', testnet: false },
+          },
+        },
+      },
+    );
+
+    await waitFor(() => {
+      expect(store.getState().navigation.stack[0]?.currentPage).toBe(
+        Screen.PORTFOLIO_PAGE,
+      );
+      expect(getByTestId('unified-router')).toBeInTheDocument();
+    });
+    expect(container.querySelector('.splashscreen')).not.toBeInTheDocument();
+    expect(store.getState().hive.appStatus).toMatchObject({
+      priceLoaded: false,
+      globalPropertiesLoaded: false,
+    });
+
+    window.location.hash = previousHash;
+  });
+
+  it('renders an EVM route while Hive startup network data is pending', async () => {
+    (loadCurrencyPrices as jest.Mock).mockImplementation(
+      () => () => undefined,
+    );
+    (loadGlobalProperties as jest.Mock).mockImplementation(
+      () => () => undefined,
+    );
+    (RpcUtils.checkRpcStatus as jest.Mock).mockImplementation(
+      () => new Promise(() => undefined),
+    );
+
+    const { container, getByTestId, store } = customRender(
+      <UnlockedAppComponent />,
+      {
+        initialState: {
+          ...initialEmptyStateStore,
+          mk: mkData.user.one,
+          activeAccountType: ChainType.EVM,
+          chain: evmChain,
+          navigation: { stack: [{ currentPage: Screen.HOME_PAGE }] },
+          hive: {
+            ...initialEmptyStateStore.hive,
+            activeRpc: { uri: 'NULL', testnet: false },
+          },
+        },
+      },
+    );
+
+    await waitFor(() => {
+      expect(getByTestId('unified-router')).toBeInTheDocument();
+    });
+    expect(container.querySelector('.splashscreen')).not.toBeInTheDocument();
+    expect(store.getState().hive.appStatus).toMatchObject({
+      priceLoaded: false,
+      globalPropertiesLoaded: false,
+    });
   });
 
   it('opens the portfolio after unlock when sign-in left SIGN_IN_PAGE on the stack', async () => {
