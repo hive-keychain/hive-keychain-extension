@@ -19,19 +19,29 @@
     .information-panel {
       display: flex;
       flex-direction: row;
+      align-items: center;
+      min-height: 48px;
       row-gap: 8px;
       color: var(--main-font-color);
       .operation-icon {
-        border-radius: 20px 0px 20px 20px;
+        border-radius: 16px 0px 16px 16px;
         background: var(--wallet-item-icon-background);
-        margin: 4px;
-        height: 40px;
-        width: 56px;
+        margin: 4px 8px 4px 4px;
+        height: 32px;
+        width: 32px;
 
-        > div {
+        > div,
+        > div > div {
           display: flex;
           align-items: center;
           justify-content: center;
+        }
+
+        > div {
+          svg {
+            height: 18px;
+            width: 18px;
+          }
         }
       }
       .right-panel {

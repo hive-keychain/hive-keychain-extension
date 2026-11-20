@@ -1,5 +1,6 @@
 .tokens-history {
   @include pageLayoutRowGap;
+  min-height: 0;
   overflow: hidden;
 
   .load-more-panel {
@@ -55,7 +56,7 @@
     overflow: auto;
     @include form-panel;
     row-gap: 8px;
-    max-height: 476px;
+    min-height: 0;
     position: relative;
   }
 
