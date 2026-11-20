@@ -156,6 +156,31 @@ describe('manage-account.component tests:\n', () => {
       ).not.toBeInTheDocument();
     });
 
+    it('Must dismiss the QR confirmation without showing the code', async () => {
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(dataTestIdButton.qrCode.toogle),
+        );
+      });
+      expect(
+        screen.getByText(I18nUtils.getMessage('popup_html_qr_title')),
+      ).toBeInTheDocument();
+      await act(async () => {
+        await userEvent.click(
+          screen.getByTestId(dataTestIdButton.qrCode.dismiss),
+        );
+      });
+      expect(
+        screen.queryByText(I18nUtils.getMessage('popup_html_qr_title')),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId(dataTestIdSvg.qrcode),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByTestId(`${Screen.SETTINGS_MANAGE_ACCOUNTS}-page`),
+      ).toBeInTheDocument();
+    });
+
     it('Must close page and go home', async () => {
       await act(async () => {
         await userEvent.click(screen.getByTestId(dataTestIdIcon.closePage));

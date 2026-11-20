@@ -201,8 +201,19 @@ const AccountKeysList = ({
     } as HiveConfirmationPageParams);
   };
 
+  const closeQRCode = () => {
+    setQRCodeDisplayed(false);
+    setShowQR(false);
+    setCheck1(false);
+    setCheck2(false);
+  };
+
   const toggleQRCode = () => {
-    setQRCodeDisplayed(!qrCodeDisplayed);
+    if (qrCodeDisplayed) {
+      closeQRCode();
+      return;
+    }
+    setQRCodeDisplayed(true);
     setTimeout(() => {
       if (qrCodeRef && qrCodeRef.current) {
         qrCodeRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -267,7 +278,7 @@ const AccountKeysList = ({
               </div>
             </div>
             {!showQR ? (
-              <div>
+              <div className="qr-code-confirmation">
                 <div className="qr-code-popup-checkbox-container">
                   <CheckboxPanelComponent
                     text="popup_html_qr_check1"
@@ -285,6 +296,12 @@ const AccountKeysList = ({
                   />
                 </div>
                 <div className="submit-button-container">
+                  <ButtonComponent
+                    dataTestId="button-dismiss-qr-code"
+                    label="dialog_cancel"
+                    onClick={closeQRCode}
+                    type={ButtonType.ALTERNATIVE}
+                  />
                   <ButtonComponent
                     label="popup_html_qr_exported_show_button"
                     onClick={() => {
@@ -311,7 +328,7 @@ const AccountKeysList = ({
                 </div>
                 <ButtonComponent
                   label="popup_html_close"
-                  onClick={() => setQRCodeDisplayed(false)}
+                  onClick={closeQRCode}
                 />
               </div>
             )}
