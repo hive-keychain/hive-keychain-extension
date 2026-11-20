@@ -114,6 +114,14 @@
     align-items: center;
     row-gap: 32px;
     width: 100%;
+
+    .wallet-token-price-chart {
+      min-height: 235px;
+    }
+
+    .wallet-token-price-chart__status {
+      flex: 1;
+    }
   }
 
   .history-icon {
