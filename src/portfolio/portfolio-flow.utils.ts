@@ -929,10 +929,12 @@ export const isPortfolioSwapExcludedAsset = (
 
 export const buildPortfolioFromSelectOptions = (
   rows: PortfolioFlowRow[],
+  options: { retainedRowKey?: string } = {},
 ): PortfolioFlowSelectOption[] =>
   rows
     .filter((row) =>
-      hasPositivePortfolioBalance(getPortfolioRowAvailableBalance(row)),
+      hasPositivePortfolioBalance(getPortfolioRowAvailableBalance(row)) ||
+      row.key === options.retainedRowKey,
     )
     .filter((row) => !row.isTestnet)
     .filter((row) => !isPortfolioSwapExcludedSymbol(row.symbol))

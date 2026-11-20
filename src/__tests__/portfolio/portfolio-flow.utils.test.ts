@@ -153,6 +153,33 @@ describe('PortfolioFlowUtils', () => {
     ]);
   });
 
+  it('retains the requested zero-balance row in from asset options', () => {
+    const options = PortfolioFlowUtils.buildPortfolioFromSelectOptions(
+      [
+        {
+          key: 'hive:HIVE',
+          symbol: 'HIVE',
+          network: 'Hive',
+          balance: '0',
+        },
+        {
+          key: 'hive:HBD',
+          symbol: 'HBD',
+          network: 'Hive',
+          balance: '0',
+        },
+      ],
+      { retainedRowKey: 'hive:HIVE' },
+    );
+
+    expect(options).toEqual([
+      {
+        value: 'hive:HIVE',
+        label: 'HIVE - Hive (0)',
+      },
+    ]);
+  });
+
   it('formats from balances to token decimals and leaves Hive savings out of the available amount', () => {
     const options = PortfolioFlowUtils.buildPortfolioFromSelectOptions([
       {

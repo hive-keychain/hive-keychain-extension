@@ -1106,12 +1106,23 @@ export const Portfolio = ({
     const rowsWithCanonicalAsset = rows.filter((row) =>
       rowHasResolvableAsset(row),
     );
-    const rowsWithPositiveBalance = rowsWithCanonicalAsset.filter(
-      (row) =>
+    const rowsWithSelectableBalance = rowsWithCanonicalAsset.filter((row) => {
+      if (row.isTestnet) {
+        return false;
+      }
+
+      const hasPositiveBalance =
         PortfolioFlowUtils.hasPositivePortfolioBalance(
           PortfolioFlowUtils.getPortfolioRowAvailableBalance(row),
-        ) && !row.isTestnet,
-    );
+        );
+      if (hasPositiveBalance || section !== 'swap') {
+        return hasPositiveBalance;
+      }
+
+      const rowAssetId =
+        resolveRowSwapFromAssetId(row) ?? resolveRowCanonicalAssetId(row);
+      return rowAssetId === lastUsedSwapAssets?.fromAssetId;
+    });
 
     const rampAvailableAssetIds = new Set(
       rampAvailableAssets.map((asset) => asset.assetId),
@@ -1121,14 +1132,14 @@ export const Portfolio = ({
     );
     const eligibleFromRows =
       section === 'sell' && rampAvailableAssetIds.size > 0
-        ? rowsWithPositiveBalance.filter((row) => {
+        ? rowsWithSelectableBalance.filter((row) => {
             const canonicalAssetId = resolveRowCanonicalAssetId(row);
             return (
               canonicalAssetId && rampAvailableAssetIds.has(canonicalAssetId)
             );
           })
         : section === 'swap' && swapAvailableFromAssetIds.size > 0
-          ? rowsWithPositiveBalance.filter((row) => {
+          ? rowsWithSelectableBalance.filter((row) => {
               const swapFromAssetId = resolveRowSwapFromAssetId(row);
               if (swapFromAssetId) {
                 return true;
@@ -1140,18 +1151,27 @@ export const Portfolio = ({
                 swapAvailableFromAssetIds.has(canonicalAssetId)
               );
             })
-          : rowsWithPositiveBalance;
+          : rowsWithSelectableBalance;
 
     const sortedEligibleFromRows = PortfolioUtils.sortPortfolioDisplayItems(
       eligibleFromRows,
       selectedAccount?.type === ChainType.HIVE,
     );
+    const retainedRowKey = lastUsedSwapAssets?.fromAssetId
+      ? sortedEligibleFromRows.find((row) => {
+          const rowAssetId =
+            resolveRowSwapFromAssetId(row) ?? resolveRowCanonicalAssetId(row);
+          return rowAssetId === lastUsedSwapAssets.fromAssetId;
+        })?.key
+      : undefined;
 
     return PortfolioFlowUtils.buildPortfolioFromSelectOptions(
       sortedEligibleFromRows,
+      { retainedRowKey },
     );
   }, [
     canonicalAssetsForRowResolution,
+    lastUsedSwapAssets?.fromAssetId,
     portfolioChains,
     rampAvailableAssets,
     rows,
@@ -1175,6 +1195,30 @@ export const Portfolio = ({
 
     return map;
   }, [assets, rampAvailableAssets, swapAvailableAssets]);
+
+  const fromAssetSelectOptions = useMemo(() => {
+    if (
+      fromAssetOptions.length > 0 ||
+      section !== 'swap' ||
+      hasLoadedPortfolioBalances ||
+      !lastUsedSwapAssets?.fromAssetId
+    ) {
+      return fromAssetOptions;
+    }
+
+    const lastUsedAsset = swapSourceAssets.find(
+      (asset) => asset.assetId === lastUsedSwapAssets.fromAssetId,
+    );
+    return lastUsedAsset
+      ? PortfolioFlowUtils.buildCanonicalAssetSelectOptions([lastUsedAsset])
+      : fromAssetOptions;
+  }, [
+    fromAssetOptions,
+    hasLoadedPortfolioBalances,
+    lastUsedSwapAssets?.fromAssetId,
+    section,
+    swapSourceAssets,
+  ]);
 
   const fromCanonicalAsset = useMemo(() => {
     if (!fromAssetId) {
@@ -1577,6 +1621,7 @@ export const Portfolio = ({
   const canRequestQuotes =
     isPositivePortfolioAmount(amount) &&
     Boolean(quoteToAddress) &&
+    (flowMode === 'buy' || Boolean(selectedFromRow)) &&
     !hasInsufficientFromBalance &&
     hasRequiredQuoteAssets({
       mode: flowMode,
@@ -1844,7 +1889,16 @@ export const Portfolio = ({
   const renderFromAssetIdentity = (rowKey: string) => {
     const row = portfolioRowByKey.get(rowKey);
     if (!row) {
-      return rowKey;
+      const asset = canonicalAssetById.get(rowKey);
+      return asset ? (
+        <PortfolioTokenIdentity
+          {...canonicalAssetToTokenIdentityProps(
+            asset,
+            toAssetEvmChains,
+            portfolioChains,
+          )}
+        />
+      ) : null;
     }
 
     return (
@@ -1861,7 +1915,7 @@ export const Portfolio = ({
   const renderToAssetIdentity = (assetId: string) => {
     const asset = canonicalAssetById.get(assetId);
     if (!asset) {
-      return assetId;
+      return null;
     }
 
     return (
@@ -2156,7 +2210,7 @@ export const Portfolio = ({
 
     return PortfolioFlowUtils.resolveFromSelectOptionValueForAssetId(
       lastUsedSwapAssets?.fromAssetId,
-      fromAssetOptions,
+      fromAssetSelectOptions,
       rows,
       canonicalAssetsForRowResolution,
       toAssetEvmChains,
@@ -2165,7 +2219,7 @@ export const Portfolio = ({
     );
   }, [
     canonicalAssetsForRowResolution,
-    fromAssetOptions,
+    fromAssetSelectOptions,
     hasLoadedLastUsedSwapAssets,
     lastUsedSwapAssets?.fromAssetId,
     portfolioChains,
@@ -2180,7 +2234,7 @@ export const Portfolio = ({
       PortfolioFlowUtils.isSwapFromTokenReadyToSelect({
         hasLoadedLastUsedSwapAssets,
         lastUsedFromOptionValue,
-        fromAssetOptions,
+        fromAssetOptions: fromAssetSelectOptions,
         rows,
         activeChain: chain,
         finishedEvmChainIds,
@@ -2189,7 +2243,7 @@ export const Portfolio = ({
     [
       chain,
       finishedEvmChainIds,
-      fromAssetOptions,
+      fromAssetSelectOptions,
       hasLoadedLastUsedSwapAssets,
       hasLoadedPortfolioBalances,
       lastUsedFromOptionValue,
@@ -2205,7 +2259,7 @@ export const Portfolio = ({
     const isSwapFromAssetSelectionPending =
       section === 'swap' && !isSwapFromTokenReady;
 
-    if (!fromAssetOptions.length) {
+    if (!fromAssetSelectOptions.length) {
       if (
         fromAssetId &&
         !isSwapFromAssetSelectionPending &&
@@ -2222,7 +2276,7 @@ export const Portfolio = ({
 
     const selectableFromOptions =
       section === 'swap' && requestedToAssetId
-        ? fromAssetOptions.filter(
+        ? fromAssetSelectOptions.filter(
             (option) =>
               PortfolioFlowUtils.resolveSwapFromOptionAssetId(
                 option.value,
@@ -2233,11 +2287,11 @@ export const Portfolio = ({
                 swapSourceAssets,
               ) !== requestedToAssetId,
           )
-        : fromAssetOptions;
+        : fromAssetSelectOptions;
     const fromOptionsForSelection =
       selectableFromOptions.length > 0
         ? selectableFromOptions
-        : fromAssetOptions;
+        : fromAssetSelectOptions;
 
     if (
       fromAssetId &&
@@ -2275,7 +2329,7 @@ export const Portfolio = ({
     canonicalAssetsForRowResolution,
     chain,
     fromAssetId,
-    fromAssetOptions,
+    fromAssetSelectOptions,
     isPortfolioLoading,
     isSwapFromTokenReady,
     lastUsedFromOptionValue,
@@ -4046,7 +4100,14 @@ export const Portfolio = ({
       isSwapAvailableAssetsLoading ||
       !hasLoadedSwapAvailableAssets ||
       !isSwapFromTokenReady ||
-      (fromAssetOptions.length > 0 && !fromAssetId));
+      (fromAssetSelectOptions.length > 0 && !fromAssetId));
+  const fromAssetSelectValue =
+    fromAssetId ||
+    (isSwapFormInitializing ? (lastUsedSwapAssets?.fromAssetId ?? '') : '');
+  const toAssetSelectValue =
+    toAssetId ||
+    (isSwapFormInitializing ? (lastUsedSwapAssets?.toAssetId ?? '') : '');
+  const isSwapSwitchDisabled = isSwapFormInitializing || !selectedFromRow;
 
   const renderFlow = () => {
     const mode = flowMode;
@@ -4396,24 +4457,26 @@ export const Portfolio = ({
           ? !isRampAvailableAssetsLoading
           : true;
     const shouldShowEmptyFromAssetError =
-      fromAssetOptions.length === 0 &&
+      fromAssetSelectOptions.length === 0 &&
+      !isSwapFormInitializing &&
       !isPortfolioLoading &&
       isFromAssetCatalogReady;
 
     const fromAssetSelect =
-      mode !== 'buy' && (mode === 'swap' || fromAssetOptions.length > 0) ? (
+      mode !== 'buy' &&
+      (mode === 'swap' || fromAssetSelectOptions.length > 0) ? (
         <PortfolioOverlayListSelect
           id="portfolio-from-asset"
           label={I18nUtils.getMessage('portfolio_from_asset')}
-          options={fromAssetOptions}
-          value={fromAssetId}
+          options={fromAssetSelectOptions}
+          value={fromAssetSelectValue}
           onChange={(value) => {
             hasUserSelectedFromAssetRef.current = true;
             setFromAssetId(value);
           }}
           renderOption={renderFromAssetIdentity}
           renderDisplay={renderFromAssetIdentity}
-          disabled={isSwapFormInitializing || fromAssetOptions.length === 0}
+          disabled={fromAssetSelectOptions.length === 0}
           error={
             shouldShowEmptyFromAssetError
               ? I18nUtils.getMessage(
@@ -4437,11 +4500,11 @@ export const Portfolio = ({
           id="portfolio-to-asset"
           label={I18nUtils.getMessage('portfolio_to_asset')}
           options={filteredToAssetOptions}
-          value={toAssetId}
+          value={toAssetSelectValue}
           onChange={setToAssetId}
           renderOption={renderToAssetIdentity}
           renderDisplay={renderToAssetIdentity}
-          disabled={isSwapFormInitializing || toAssetOptions.length === 0}
+          disabled={toAssetOptions.length === 0}
           listHeader={
             <PortfolioToAssetFilter
               textFilter={toAssetFilter}
@@ -4476,7 +4539,6 @@ export const Portfolio = ({
         value={amount}
         min={0}
         onChange={setAmount}
-        disabled={isSwapFormInitializing}
         classname={
           amountQuoteError || hasInsufficientFromBalance
             ? 'portfolio-amount-input--error'
@@ -4643,13 +4705,13 @@ export const Portfolio = ({
             </div>
             <SVGIcon
               className={`portfolio-swap-switch ${
-                isSwapFormInitializing ? 'is-disabled' : ''
+                isSwapSwitchDisabled ? 'is-disabled' : ''
               }`}
               dataTestId="portfolio-swap-switch"
               icon={SVGIcons.SWAPS_SWITCH}
               ariaLabel={I18nUtils.getMessage('portfolio_swap_switch_tokens')}
               onClick={
-                isSwapFormInitializing ? undefined : handleSwitchSwapAssets
+                isSwapSwitchDisabled ? undefined : handleSwitchSwapAssets
               }
             />
             <div className="portfolio-flow-group">

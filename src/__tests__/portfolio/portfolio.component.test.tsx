@@ -933,7 +933,7 @@ describe('Portfolio', () => {
     expect(container.querySelector('.portfolio-flow')).toBeNull();
   });
 
-  it('renders a disabled swap form while initial data is loading', async () => {
+  it('keeps amount entry enabled while initial swap data is loading', async () => {
     window.history.replaceState(null, '', '/#swap');
     (
       PortfolioSwapCatalogCacheUtils.getCachedSwapCatalog as jest.Mock
@@ -976,7 +976,110 @@ describe('Portfolio', () => {
           '.portfolio-amount-field input[type="number"]',
         ) as HTMLInputElement
       ).disabled,
-    ).toBe(true);
+    ).toBe(false);
+  });
+
+  it('shows the last-used swap tokens while wallet balances are loading', async () => {
+    window.history.replaceState(null, '', '/#swap');
+    const hiveSwapCatalog: PortfolioAvailableAssetsResponse = {
+      mode: 'swap',
+      direction: null,
+      sourceAssetId: null,
+      assets: [
+        {
+          assetId: 'hive:hive',
+          ecosystem: 'hive',
+          symbol: 'HIVE',
+          name: 'Hive',
+          chainId: null,
+          address: null,
+          decimals: 3,
+          isNative: true,
+          familyId: 'hive',
+          logoUrl: null,
+          priceUsd: 0,
+          rankScore: 0,
+        },
+        {
+          assetId: 'hive:hbd',
+          ecosystem: 'hive',
+          symbol: 'HBD',
+          name: 'Hive Backed Dollar',
+          chainId: null,
+          address: null,
+          decimals: 3,
+          isNative: true,
+          familyId: 'hbd',
+          logoUrl: null,
+          priceUsd: 0,
+          rankScore: 0,
+        },
+      ],
+      chains: {},
+    };
+
+    (
+      PortfolioSwapCatalogCacheUtils.getCachedSwapCatalog as jest.Mock
+    ).mockResolvedValue({
+      response: hiveSwapCatalog,
+      fetchedAt: Date.now(),
+    });
+    jest
+      .spyOn(PortfolioFlowUtils, 'getLastUsedSwapAssets')
+      .mockResolvedValue({
+        fromAssetId: 'hive:hive',
+        toAssetId: 'hive:hbd',
+      });
+    jest
+      .spyOn(AccountUtils, 'getExtendedAccounts')
+      .mockResolvedValue([{ name: 'alice' } as never]);
+    jest
+      .spyOn(PortfolioUtils, 'getPortfolio')
+      .mockImplementation(() => new Promise(() => undefined));
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[{ name: 'alice' } as never]}
+        evmAccounts={[]}
+        activeAccountType={ChainType.HIVE}
+        activeEvmAccountAddress={undefined}
+        activeHiveAccountName="alice"
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(
+        container.querySelector('#portfolio-from-asset')?.textContent,
+      ).toContain('HIVE');
+      expect(
+        container.querySelector('#portfolio-to-asset')?.textContent,
+      ).toContain('HBD');
+    });
+
+    expect(
+      (container.querySelector('#portfolio-from-asset') as HTMLButtonElement)
+        .disabled,
+    ).toBe(false);
+    expect(
+      (container.querySelector('#portfolio-to-asset') as HTMLButtonElement)
+        .disabled,
+    ).toBe(false);
+    expect(
+      (
+        container.querySelector(
+          '.portfolio-amount-field input[type="number"]',
+        ) as HTMLInputElement
+      ).disabled,
+    ).toBe(false);
+    expect(container.textContent).not.toContain('hive:hive');
+    expect(container.textContent).not.toContain('hive:hbd');
+    expect(container.textContent).not.toContain(
+      'portfolio_swap_no_wallet_tokens',
+    );
   });
 
   it('renders direct swap from cached catalog while refresh remains pending', async () => {
@@ -2039,6 +2142,70 @@ describe('Portfolio', () => {
     });
   });
 
+  it('keeps the last-used zero-balance token selected for swap', async () => {
+    window.history.replaceState(null, '', '/#swap');
+    const zeroEthToken = {
+      ...ethToken,
+      formattedBalance: '0',
+      balance: 0n,
+      balanceInteger: 0,
+      shortFormattedBalance: '0',
+    };
+
+    jest
+      .spyOn(PortfolioFlowUtils, 'getLastUsedSwapAssets')
+      .mockResolvedValue({
+        fromAssetId: 'evm:native:ethereum',
+        toAssetId: 'evm:native:polygon',
+      });
+    (
+      EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains as jest.Mock
+    ).mockImplementation(async (_chains, _walletAddress, options) => {
+      options?.onChainReady?.(ethereumChain, [zeroEthToken]);
+      options?.onChainFinished?.(ethereumChain);
+      options?.onChainReady?.(polygonChain, [maticToken]);
+      options?.onChainFinished?.(polygonChain);
+      return [zeroEthToken, maticToken];
+    });
+
+    const { container } = render(
+      <Portfolio
+        hiveAccounts={[]}
+        evmAccounts={[
+          {
+            id: 1,
+            wallet: { address: '0xabc' },
+          } as never,
+        ]}
+        activeAccountType={ChainType.EVM}
+        activeEvmAccountAddress="0xabc"
+        activeHiveAccountName={undefined}
+        navigateTo={jest.fn()}
+        navigateToWithParams={jest.fn()}
+        setErrorMessage={jest.fn()}
+        setTitleContainerProperties={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(
+        container.querySelector('#portfolio-from-asset')?.textContent,
+      ).toContain('ETH');
+    });
+
+    expect(container.querySelector('#portfolio-from-asset-error')).toBeNull();
+    fireEvent.change(
+      container.querySelector(
+        '.portfolio-amount-field input[type="number"]',
+      ) as HTMLInputElement,
+      { target: { value: '1' } },
+    );
+    await waitFor(() => {
+      expect(container.querySelector('.portfolio-field-error')).not.toBeNull();
+    });
+    expect(PortfolioApiUtils.getQuotes).not.toHaveBeenCalled();
+  });
+
   it('shows a partial load error and clears the bottom spinner when a chain fails', async () => {
     (
       EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains as jest.Mock
@@ -2608,7 +2775,7 @@ describe('Portfolio', () => {
     ).toContain('KAIA');
   });
 
-  it('keeps the swap form disabled until the active chain balances have loaded', async () => {
+  it('keeps the swap form interactive while active-chain balances load', async () => {
     window.history.replaceState(null, '', '/#swap');
 
     let finishPolygon: (() => void) | undefined;
@@ -2659,7 +2826,7 @@ describe('Portfolio', () => {
     expect(
       (container.querySelector('#portfolio-from-asset') as HTMLButtonElement)
         .disabled,
-    ).toBe(true);
+    ).toBe(false);
 
     await act(async () => {
       finishPolygon?.();
@@ -2770,7 +2937,7 @@ describe('Portfolio', () => {
     });
   });
 
-  it('keeps the swap form disabled until last-used from token can be restored', async () => {
+  it('keeps the swap form interactive while restoring the last-used token', async () => {
     window.history.replaceState(null, '', '/#swap');
 
     let resolveLastUsed:
@@ -2816,7 +2983,7 @@ describe('Portfolio', () => {
     expect(
       (container.querySelector('#portfolio-from-asset') as HTMLButtonElement)
         .disabled,
-    ).toBe(true);
+    ).toBe(false);
 
     await act(async () => {
       resolveLastUsed?.({
