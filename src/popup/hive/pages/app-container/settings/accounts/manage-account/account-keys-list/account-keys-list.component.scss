@@ -50,12 +50,38 @@
     row-gap: 32px;
     width: 70%;
     height: 80%;
+    box-sizing: border-box;
+    overflow: hidden;
+
+    > div:first-child {
+      flex-shrink: 0;
+    }
+
+    .qr-code-confirmation {
+      display: flex;
+      flex-direction: column;
+      align-self: stretch;
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+      row-gap: 16px;
+    }
 
     .qr-code-popup-checkbox-container {
-      height: 272px;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
       .checkbox-panel {
         margin: 12px;
       }
+    }
+
+    .submit-button-container {
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      row-gap: 12px;
+      width: 100%;
     }
     .qr-code-disclaimer {
       @include settings-page-note();

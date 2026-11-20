@@ -86,6 +86,7 @@ const dataTestIdButton = {
   },
   qrCode: {
     toogle: 'button-toogle-qr-code',
+    dismiss: 'button-dismiss-qr-code',
   },
   accounts: {
     manage: {
