@@ -1,6 +1,5 @@
 import { useThemeContext } from '@popup/theme.context';
-import React, { useEffect, useMemo, useState } from 'react';
-import { Shimmer, Image as ShimmerImage } from 'react-shimmer';
+import React, { useEffect, useRef, useState } from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { SVGIcon } from 'src/common-ui/svg-icon/svg-icon.component';
 import { ColorsUtils } from 'src/utils/colors.utils';
@@ -17,13 +16,11 @@ interface PreloadedImageProps {
   useDefaultSVG?: SVGIcons;
 }
 
-function isImageSrcLoadedSync(url: string): boolean {
-  if (typeof window === 'undefined' || !url) {
-    return false;
-  }
-  const probe = new Image();
-  probe.src = url;
-  return probe.complete && probe.naturalWidth > 0;
+const LOADING_PLACEHOLDER_DELAY_MS = 150;
+
+interface ImageLoadState {
+  src: string;
+  status: 'loading' | 'loaded' | 'error';
 }
 
 export const PreloadedImage = ({
@@ -39,93 +36,65 @@ export const PreloadedImage = ({
   const safeSrc = ImageUrlUtils.getSafeImageUrl(src) ?? '';
   const safeAlt = ImageUrlUtils.getSafeImageUrl(alt);
   const safePlaceholder = ImageUrlUtils.getSafeImageUrl(placeholder);
-  const [background, setBackground] = useState<string>('transparent');
-  const [cachedPathError, setCachedPathError] = useState(false);
+  const safeFallback = safePlaceholder ?? safeAlt;
+  const imageRef = useRef<HTMLImageElement>(null);
+  const [imageLoadState, setImageLoadState] = useState<ImageLoadState>({
+    src: safeSrc,
+    status: 'loading',
+  });
+  const [loadingPlaceholderSrc, setLoadingPlaceholderSrc] = useState('');
+  const [backgroundState, setBackgroundState] = useState({
+    src: '',
+    value: 'transparent',
+  });
   const { theme } = useThemeContext();
-
-  const skipShimmer = useMemo(
-    () => isImageSrcLoadedSync(safeSrc),
-    [safeSrc],
-  );
+  const imageStatus =
+    imageLoadState.src === safeSrc ? imageLoadState.status : 'loading';
+  const isLoaded = imageStatus === 'loaded';
+  const hasError = imageStatus === 'error';
+  const background =
+    backgroundState.src === safeSrc
+      ? backgroundState.value
+      : 'transparent';
+  const showLoadingPlaceholder =
+    imageStatus === 'loading' && loadingPlaceholderSrc === safeSrc;
 
   useEffect(() => {
-    setCachedPathError(false);
-  }, [safeSrc]);
-
-  useEffect(() => {
-    if (!safeSrc) {
+    if (!safeSrc || imageStatus !== 'loading') {
       return;
     }
-    let isCancelled = false;
-    const existingImg = new Image();
-    existingImg.referrerPolicy = 'no-referrer';
-
-    const setBackgroundColor = (img: HTMLImageElement) => {
-      if (!addBackground || isCancelled) {
-        return;
-      }
-
-      if (backgroundColor) {
-        setBackground(`${backgroundColor}2b`);
-      } else if (symbol) {
-        setBackground(ColorsUtils.getBackgroundColorFromBackend(symbol, theme));
-      } else {
-        setBackground(ColorsUtils.getBackgroundColorFromImage(img));
-      }
-    };
-
-    // Check if image is already cached/loaded
-    existingImg.onerror = () => {
-      // Dont display errors
-    };
-    existingImg.src = safeSrc;
-
-    if (existingImg.complete) {
-      if (existingImg.naturalWidth > 0) {
-        setBackgroundColor(existingImg);
-      }
-      return () => {
-        isCancelled = true;
-        existingImg.onerror = null;
-      };
-    }
-
-    // Image not cached, proceed with normal preloading
-    const img = new Image();
-    img.referrerPolicy = 'no-referrer';
-
-    img.onload = () => {
-      setBackgroundColor(img);
-    };
-    img.onerror = () => {
-      if (isCancelled) {
-        return;
-      }
-      if (addBackground && useDefaultSVG) {
-        setBackground('#e31337');
-        return;
-      }
-      if (safeAlt) {
-        img.src = safeAlt;
-      }
-    };
-    img.src = safeSrc;
+    const timeout = window.setTimeout(() => {
+      setLoadingPlaceholderSrc(safeSrc);
+    }, LOADING_PLACEHOLDER_DELAY_MS);
 
     return () => {
-      isCancelled = true;
-      existingImg.onerror = null;
-      img.onload = null;
-      img.onerror = null;
+      window.clearTimeout(timeout);
     };
-  }, [
-    addBackground,
-    backgroundColor,
-    safeAlt,
-    safeSrc,
-    symbol,
-    theme,
-    useDefaultSVG,
-  ]);
+  }, [imageStatus, safeSrc]);
+
+  useEffect(() => {
+    if (!isLoaded || !addBackground || !imageRef.current) {
+      return;
+    }
+
+    const value = backgroundColor
+      ? `${backgroundColor}2b`
+      : symbol
+        ? ColorsUtils.getBackgroundColorFromBackend(symbol, theme)
+        : ColorsUtils.getBackgroundColorFromImage(imageRef.current);
+    setBackgroundState({ src: safeSrc, value });
+  }, [addBackground, backgroundColor, isLoaded, safeSrc, symbol, theme]);
+
+  const handleLoad = () => {
+    setImageLoadState({ src: safeSrc, status: 'loaded' });
+  };
+
+  const handleError = () => {
+    if (addBackground && useDefaultSVG) {
+      setBackgroundState({ src: safeSrc, value: '#e31337' });
+    }
+    setImageLoadState({ src: safeSrc, status: 'error' });
+  };
 
   const errorFallback = (
     <>
@@ -138,9 +107,9 @@ export const PreloadedImage = ({
           background={background}
         />
       )}
-      {!useDefaultSVG && safePlaceholder && (
+      {!useDefaultSVG && safeFallback && (
         <img
-          src={safePlaceholder}
+          src={safeFallback}
           className={`${className} ${addBackground ? 'add-background' : ''}`}
           style={{ background: background }}
           referrerPolicy="no-referrer"
@@ -154,42 +123,29 @@ export const PreloadedImage = ({
     return <>{errorFallback}</>;
   }
 
-  if (skipShimmer) {
-    if (cachedPathError) {
-      return <>{errorFallback}</>;
-    }
-    return (
-      <img
-        src={safeSrc}
-        className={`${className} ${addBackground ? 'add-background' : ''}`}
-        style={{ background: background }}
-        onError={() => setCachedPathError(true)}
-        referrerPolicy="no-referrer"
-        decoding="async"
-      />
-    );
+  if (hasError) {
+    return <>{errorFallback}</>;
   }
 
+  const imageClassName = [
+    className,
+    addBackground ? 'add-background' : undefined,
+    showLoadingPlaceholder ? 'shimmer preloaded-image-loading' : undefined,
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
-    <>
-      <ShimmerImage
-        src={safeSrc}
-        fallback={
-          <Shimmer
-            width={300}
-            height={300}
-            className={className}
-            backgroundColor={background}
-          />
-        }
-        NativeImgProps={{
-          className: `${className} ${addBackground ? 'add-background' : ''}`,
-          style: { background: background },
-          referrerPolicy: 'no-referrer',
-          decoding: 'async',
-        }}
-        errorFallback={() => errorFallback}
-      />
-    </>
+    <img
+      key={safeSrc}
+      ref={imageRef}
+      src={safeSrc}
+      className={imageClassName}
+      style={isLoaded ? { background } : undefined}
+      onLoad={handleLoad}
+      onError={handleError}
+      referrerPolicy="no-referrer"
+      decoding="async"
+    />
   );
 };

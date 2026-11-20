@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { act, cleanup, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 import { SVGIcons } from 'src/common-ui/icons.enum';
 import { PreloadedImage } from 'src/common-ui/preloaded-image/preloaded-image.component';
@@ -11,83 +11,70 @@ jest.mock('src/common-ui/svg-icon/svg-icon.component', () => ({
 }));
 
 describe('preloaded-image.component', () => {
-  const hasUnmountedStateUpdateWarning = (
-    consoleError: jest.SpyInstance<void, any[]>,
-  ) =>
-    consoleError.mock.calls.some((call) =>
-      call.some(
-        (arg) =>
-          typeof arg === 'string' &&
-          arg.includes(
-            "Can't perform a React state update on an unmounted component",
-          ),
-      ),
-    );
-
   afterEach(() => {
+    jest.useRealTimers();
     jest.clearAllMocks();
     cleanup();
   });
 
-  it('ignores pending image callbacks after unmount', () => {
-    const OriginalImage = global.Image;
-    const createdImages: Array<{
-      complete: boolean;
-      onload: null | (() => void);
-      onerror: null | (() => void);
-      _src?: string;
-    }> = [];
+  it('does not flash the loading placeholder when an image loads quickly', () => {
+    jest.useFakeTimers();
+    const { container } = render(
+      <PreloadedImage src="https://images.hive.blog/u/test/avatar" />,
+    );
+    const image = container.querySelector('img')!;
 
-    class MockImage {
-      complete = false;
-      onload: null | (() => void) = null;
-      onerror: null | (() => void) = null;
-      _src?: string;
+    expect(image).not.toHaveClass('preloaded-image-loading');
+    fireEvent.load(image);
 
-      set src(value: string) {
-        this._src = value;
-      }
-
-      get src() {
-        return this._src ?? '';
-      }
-
-      constructor() {
-        createdImages.push(this);
-      }
-    }
-
-    Object.defineProperty(global, 'Image', {
-      configurable: true,
-      writable: true,
-      value: MockImage,
+    act(() => {
+      jest.advanceTimersByTime(200);
     });
+    expect(image).not.toHaveClass('preloaded-image-loading');
+  });
 
-    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+  it('shows delayed loading feedback for a slow image and removes it on load', () => {
+    jest.useFakeTimers();
+    const { container } = render(
+      <PreloadedImage
+        className="user-avatar"
+        src="https://images.hive.blog/u/test/avatar"
+      />,
+    );
+    const image = container.querySelector('img')!;
 
+    expect(image).not.toHaveClass('preloaded-image-loading');
+    act(() => {
+      jest.advanceTimersByTime(150);
+    });
+    expect(image).toHaveClass(
+      'user-avatar',
+      'shimmer',
+      'preloaded-image-loading',
+    );
+
+    fireEvent.load(image);
+    expect(image).not.toHaveClass('shimmer', 'preloaded-image-loading');
+  });
+
+  it('clears the delayed loading feedback timer after unmount', () => {
+    jest.useFakeTimers();
+    const consoleError = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
     const { unmount } = render(
       <PreloadedImage src="https://images.hive.blog/u/test/avatar" />,
     );
 
     unmount();
-
     act(() => {
-      createdImages.forEach((image) => {
-        image.onload?.();
-        image.onerror?.();
-      });
+      jest.runOnlyPendingTimers();
     });
 
-    expect(hasUnmountedStateUpdateWarning(consoleError)).toBe(false);
-
-    Object.defineProperty(global, 'Image', {
-      configurable: true,
-      writable: true,
-      value: OriginalImage,
-    });
+    expect(consoleError).not.toHaveBeenCalled();
   });
 
-  it('shows the default svg without fetching when src is empty', () => {
+  it('does not create separate image probes or preloaders', () => {
     const OriginalImage = global.Image;
     const ImageSpy = jest.fn();
 
@@ -97,15 +84,9 @@ describe('preloaded-image.component', () => {
       value: ImageSpy,
     });
 
-    render(
-      <PreloadedImage src="" useDefaultSVG={SVGIcons.HIVE_ENGINE} />,
-    );
+    render(<PreloadedImage src="https://images.hive.blog/u/test/avatar" />);
 
     expect(ImageSpy).not.toHaveBeenCalled();
-    expect(screen.getByTestId('fallback-svg')).toHaveAttribute(
-      'data-icon',
-      SVGIcons.HIVE_ENGINE,
-    );
 
     Object.defineProperty(global, 'Image', {
       configurable: true,
@@ -114,63 +95,28 @@ describe('preloaded-image.component', () => {
     });
   });
 
-  it('does not retry an empty alt after a load error', () => {
-    const OriginalImage = global.Image;
-    const createdImages: Array<{
-      complete: boolean;
-      naturalWidth: number;
-      onload: null | (() => void);
-      onerror: null | (() => void);
-      _src?: string;
-    }> = [];
+  it('shows the default svg without fetching when src is empty', () => {
+    render(<PreloadedImage src="" useDefaultSVG={SVGIcons.HIVE_ENGINE} />);
 
-    class MockImage {
-      complete = false;
-      naturalWidth = 0;
-      onload: null | (() => void) = null;
-      onerror: null | (() => void) = null;
-      _src?: string;
+    expect(screen.getByTestId('fallback-svg')).toHaveAttribute(
+      'data-icon',
+      SVGIcons.HIVE_ENGINE,
+    );
+  });
 
-      set src(value: string) {
-        this._src = value;
-      }
-
-      get src() {
-        return this._src ?? '';
-      }
-
-      constructor() {
-        createdImages.push(this);
-      }
-    }
-
-    Object.defineProperty(global, 'Image', {
-      configurable: true,
-      writable: true,
-      value: MockImage,
-    });
-
-    render(
-      <PreloadedImage src="https://images.hive.blog/u/missing/avatar" />,
+  it('shows the safe fallback image after a load error', () => {
+    const { container } = render(
+      <PreloadedImage
+        src="https://images.hive.blog/u/missing/avatar"
+        placeholder="/assets/images/accounts.png"
+      />,
     );
 
-    act(() => {
-      createdImages.forEach((image) => {
-        image.onerror?.();
-      });
-    });
+    fireEvent.error(container.querySelector('img')!);
 
-    expect(createdImages.some((image) => image._src === '')).toBe(false);
-    expect(
-      createdImages.some(
-        (image) => image._src === 'https://images.hive.blog/u/missing/avatar',
-      ),
-    ).toBe(true);
-
-    Object.defineProperty(global, 'Image', {
-      configurable: true,
-      writable: true,
-      value: OriginalImage,
-    });
+    expect(container.querySelector('img')).toHaveAttribute(
+      'src',
+      '/assets/images/accounts.png',
+    );
   });
 });
