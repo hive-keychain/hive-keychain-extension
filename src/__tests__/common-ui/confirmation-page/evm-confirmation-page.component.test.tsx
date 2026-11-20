@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { Screen } from '@interfaces/screen.interface';
 import { EVMConfirmationPageComponent } from 'src/common-ui/confirmation-page/evm-confirmation-page.component';
@@ -286,5 +287,26 @@ describe('EVMConfirmationPageComponent', () => {
     await waitFor(() =>
       expect(screen.getByTestId('dialog_confirm-button')).toBeTruthy(),
     );
+  });
+
+  it('shows immediate feedback while confirmation is pending', async () => {
+    const afterConfirmAction = jest.fn(
+      () => new Promise<void>(() => undefined),
+    );
+    renderConfirmationPage({
+      afterConfirmAction,
+      hasGasFee: false,
+    });
+
+    fireEvent.click(screen.getByTestId('dialog_confirm-button'));
+
+    await waitFor(() => {
+      expect(afterConfirmAction).toHaveBeenCalledTimes(1);
+      expect(screen.getByTestId('dialog_confirm-button')).toBeDisabled();
+    });
+    expect(screen.getByTestId('dialog_confirm-button')).toHaveTextContent(
+      'popup_html_loading',
+    );
+    expect(screen.getByTestId('dialog_cancel-button')).toBeDisabled();
   });
 });

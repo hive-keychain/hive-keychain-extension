@@ -57,6 +57,7 @@ export const PortfolioEvmApprovalConfirmation = ({
   const [swapSelectedFee, setSwapSelectedFee] =
     useState<GasFeeEstimationBase>();
   const [hasInsufficientBalance, setHasInsufficientBalance] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
 
   useEffect(() => {
     transactionHook.setConfirmationPageFields([
@@ -82,7 +83,9 @@ export const PortfolioEvmApprovalConfirmation = ({
     );
   };
 
-  const handleClickOnConfirm = () => {
+  const handleClickOnConfirm = async () => {
+    if (isConfirming) return;
+
     if (transactionHook.hasWarning()) {
       transactionHook.openWarningsPopup();
       return;
@@ -97,7 +100,12 @@ export const PortfolioEvmApprovalConfirmation = ({
       setErrorMessage('popup_html_evm_gas_fee_not_selected');
       return;
     }
-    void context.onConfirm(swapSelectedFee, selectedAllowanceFees);
+    setIsConfirming(true);
+    try {
+      await context.onConfirm(swapSelectedFee, selectedAllowanceFees);
+    } finally {
+      setIsConfirming(false);
+    }
   };
 
   const handleClickOnCancel = () => {
@@ -264,12 +272,14 @@ export const PortfolioEvmApprovalConfirmation = ({
           dataTestId="dialog_cancel-button"
           label={'dialog_cancel'}
           onClick={handleClickOnCancel}
+          disabled={isConfirming}
           type={ButtonType.ALTERNATIVE}></ButtonComponent>
         {!hasInsufficientBalance && (
           <ButtonComponent
             dataTestId="dialog_confirm-button"
-            label={'popup_html_confirm'}
+            label={isConfirming ? 'popup_html_loading' : 'popup_html_confirm'}
             onClick={handleClickOnConfirm}
+            disabled={isConfirming}
             type={ButtonType.IMPORTANT}></ButtonComponent>
         )}
       </div>

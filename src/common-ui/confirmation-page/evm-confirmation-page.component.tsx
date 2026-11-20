@@ -26,7 +26,7 @@ import { setTitleContainerProperties } from '@popup/multichain/actions/title-con
 import { EvmChain } from '@popup/multichain/interfaces/chains.interface';
 import { RootState } from '@popup/multichain/store';
 import EventEmitter from 'events';
-import React, { BaseSyntheticEvent, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import AmountWithLogo from 'src/common-ui/amount-with-logo/amount-with-logo';
 import ButtonComponent, {
@@ -110,6 +110,7 @@ export const EvmConfirmationPageContent = ({
   const [hasField] = useState(fields && fields.length !== 0);
   const [selectedFee, setSelectedFee] = useState<GasFeeEstimationBase>();
   const [balanceInfo, setBalanceInfo] = useState<BalanceInfo>();
+  const [isConfirming, setIsConfirming] = useState(false);
   const transactionHook = useTransactionHook(
     {} as EvmRequestMessage,
     {} as EvmRequest,
@@ -182,6 +183,8 @@ export const EvmConfirmationPageContent = ({
     BalanceChangeCardUtils.hasInsufficientBalance(balanceInfo);
 
   const handleClickOnConfirm = async () => {
+    if (isConfirming) return;
+
     if (hasGasFee && GasFeeUtils.isGasFeeEstimateInvalid(selectedFee)) {
       forceOpenGasFeePanelEvent.emit('forceOpenCustomFeePanel');
       return;
@@ -192,7 +195,12 @@ export const EvmConfirmationPageContent = ({
       return;
     }
     if ((hasGasFee && !!selectedFee) || !hasGasFee) {
-      await afterConfirmAction(selectedFee);
+      setIsConfirming(true);
+      try {
+        await afterConfirmAction(selectedFee);
+      } finally {
+        setIsConfirming(false);
+      }
     } else {
       setErrorMessage('popup_html_evm_gas_fee_not_selected');
     }
@@ -380,14 +388,14 @@ export const EvmConfirmationPageContent = ({
           dataTestId="dialog_cancel-button"
           label={'dialog_cancel'}
           onClick={handleClickOnCancel}
+          disabled={isConfirming}
           type={ButtonType.ALTERNATIVE}></ButtonComponent>
         {!hideConfirm && (
           <ButtonComponent
             dataTestId="dialog_confirm-button"
-            label={'popup_html_confirm'}
-            onClick={($event: BaseSyntheticEvent) => {
-              handleClickOnConfirm();
-            }}
+            label={isConfirming ? 'popup_html_loading' : 'popup_html_confirm'}
+            onClick={handleClickOnConfirm}
+            disabled={isConfirming}
             type={ButtonType.IMPORTANT}></ButtonComponent>
         )}
       </div>

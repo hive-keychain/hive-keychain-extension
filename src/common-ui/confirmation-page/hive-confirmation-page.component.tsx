@@ -7,7 +7,7 @@ import { goBack } from '@popup/multichain/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/multichain/actions/title-container.actions';
 import { RootState } from '@popup/multichain/store';
 import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
-import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import AmountWithLogo from 'src/common-ui/amount-with-logo/amount-with-logo';
 import ButtonComponent, {
@@ -75,6 +75,7 @@ export const HiveConfirmationPageContent = ({
 }: HiveConfirmationPageContentProps) => {
   const [willUseMultisig, setWillUseMultisig] = useState<boolean>();
   const [hasField] = useState(fields && fields.length !== 0);
+  const [isConfirming, setIsConfirming] = useState(false);
 
   const [twoFABots, setTwoFABots] = useState<{ [botName: string]: string }>({});
 
@@ -158,7 +159,9 @@ export const HiveConfirmationPageContent = ({
     }
   };
 
-  const handleClickOnConfirm = () => {
+  const handleClickOnConfirm = async () => {
+    if (isConfirming) return;
+
     let metadata;
     if (willUseMultisig) {
       addCaptionToLoading?.(
@@ -168,7 +171,12 @@ export const HiveConfirmationPageContent = ({
       );
       metadata = { twoFACodes: twoFABots };
     }
-    void afterConfirmAction({ metaData: metadata });
+    setIsConfirming(true);
+    try {
+      await afterConfirmAction({ metaData: metadata });
+    } finally {
+      setIsConfirming(false);
+    }
   };
 
   const handleClickOnCancel = async () => {
@@ -316,14 +324,13 @@ export const HiveConfirmationPageContent = ({
           dataTestId="dialog_cancel-button"
           label={'dialog_cancel'}
           onClick={handleClickOnCancel}
+          disabled={isConfirming}
           type={ButtonType.ALTERNATIVE}></ButtonComponent>
         <ButtonComponent
           dataTestId="dialog_confirm-button"
-          label={'popup_html_confirm'}
-          onClick={($event: BaseSyntheticEvent) => {
-            $event.target.disabled = true;
-            handleClickOnConfirm();
-          }}
+          label={isConfirming ? 'popup_html_loading' : 'popup_html_confirm'}
+          onClick={handleClickOnConfirm}
+          disabled={isConfirming}
           type={ButtonType.IMPORTANT}></ButtonComponent>
       </div>
     </div>
