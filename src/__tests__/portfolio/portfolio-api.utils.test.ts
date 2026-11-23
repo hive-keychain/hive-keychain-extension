@@ -1253,6 +1253,34 @@ describe('PortfolioApiUtils', () => {
       ).toBe(true);
     });
 
+    it('allows a Keychain Swap quote before its deposit is saved', () => {
+      expect(
+        PortfolioApiUtils.canExecutePortfolioQuote(
+          createQuote({
+            provider: 'keychain_swap',
+            transaction: null,
+            routeMetadata: {
+              account: 'keychain.swap',
+              slippage: 5,
+              steps: [{ type: 'SELL_ON_MARKET' }],
+            },
+          }),
+        ),
+      ).toBe(true);
+    });
+
+    it('blocks a Keychain Swap quote that has no steps to save', () => {
+      expect(
+        PortfolioApiUtils.canExecutePortfolioQuote(
+          createQuote({
+            provider: 'keychain_swap',
+            transaction: null,
+            routeMetadata: { account: 'keychain.swap', slippage: 5, steps: [] },
+          }),
+        ),
+      ).toBe(false);
+    });
+
     it('blocks in-app quotes that do not include a transaction', () => {
       expect(
         PortfolioApiUtils.canExecutePortfolioQuote(
