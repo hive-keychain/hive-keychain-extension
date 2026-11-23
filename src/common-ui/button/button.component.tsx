@@ -19,25 +19,38 @@ export interface ButtonProps {
   additionalClass?: string;
   height?: 'tall' | 'medium' | 'small';
   disabled?: boolean;
+  loading?: boolean;
 }
 
 const ButtonComponent = (props: ButtonProps) => {
+  const isDisabled = props.disabled || props.loading;
+
   return (
     <button
-      disabled={props.disabled}
+      disabled={isDisabled}
       data-testid={props.dataTestId}
+      aria-busy={props.loading || undefined}
+      aria-label={
+        props.loading ? I18nUtils.getMessage('popup_html_loading') : undefined
+      }
       className={`submit-button ${
         props.type ? props.type : ButtonType.IMPORTANT
       }  ${props.additionalClass ?? ''} ${props.height ?? 'medium'} ${
         props.disabled ? 'disabled' : ''
-      }`}
+      } ${props.loading ? 'loading' : ''}`}
       onClick={props.onClick}>
-      <div className="button-label">
-        {props.skipLabelTranslation
-          ? props.label
-          : I18nUtils.getMessage(props.label, props.labelParams)}{' '}
-      </div>
-      {props.logo && <SVGIcon icon={props.logo} className="logo" />}
+      {props.loading ? (
+        <span className="button-loading-spinner" aria-hidden />
+      ) : (
+        <>
+          <div className="button-label">
+            {props.skipLabelTranslation
+              ? props.label
+              : I18nUtils.getMessage(props.label, props.labelParams)}{' '}
+          </div>
+          {props.logo && <SVGIcon icon={props.logo} className="logo" />}
+        </>
+      )}
     </button>
   );
 };

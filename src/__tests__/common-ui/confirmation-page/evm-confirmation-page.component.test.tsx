@@ -304,9 +304,18 @@ describe('EVMConfirmationPageComponent', () => {
       expect(afterConfirmAction).toHaveBeenCalledTimes(1);
       expect(screen.getByTestId('dialog_confirm-button')).toBeDisabled();
     });
-    expect(screen.getByTestId('dialog_confirm-button')).toHaveTextContent(
-      'popup_html_loading',
+    expect(screen.getByTestId('dialog_confirm-button')).toHaveAttribute(
+      'aria-busy',
+      'true',
     );
+    expect(screen.getByTestId('dialog_confirm-button')).not.toHaveClass(
+      'disabled',
+    );
+    expect(
+      screen
+        .getByTestId('dialog_confirm-button')
+        .querySelector('.button-loading-spinner'),
+    ).not.toBeNull();
     expect(screen.getByTestId('dialog_cancel-button')).toBeDisabled();
   });
 });

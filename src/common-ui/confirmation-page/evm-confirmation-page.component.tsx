@@ -393,9 +393,9 @@ export const EvmConfirmationPageContent = ({
         {!hideConfirm && (
           <ButtonComponent
             dataTestId="dialog_confirm-button"
-            label={isConfirming ? 'popup_html_loading' : 'popup_html_confirm'}
+            label={'popup_html_confirm'}
             onClick={handleClickOnConfirm}
-            disabled={isConfirming}
+            loading={isConfirming}
             type={ButtonType.IMPORTANT}></ButtonComponent>
         )}
       </div>

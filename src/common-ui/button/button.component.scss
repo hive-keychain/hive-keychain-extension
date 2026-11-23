@@ -66,4 +66,35 @@
     background: $lighter-grey;
     cursor: not-allowed;
   }
+
+  &.loading {
+    cursor: wait;
+
+    &:hover {
+      box-shadow: none;
+    }
+  }
+
+  .button-loading-spinner {
+    display: block;
+    width: 20px;
+    height: 20px;
+    margin: 0 auto;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: button-loading-spinner 0.8s linear infinite;
+  }
+}
+
+@keyframes button-loading-spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .submit-button .button-loading-spinner {
+    animation: none;
+  }
 }
