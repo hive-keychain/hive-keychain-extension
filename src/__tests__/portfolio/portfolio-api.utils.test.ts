@@ -1,5 +1,8 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { PortfolioQuote } from 'src/portfolio/portfolio-api.interface';
+import {
+  PortfolioExecution,
+  PortfolioQuote,
+} from 'src/portfolio/portfolio-api.interface';
 import {
   PortfolioApiError,
   PortfolioApiUtils,
@@ -1191,6 +1194,88 @@ describe('PortfolioApiUtils', () => {
           submittedAt: null,
           updatedAt: null,
         }),
+      ).toBeNull();
+    });
+  });
+
+  describe('resolvePortfolioCheckoutTabUrl', () => {
+    const createExecution = (
+      overrides: Partial<PortfolioExecution> = {},
+    ): PortfolioExecution => ({
+      id: 'exec-1',
+      status: 'created',
+      mode: 'buy',
+      provider: 'transak',
+      providerReferenceId: null,
+      fromAssetId: null,
+      toAssetId: null,
+      fromAmount: null,
+      toAmount: null,
+      receivedAmount: null,
+      fromAddress: null,
+      toAddress: null,
+      redirectUrl: null,
+      transaction: null,
+      fiatCurrency: 'USD',
+      paymentMethod: 'credit_debit_card',
+      submittedAt: null,
+      updatedAt: null,
+      ...overrides,
+    });
+
+    it('opens the aggregator redirect when the execution stored an https checkout URL', () => {
+      expect(
+        PortfolioApiUtils.resolvePortfolioCheckoutTabUrl(
+          createExecution({
+            id: '11111111-1111-4111-8111-111111111111',
+            redirectUrl: 'https://global.transak.com/?sessionId=fresh',
+          }),
+          {
+            redirectUrl: 'https://global.transak.com/?sessionId=preview',
+          } as PortfolioQuote,
+        ),
+      ).toBe(
+        'https://portfolio.example/executions/11111111-1111-4111-8111-111111111111/redirect',
+      );
+    });
+
+    it('encodes the execution id in the aggregator redirect', () => {
+      expect(
+        PortfolioApiUtils.buildPortfolioExecutionRedirectTabUrl('id/with space'),
+      ).toBe('https://portfolio.example/executions/id%2Fwith%20space/redirect');
+    });
+
+    it('returns null when the API base URL is missing', () => {
+      const originalUrl = process.env.PORTFOLIO_API_URL;
+      delete process.env.PORTFOLIO_API_URL;
+
+      expect(
+        PortfolioApiUtils.resolvePortfolioCheckoutTabUrl(
+          createExecution({
+            redirectUrl: 'https://global.transak.com/?sessionId=fresh',
+          }),
+        ),
+      ).toBeNull();
+
+      process.env.PORTFOLIO_API_URL = originalUrl;
+    });
+
+    it('falls back to the quote URL when the execution has no stored checkout URL', () => {
+      expect(
+        PortfolioApiUtils.resolvePortfolioCheckoutTabUrl(createExecution(), {
+          redirectUrl: 'https://app.rampnetwork.com/preview',
+        } as PortfolioQuote),
+      ).toBe('https://app.rampnetwork.com/preview');
+    });
+
+    it('does not open an unsafe stored checkout URL', () => {
+      expect(
+        PortfolioApiUtils.resolvePortfolioCheckoutTabUrl(
+          createExecution({ redirectUrl: 'javascript:alert(1)' }),
+          {
+            redirectUrl: 'https://global.transak.com/?sessionId=preview',
+          } as PortfolioQuote,
+        ),
       ).toBeNull();
     });
   });

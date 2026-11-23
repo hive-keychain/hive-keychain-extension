@@ -3779,12 +3779,12 @@ export const Portfolio = ({
         throw new Error('portfolio_execution_prepare_failed');
       }
 
-      const redirectUrl =
-        PortfolioApiUtils.resolvePortfolioExecutionRedirectUrl(
-          execution,
-          quote,
-        );
+      const redirectUrl = PortfolioApiUtils.resolvePortfolioCheckoutTabUrl(
+        execution,
+        quote,
+      );
       if (redirectUrl) {
+        console.log('Portfolio checkout redirect', redirectUrl);
         chrome.tabs.create({ url: redirectUrl });
         if (flowMode === 'swap') {
           persistLastUsedSwapAssets(

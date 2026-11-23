@@ -427,6 +427,34 @@ export const shouldSchedulePortfolioSwapQuoteAutoRefresh = (
 
 const getBaseUrl = () => (process.env.PORTFOLIO_API_URL ?? '').replace(/\/+$/, '');
 
+/** Aggregator URL a browser tab must open so the provider sees this API as Referer. */
+export const buildPortfolioExecutionRedirectTabUrl = (
+  executionId: string,
+): string | null => {
+  const baseUrl = getBaseUrl();
+  const id = executionId.trim();
+  if (!baseUrl || !id) {
+    return null;
+  }
+
+  return `${baseUrl}/executions/${encodeURIComponent(id)}/redirect`;
+};
+
+/**
+ * Tab URL for a redirect checkout.
+ * A stored execution URL is opened through the aggregator redirect, not directly.
+ */
+export const resolvePortfolioCheckoutTabUrl = (
+  execution: PortfolioExecution,
+  quote?: PortfolioQuote,
+): string | null => {
+  if (resolveSafePortfolioExternalUrl(execution.redirectUrl)) {
+    return buildPortfolioExecutionRedirectTabUrl(execution.id);
+  }
+
+  return resolvePortfolioExecutionRedirectUrl(execution, quote);
+};
+
 /** Dev-only geo spoof for portfolio API bans. Never sent outside development builds. */
 const getDevGeoCountryHeaderValue = (): string | undefined => {
   if (process.env.NODE_ENV !== 'development') {
@@ -684,6 +712,8 @@ export const PortfolioApiUtils = {
   markSubmitted,
   resolveExecutablePortfolioQuoteId,
   resolvePortfolioAmountQuoteError,
+  buildPortfolioExecutionRedirectTabUrl,
+  resolvePortfolioCheckoutTabUrl,
   resolvePortfolioExecutionRedirectUrl,
   resolveSafePortfolioExternalUrl,
   resolvePortfolioQuoteAmountHint,

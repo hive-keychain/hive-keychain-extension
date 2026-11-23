@@ -3310,12 +3310,12 @@ describe('Portfolio', () => {
     (
       PortfolioApiUtils.resolveExecutablePortfolioQuoteId as jest.Mock
     ).mockReturnValue('redirect-swap');
+    const originalPortfolioApiUrl = process.env.PORTFOLIO_API_URL;
+    process.env.PORTFOLIO_API_URL = 'https://portfolio.example';
     (PortfolioApiUtils.createExecution as jest.Mock).mockResolvedValue({
       id: 'execution-1',
+      redirectUrl: 'https://global.transak.com/?sessionId=fresh',
     });
-    (
-      PortfolioApiUtils.resolvePortfolioExecutionRedirectUrl as jest.Mock
-    ).mockReturnValue('https://example.com/swap');
 
     const { container } = await renderSwapPortfolio({
       evmAccounts: [
@@ -3346,6 +3346,9 @@ describe('Portfolio', () => {
     );
 
     await waitFor(() => {
+      expect(chrome.tabs.create).toHaveBeenCalledWith({
+        url: 'https://portfolio.example/executions/execution-1/redirect',
+      });
       expect(
         container
           .querySelector('[data-testid="portfolio-nav-history"]')
@@ -3370,6 +3373,8 @@ describe('Portfolio', () => {
         EvmAccountTokensLoadUtils.loadVisibleNativeAndErc20TokensForSetupChains,
       ).toHaveBeenCalledTimes(1);
     });
+
+    process.env.PORTFOLIO_API_URL = originalPortfolioApiUrl;
   });
 
   it('sets the swap amount to the selected source balance', async () => {
