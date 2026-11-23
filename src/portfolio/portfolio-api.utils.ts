@@ -82,7 +82,37 @@ export const resolveVisiblePortfolioSections = (
   return sections;
 };
 
+const canExecuteDeferredKeychainSwapQuote = (
+  quote: PortfolioQuote,
+): boolean => {
+  if (quote.provider !== 'keychain_swap' || quote.executionType !== 'in_app') {
+    return false;
+  }
+
+  const metadata = quote.routeMetadata;
+  if (!metadata) {
+    return false;
+  }
+
+  const steps = metadata.steps;
+  const account = metadata.account;
+  const slippage = metadata.slippage;
+
+  return (
+    Array.isArray(steps) &&
+    steps.length > 0 &&
+    typeof account === 'string' &&
+    account.trim().length > 0 &&
+    typeof slippage === 'number' &&
+    Number.isFinite(slippage)
+  );
+};
+
 export const canExecutePortfolioQuote = (quote: PortfolioQuote): boolean => {
+  if (canExecuteDeferredKeychainSwapQuote(quote)) {
+    return true;
+  }
+
   if (quote.executionType === 'in_app') {
     return Boolean(quote.transaction);
   }

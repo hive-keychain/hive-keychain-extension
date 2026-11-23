@@ -125,6 +125,7 @@ import {
   PortfolioTokenIdentity,
 } from 'src/portfolio/ui/portfolio-token-identity.component';
 import Logger from 'src/utils/logger.utils';
+import { SwapTokenUtils } from 'src/utils/swap-token.utils';
 import { PortfolioUtils } from 'src/utils/porfolio.utils';
 
 import { ethers } from 'ethers';
@@ -662,6 +663,7 @@ export const Portfolio = ({
     useState(false);
   const [hasLoadedSwapAvailableAssets, setHasLoadedSwapAvailableAssets] =
     useState(false);
+  const pendingKeychainSwapIdRef = useRef<string | null>(null);
   const [pendingInAppConfirmation, setPendingInAppConfirmation] =
     useState<PortfolioInAppConfirmationContext | null>(null);
   const hasUserSelectedAccountRef = useRef(false);
@@ -2112,7 +2114,23 @@ export const Portfolio = ({
     };
   }, []);
 
+  const cancelUnconfirmedKeychainSwap = () => {
+    const swapId = pendingKeychainSwapIdRef.current;
+    pendingKeychainSwapIdRef.current = null;
+    if (!swapId) {
+      return;
+    }
+    void SwapTokenUtils.cancelSwap(swapId).catch((error) => {
+      Logger.error('Unable to cancel Keychain Swap estimate', error);
+    });
+  };
+
+  const keepConfirmedKeychainSwap = () => {
+    pendingKeychainSwapIdRef.current = null;
+  };
+
   const resetFlowFormFields = () => {
+    cancelUnconfirmedKeychainSwap();
     setAmount('');
     setPaymentMethod('');
     setRecipientAddress('');
@@ -2133,6 +2151,7 @@ export const Portfolio = ({
       setRecipientSelectValue('');
       setRecipientFieldError(undefined);
       setAmountQuoteError(null);
+      cancelUnconfirmedKeychainSwap();
       setPendingInAppConfirmation(null);
       setIsQuotesPanelExpanded(false);
       return;
@@ -3406,6 +3425,7 @@ export const Portfolio = ({
   ]);
 
   useEffect(() => {
+    cancelUnconfirmedKeychainSwap();
     setPendingInAppConfirmation(null);
   }, [section]);
 
@@ -3416,6 +3436,7 @@ export const Portfolio = ({
     setHistory([]);
     setHistoryHasMore(false);
     setIsHistoryLoading(true);
+    keepConfirmedKeychainSwap();
     setSection('history');
     setPendingInAppConfirmation(null);
   };
@@ -3732,6 +3753,9 @@ export const Portfolio = ({
         address,
         toAddress,
       );
+      if (quote.provider === 'keychain_swap' && execution.providerReferenceId) {
+        pendingKeychainSwapIdRef.current = execution.providerReferenceId;
+      }
 
       if (quote.executionType === 'in_app') {
         const transaction = resolvePortfolioSignableTransaction(
@@ -3799,6 +3823,7 @@ export const Portfolio = ({
 
       setStatusMessage('portfolio_provider_execution_unavailable');
     } catch (error) {
+      cancelUnconfirmedKeychainSwap();
       Logger.error('Unable to execute portfolio quote', error);
       setStatusMessage(getStatusMessageKey(error, 'portfolio_execution_error'));
     } finally {
@@ -4965,7 +4990,10 @@ export const Portfolio = ({
       return (
         <PortfolioConfirmationStepComponent
           context={pendingInAppConfirmation}
-          onDismiss={() => setPendingInAppConfirmation(null)}
+          onDismiss={() => {
+            cancelUnconfirmedKeychainSwap();
+            setPendingInAppConfirmation(null);
+          }}
         />
       );
     }
