@@ -3249,6 +3249,7 @@ export const Portfolio = ({
           fromAmount: formattedFromAmount,
           fromAddress: address,
           toAddress,
+          deferKeychainSwapEstimate: true,
           countryCode:
             mode === 'buy' || mode === 'sell'
               ? (geoCountryCode ??

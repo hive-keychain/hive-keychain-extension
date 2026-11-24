@@ -237,6 +237,11 @@ export interface PortfolioQuoteRequestBody {
   sourceChainId?: string;
   destinationChainId?: string;
   providers?: PortfolioProviderId[];
+  /**
+   * Ask the portfolio API to skip creating a Keychain Swap pending row during quote refresh.
+   * Older extensions omit this and still receive the deposit on the quote.
+   */
+  deferKeychainSwapEstimate?: boolean;
 }
 
 export interface PortfolioChainDisplay {
